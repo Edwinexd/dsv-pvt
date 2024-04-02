@@ -1,0 +1,28 @@
+name: Flutter Test
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+        - name: Clone repository
+          uses: actions/checkout@v4
+
+        - name: Set up Flutter
+          uses: subosito/flutter-action@v2
+          with:
+            channel: stable
+            flutter-version: 3.19.5
+
+        - name: Get all Flutter Packages
+          run: flutter pub get
+          working-directory: ./flutter_application
+
+        - name: Run Flutter Test
+          run: flutter test
+          working-directory: ./flutter_application
