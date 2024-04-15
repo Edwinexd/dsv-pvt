@@ -53,3 +53,9 @@ class ChallengeCreate(ChallengeBase):
     difficulty_code: int
     expiration_date: str | None = None
     point_reward: int
+
+class Challenge(ChallengeBase):
+    id: int
+
+    class Config:
+        orm_mode = True
