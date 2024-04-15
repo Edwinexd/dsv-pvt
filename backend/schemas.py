@@ -12,3 +12,13 @@ class User(UserBase):
 
     class Config:
         orm_mode = True
+
+class GroupBase(BaseModel):
+    group_name: str
+    description: str
+
+class GroupCreate(GroupBase):
+    pass
+
+class Group(GroupBase):
+    id: int

@@ -16,3 +16,18 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+def create_group(db: Session, group: schemas.GroupCreate):
+    db_group = models.Group(group_name = group.group_name, description = group.description)
+    db.add(db_group)
+    db.commit()
+    db.refresh(db_group)
+    return db_group
+
+# get a group from group_id
+def get_group(db: Session, group_id: int):
+    return db.query(models.Group).filter(models.Group.id == group_id).first()
+
+# get a list of groups
+def get_groups(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Group).offset(skip).limit(limit).all()
