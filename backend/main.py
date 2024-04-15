@@ -71,3 +71,5 @@ def read_members_in_group(group_id: int, db: Session = Depends(get_db)):
 def read_user_groups(user_id: int, db: Session = Depends(get_db)):
     groups = crud.get_user_groups(db=db, user_id=user_id)
     return groups
+
+#TODO: activity creation, activity deletion, activity participation, activity reading

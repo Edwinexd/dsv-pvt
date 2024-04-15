@@ -1,5 +1,7 @@
+# Schemas will be used for presentation and data query with user
 from pydantic import BaseModel
 
+# USER
 class UserBase(BaseModel):
     username: str
 
@@ -13,6 +15,7 @@ class User(UserBase):
     class Config:
         orm_mode = True
 
+# GROUP
 class GroupBase(BaseModel):
     group_name: str
     description: str
@@ -26,13 +29,17 @@ class Group(GroupBase):
     class Config:
         orm_mode = True
 
-class GroupMembershipBase(BaseModel):
-    user_id: int
-    group_id: int
+# ACTIVITY
+class ActivityBase(BaseModel):
+    activity_name: str
 
-class GroupMembershipCreate(GroupMembershipBase):
-    pass
+class ActivityCreate(ActivityBase):
+    scheduled_date: str
+    scheduled_time: str
 
-class GroupMembership(GroupMembershipBase):
+class Activity(ActivityBase):
+    id: int
+    completed: bool
+
     class Config:
         orm_mode = True
