@@ -43,3 +43,13 @@ class Activity(ActivityBase):
 
     class Config:
         orm_mode = True
+
+# CHALLENGE
+class ChallengeBase(BaseModel):
+    challenge_name: str
+
+class ChallengeCreate(ChallengeBase):
+    description: str
+    difficulty_code: int
+    expiration_date: str | None = None
+    point_reward: int

@@ -73,3 +73,4 @@ def read_user_groups(user_id: int, db: Session = Depends(get_db)):
     return groups
 
 #TODO: activity creation, activity deletion, activity participation, activity reading
+#TODO: challenge creation (by superusers), adding challenges to activities, reading all challanges, challenge-trophy link (?), reading all challenges in activity

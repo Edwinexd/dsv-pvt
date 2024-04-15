@@ -17,6 +17,12 @@ activity_participation = Table(
     Column("user_id", ForeignKey("users.id"), primary_key=True),
     Column("group_id", ForeignKey("groups.id"), primary_key=True),
 )
+challenge_completion = Table(
+    "challenge_completion",
+    Base.metadata,
+    Column("user_id", ForeignKey("users.id"), primary_key=True),
+    Column("challenge_id", ForeignKey("challenges.id"), primary_key=True),
+)
 
 # NORMAL TABLES
 class User(Base):
@@ -29,6 +35,7 @@ class User(Base):
 
     groups = relationship("Group", secondary=group_memberships)
     activities = relationship("Activity", secondary=activity_participation)
+    completed_challenges = relationship("Challenge", secondary=challenge_completion)
 
 class Group(Base):
     __tablename__ = "groups"
@@ -59,3 +66,14 @@ class Activity(Base):
 
     participants = relationship("User", secondary=activity_participation)
 
+class Challenge(Base):
+    __tablename__ = "challenges"
+
+    id = Column(Integer, primary_key=True)
+    challenge_name = Column(String)
+    description = Column(String)
+    difficulty_code = Column(Integer)
+    expiration_date = Column(String, nullable=True)
+    point_reward = Column(Integer)
+
+    completed_by = relationship("User", secondary=challenge_completion)
