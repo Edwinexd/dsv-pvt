@@ -1,10 +1,10 @@
 class Group {
-  final int groupId;
+  final int id;
   final String name;
   final String description;
 
   const Group({
-    required this.groupId,
+    required this.id,
     required this.name,
     required this.description,
   });
@@ -12,12 +12,12 @@ class Group {
   factory Group.fromJson(Map<String, dynamic> json) {
     return switch (json) {
       {
-        'groupId': int groupId,
+        'id': int id,
         'name': String name,
         'description': String description,
       } =>
         Group(
-          groupId: groupId,
+          id: id,
           name: name,
           description: description,
         ),
@@ -25,3 +25,4 @@ class Group {
     };
   }
 }
+
