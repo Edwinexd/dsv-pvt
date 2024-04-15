@@ -22,3 +22,17 @@ class GroupCreate(GroupBase):
 
 class Group(GroupBase):
     id: int
+
+    class Config:
+        orm_mode = True
+
+class GroupMembershipBase(BaseModel):
+    user_id: int
+    group_id: int
+
+class GroupMembershipCreate(GroupMembershipBase):
+    pass
+
+class GroupMembership(GroupMembershipBase):
+    class Config:
+        orm_mode = True
