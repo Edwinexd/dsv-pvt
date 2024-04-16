@@ -1,13 +1,18 @@
+import os
+
+from dotenv import load_dotenv
+from id_generator import IdGenerator
+from sqlalchemy import BigInteger, Column
 from sqlmodel import Field, Session, SQLModel, create_engine, select
 
-from id_generator import IdGenerator
+load_dotenv()
 
 ID_GENERATOR = IdGenerator()
 
-ENGINE = create_engine("sqlite:///temp.db")
+ENGINE = create_engine(os.getenv("DATABASE_URL", "sqlite:///:memory:"))
 
 class User(SQLModel, table=True):
-    id: int = Field(default=None, primary_key=True)
+    id: int = Field(sa_column=Column(BigInteger(), default=None, primary_key=True))
     username: str = Field(unique=True, index=True)
     password_hash: str
     salt: str
@@ -38,7 +43,7 @@ if __name__ == "__main__":
     
     with Session(ENGINE) as test_session:
     # Create a new user
-        new_test_user = User(username="test", password_hash="1234", salt="abcd")
+        new_test_user = User(id=ID_GENERATOR.generate_id(), username="test", password_hash="1234", salt="abcd")
         test_session.add(new_test_user)
 
         test_session.commit()
