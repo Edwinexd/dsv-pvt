@@ -1,0 +1,20 @@
+
+from authentication.database import add_user, get_user
+from authentication.passwords import create_password_hash, generate_salt, validate
+
+
+def create_user(username: str, password: str):
+    salt = generate_salt()
+    password_hash = create_password_hash(password, salt)
+
+    return add_user(username, password_hash, salt)
+
+def find_user(username: str, password: str):
+    # NOTE: Susceptible to timing attacks
+    user = get_user(username)
+
+    # Alchemy stubs don't work with python's type system: https://github.com/python/typeshed/issues/974
+    if user is not None and validate(password, user.salt, user.password_hash): # type: ignore
+        return user
+    
+    return None
