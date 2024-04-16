@@ -33,12 +33,7 @@ def get_groups(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Group).offset(skip).limit(limit).all()
 
 # join a user to a group
-def join_group(db: Session, user_id: int, group_id: int):
-    db_user = get_user(db, user_id)
-    db_group = get_group(db, group_id)
-#    if db_group or db_user is None
-#        raise HTTPException
-
+def join_group(db: Session, db_user: models.User, db_group: models.Group):
     db_group.users.append(db_user)
     db.add(db_group)
     db.commit()
