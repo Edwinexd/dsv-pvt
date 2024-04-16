@@ -1,59 +1,52 @@
-import sqlalchemy
-from sqlalchemy.orm import declarative_base, sessionmaker
-from sqlalchemy import Column, Integer, String
+from sqlmodel import Field, Session, SQLModel, create_engine, select
 
 from id_generator import IdGenerator
 
 ID_GENERATOR = IdGenerator()
 
-# TODO: Replace sqlalchemy with SQLModel
-ENGINE = sqlalchemy.create_engine("sqlite:///temp.db")
+ENGINE = create_engine("sqlite:///temp.db")
 
-_BASE = declarative_base()
-
-class User(_BASE):
-    __tablename__ = "users"
-
-    id = Column(Integer, primary_key=True)
-    username = Column(String, unique=True)
-    password_hash = Column(String)
-    salt = Column(String)
-
-SESSION = sessionmaker(ENGINE)
+class User(SQLModel, table=True):
+    id: int = Field(default=None, primary_key=True)
+    username: str = Field(unique=True, index=True)
+    password_hash: str
+    salt: str
 
 def add_user(username: str, password_hash: str, salt: str):
-    session = SESSION()
+    with Session(ENGINE) as session:
+        new_user = User(id=ID_GENERATOR.generate_id(), username=username, password_hash=password_hash, salt=salt)
+        session.add(new_user)
 
-    new_user = User(id=ID_GENERATOR.generate_id(), username=username, password_hash=password_hash, salt=salt)
-    session.add(new_user)
+        session.commit()
 
-    session.commit()
+        session.refresh(new_user)
 
-    return new_user
+        return new_user
 
 def get_user(username: str):
-    session = SESSION()
+    with Session(ENGINE) as session:
+        statement = select(User).where(User.username == username)
+        target_user = session.exec(statement).first()
 
-    target_user = session.query(User).filter(User.username == username).first()
-
-    return target_user
+        return target_user
 
 def setup():
-    _BASE.metadata.create_all(ENGINE)
+    SQLModel.metadata.create_all(ENGINE)
 
 if __name__ == "__main__":
     setup()
+    
+    with Session(ENGINE) as test_session:
     # Create a new user
-    test_session = SESSION()
+        new_test_user = User(username="test", password_hash="1234", salt="abcd")
+        test_session.add(new_test_user)
 
-    new_test_user = User(username="test", password_hash="1234", salt="abcd")
-    test_session.add(new_test_user)
+        test_session.commit()
 
-    test_session.commit()
-
-    # Query the user
-    user = test_session.query(User).filter(User.username == "test").first()
-    
-    assert user
-    
-    print(user.username)
+        # Query the user
+        test_statement = select(User).where(User.username == "test")
+        user = test_session.exec(test_statement).first()
+        
+        assert user
+        
+        print(user.username)

@@ -37,7 +37,7 @@ def login(payload: LoginPayload):
     if user is None:
         raise fastapi.HTTPException(401, detail="Invalid username and/or password")
 
-    return BasicUserInfo(id=user.id) # type: ignore
+    return BasicUserInfo(id=user.id)
 
 @app.post("/users")
 def create_user_(payload: LoginPayload):
@@ -46,4 +46,4 @@ def create_user_(payload: LoginPayload):
     except UsernameInUseError as e:
         raise fastapi.HTTPException(400, detail="Username unavailable") from e
 
-    return BasicUserInfo(id=new_user.id) # type: ignore
+    return BasicUserInfo(id=new_user.id)

@@ -19,8 +19,7 @@ def find_user(username: str, password: str):
     # NOTE: Susceptible to timing attacks
     user = get_user(username)
 
-    # Alchemy stubs don't work with python's type system: https://github.com/python/typeshed/issues/974
-    if user is not None and validate(password, user.salt, user.password_hash): # type: ignore
+    if user is not None and validate(password, user.salt, user.password_hash):
         return user
     
     return None
