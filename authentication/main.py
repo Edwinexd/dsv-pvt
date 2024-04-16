@@ -31,7 +31,7 @@ class BasicUserInfo(BaseModel):
     id: int
 
 @app.post("/users/login")
-def login(payload: LoginPayload):
+def login(payload: LoginPayload) -> BasicUserInfo:
     user = find_user(payload.username, payload.password)
     
     if user is None:
@@ -40,7 +40,7 @@ def login(payload: LoginPayload):
     return BasicUserInfo(id=user.id)
 
 @app.post("/users")
-def create_user_(payload: LoginPayload):
+def create_user_(payload: LoginPayload) -> BasicUserInfo:
     try:
         new_user = create_user(payload.username, payload.password)
     except UsernameInUseError as e:
