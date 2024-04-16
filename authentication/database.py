@@ -7,7 +7,7 @@ from id_generator import IdGenerator
 ID_GENERATOR = IdGenerator()
 
 # TODO: Replace sqlalchemy with SQLModel
-ENGINE = sqlalchemy.create_engine("sqlite:///:memory:")
+ENGINE = sqlalchemy.create_engine("sqlite:///temp.db")
 
 _BASE = declarative_base()
 
@@ -38,10 +38,11 @@ def get_user(username: str):
 
     return target_user
 
-
-if __name__ == "__main__":
+def setup():
     _BASE.metadata.create_all(ENGINE)
 
+if __name__ == "__main__":
+    setup()
     # Create a new user
     test_session = SESSION()
 
