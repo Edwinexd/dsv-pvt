@@ -15,7 +15,7 @@ activity_participation = Table(
     "activity_participation",
     Base.metadata,
     Column("user_id", ForeignKey("users.id"), primary_key=True),
-    Column("group_id", ForeignKey("groups.id"), primary_key=True),
+    Column("activity_id", ForeignKey("activities.id"), primary_key=True),
 )
 challenge_completion = Table(
     "challenge_completion",
