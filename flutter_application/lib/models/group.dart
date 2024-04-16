@@ -28,5 +28,8 @@ class Group {
         _ => throw const FormatException('Failed to build Group.'),
     };
   }
+
+  static Map<String, dynamic> toJson(Group value) =>
+      {'id': value.id, 'name': value.name, 'description': value.description, 'isPublic': value.isPublic};
 }
 

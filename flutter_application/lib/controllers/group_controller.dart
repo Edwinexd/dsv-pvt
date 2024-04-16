@@ -32,12 +32,31 @@ class GroupController {
       headers: {
         HttpHeaders.authorizationHeader: 'Basic your_api_token_here'
       },
+      body: jsonEncode(Group.toJson(group))
     );
 
     if (response.statusCode == 200) {
       // TODO: Not sure what to return
     } else {
       throw Exception('Failed to create group');
+    }
+  }
+
+  void updateGroupName(String groupId, String newName) async {
+    final response = await http
+      .put(Uri.parse('url'),
+      headers: {
+        HttpHeaders.authorizationHeader: 'Basic your_api_token_here'
+      },
+      body: jsonEncode(<String, String>{
+        'name': newName
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      // TODO: Not sure what to return
+    } else {
+      throw Exception('Failed to update group data');
     }
   }
 }
