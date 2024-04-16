@@ -1,6 +1,6 @@
 
-from authentication.database import add_user, get_user
-from authentication.passwords import create_password_hash, generate_salt, validate
+from database import add_user, get_user
+from passwords import create_password_hash, generate_salt, validate
 
 
 def create_user(username: str, password: str):

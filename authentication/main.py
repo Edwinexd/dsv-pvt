@@ -10,7 +10,7 @@ import fastapi
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
-from authentication.users import find_user
+from users import find_user
 
 
 logging.basicConfig(level=logging.INFO)
