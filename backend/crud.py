@@ -10,7 +10,7 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.User).offset(skip).limit(limit).all()
 
 def create_user(db: Session, user: schemas.UserCreate):
-    date_created = datetime.today().strftime('%Y-%m-%d')
+    date_created = datetime.today().isoformat()
     db_user = models.User(username = user.username, full_name = user.full_name, date_created = date_created)
     db.add(db_user)
     db.commit()
@@ -36,6 +36,8 @@ def get_groups(db: Session, skip: int = 0, limit: int = 100):
 def join_group(db: Session, user_id: int, group_id: int):
     db_user = get_user(db, user_id)
     db_group = get_group(db, group_id)
+#    if db_group or db_user is None
+#        raise HTTPException
 
     db_group.users.append(db_user)
     db.add(db_group)

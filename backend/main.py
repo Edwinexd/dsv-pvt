@@ -19,6 +19,8 @@ def get_db():
     finally:
         db.close()
 
+#TODO: faulty data handling
+
 # user creation
 @app.post("/users/", response_model = schemas.User)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
@@ -55,9 +57,12 @@ def read_groups(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     groups = crud.get_groups(db, skip=skip, limit=limit)
     return groups
 
+#TODO: user should not be able to join group that the user has already joined
 # join group
 @app.post("/groups/{group_id}/users/", response_model=schemas.Group)
 def join_group(user_id: int, group_id: int, db: Session = Depends(get_db)):
+    db_user = crud.get_user(db, user_id=user_id)
+    db_group = crud.get_group(db, group_id=group_id)
     return crud.join_group(db=db, user_id=user_id, group_id=group_id)
 
 # get all members in a group by group_id
