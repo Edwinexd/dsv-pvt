@@ -63,6 +63,8 @@ def read_groups(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 def join_group(user_id: int, group_id: int, db: Session = Depends(get_db)):
     db_user = read_user(user_id=user_id, db=db)
     db_group = read_group(group_id=group_id, db=db)
+    if db_user in db_group.users:
+        raise HTTPException(status_code=400, detail="User already in group")
     return crud.join_group(db=db, db_user=db_user, db_group=db_group)
 
 # get all members in a group by group_id
