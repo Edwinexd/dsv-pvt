@@ -18,7 +18,7 @@ def create_user(db: Session, user: schemas.UserCreate):
     return db_user
 
 def create_group(db: Session, group: schemas.GroupCreate):
-    db_group = models.Group(group_name = group.group_name, description = group.description)
+    db_group = models.Group(group_name = group.group_name, description = group.description, private = group.private)
     db.add(db_group)
     db.commit()
     db.refresh(db_group)

@@ -43,6 +43,7 @@ class Group(Base):
     id = Column(Integer, primary_key=True)
     group_name = Column(String)
     description = Column(String)
+    private = Column(Boolean)
 
     users = relationship("User", secondary=group_memberships, back_populates="groups")
 
@@ -56,6 +57,7 @@ class Activity(Base):
     scheduled_date = Column(String)
     scheduled_time = Column(String)
     completed = Column(Boolean)
+    difficulty_code = Column(Integer)
     
     # user who created activity
     creator_id = Column(Integer, ForeignKey("users.id"))

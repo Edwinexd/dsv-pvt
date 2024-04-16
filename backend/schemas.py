@@ -21,7 +21,7 @@ class GroupBase(BaseModel):
     description: str
 
 class GroupCreate(GroupBase):
-    pass
+    private: bool
 
 class Group(GroupBase):
     id: int
@@ -36,6 +36,7 @@ class ActivityBase(BaseModel):
 class ActivityCreate(ActivityBase):
     scheduled_date: str
     scheduled_time: str
+    difficulty_code: int
 
 class Activity(ActivityBase):
     id: int
