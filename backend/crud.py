@@ -40,6 +40,13 @@ def join_group(db: Session, db_user: models.User, db_group: models.Group):
     db.refresh(db_group)
     return db_group
 
+def leave_group(db: Session, db_user: models.User, db_group: models.Group):
+    db_group.users.remove(db_user)
+    db.add(db_group)
+    db.commit()
+    db.refresh(db_group)
+    return db_group
+
 # get all groups a user is member of
 def get_user_groups(db: Session, user_id: int):
     db_user = get_user(db, user_id)
