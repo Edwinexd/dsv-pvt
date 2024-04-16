@@ -33,9 +33,9 @@ class User(Base):
     full_name = Column(String)
     date_created = Column(String)
 
-    groups = relationship("Group", secondary=group_memberships)
-    activities = relationship("Activity", secondary=activity_participation)
-    completed_challenges = relationship("Challenge", secondary=challenge_completion)
+    groups = relationship("Group", secondary=group_memberships, back_populates="users")
+    activities = relationship("Activity", secondary=activity_participation, back_populates="participants")
+    completed_challenges = relationship("Challenge", secondary=challenge_completion, back_populates="completed_by")
 
 class Group(Base):
     __tablename__ = "groups"
@@ -44,7 +44,7 @@ class Group(Base):
     group_name = Column(String)
     description = Column(String)
 
-    users = relationship("User", secondary=group_memberships)
+    users = relationship("User", secondary=group_memberships, back_populates="groups")
 
     activities = relationship("Activity", back_populates="creator_group")
 
@@ -64,7 +64,7 @@ class Activity(Base):
 
     creator_group = relationship("Group", back_populates="activities")
 
-    participants = relationship("User", secondary=activity_participation)
+    participants = relationship("User", secondary=activity_participation, back_populates="activities")
 
 class Challenge(Base):
     __tablename__ = "challenges"
@@ -76,4 +76,4 @@ class Challenge(Base):
     expiration_date = Column(String, nullable=True)
     point_reward = Column(Integer)
 
-    completed_by = relationship("User", secondary=challenge_completion)
+    completed_by = relationship("User", secondary=challenge_completion, back_populates="completed_challenges")
