@@ -11,14 +11,14 @@ group_memberships = Table(
     Column("user_id", ForeignKey("users.id"), primary_key=True),
     Column("group_id", ForeignKey("groups.id"), primary_key=True),
 )
-activity_participation = Table(
-    "activity_participation",
+activity_participations = Table(
+    "activity_participations",
     Base.metadata,
     Column("user_id", ForeignKey("users.id"), primary_key=True),
     Column("activity_id", ForeignKey("activities.id"), primary_key=True),
 )
-challenge_completion = Table(
-    "challenge_completion",
+challenge_completions = Table(
+    "challenge_completions",
     Base.metadata,
     Column("user_id", ForeignKey("users.id"), primary_key=True),
     Column("challenge_id", ForeignKey("challenges.id"), primary_key=True),
@@ -34,8 +34,8 @@ class User(Base):
     date_created = Column(String)
 
     groups = relationship("Group", secondary=group_memberships, back_populates="users")
-    activities = relationship("Activity", secondary=activity_participation, back_populates="participants")
-    completed_challenges = relationship("Challenge", secondary=challenge_completion, back_populates="completed_by")
+    activities = relationship("Activity", secondary=activity_participations, back_populates="participants")
+    completed_challenges = relationship("Challenge", secondary=challenge_completions, back_populates="completed_by")
 
 class Group(Base):
     __tablename__ = "groups"
@@ -66,7 +66,7 @@ class Activity(Base):
 
     creator_group = relationship("Group", back_populates="activities")
 
-    participants = relationship("User", secondary=activity_participation, back_populates="activities")
+    participants = relationship("User", secondary=activity_participations, back_populates="activities")
 
 class Challenge(Base):
     __tablename__ = "challenges"
@@ -78,4 +78,4 @@ class Challenge(Base):
     expiration_date = Column(String, nullable=True)
     point_reward = Column(Integer)
 
-    completed_by = relationship("User", secondary=challenge_completion, back_populates="completed_challenges")
+    completed_by = relationship("User", secondary=challenge_completions, back_populates="completed_challenges")
