@@ -1,30 +1,30 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import relationship
 
-from .database import Base
+from .database import base
 
 # ASSOCIATION TABLES
 group_memberships = Table(
     "group_memberships",
-    Base.metadata,
+    base.metadata,
     Column("user_id", ForeignKey("users.id"), primary_key=True),
     Column("group_id", ForeignKey("groups.id"), primary_key=True),
 )
 activity_participations = Table(
     "activity_participations",
-    Base.metadata,
+    base.metadata,
     Column("user_id", ForeignKey("users.id"), primary_key=True),
     Column("activity_id", ForeignKey("activities.id"), primary_key=True),
 )
 challenge_completions = Table(
     "challenge_completions",
-    Base.metadata,
+    base.metadata,
     Column("user_id", ForeignKey("users.id"), primary_key=True),
     Column("challenge_id", ForeignKey("challenges.id"), primary_key=True),
 )
 
 # NORMAL TABLES
-class User(Base):
+class User(base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
@@ -44,7 +44,7 @@ class User(Base):
         back_populates="completed_by"
     )
 
-class Group(Base):
+class Group(base):
     __tablename__ = "groups"
 
     id = Column(Integer, primary_key=True)
@@ -56,7 +56,7 @@ class Group(Base):
 
     activities = relationship("Activity", back_populates="creator_group")
 
-class Activity(Base):
+class Activity(base):
     __tablename__ = "activities"
 
     id = Column(Integer, primary_key=True)
@@ -79,7 +79,7 @@ class Activity(Base):
         back_populates="activities"
     )
 
-class Challenge(Base):
+class Challenge(base):
     __tablename__ = "challenges"
 
     id = Column(Integer, primary_key=True)
