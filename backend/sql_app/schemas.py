@@ -1,6 +1,6 @@
 # Schemas will be used for presentation and data query with user
-from pydantic import BaseModel
 from typing import List
+from pydantic import BaseModel
 
 # USER
 class UserBase(BaseModel):

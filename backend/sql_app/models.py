@@ -1,6 +1,5 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import relationship
-from sqlalchemy.schema import PrimaryKeyConstraint
 
 from .database import Base
 
@@ -34,8 +33,16 @@ class User(Base):
     date_created = Column(String)
 
     groups = relationship("Group", secondary=group_memberships, back_populates="users")
-    activities = relationship("Activity", secondary=activity_participations, back_populates="participants")
-    completed_challenges = relationship("Challenge", secondary=challenge_completions, back_populates="completed_by")
+    activities = relationship(
+        "Activity",
+        secondary=activity_participations,
+        back_populates="participants"
+    )
+    completed_challenges = relationship(
+        "Challenge",
+        secondary=challenge_completions,
+        back_populates="completed_by"
+    )
 
 class Group(Base):
     __tablename__ = "groups"
@@ -58,7 +65,7 @@ class Activity(Base):
     scheduled_time = Column(String)
     completed = Column(Boolean)
     difficulty_code = Column(Integer)
-    
+
     # user who created activity
     creator_id = Column(Integer, ForeignKey("users.id"))
     # the group where activity resides
@@ -66,7 +73,11 @@ class Activity(Base):
 
     creator_group = relationship("Group", back_populates="activities")
 
-    participants = relationship("User", secondary=activity_participations, back_populates="activities")
+    participants = relationship(
+        "User",
+        secondary=activity_participations,
+        back_populates="activities"
+    )
 
 class Challenge(Base):
     __tablename__ = "challenges"
@@ -78,4 +89,8 @@ class Challenge(Base):
     expiration_date = Column(String, nullable=True)
     point_reward = Column(Integer)
 
-    completed_by = relationship("User", secondary=challenge_completions, back_populates="completed_challenges")
+    completed_by = relationship(
+        "User",
+        secondary=challenge_completions,
+        back_populates="completed_challenges"
+    )

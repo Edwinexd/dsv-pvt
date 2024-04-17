@@ -1,10 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException
-from typing import Optional, Annotated, Union, List
-from pydantic import BaseModel
-# fastapi.tiangolo.com/tutorial/sql-databases
-
 from sqlalchemy.orm import Session
-
 from . import crud, models, schemas
 from .database import session_local, engine
 
@@ -86,4 +81,5 @@ def read_user_groups(user_id: int, db: Session = Depends(get_db)):
     return groups
 
 #TODO: activity creation, activity deletion, activity participation, activity reading
-#TODO: challenge creation (by superusers), adding challenges to activities, reading all challanges, challenge-trophy link (?), reading all challenges in activity
+#TODO: challenge creation (by superusers), adding challenges to activities
+#TODO: reading all challanges, challenge-trophy link (?), reading all challenges in activity
