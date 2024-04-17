@@ -6,14 +6,14 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from . import crud, models, schemas
-from .database import SessionLocal, engine
+from .database import session_local, engine
 
 models.Base.metadata.create_all(bind = engine)
 
 app = FastAPI()
 
 def get_db():
-    db = SessionLocal()
+    db = session_local()
     try:
         yield db
     finally:
