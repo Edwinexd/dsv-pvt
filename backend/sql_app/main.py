@@ -19,8 +19,6 @@ def get_db():
     finally:
         db.close()
 
-#TODO: faulty data handling
-
 # user creation
 @app.post("/users", response_model = schemas.User)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):

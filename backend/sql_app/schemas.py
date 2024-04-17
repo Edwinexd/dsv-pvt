@@ -13,7 +13,7 @@ class User(UserBase):
     date_created: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # GROUP
 class GroupBase(BaseModel):
@@ -27,7 +27,7 @@ class Group(GroupBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # ACTIVITY
 class ActivityBase(BaseModel):
@@ -43,7 +43,7 @@ class Activity(ActivityBase):
     completed: bool
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # CHALLENGE
 class ChallengeBase(BaseModel):
@@ -59,4 +59,4 @@ class Challenge(ChallengeBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
