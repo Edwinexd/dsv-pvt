@@ -1,7 +1,7 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import relationship
 
-from .database import base
+from database import base
 
 # ASSOCIATION TABLES
 group_memberships = Table(
