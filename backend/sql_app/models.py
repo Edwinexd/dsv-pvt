@@ -2,7 +2,7 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import PrimaryKeyConstraint
 
-from database import Base
+from .database import Base
 
 # ASSOCIATION TABLES
 group_memberships = Table(
