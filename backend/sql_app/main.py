@@ -22,12 +22,12 @@ def get_db():
 #TODO: faulty data handling
 
 # user creation
-@app.post("/users/", response_model = schemas.User)
+@app.post("/users", response_model = schemas.User)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return crud.create_user(db=db, user=user)
 
 # get a list of users from db using a offset and size limit
-@app.get("/users/", response_model=list[schemas.User])
+@app.get("/users", response_model=list[schemas.User])
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = crud.get_users(db, skip=skip, limit=limit)
     return users
@@ -41,7 +41,7 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
     return db_user
 
 # group creation
-@app.post("/groups/", response_model = schemas.Group)
+@app.post("/groups", response_model = schemas.Group)
 def create_group(group: schemas.GroupCreate, db: Session = Depends(get_db)):
     return crud.create_group(db=db, group=group)
 
@@ -52,13 +52,13 @@ def read_group(group_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Group not found")
     return db_group
 
-@app.get("/groups/", response_model=list[schemas.Group])
+@app.get("/groups", response_model=list[schemas.Group])
 def read_groups(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     groups = crud.get_groups(db, skip=skip, limit=limit)
     return groups
 
 # join group
-@app.post("/groups/{group_id}/users/", response_model=schemas.Group)
+@app.post("/groups/{group_id}/users", response_model=schemas.Group)
 def join_group(user_id: int, group_id: int, db: Session = Depends(get_db)):
     db_user = read_user(user_id=user_id, db=db)
     db_group = read_group(group_id=group_id, db=db)
@@ -67,7 +67,7 @@ def join_group(user_id: int, group_id: int, db: Session = Depends(get_db)):
     return crud.join_group(db=db, db_user=db_user, db_group=db_group)
 
 #leave group
-@app.delete("/groups/{group_id}/users/", response_model=schemas.Group)
+@app.delete("/groups/{group_id}/users", response_model=schemas.Group)
 def leave_group(user_id: int, group_id: int, db: Session = Depends(get_db)):
     db_user = read_user(user_id=user_id, db=db)
     db_group = read_group(group_id=group_id, db=db)
@@ -76,13 +76,13 @@ def leave_group(user_id: int, group_id: int, db: Session = Depends(get_db)):
     return crud.leave_group(db=db, db_user=db_user, db_group=db_group)
 
 # get all members in a group by group_id
-@app.get("/groups/{group_id}/users/", response_model = list[schemas.User])
+@app.get("/groups/{group_id}/users", response_model = list[schemas.User])
 def read_members_in_group(group_id: int, db: Session = Depends(get_db)):
     users = crud.get_group_users(db=db, group_id=group_id)
     return users
 
 # get all groups a user has joined
-@app.get("/users/{user_id}/groups/", response_model = list[schemas.Group])
+@app.get("/users/{user_id}/groups", response_model = list[schemas.Group])
 def read_user_groups(user_id: int, db: Session = Depends(get_db)):
     groups = crud.get_user_groups(db=db, user_id=user_id)
     return groups
