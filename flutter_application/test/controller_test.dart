@@ -1,7 +1,6 @@
 import 'package:flutter_application/controllers/group_controller.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/testing.dart';
 import 'package:mockito/mockito.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
@@ -19,10 +18,9 @@ void main() {
 
       // Mocking the HTTP request response
       when(client
-          .get(Uri.parse('url'),
-            headers: anyNamed('headers'),))
+          .get(Uri.parse('url')))
         .thenAnswer((_) async => 
-          http.Response('{"id": 1, "name": Test Group"}', 200));
+          http.Response('{"id": 1, "name": "mock", "description": "mock", "isPublic": true}', 200));
 
       expect(await groupController.fetchGroup(), isA<Group>());
     });
