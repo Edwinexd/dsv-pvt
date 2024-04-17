@@ -1,5 +1,6 @@
 # Schemas will be used for presentation and data query with user
 from pydantic import BaseModel
+from typing import List
 
 # USER
 class UserBase(BaseModel):
@@ -15,6 +16,9 @@ class User(UserBase):
     class Config:
         from_attributes = True
 
+class UserList(BaseModel):
+    data: List[User]
+
 # GROUP
 class GroupBase(BaseModel):
     group_name: str
@@ -28,6 +32,9 @@ class Group(GroupBase):
 
     class Config:
         from_attributes = True
+
+class GroupList(BaseModel):
+    data: List[Group]
 
 # ACTIVITY
 class ActivityBase(BaseModel):
@@ -45,6 +52,9 @@ class Activity(ActivityBase):
     class Config:
         from_attributes = True
 
+class ActivityList(BaseModel):
+    data: List[Activity]
+
 # CHALLENGE
 class ChallengeBase(BaseModel):
     challenge_name: str
@@ -60,3 +70,6 @@ class Challenge(ChallengeBase):
 
     class Config:
         from_attributes = True
+
+class ChallengeList(BaseModel):
+    data: List[Challenge]

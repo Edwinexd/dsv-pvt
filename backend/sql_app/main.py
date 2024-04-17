@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException
-from typing import Optional, Annotated, Union
+from typing import Optional, Annotated, Union, List
 from pydantic import BaseModel
 # fastapi.tiangolo.com/tutorial/sql-databases
 
@@ -25,9 +25,9 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return crud.create_user(db=db, user=user)
 
 # get a list of users from db using a offset and size limit
-@app.get("/users", response_model=list[schemas.User])
+@app.get("/users", response_model = schemas.UserList)
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    users = crud.get_users(db, skip=skip, limit=limit)
+    users = schemas.UserList(data=crud.get_users(db, skip=skip, limit=limit))
     return users
 
 #get a user from db using specific user id
@@ -50,9 +50,9 @@ def read_group(group_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Group not found")
     return db_group
 
-@app.get("/groups", response_model=list[schemas.Group])
+@app.get("/groups", response_model=schemas.GroupList)
 def read_groups(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    groups = crud.get_groups(db, skip=skip, limit=limit)
+    groups = schemas.GroupList(data=crud.get_groups(db, skip=skip, limit=limit))
     return groups
 
 # join group
@@ -74,15 +74,15 @@ def leave_group(user_id: int, group_id: int, db: Session = Depends(get_db)):
     return crud.leave_group(db=db, db_user=db_user, db_group=db_group)
 
 # get all members in a group by group_id
-@app.get("/groups/{group_id}/members", response_model = list[schemas.User])
+@app.get("/groups/{group_id}/members", response_model = schemas.UserList)
 def read_members_in_group(group_id: int, db: Session = Depends(get_db)):
-    users = crud.get_group_users(db=db, group_id=group_id)
+    users = schemas.UserList(data=crud.get_group_users(db=db, group_id=group_id))
     return users
 
 # get all groups a user has joined
-@app.get("/users/{user_id}/groups", response_model = list[schemas.Group])
+@app.get("/users/{user_id}/groups", response_model = schemas.GroupList)
 def read_user_groups(user_id: int, db: Session = Depends(get_db)):
-    groups = crud.get_user_groups(db=db, user_id=user_id)
+    groups = schemas.GroupList(data=crud.get_user_groups(db=db, user_id=user_id))
     return groups
 
 #TODO: activity creation, activity deletion, activity participation, activity reading
