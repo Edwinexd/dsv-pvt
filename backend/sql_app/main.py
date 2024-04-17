@@ -58,7 +58,7 @@ def read_groups(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return groups
 
 # join group
-@app.post("/groups/{group_id}/users", response_model=schemas.Group)
+@app.put("/groups/{group_id}/members/{user_id}", response_model=schemas.Group)
 def join_group(user_id: int, group_id: int, db: Session = Depends(get_db)):
     db_user = read_user(user_id=user_id, db=db)
     db_group = read_group(group_id=group_id, db=db)
@@ -67,7 +67,7 @@ def join_group(user_id: int, group_id: int, db: Session = Depends(get_db)):
     return crud.join_group(db=db, db_user=db_user, db_group=db_group)
 
 #leave group
-@app.delete("/groups/{group_id}/users", response_model=schemas.Group)
+@app.delete("/groups/{group_id}/members/{user_id}", response_model=schemas.Group)
 def leave_group(user_id: int, group_id: int, db: Session = Depends(get_db)):
     db_user = read_user(user_id=user_id, db=db)
     db_group = read_group(group_id=group_id, db=db)
@@ -76,7 +76,7 @@ def leave_group(user_id: int, group_id: int, db: Session = Depends(get_db)):
     return crud.leave_group(db=db, db_user=db_user, db_group=db_group)
 
 # get all members in a group by group_id
-@app.get("/groups/{group_id}/users", response_model = list[schemas.User])
+@app.get("/groups/{group_id}/members", response_model = list[schemas.User])
 def read_members_in_group(group_id: int, db: Session = Depends(get_db)):
     users = crud.get_group_users(db=db, group_id=group_id)
     return users
