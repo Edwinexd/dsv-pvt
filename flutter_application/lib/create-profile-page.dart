@@ -52,7 +52,7 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
                 child: CircleAvatar(
                   radius: 60,
                   backgroundImage: _imageProvider,
-                  child: Align(
+                  child: const Align(
                     alignment: Alignment.bottomRight,
                     child: CircleAvatar(
                       backgroundColor: Colors.white,
