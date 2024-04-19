@@ -42,14 +42,21 @@ class GroupCreationState extends State<GroupCreation> {
             const SizedBox(height: 16.0,),
             Row(
               children: <Widget>[
-                const Text('Public'),
+                const Text(
+                  'Public',
+                  style: TextStyle(fontSize: 12.0),
+                  ),
                 Switch(value: _isPublic, onChanged: (value) {
                   setState(() {
                     _isPublic = value;
                   });
                 },
                 ),
-                const Text('Private'),
+                const Text(
+                  'Private',
+                  style: TextStyle(fontSize: 12.0),
+                  ),
+                
               ],
             ),
             
@@ -62,7 +69,7 @@ class GroupCreationState extends State<GroupCreation> {
             if (_isGroupCreated)
               const Text(
                 'Your group has been created!',
-                style: TextStyle(color: Colors.green),
+                style: TextStyle(color: Colors.green),          
               ),
             if (_errorMessage.isNotEmpty)
               Text(_errorMessage, 
@@ -76,7 +83,6 @@ class GroupCreationState extends State<GroupCreation> {
 
   void createGroup() {
     String name = _nameController.text;
-    String description = _descriptionController.text;
 
     if (name.isEmpty) {
       setState(() {
@@ -84,7 +90,7 @@ class GroupCreationState extends State<GroupCreation> {
       });
       return;
     }
-    
+
     setState(() {
       _errorMessage = '';
     });
