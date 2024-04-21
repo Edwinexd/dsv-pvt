@@ -31,34 +31,24 @@ class MainPage extends StatelessWidget {
       ),
       drawer: MyDrawer(
         onProfileTap: () => goToProfilePage(context),
-        onSignoutTap: () {
-
-        },
-        onSettingsTap: () {
-
-        },
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const ProfilePage()),
-            );
-          },
-          child: const Text('Go to Profile Page'),
-        ),
+        onSignoutTap: () {},
+        onSettingsTap: () {},
       ),
     );
   }
+
   //navigate to profile page
   void goToProfilePage(BuildContext context) {
     Navigator.pop(context);
 
     Navigator.push(
-      context, 
-      MaterialPageRoute(builder: (context) => const ProfilePage(),
-
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ProfilePage(
+          name: 'Axel Andersson',
+          biography: 'Älskar godis och andra goda grejer',
+          imageUrl: 'https://via.placeholder.com/150',
+        ),
       ),
     );
   }

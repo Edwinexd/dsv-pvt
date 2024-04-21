@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/my_list_tile.dart';
-import 'package:flutter_application/profile_page.dart';
 
 class MyDrawer extends StatelessWidget {
   final void Function()? onSettingsTap;
   final void Function()? onProfileTap;
   final void Function()? onSignoutTap;
-  
+
   MyDrawer({
     super.key,
     required this.onProfileTap,
@@ -19,39 +18,46 @@ class MyDrawer extends StatelessWidget {
     return Drawer(
       backgroundColor: Colors.deepOrange,
       child: Column(
-        children: <Widget>[
-          //header
-          const DrawerHeader(
-              child: Icon(
-            Icons.person,
-            color: Colors.white,
-            size: 64,
-            )
-          ),
-          //Home list title
-          MyListTile(
-            icon: Icons.home,
-            text: 'HOME',
-            onTap:() => Navigator.pop(context),
-          ),
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            children: [
+              //header
+              const DrawerHeader(
+                  child: Icon(
+                Icons.person,
+                color: Colors.white,
+                size: 64,
+              )),
+              //Home list title
+              MyListTile(
+                icon: Icons.home,
+                text: 'HOME',
+                onTap: () => Navigator.pop(context),
+              ),
 
-          //Settings list title
-          MyListTile(
-            icon: Icons.settings,
-            text: 'SETTINGS',
-            onTap: onSettingsTap,
-          ),
-          //profile list title
-          MyListTile(
-            icon: Icons.person,
-            text: 'PROFILE',
-            onTap: onProfileTap,
+              //Settings list title
+              MyListTile(
+                icon: Icons.settings,
+                text: 'SETTINGS',
+                onTap: onSettingsTap,
+              ),
+              //profile list title
+              MyListTile(
+                icon: Icons.person,
+                text: 'PROFILE',
+                onTap: onProfileTap,
+              ),
+            ],
           ),
           //logout list title
-           MyListTile(
-            icon: Icons.logout_sharp,
-            text: 'SIGN OUT',
-            onTap: onSignoutTap,
+          Padding(
+            padding: const EdgeInsets.only(bottom: 25.0),
+            child: MyListTile(
+              icon: Icons.logout_sharp,
+              text: 'SIGN OUT',
+              onTap: onSignoutTap,
+            ),
           ),
         ],
       ),

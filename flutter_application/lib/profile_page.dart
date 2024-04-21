@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+  final String name;
+  final String biography;
+  final String imageUrl;
+
+  const ProfilePage({
+    super.key,
+    required this.name,
+    required this.biography,
+    required this.imageUrl,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,29 +25,29 @@ class ProfilePage extends StatelessWidget {
             alignment: Alignment.center,
             children: <Widget>[
               Container(
-                height: 220.0, // Height of the rectangle
+                height: 220.0,
                 decoration: BoxDecoration(
-                  color: Colors.deepOrange, // Color of the rectangle
+                  color: Colors.deepOrange,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.3), // Shadow color with some transparency
-                      spreadRadius: 0, // No spread radius
-                      blurRadius: 10, // Blur radius
-                      offset: Offset(0, 5), // Shadow position
+                      color: Colors.black.withOpacity(0.3),
+                      spreadRadius: 0,
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
                     ),
                   ],
                 ),
               ),
               CircleAvatar(
                 radius: 70.0,
-                backgroundImage: NetworkImage('https://via.placeholder.com/150'),
+                backgroundImage: NetworkImage(imageUrl),
               ),
             ],
           ),
           const SizedBox(height: 10),
-          const Text('Axel Andersson', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          Text(name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
           const SizedBox(height: 10),
-          const Text('Software Developer, Flutter Enthusiast.', style: TextStyle(fontSize: 18)),
+          Text(biography, style: const TextStyle(fontSize: 18)),
           const SizedBox(height: 20),
           IconButton(
             icon: const Icon(Icons.edit),
