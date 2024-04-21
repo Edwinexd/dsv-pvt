@@ -21,9 +21,9 @@ void main() {
   
   group('fetchGroup()', () {
 
-    setUp() {
+    setUp(() {
       reset(client);
-    }
+    });
 
     test('returns a Group if the http call completes successfully', () async {
       int groupId = 1;
