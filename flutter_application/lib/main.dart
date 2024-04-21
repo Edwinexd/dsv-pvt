@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'profile_page.dart'; // Import the ProfilePage
+import 'drawer.dart';
 
 void main() {
   runApp(const MyApp());
@@ -26,7 +27,16 @@ class MainPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Main Page'),
-        backgroundColor: const Color.fromRGBO(60, 71, 133, 205),
+        //backgroundColor: Colors.deepPurple[700],
+      ),
+      drawer: MyDrawer(
+        onProfileTap: () => goToProfilePage(context),
+        onSignoutTap: () {
+
+        },
+        onSettingsTap: () {
+
+        },
       ),
       body: Center(
         child: ElevatedButton(
@@ -38,6 +48,17 @@ class MainPage extends StatelessWidget {
           },
           child: const Text('Go to Profile Page'),
         ),
+      ),
+    );
+  }
+  //navigate to profile page
+  void goToProfilePage(BuildContext context) {
+    Navigator.pop(context);
+
+    Navigator.push(
+      context, 
+      MaterialPageRoute(builder: (context) => const ProfilePage(),
+
       ),
     );
   }
