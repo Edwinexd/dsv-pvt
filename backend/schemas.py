@@ -23,9 +23,10 @@ class UserList(BaseModel):
 class GroupBase(BaseModel):
     group_name: str
     description: str
+    private: bool
 
 class GroupCreate(GroupBase):
-    private: bool
+    pass
 
 class Group(GroupBase):
     id: int
