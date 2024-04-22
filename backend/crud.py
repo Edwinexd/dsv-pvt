@@ -16,6 +16,18 @@ def create_user(db_session: Session, user: schemas.UserCreate):
     db_session.refresh(db_user)
     return db_user
 
+def update_user(db_session: Session, db_user: models.User, user_update: schemas.UserUpdate):
+    update_data = user_update.dict(exclude_unset=True)
+    for k, v in update_data.items():
+        setattr(db_user, k, v)
+    db_session.commit()
+    db_session.refresh(db_user)
+    return db_user
+
+def delete_user(db_session: Session, db_user: models.User):
+    db_session.delete(db_user)
+    db_session.commit()
+
 def create_group(db_session: Session, group: schemas.GroupCreate):
     db_group = models.Group(group_name = group.group_name, description = group.description, private = group.private)
     db_session.add(db_group)
