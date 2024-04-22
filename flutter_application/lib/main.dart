@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/controllers/group_controller.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/group_creation_page.dart';
+import 'package:flutter/widgets.dart';
+import 'profile_page.dart'; // Import the ProfilePage
+import 'drawer.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,86 +15,102 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: ' ',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(),
+    return const MaterialApp(
+      title: 'Profile Page Demo',
+      home: MainPage(),
       debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class MainPage extends StatelessWidget {
+  const MainPage({super.key});
 
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Group Creation'),
+        title: const Text('Main Page'),
+        //backgroundColor: Colors.deepPurple[700],
+      ),
+      drawer: MyDrawer(
+        onProfileTap: () => goToProfilePage(context),
+        onSignoutTap: () {},
+        onSettingsTap: () {},
       ),
       body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const GroupCreation()),
-            );
-          },
-          child: const Text('Create a group'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Stack(
+              children: <Widget>[
+                Container(
+                  height: 200.0,
+                  width: 200,
+                  decoration: BoxDecoration(
+                    color: Colors.teal[900],
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.3),
+                        spreadRadius: 0,
+                        blurRadius: 10,
+                        offset: const Offset(0, 5),
+                      )
+                    ],
+                    borderRadius: BorderRadius.circular(20), // Rounded corners
+                  ),
+                  child: Center(
+                    // Centers the Column within the Container
+                    child: Column(
+                      mainAxisSize: MainAxisSize
+                          .min, // Makes the column take the size of its children
+                      children: [
+                        Transform.rotate(
+                          angle: 315 *
+                              (3.1415926535897932/180), // Rotating 90 degrees, expressed in radians
+                          child: const Icon(
+                            Icons.arrow_upward, // Arrow icon
+                            color: Colors.white,
+                            size: 24, // Icon size
+                          ),
+                        ),
+                        SizedBox(height: 10), // Spacing between icon and text
+                        const Text(
+                          'Press the \nmenu button',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white, // Text color
+                            fontSize: 16, // Font size
+                            fontWeight: FontWeight.bold, // Font weight
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  //navigate to profile page
+  void goToProfilePage(BuildContext context) {
+    Navigator.pop(context);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ProfilePage(
+          name: 'Jeb Jebson',
+          biography: "Let's go running!",
+          imageUrl: 'https://via.placeholder.com/150',
         ),
       ),
     );
   }
 }
-
-/*class _MyAppState extends State<MyApp> {
-  late Future<Group> futureGroup;
-  final GroupController gc = GroupController();
-
-  @override
-  void initState() {
-    super.initState();
-    futureGroup = gc.fetchGroup();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Fetch Data Example',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple)
-      ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Fetch Data Example'),
-        ),
-        body: Center(
-          child: FutureBuilder<Group>(
-            future: futureGroup,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Text(snapshot.data!.name);
-                
-              } else if (snapshot.hasError) {
-                return Text('${snapshot.error}');
-              }
-
-              // By default, show a loading spinner.
-              return const CircularProgressIndicator();
-            },
-          ),
-        )
-      )
-    );
-  }
-}*/
 
 
