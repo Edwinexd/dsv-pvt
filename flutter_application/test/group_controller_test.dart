@@ -52,9 +52,9 @@ void main() {
       int groupId = 1;
       String URL = 'https://jsonplaceholder.typicode.com/albums/1';
 
-      when(client
-        .get(Uri.parse('url'),
-          headers: anyNamed('headers'),))
+      when(client.get(
+        any,
+        headers: anyNamed('headers'),))
         .thenAnswer((_) async =>
           http.Response('Not Found', 404));
       
