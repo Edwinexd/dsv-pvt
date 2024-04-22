@@ -6,6 +6,7 @@ import 'package:flutter_application/views/group_creation_page.dart';
 import 'package:flutter/widgets.dart';
 import 'profile_page.dart'; // Import the ProfilePage
 import 'drawer.dart';
+import 'settings_page.dart'; // Import the SettingsPage
 
 //Uppdaterad från PC.
 void main() {
@@ -13,7 +14,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,19 +27,24 @@ class MyApp extends StatelessWidget {
 }
 
 class MainPage extends StatelessWidget {
-  const MainPage({super.key});
+  const MainPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Main Page'),
-        //backgroundColor: Colors.deepPurple[700],
       ),
       drawer: MyDrawer(
         onProfileTap: () => goToProfilePage(context),
         onSignoutTap: () {},
-        onSettingsTap: () {},
+        onSettingsTap: () {
+          // Navigate to the SettingsPage when settings is tapped
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const SettingsPage()),
+          );
+        },
       ),
       body: Center(
         child: Column(
@@ -64,12 +70,10 @@ class MainPage extends StatelessWidget {
                   child: Center(
                     // Centers the Column within the Container
                     child: Column(
-                      mainAxisSize: MainAxisSize
-                          .min, // Makes the column take the size of its children
+                      mainAxisSize: MainAxisSize.min, // Makes the column take the size of its children
                       children: [
                         Transform.rotate(
-                          angle: 315 *
-                              (3.1415926535897932/180), // Rotating 90 degrees, expressed in radians
+                          angle: 315 * (3.1415926535897932 / 180), // Rotating 90 degrees, expressed in radians
                           child: const Icon(
                             Icons.arrow_upward, // Arrow icon
                             color: Colors.white,
@@ -114,5 +118,3 @@ class MainPage extends StatelessWidget {
     );
   }
 }
-
-

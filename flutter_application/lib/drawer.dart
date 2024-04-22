@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/my_list_tile.dart';
+import 'package:flutter_application/settings_page.dart';
 
 class MyDrawer extends StatelessWidget {
   final void Function()? onSettingsTap;
@@ -7,11 +8,11 @@ class MyDrawer extends StatelessWidget {
   final void Function()? onSignoutTap;
 
   MyDrawer({
-    super.key,
+    Key? key, // Add Key? for constructor
     required this.onProfileTap,
     required this.onSettingsTap,
     required this.onSignoutTap,
-  });
+  }) : super(key: key); 
 
   @override
   Widget build(BuildContext context) {
