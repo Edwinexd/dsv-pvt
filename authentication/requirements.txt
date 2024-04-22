@@ -1,0 +1,6 @@
+uvicorn==0.29.0
+fastapi==0.110.1
+pytest==8.1.1
+sqlmodel==0.0.16
+psycopg2-binary==2.9.9
+python-dotenv==1.0.1
