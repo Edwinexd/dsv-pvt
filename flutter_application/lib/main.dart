@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/controllers/group_controller.dart';
+import 'package:flutter_application/models/group.dart';
+import 'package:flutter_application/views/group_creation_page.dart';
 import 'package:flutter/widgets.dart';
 import 'profile_page.dart'; // Import the ProfilePage
 import 'drawer.dart';
@@ -109,3 +112,5 @@ class MainPage extends StatelessWidget {
     );
   }
 }
+
+
