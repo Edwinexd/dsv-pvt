@@ -1,6 +1,8 @@
+import os
 from datetime import datetime
 from sqlalchemy.orm import Session
 import models, schemas
+import requests #synchronous http
 
 #USERS
 def get_user(db_session: Session, user_id: int):
@@ -10,10 +12,15 @@ def get_users(db_session: Session, skip: int = 0, limit: int = 100):
     return db_session.query(models.User).offset(skip).limit(limit).all()
 
 def create_user(db_session: Session, user: schemas.UserCreate):
-
+    payload = {
+        "username": user.username,
+        "password": user.password
+    }
+    response = requests.post(os.getenv("AUTH_URL")+"/users", json=payload)
+    user_id = response.json()["id"]
 
     date_created = datetime.today().isoformat()
-    db_user = models.User(username = user.username, full_name = user.full_name, date_created = date_created)
+    db_user = models.User(id=user_id, username = user.username, full_name = user.full_name, date_created = date_created)
     db_session.add(db_user)
     db_session.commit()
     db_session.refresh(db_user)
