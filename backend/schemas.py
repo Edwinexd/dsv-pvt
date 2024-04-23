@@ -31,6 +31,7 @@ class GroupBase(BaseModel):
     private: bool
 
 class GroupCreate(GroupBase):
+    # In case we wan't to have variables on for creation in the future
     pass
 
 class Group(GroupBase):
