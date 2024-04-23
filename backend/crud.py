@@ -3,6 +3,7 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 import models, schemas
 import requests #synchronous http
+from fastapi import HTTPException
 
 #USERS
 def get_user(db_session: Session, user_id: int):
@@ -16,8 +17,14 @@ def create_user(db_session: Session, user: schemas.UserCreate):
         "username": user.username,
         "password": user.password
     }
-    response = requests.post(os.getenv("AUTH_URL")+"/users", json=payload)
-    #TODO: handle error response
+
+    # maybe theres a better way to do this
+    try:
+        response = requests.post(os.getenv("AUTH_URL")+"/users", json=payload)
+        response.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        raise HTTPException(e.response.status_code, detail=e.response.json()["detail"])
+
     user_id = response.json()["id"]
 
     date_created = datetime.today().isoformat()

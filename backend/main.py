@@ -17,7 +17,7 @@ def get_db_session():
 #USER
 # user creation
 @app.post("/users", response_model = schemas.User)
-def create_user(user: schemas.UserCreate, db_session: Session = Depends(get_db_session))
+def create_user(user: schemas.UserCreate, db_session: Session = Depends(get_db_session)):
     return crud.create_user(db_session=db_session, user=user)
 
 # get a list of users from db using a offset and size limit
