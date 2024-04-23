@@ -17,6 +17,7 @@ def create_user(db_session: Session, user: schemas.UserCreate):
         "password": user.password
     }
     response = requests.post(os.getenv("AUTH_URL")+"/users", json=payload)
+    #TODO: handle error response
     user_id = response.json()["id"]
 
     date_created = datetime.today().isoformat()
