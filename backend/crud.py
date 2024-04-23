@@ -10,6 +10,8 @@ def get_users(db_session: Session, skip: int = 0, limit: int = 100):
     return db_session.query(models.User).offset(skip).limit(limit).all()
 
 def create_user(db_session: Session, user: schemas.UserCreate):
+
+
     date_created = datetime.today().isoformat()
     db_user = models.User(username = user.username, full_name = user.full_name, date_created = date_created)
     db_session.add(db_user)
