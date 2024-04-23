@@ -66,7 +66,7 @@ def read_groups(skip: int = 0, limit: int = 100, db_session: Session = Depends(g
     groups = schemas.GroupList(data=crud.get_groups(db_session, skip=skip, limit=limit))
     return groups
 
-@app.put("/groups/{group_id}", response_model=schemas.Group)
+@app.patch("/groups/{group_id}", response_model=schemas.Group)
 def update_group(group_id: int, group_update: schemas.GroupUpdate, db_session: Session = Depends(get_db_session)):
     db_group = crud.get_group(db_session, group_id=group_id)
     if db_group is None:
