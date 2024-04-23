@@ -2,6 +2,7 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 import models, schemas
 
+#USERS
 def get_user(db_session: Session, user_id: int):
     return db_session.query(models.User).filter(models.User.id == user_id).first()
 
@@ -43,6 +44,19 @@ def get_group(db_session: Session, group_id: int):
 def get_groups(db_session: Session, skip: int = 0, limit: int = 100):
     return db_session.query(models.Group).offset(skip).limit(limit).all()
 
+def update_group(db_session: Session, db_group: models.Group, group_update: schemas.GroupUpdate):
+    update_data = group_update.dict(exclude_unset=True)
+    for k, v in update_data.items():
+        setattr(db_group, k, v)
+    db_session.commit()
+    db_session.refresh(db_group)
+    return db_group
+
+def delete_group(db_session: Session, db_group: models.Group):
+    db_session.delete(db_group)
+    db_session.commit()
+
+#MEMBERSHIPS
 # join a user to a group
 def join_group(db_session: Session, db_user: models.User, db_group: models.Group):
     db_group.users.append(db_user)

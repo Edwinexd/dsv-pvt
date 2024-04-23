@@ -14,6 +14,7 @@ def get_db_session():
     finally:
         db_session.close()
 
+#USER
 # user creation
 @app.post("/users", response_model = schemas.User)
 def create_user(user: schemas.UserCreate, db_session: Session = Depends(get_db_session)):
@@ -65,6 +66,22 @@ def read_groups(skip: int = 0, limit: int = 100, db_session: Session = Depends(g
     groups = schemas.GroupList(data=crud.get_groups(db_session, skip=skip, limit=limit))
     return groups
 
+@app.put("/groups/{group_id}", response_model=schemas.Group)
+def update_group(group_id: int, group_update: schemas.GroupUpdate, db_session: Session = Depends(get_db_session)):
+    db_group = crud.get_group(db_session, group_id=group_id)
+    if db_group is None:
+        raise HTTPException(status_code=404, detail="Group not found")
+    return crud.update_group(db_session, db_group, group_update)
+
+@app.delete("/groups/{group_id}")
+def delete_group(group_id: int, db_session: Session = Depends(get_db_session)):
+    db_group = crud.get_group(db_session, group_id=group_id)
+    if db_group is None:
+        raise HTTPException(status_code=404, detail="Group not found")
+    crud.delete_group(db_session, db_group)
+    return {"message": "Group deleted successfully"}
+
+#MEMBERSHIPS
 # join group
 @app.put("/groups/{group_id}/members/{user_id}", response_model=schemas.Group)
 def join_group(user_id: int, group_id: int, db_session: Session = Depends(get_db_session)):
