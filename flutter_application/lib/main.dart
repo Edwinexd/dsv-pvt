@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/views/all_group_pages.dart';
 import 'create-profile-page.dart';  
 import 'package:flutter_application/controllers/group_controller.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/group_creation_page.dart';
-import 'package:flutter/widgets.dart';
 import 'profile_page.dart'; // Import the ProfilePage
 import 'drawer.dart';
 
@@ -116,14 +116,14 @@ class MainPage extends StatelessWidget {
     );
   }
 
-  //Navigate to 'Create a group' page until we have a group page
+  //Navigate to 'All groups' page
   void goToGroupPage(BuildContext context) {
     Navigator.pop(context);
 
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: ((context) => const GroupCreation()),
+        builder: ((context) => const AllGroupsPage()),
       ),
     );
   }

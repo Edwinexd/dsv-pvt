@@ -3,9 +3,10 @@ import 'package:flutter_application/models/group.dart';
 
 
 class AllGroupsPage extends StatefulWidget {
-  const AllGroupsPage({Key? key}) : super(key: key);
+  const AllGroupsPage({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _AllGroupsPageState createState() => _AllGroupsPageState();
 }
 
@@ -13,9 +14,10 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
   
   // List of groups
   final List<Group> _groups = [
-    Group('Group 1', 'Description of Group 1'),
-    Group('Group 2', 'Description of Group 2'),
-    Group('Group 3', 'Description of Group 3'),
+    const Group(name: 'Lace up!', description: 'blabla', id: 3, isPublic: true),
+    const Group(name: 'DVK Runners', description: 'bla', id: 2, isPublic: false),
+    const Group(id: 4, name: 'Kista Runners', description: 'Best runners!', isPublic: true),
+  
     //Can add more groups 
   ];
 
@@ -28,7 +30,7 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
     List<Group> filteredGroups = _groups.where((group) {
       final name = group.name.toLowerCase();
       return name.contains(_searchQuery.toLowerCase()) &&
-          (_selectedFilter == 'All' || /*will add filtering condition function here */);
+          (_selectedFilter == 'All' /*|| will add filtering condition function here */);
     }).toList();
 
     return Scaffold(
@@ -46,7 +48,7 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
                   _searchQuery = value;
                 });
               },
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Search',
                 border: OutlineInputBorder(),
               ),
@@ -62,8 +64,8 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
                   _selectedFilter = value.toString();
                 });
               },
-              items: [
-                DropdownMenuItem(value: 'All', child: const Text('All')),
+              items: const [
+                DropdownMenuItem(value: 'All', child: Text('All')),
                 
               ],
             ),
