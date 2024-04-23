@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter_application/models/group.dart';
 import 'package:http/http.dart' as http;
@@ -7,14 +6,15 @@ import 'package:http_status/http_status.dart';
 
 class GroupController {
   http.Client client = http.Client();
-  String groupURL = "http://10.97.231.1:81/groups";
+  String groupUrl = "http://10.97.231.1:81/groups";
+  // TODO: Use DIO for defaultheaders?
+  Map<String, String> headers = {'Content-Type': 'application/json'};
+  
 
   Future<Group> createGroup(String name, String description, bool private) async {
     final response = await client
-      .post(Uri.parse(groupURL),
-      headers: <String, String> {
-        'Content-Type': 'application/json'
-      },
+      .post(Uri.parse(groupUrl),
+      headers: headers,
       body: jsonEncode(<String, dynamic> {
         "group_name": name,
         "description": description,
@@ -30,9 +30,9 @@ class GroupController {
   }
 
   Future<Group> fetchGroup(int groupId) async {
-    String URL = '$groupURL/$groupId';
+    String url = '$groupUrl/$groupId';
 
-    final response = await client.get(Uri.parse(URL),);
+    final response = await client.get(Uri.parse(url),);
   
     if (response.statusCode.isSuccessfulHttpStatusCode) {
       return Group.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
@@ -42,9 +42,9 @@ class GroupController {
   }
 
   Future<List<Group>> fetchGroups(int skip, int limit) async {
-    String URL = "$groupURL?skip=$skip&limit=$limit";
+    String url = "$groupUrl?skip=$skip&limit=$limit";
 
-    final response = await client.get(Uri.parse(URL));
+    final response = await client.get(Uri.parse(url));
     if (response.statusCode.isSuccessfulHttpStatusCode) {
        var jsonData = jsonDecode(response.body);
        List<Group> groups = (jsonData['data'] as List)
@@ -57,32 +57,30 @@ class GroupController {
   }
 
   Future<Group> updateGroup(int groupId, {String? newName, String? description, bool? isPrivate}) async {
-  String URL = '$groupURL/$groupId';
+    String url = '$groupUrl/$groupId';
 
-  // Create a map to hold the update fields
-  Map<String, dynamic> updateFields = {};
-  if (newName != null) {
-    updateFields['group_name'] = newName;
-  }
-  if (description != null) {
-    updateFields['description'] = description;
-  }
-  if (isPrivate != null) {
-    updateFields['private'] = isPrivate;
-  }
+    // Create a map to hold the update fields
+    Map<String, dynamic> updateFields = {};
+    if (newName != null) {
+      updateFields['group_name'] = newName;
+    }
+    if (description != null) {
+      updateFields['description'] = description;
+    }
+    if (isPrivate != null) {
+      updateFields['private'] = isPrivate;
+    }
 
-  final response = await client.patch(Uri.parse(URL),
-    headers: <String, String>{
-      'Content-Type': 'application/json'
-    },
-    body: jsonEncode(updateFields),
-  );
-  print(jsonEncode(updateFields));
-  if (response.statusCode.isSuccessfulHttpStatusCode) {
-    return Group.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
-  } else {
-    throw Exception('Failed to update group data with status code: ${response.statusCode}');
+    final response = await client.patch(Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(updateFields),
+    );
+
+    if (response.statusCode.isSuccessfulHttpStatusCode) {
+      return Group.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    } else {
+      throw Exception('Failed to update group data with status code: ${response.statusCode}');
+    }
   }
 }
 
-}
