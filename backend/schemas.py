@@ -1,5 +1,5 @@
 # Schemas will be used for presentation and data query with user
-from typing import List, Optional, Union
+from typing import List, Optional
 from pydantic import BaseModel
 
 # USER
@@ -43,9 +43,9 @@ class GroupList(BaseModel):
     data: List[Group]
 
 class GroupUpdate(BaseModel):
-    group_name: Union[str, None] = None
-    description: Union[str, None] = None
-    private: Union[bool, None] = None
+    group_name: Optional[str] = None
+    description: Optional[str] = None
+    private: Optional[bool] = None
 
 # ACTIVITY
 class ActivityBase(BaseModel):
@@ -73,7 +73,7 @@ class ChallengeBase(BaseModel):
 class ChallengeCreate(ChallengeBase):
     description: str
     difficulty_code: int
-    expiration_date: str | None = None
+    expiration_date: Optional[str] = None
     point_reward: int
 
 class Challenge(ChallengeBase):
