@@ -34,7 +34,21 @@ def read_user(user_id: int, db_session: Session = Depends(get_db_session)):
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
 
-#GROUP
+@app.patch("/users/{user_id}", response_model=schemas.User)
+def update_user(user_id: int, user_update: schemas.UserUpdate, db_session: Session = Depends(get_db_session)):
+    db_user = crud.get_user(db_session, user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return crud.update_user(db_session, db_user, user_update)
+
+@app.delete("/users/{user_id}")
+def delete_user(user_id: int, db_session: Session = Depends(get_db_session)):
+    db_user = crud.get_user(db_session, user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    crud.delete_user(db_session, db_user)
+    return {"message": "User deleted successfully"}
+
 # group creation
 @app.post("/groups", response_model = schemas.Group)
 def create_group(group: schemas.GroupCreate, db_session: Session = Depends(get_db_session)):

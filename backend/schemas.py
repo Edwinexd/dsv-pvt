@@ -1,13 +1,14 @@
 # Schemas will be used for presentation and data query with user
-from typing import List, Union
+from typing import List, Optional, Union
 from pydantic import BaseModel
 
 # USER
 class UserBase(BaseModel):
     username: str
+    full_name: str
 
 class UserCreate(UserBase):
-    full_name: str
+    pass
 
 class User(UserBase):
     id: int
@@ -18,6 +19,10 @@ class User(UserBase):
 
 class UserList(BaseModel):
     data: List[User]
+
+class UserUpdate(BaseModel):
+    username: Optional[str] = None
+    full_name: Optional[str] = None
 
 # GROUP
 class GroupBase(BaseModel):
