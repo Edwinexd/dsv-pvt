@@ -37,8 +37,10 @@ class MainPage extends StatelessWidget {
       ),
       drawer: MyDrawer(
         onProfileTap: () => goToProfilePage(context),
+        onGroupTap: () => goToGroupPage(context),
         onSignoutTap: () {},
         onSettingsTap: () {},
+        
       ),
       body: Center(
         child: Column(
@@ -110,6 +112,18 @@ class MainPage extends StatelessWidget {
           biography: "Let's go running!",
           imageUrl: 'https://via.placeholder.com/150',
         ),
+      ),
+    );
+  }
+
+  //Navigate to 'Create a group' page until we have a group page
+  void goToGroupPage(BuildContext context) {
+    Navigator.pop(context);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: ((context) => const GroupCreation()),
       ),
     );
   }

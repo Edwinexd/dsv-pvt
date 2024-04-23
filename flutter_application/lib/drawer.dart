@@ -5,12 +5,14 @@ class MyDrawer extends StatelessWidget {
   final void Function()? onSettingsTap;
   final void Function()? onProfileTap;
   final void Function()? onSignoutTap;
+  final void Function()? onGroupTap;
 
   MyDrawer({
     super.key,
     required this.onProfileTap,
     required this.onSettingsTap,
     required this.onSignoutTap,
+    required this.onGroupTap,
   });
 
   @override
@@ -48,6 +50,12 @@ class MyDrawer extends StatelessWidget {
                 text: 'PROFILE',
                 onTap: onProfileTap,
               ),
+
+              MyListTile(
+                icon: Icons.group, 
+                text: 'GROUP', 
+                onTap: onGroupTap,
+                ),
             ],
           ),
           //logout list title
