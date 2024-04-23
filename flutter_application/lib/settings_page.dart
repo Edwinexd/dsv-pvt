@@ -51,10 +51,51 @@ class _SettingsPageState extends State<SettingsPage> {
           ListTile(
             title: const Text('About App'),
             onTap: () {
-              // Show information about the app
+              // Navigate to About App page
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AboutAppPage(),
+                ),
+              );
             },
           ),
         ],
+      ),
+    );
+  }
+}
+
+class AboutAppPage extends StatelessWidget {
+  const AboutAppPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('About App'),
+      ),
+      body: const SingleChildScrollView(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Middnatsloppet App',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 16),
+            Text(
+              'This app is designed for Middnatsloppet, a popular event for running enthusiasts. '
+              'With this app, users can track their training progress, participate in events, '
+              'connect with other runners, and more.',
+              style: TextStyle(fontSize: 18),
+            ),
+          ],
+        ),
       ),
     );
   }
