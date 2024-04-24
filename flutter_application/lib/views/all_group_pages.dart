@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/models/group.dart';
+import 'package:flutter_application/views/group_creation_page.dart';
 
 
 class AllGroupsPage extends StatefulWidget {
@@ -102,6 +103,18 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
           ),
         ],
       ),
+      
+      
+      floatingActionButton: FloatingActionButton(
+        onPressed:() {
+          Navigator.push(
+            context, 
+            MaterialPageRoute(builder: (context) => GroupCreation()), 
+            );
+        },
+        backgroundColor: Colors.grey[150],
+        child: const Icon(Icons.add),
+        ),
     );
   }
 }
