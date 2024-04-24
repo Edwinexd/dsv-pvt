@@ -1,7 +1,10 @@
+import os
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 import crud, models, schemas
 from database import session_local, engine
+import requests
+from datetime import datetime
 
 models.base.metadata.create_all(bind = engine)
 
@@ -15,9 +18,33 @@ def get_db_session():
         db_session.close()
 
 #USER
+#login
+@app.post("/users/login")
+def login(credentials: schemas.UserCreds):
+    try:
+        response = requests.post(os.getenv("AUTH_URL")+"/users/login", json=credentials.model_dump())
+        response.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        raise HTTPException(e.response.status_code, detail=e.response.json()["detail"])
+    return response.json()
+
 # user creation
 @app.post("/users", response_model = schemas.User)
-def create_user(user: schemas.UserCreate, db_session: Session = Depends(get_db_session)):
+def create_user(user_payload: schemas.UserCreate, db_session: Session = Depends(get_db_session)):
+    auth_payload = {
+        "username": user_payload.username,
+        "password": user_payload.password
+    }
+
+    # maybe theres a better way to do this
+    try:
+        response = requests.post(os.getenv("AUTH_URL")+"/users", json=auth_payload)
+        response.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        raise HTTPException(e.response.status_code, detail=e.response.json()["detail"])
+
+    user_id = response.json()["id"]
+    user = schemas.User(id=user_id, username=user_payload.username, full_name=user_payload.full_name, date_created = datetime.today().isoformat())
     return crud.create_user(db_session=db_session, user=user)
 
 # get a list of users from db using a offset and size limit

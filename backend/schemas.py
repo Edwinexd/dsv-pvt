@@ -24,6 +24,10 @@ class UserUpdate(BaseModel):
     username: Optional[str] = None
     full_name: Optional[str] = None
 
+class UserCreds(BaseModel):
+    username: str
+    password: str
+
 # GROUP
 class GroupBase(BaseModel):
     group_name: str
