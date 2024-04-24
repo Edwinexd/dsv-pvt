@@ -54,7 +54,7 @@ class Profile(base):
     skill_level = Column(Integer) # will be mapped to a running pace in client
     is_private = Column(Boolean)
 
-    owner_id = Column(Integer, ForeignKey("users.id"))
+    owner_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
     owner = relationship("User", back_populates="profile")
 
 

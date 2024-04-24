@@ -46,6 +46,37 @@ def delete_user(db_session: Session, db_user: models.User):
     db_session.delete(db_user)
     db_session.commit()
 
+#PROFILES
+def get_profile(db_session: Session, user_id: int):
+    return db_session.query(models.User).filter(models.User.id == user_id).first().profile
+
+def create_profile(db_session: Session, profile: schemas.ProfileCreate, user_id: int):
+    db_profile = models.Profile(
+        description=profile.description,
+        age=profile.age,
+        interests=profile.interests,
+        skill_level=profile.skill_level,
+        is_private=profile.is_private
+    )
+    db_user = get_user(db_session, user_id)
+    db_user.profile = db_profile
+    db_session.add(db_user)
+    db_session.commit()
+    db_session.refresh(db_user)
+
+def update_profile(db_session: Session, db_profile: models.Profile, profile_update: schemas.ProfileUpdate):
+    update_data = profile_update.model_dump(exclude_unset=True)
+    for k, v in update_data.items():
+        setattr(db_profile, k, v)
+    db_session.commit()
+    db_session.refresh(db_profile)
+    return db_profile
+
+def delete_profile(db_session: Session, db_profile: models.Profile):
+    db_session.delete(db_profile)
+    db_session.commit()
+
+#GROUPS
 def create_group(db_session: Session, group: schemas.GroupCreate):
     db_group = models.Group(group_name = group.group_name, description = group.description, private = group.private)
     db_session.add(db_group)
