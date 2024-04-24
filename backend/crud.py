@@ -48,7 +48,7 @@ def delete_user(db_session: Session, db_user: models.User):
 
 #PROFILES
 def get_profile(db_session: Session, user_id: int):
-    return db_session.query(models.User).filter(models.User.id == user_id).first().profile
+    return get_user(db_session, user_id).profile
 
 def create_profile(db_session: Session, profile: schemas.ProfileCreate, user_id: int):
     db_profile = models.Profile(
@@ -63,6 +63,7 @@ def create_profile(db_session: Session, profile: schemas.ProfileCreate, user_id:
     db_session.add(db_user)
     db_session.commit()
     db_session.refresh(db_user)
+    return db_profile
 
 def update_profile(db_session: Session, db_profile: models.Profile, profile_update: schemas.ProfileUpdate):
     update_data = profile_update.model_dump(exclude_unset=True)

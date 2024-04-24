@@ -49,6 +49,40 @@ def delete_user(user_id: int, db_session: Session = Depends(get_db_session)):
     crud.delete_user(db_session, db_user)
     return {"message": "User deleted successfully"}
 
+#PROFILE
+@app.post("/users/{user_id}/profile", response_model=schemas.Profile)
+def create_profile(profile: schemas.ProfileCreate, user_id: int, db_session: Session = Depends(get_db_session)):
+    db_profile = crud.get_profile(db_session, user_id)
+    if db_profile is not None:
+        raise HTTPException(status_code=400, detail="User already has a profile")
+    db_user = crud.get_user(db_session, user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return crud.create_profile(db_session, profile, user_id)
+
+@app.get("/users/{user_id}/profile", response_model=schemas.Profile)
+def read_profile(user_id: int, db_session: Session = Depends(get_db_session)):
+    db_profile = crud.get_profile(db_session, user_id)
+    if db_profile is None:
+        raise HTTPException(status_code=404, detail="Profile not found")
+    return db_profile
+
+@app.patch("/users/{user_id}/profile", response_model=schemas.Profile)
+def update_profile(user_id: int, profile_update: schemas.ProfileUpdate, db_session: Session = Depends(get_db_session)):
+    db_profile = crud.get_profile(db_session, user_id)
+    if db_profile is None:
+        raise HTTPException(status_code=404, detail="Profile not found")
+    return crud.update_profile(db_session, db_profile, profile_update)
+
+@app.delete("/users/{user_id}/profile")
+def delete_profile(user_id: int, db_session: Session = Depends(get_db_session)):
+    db_profile = crud.get_profile(db_session, user_id)
+    if db_profile is None:
+        raise HTTPException(status_code=404, detail="Profile not found")
+    crud.delete_profile(db_session, db_profile)
+    return {"message": "Profile deleted successfully"}
+
+#GROUP
 # group creation
 @app.post("/groups", response_model = schemas.Group)
 def create_group(group: schemas.GroupCreate, db_session: Session = Depends(get_db_session)):
