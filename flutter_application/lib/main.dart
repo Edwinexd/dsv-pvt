@@ -8,26 +8,49 @@ import 'profile_page.dart'; // Import the ProfilePage
 import 'drawer.dart';
 import 'settings_page.dart'; // Import the SettingsPage
 
-//Uppdaterad från PC.
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool _darkModeEnabled = false;
+
+  void _toggleDarkMode(bool enabled) {
+    setState(() {
+      _darkModeEnabled = enabled;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Profile Page Demo',
-      home: MainPage(),
+      home: MainPage(
+        darkModeEnabled: _darkModeEnabled,
+        onToggleDarkMode: _toggleDarkMode,
+      ),
       debugShowCheckedModeBanner: false,
+      theme: _darkModeEnabled ? ThemeData.dark() : ThemeData.light(),
     );
   }
 }
 
 class MainPage extends StatelessWidget {
-  const MainPage({Key? key}) : super(key: key);
+  final bool darkModeEnabled;
+  final ValueChanged<bool> onToggleDarkMode;
+
+  const MainPage({
+    Key? key,
+    required this.darkModeEnabled,
+    required this.onToggleDarkMode,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +65,9 @@ class MainPage extends StatelessWidget {
           // Navigate to the SettingsPage when settings is tapped
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const SettingsPage()),
+            MaterialPageRoute(builder: (context) => SettingsPage(
+              onToggleDarkMode: onToggleDarkMode,
+            )),
           );
         },
       ),

@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+  final ValueChanged<bool> onToggleDarkMode;
+
+  const SettingsPage({
+    Key? key,
+    required this.onToggleDarkMode,
+  }) : super(key: key);
 
   @override
   _SettingsPageState createState() => _SettingsPageState();
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  bool darkModeEnabled = false; // Track dark mode state
+  bool darkModeEnabled = false;
 
   @override
   Widget build(BuildContext context) {
@@ -24,12 +29,13 @@ class _SettingsPageState extends State<SettingsPage> {
               value: darkModeEnabled,
               onChanged: (value) {
                 setState(() {
-                  darkModeEnabled = value; // Update dark mode state
-                  // Implement dark mode theme change here
-                });
+                  darkModeEnabled = value;
+                  widget.onToggleDarkMode(value);
+              });
+              widget.onToggleDarkMode(value);
               },
-            ),
           ),
+          ),  
           ListTile(
             title: const Text('Clear Cache'),
             onTap: () {
@@ -41,13 +47,7 @@ class _SettingsPageState extends State<SettingsPage> {
             onTap: () {
               // Navigate to notification settings page
             },
-          ),
-          ListTile(
-            title: const Text('Font Size Adjustments'),
-            onTap: () {
-              // Navigate to font size settings page
-            },
-          ),
+          ),          
           ListTile(
             title: const Text('About App'),
             onTap: () {
