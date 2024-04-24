@@ -1,8 +1,5 @@
-import os
-from datetime import datetime
 from sqlalchemy.orm import Session
 import models, schemas
-import requests #synchronous http
 from fastapi import HTTPException
 
 #USERS
