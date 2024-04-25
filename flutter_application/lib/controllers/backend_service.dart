@@ -5,7 +5,7 @@ import 'package:dio/dio.dart';
 
 class BackendService {
   late final BaseOptions options;
-  late final Dio dio;
+  late Dio dio;
 
   BackendService() {
     options = BaseOptions(
