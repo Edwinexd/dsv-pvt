@@ -17,7 +17,6 @@ from sessions import create_session, get_session
 
 models.base.metadata.create_all(bind = engine)
 
-AUTH_URL = os.getenv("AUTH_URL")
 
 app = FastAPI()
 
