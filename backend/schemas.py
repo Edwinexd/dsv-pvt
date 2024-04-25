@@ -8,7 +8,7 @@ class UserBase(BaseModel):
     full_name: str
 
 class UserCreate(UserBase):
-    pass
+    password: str
 
 class User(UserBase):
     id: int
@@ -23,6 +23,10 @@ class UserList(BaseModel):
 class UserUpdate(BaseModel):
     username: Optional[str] = None
     full_name: Optional[str] = None
+
+class UserCreds(BaseModel):
+    username: str
+    password: str
 
 # GROUP
 class GroupBase(BaseModel):

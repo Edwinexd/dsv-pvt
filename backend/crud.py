@@ -1,6 +1,6 @@
-from datetime import datetime
 from sqlalchemy.orm import Session
 import models, schemas
+from fastapi import HTTPException
 
 #USERS
 def get_user(db_session: Session, user_id: int):
@@ -9,16 +9,15 @@ def get_user(db_session: Session, user_id: int):
 def get_users(db_session: Session, skip: int = 0, limit: int = 100):
     return db_session.query(models.User).offset(skip).limit(limit).all()
 
-def create_user(db_session: Session, user: schemas.UserCreate):
-    date_created = datetime.today().isoformat()
-    db_user = models.User(username = user.username, full_name = user.full_name, date_created = date_created)
+def create_user(db_session: Session, user: schemas.User):
+    db_user = models.User(id=user.id, username = user.username, full_name = user.full_name, date_created = user.date_created)
     db_session.add(db_user)
     db_session.commit()
     db_session.refresh(db_user)
     return db_user
 
 def update_user(db_session: Session, db_user: models.User, user_update: schemas.UserUpdate):
-    update_data = user_update.dict(exclude_unset=True)
+    update_data = user_update.model_dump(exclude_unset=True)
     for k, v in update_data.items():
         setattr(db_user, k, v)
     db_session.commit()
@@ -45,7 +44,7 @@ def get_groups(db_session: Session, skip: int = 0, limit: int = 100):
     return db_session.query(models.Group).offset(skip).limit(limit).all()
 
 def update_group(db_session: Session, db_group: models.Group, group_update: schemas.GroupUpdate):
-    update_data = group_update.dict(exclude_unset=True)
+    update_data = group_update.model_dump(exclude_unset=True)
     for k, v in update_data.items():
         setattr(db_group, k, v)
     db_session.commit()
