@@ -2,8 +2,9 @@ import os
 import hashlib
 
 from cryptography.exceptions import InvalidSignature
-from cryptography.hazmat.primitives.asymmetric.ed25519 import \
-    Ed25519PrivateKey  # pylint: disable=no-name-in-module
+from cryptography.hazmat.primitives.asymmetric.ed25519 import (
+    Ed25519PrivateKey,
+)  # pylint: disable=no-name-in-module
 from dotenv import load_dotenv
 import url64
 
@@ -17,8 +18,10 @@ PRIVATE_KEY = Ed25519PrivateKey.from_private_bytes(bytes.fromhex(_PRIVATE_KEY_BY
 
 PUBLIC_KEY = PRIVATE_KEY.public_key()
 
+
 def sign(data: str) -> str:
     return PRIVATE_KEY.sign(data.encode()).hex()
+
 
 def verify(signature: str, data: str) -> bool:
     try:
@@ -26,6 +29,7 @@ def verify(signature: str, data: str) -> bool:
         return True
     except (InvalidSignature, ValueError):
         return False
-    
+
+
 def blake2b_hash(data: str) -> str:
     return url64.encode(hashlib.blake2b(data.encode()).digest())

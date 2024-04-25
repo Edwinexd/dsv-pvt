@@ -20,6 +20,7 @@ class TokenEntry(BaseModel):
             created_at=datetime.datetime.fromisoformat(data["created_at"]),
         )
 
+
 class TokenEntryWithExpires(TokenEntry):
     expires_in: int
 
@@ -30,6 +31,7 @@ class TokenEntryWithExpires(TokenEntry):
             created_at=datetime.datetime.fromisoformat(data["created_at"]),
             expires_in=data["expires_in"],
         )
+
 
 class Bearer:
     def __init__(
