@@ -29,10 +29,3 @@ def verify(signature: str, data: str) -> bool:
     
 def blake2b_hash(data: str) -> str:
     return url64.encode(hashlib.blake2b(data.encode()).digest())
-
-if __name__ == "__main__":
-    data = "Hello, world!"
-    signature = sign(data)
-    print(f"Signature: {signature}")
-    print(f"Verification: {verify(signature, data)}")
-    print(f"Verification: {verify(signature, data + 'x')}")
