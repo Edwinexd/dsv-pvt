@@ -35,9 +35,8 @@ void main() {
            "private": true},
         ),
       );
-      var response = await backendService.fetchGroup(groupId);
-      print(response.description);
-      expect(response, isA<Group>());
+
+      expect(await backendService.fetchGroup(groupId), isA<Group>());
     });
 
     test('fetchGroup() - throws exception after unsuccessful http request', () async {
@@ -53,10 +52,13 @@ void main() {
               path: path
             )
           )
-        );
-    });
+        );}
+      );
 
-      expect(() async => await backendService.fetchGroup(groupId), throwsA(isA<DioException>()));
+      expect(
+        () async => await backendService.fetchGroup(groupId), 
+        throwsA(isA<DioException>())
+      );
     });
   });
 }
