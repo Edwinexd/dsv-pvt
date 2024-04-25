@@ -2,17 +2,24 @@
 # pylint: disable=missing-function-docstring
 # pylint: disable=missing-class-docstring
 import datetime
+import json
 import logging
 import os
 import secrets
 from typing import Optional
+import url64
 import redis.asyncio as redis
 from redis.commands.json.path import Path
 
 from fastapi import FastAPI, HTTPException, Response
 from dotenv import load_dotenv
 
+from cryptolib import blake2b_hash, sign, verify
+from id_generator import IdGenerator
+
 TOKEN_LIFETIME = 86400
+
+ID_GENERATOR = IdGenerator()
 
 logging.basicConfig(level=logging.INFO)
 
@@ -22,12 +29,33 @@ load_dotenv()
 app = FastAPI()
 redis_client = redis.Redis.from_url(os.getenv("REDIS_URL", ""), decode_responses=True)
 
-def generate_token():
-    # TODO: Implement proper bearer token generation
-    return secrets.token_urlsafe(256)
+# TODO: Bearer should def be a class, methods for getting key etc
+def generate_token() -> str:
+    sid = secrets.token_urlsafe(256)
+    id_ = ID_GENERATOR.generate_id()
+    algo = "ed25519"
+    sig = sign(f"{id_}:{sid}:{algo}")
+    
+    return url64.encode(json.dumps({"sid": sid, "id": str(id_), "algo": algo, "sig": sig }))
 
-def token_to_key(token: str):
-    return f"token:{token}"
+def bearer_to_key(bearer: str) -> Optional[str]:
+    blob = url64.decode(bearer)
+    try:
+        blob_decoded = json.loads(blob)
+    except json.JSONDecodeError:
+        return None
+    if not all(key in blob_decoded and isinstance(blob_decoded[key], str) for key in ["sid", "id", "algo", "sig"]):
+        return None
+    sid, id_, algo, sig = blob_decoded["sid"], blob_decoded["id"], blob_decoded["algo"], blob_decoded["sig"]
+    if not verify(sig, f"{id_}:{sid}:{algo}"):
+        return None
+    
+    hash_ = blake2b_hash(f"{sid}:{id_}")
+
+    return f"bearer:{id_}:{hash_}"
+
+def user_id_to_revoked_key(user_id: str):
+    return f"user:revoked:{user_id}"
 
 async def get_token(token: str):
     key = token_to_key(token)
@@ -50,12 +78,13 @@ async def renew_token(token: str):
     key = token_to_key(token)
     await redis_client.expire(key, TOKEN_LIFETIME)
 
-async def create_token(user_id: str):
+async def create_bearer(user_id: str):
     # TODO: Collissions may happen
     token = generate_token()
     key = token_to_key(token)
     await ensure_user(user_id)
     async with redis_client.pipeline() as pipeline:
+        # TODO: Don't store plain access tokens in the database
         pipeline.json().set(key, Path.root_path(), {"user_id": user_id, "created_at": datetime.datetime.now(datetime.UTC).isoformat()})
         pipeline.expire(key, TOKEN_LIFETIME)
         await pipeline.execute()
@@ -64,16 +93,17 @@ async def create_token(user_id: str):
 
 async def ensure_user(user_id: str):
     # Indicates the last time the user revoked all sessions
+    key = user_id_to_revoked_key(user_id)
     async with redis_client.pipeline() as pipeline:
-        pipeline.set(f"user:revoked:{user_id}", datetime.datetime.now(datetime.UTC).isoformat(), nx=True)
-        pipeline.expire(f"user:revoked:{user_id}", TOKEN_LIFETIME)
+        pipeline.set(key, datetime.datetime.now(datetime.UTC).isoformat(), nx=True)
+        pipeline.expire(key, TOKEN_LIFETIME)
         await pipeline.execute()
 
 async def revoke_sessions(user_id: str):
-    await redis_client.set(f"user:revoked:{user_id}", datetime.datetime.now(datetime.UTC).isoformat())
+    await redis_client.set(user_id_to_revoked_key(user_id), datetime.datetime.now(datetime.UTC).isoformat())
 
 async def get_user_revoked_at(user_id: str) -> Optional[datetime.datetime]:
-    revoked_at = await redis_client.get(f"user:revoked:{user_id}")
+    revoked_at = await redis_client.get(user_id_to_revoked_key(user_id))
     if not revoked_at:
         return None
 
