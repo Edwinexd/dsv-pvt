@@ -5,14 +5,13 @@ import 'package:flutter_application/controllers/group_controller.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/group_creation_page.dart';
 import 'package:flutter/widgets.dart';
-import 'profile_page.dart'; // Import the ProfilePage
+import 'profile_page.dart';
 import 'drawer.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-// This is the MyApp widget which provides a Material App context.
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -24,12 +23,12 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const MainPage(), // Set MainPage as the home of the application
+      home: const MainPage(), 
+      debugShowCheckedModeBanner: false,
     );
   }
 }
 
-// The MainPage widget remains unchanged, but it is now correctly wrapped in a MaterialApp.
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
