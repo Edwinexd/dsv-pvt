@@ -5,15 +5,19 @@ from typing import Annotated
 import requests
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi.security.base import SecurityBase
 from sqlalchemy.orm import Session
 
 import crud
 import models
 import schemas
+import auth
 from database import engine, session_local
 from sessions import create_session, get_session
 
 models.base.metadata.create_all(bind = engine)
+
+AUTH_URL = os.getenv("AUTH_URL")
 
 app = FastAPI()
 
@@ -39,30 +43,14 @@ def get_current_user(token: Annotated[HTTPAuthorizationCredentials, Depends(head
 # TODO: Properly annotate in OPENAPI that it requires credentials
 @app.post("/users/login")
 def login(credentials: schemas.UserCreds):
-    try:
-        response = requests.post(os.getenv("AUTH_URL")+"/users/login", json=credentials.model_dump())
-        response.raise_for_status()
-    except requests.exceptions.HTTPError as e:
-        raise HTTPException(e.response.status_code, detail=e.response.json()["detail"])
-    session = create_session(response.json()["id"])
+    user_id = auth.login(credentials)
+    session = create_session(user_id)
     return {"bearer": f"Bearer {session}"}
 
 # user creation
 @app.post("/users", response_model = schemas.User)
 def create_user(user_payload: schemas.UserCreate, db_session: Session = Depends(get_db_session)):
-    auth_payload = {
-        "username": user_payload.username,
-        "password": user_payload.password
-    }
-
-    # maybe theres a better way to do this
-    try:
-        response = requests.post(os.getenv("AUTH_URL")+"/users", json=auth_payload)
-        response.raise_for_status()
-    except requests.exceptions.HTTPError as e:
-        raise HTTPException(e.response.status_code, detail=e.response.json()["detail"])
-
-    user_id = response.json()["id"]
+    user_id = auth.create_user(user_payload)
     user = schemas.User(id=user_id, username=user_payload.username, full_name=user_payload.full_name, date_created = datetime.today().isoformat())
     return crud.create_user(db_session=db_session, user=user)
 
