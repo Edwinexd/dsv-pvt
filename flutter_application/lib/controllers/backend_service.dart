@@ -8,11 +8,12 @@ class BackendService {
   late Dio dio;
 
   BackendService() {
-    options = BaseOptions(
-      baseUrl: 'http://10.97.231.1:81',
-      headers: {'Content-Type': 'applcation/json'},
+    dio = Dio(
+      BaseOptions(
+        baseUrl: 'http://10.97.231.1:81',
+        headers: {'Content-Type': 'applcation/json'},
+      )
     );
-    dio = Dio(options);
   }
 
   Future<Group> fetchGroup(int groupId) async {
