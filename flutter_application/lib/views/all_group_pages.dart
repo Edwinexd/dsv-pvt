@@ -46,13 +46,13 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
         onProfileTap: () => goToProfilePage(context),
         onGroupTap: () => goToGroupPage(context),
         onSignoutTap: () {},
-        onSettingsTap: () {},
-        
+        onSettingsTap: () {},   
       ),
+
       body: Column(
         children: [
           Container(
-            color: Colors.grey[100], // Background color of the box
+            color: Colors.grey[100], //Background color of the box
             padding: const EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -86,7 +86,7 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
                   ),
                   items: const [
                     DropdownMenuItem(value: 'All', child: Text('All')),
-                    DropdownMenuItem(value: 'Public', child: Text('Public groups')),
+                    DropdownMenuItem(value: 'Public', child: Text('Show only public groups')),
                   ],
                 ),
               ],
