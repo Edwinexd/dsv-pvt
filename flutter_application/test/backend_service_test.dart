@@ -109,6 +109,22 @@ void main() {
         throwsA(isA<DioException>())
       );
     });
+
+    test('fetchGroups() - return a list of groups after successful http request', () async {
+      int skip = 0;
+      int limit = 10;
+      String path = '/groups?skip=$skip&limit=$limit';
+
+      dioAdapter.onGet(
+        path,
+        (server) => server.reply(
+          200,
+          {"data": [{"group_name": "uppdaterall","description": "hejdå","private": false,"id": 6},{"group_name": "johan","description": "test","private": false,"id": 7}]} 
+        ),
+      );
+
+      expect(await backendService.fetchGroups(skip, limit), isA<List<Group>>());
+    });
   });
 }
 
@@ -116,19 +132,6 @@ void main() {
   
 
   //   // TODO: Unfinished - Maybe 
-  //   test('fetchGroups() - return a list of groups after successful http request', () async {
-  //     int skip = 0;
-  //     int limit = 10;
-  //     Uri uri = Uri.parse("$groupUrl?skip=$skip&limit=$limit");
-
-  //     when(client.get(
-  //       uri,
-  //     )).thenAnswer((_) async => http.Response('{"data": [{"group_name": "uppdaterall","description": "hejdå","private": false,"id": 6},{"group_name": "johan","description": "test","private": false,"id": 7}]}', 200));
-
-  //     expect(await groupController.fetchGroups(skip, limit), isA<List<Group>>());
-  //   });
-
-  // });
 
   // /*
   //   WARNING! Production tests
