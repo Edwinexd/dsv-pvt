@@ -125,7 +125,23 @@ void main() {
 
       expect(await backendService.fetchGroups(skip, limit), isA<List<Group>>());
     });
-  });
+
+    test('fetchGroups() - throws DioException after unsuccessful http request', () async {
+      int skip = 0;
+      int limit = 10;
+      String path = '/groups?skip=$skip&limit=$limit';
+
+      dioAdapter.onGet(
+        path, 
+        (server) => server.throws(
+          400, 
+          DioException(requestOptions: RequestOptions(path: path))
+        ),
+      );
+
+      expect(() async => await backendService.fetchGroups(skip, limit), throwsA(isA<DioException>()));
+    });
+  }); // GROUP
 }
 
 
