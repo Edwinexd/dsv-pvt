@@ -113,3 +113,14 @@ def get_user_groups(db_session: Session, user_id: int):
 def get_group_users(db_session: Session, group_id: int):
     db_group = get_group(db_session, group_id)
     return db_group.users
+
+
+
+
+#ACHIEVEMENTS
+
+#create
+#get
+#get all
+#delete
+

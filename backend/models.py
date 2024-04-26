@@ -22,6 +22,13 @@ challenge_completions = Table(
     Column("user_id", ForeignKey("users.id"), primary_key=True),
     Column("challenge_id", ForeignKey("challenges.id"), primary_key=True),
 )
+#achievements association table
+achievement_completions = Table(
+    "achievement_completions",
+    base.metadata,
+    Column("user_id", ForeignKey("users.id"),primary_key = True),
+    Column("achievement_id", ForeignKey("achievements.id"), primary_key = True),
+)
 
 # NORMAL TABLES
 class User(base):
@@ -42,6 +49,11 @@ class User(base):
         "Challenge",
         secondary=challenge_completions,
         back_populates="completed_by"
+    )
+    completed_achievements = relationship(
+        "Achievement"
+        secondary=achievement_completions,
+        back_populates="achivment_completed_by"
     )
     profile = relationship("Profile", uselist=False, back_populates="owner")
 
@@ -107,3 +119,24 @@ class Challenge(base):
         secondary=challenge_completions,
         back_populates="completed_challenges"
     )
+
+
+class Achievements(base):
+    __tablename__ = "achievements"
+
+    id = Column(Integer, primary_key = True)
+    achievement_name = Column(String)
+    description = Column(String)
+    requirement = Column(Integer)
+
+    #Gå till en challanges
+    
+    #Gå till personer - association table
+    achivment_completed_by = relationship(
+        "User",
+        secondary=achievement_completions,
+        back_populates="completed_achievements"
+    )
+
+
+
