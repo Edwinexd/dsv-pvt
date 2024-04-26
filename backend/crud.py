@@ -59,6 +59,7 @@ def create_profile(db_session: Session, profile: schemas.ProfileCreate, user_id:
         is_private=profile.is_private
     )
     db_user = get_user(db_session, user_id)
+    db_session.delete(db_user.profile)
     db_user.profile = db_profile
     db_session.add(db_user)
     db_session.commit()
