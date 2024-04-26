@@ -192,6 +192,12 @@ def read_members_in_group(user: Annotated[schemas.SessionUser, Depends(get_curre
     users = schemas.UserList(data=crud.get_group_users(db_session=db_session, db_group=db_group))
     return users
 
+@app.get("/users/me/groups", response_model = schemas.GroupList)
+def read_user_groups_me(user: Annotated[schemas.SessionUser, Depends(get_current_user)], db_session: Session = Depends(get_db_session)):
+    db_user = read_user_me(user, db_session)
+    groups = schemas.GroupList(data=crud.get_user_groups(db_session=db_session, db_user=db_user))
+    return groups
+
 # get all groups a user has joined
 @app.get("/users/{user_id}/groups", response_model = schemas.GroupList)
 def read_user_groups(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, db_session: Session = Depends(get_db_session)):
@@ -201,7 +207,7 @@ def read_user_groups(user: Annotated[schemas.SessionUser, Depends(get_current_us
 
 #INVITATIONS
 # All of this needs extensive testing
-@app.put("/groups/{group_id}/invited-users/{user_id}")
+@app.put("/groups/{group_id}/invited-users/{user_id}", response_model = schemas.Invite)
 def invite_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, group_id: int, db_session: Session = Depends(get_db_session)):
     db_user = read_user(user, user_id=user_id, db_session=db_session)
     db_group = read_group(user, group_id=group_id, db_session=db_session)
@@ -210,13 +216,11 @@ def invite_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)],
     
     validate_user_in_group(crud.get_user(db_session, user.id), db_group) # user can only invite to group if user is in the group
 
-    if db_user in db_group.invited_users:
+    if db_user in crud.get_invited_users(db_session, group_id):
         raise HTTPException(status_code=400, detail="User already invited to group!")
     if db_user in db_group.users:
         raise HTTPException(status_code=400, detail="User already in group!")
-    crud.invite_user(db_session, db_user, db_group, user.id)
-
-    return {"message": "User successfully invited!"}
+    return crud.invite_user(db_session, db_user, db_group, user.id)
 
 #get invited users in group
 @app.get("/groups/{group_id}/invited-users", response_model = schemas.UserList)
@@ -254,6 +258,7 @@ def decline_invitation(user: Annotated[schemas.SessionUser, Depends(get_current_
     if invitation is None:
         raise HTTPException(status_code=404, detail="Invitation not found")
     crud.delete_invitation(db_session, user.id, group_id)
+    return {"message" : "invitation successfully declined!"}
 
 #TODO: moderators, admins
 

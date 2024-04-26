@@ -122,6 +122,7 @@ def invite_user(db_session: Session, db_user: models.User, db_group: models.Grou
     db_session.add(db_invitation)
     db_session.commit()
     db_session.refresh(db_invitation)
+    return db_invitation
 
 #super hacky but works, open to improvement suggestions
 def get_invited_users(db_session: Session, group_id: int):
