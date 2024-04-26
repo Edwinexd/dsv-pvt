@@ -36,8 +36,6 @@ class MainPage extends StatelessWidget {
         //backgroundColor: Colors.deepPurple[700],
       ),
       drawer: MyDrawer(
-        onProfileTap: () => goToProfilePage(context),
-        onGroupTap: () => goToGroupPage(context),
         onSignoutTap: () {},
         onSettingsTap: () {},
         
@@ -100,33 +98,6 @@ class MainPage extends StatelessWidget {
     );
   }
 
-  //navigate to profile page
-  void goToProfilePage(BuildContext context) {
-    Navigator.pop(context);
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const ProfilePage(
-          name: 'Jeb Jebson',
-          biography: "Let's go running!",
-          imageUrl: 'https://via.placeholder.com/150',
-        ),
-      ),
-    );
-  }
-
-  //Navigate to 'All groups' page
-  void goToGroupPage(BuildContext context) {
-    Navigator.pop(context);
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: ((context) => const AllGroupsPage()),
-      ),
-    );
-  }
 }
 
 

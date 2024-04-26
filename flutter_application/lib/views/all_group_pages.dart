@@ -43,11 +43,9 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
       ),
 
       drawer: MyDrawer(
-        onProfileTap: () => goToProfilePage(context),
-        onGroupTap: () => goToGroupPage(context),
+        onSettingsTap: () {}, 
         onSignoutTap: () {},
-        onSettingsTap: () {},   
-      ),
+        ),
 
       body: Column(
         children: [
@@ -123,7 +121,6 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
         ],
       ),
       
-      
       floatingActionButton: FloatingActionButton(
         onPressed:() {
           Navigator.push(
@@ -134,34 +131,6 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
         backgroundColor: Colors.grey[150],
         child: const Icon(Icons.add),
         ),
-    );
-  }
- 
-
-  //same code from the main class, will be changed later since we do not need to write the same code one more time
-  void goToProfilePage(BuildContext context) {
-    Navigator.pop(context);
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const ProfilePage(
-          name: 'Jeb Jebson',
-          biography: "Let's go running!",
-          imageUrl: 'https://via.placeholder.com/150',
-        ),
-      ),
-    );
-  }
-
-  void goToGroupPage(BuildContext context) {
-    Navigator.pop(context);
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: ((context) => const AllGroupsPage()),
-      ),
     );
   }
 

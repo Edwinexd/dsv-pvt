@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/my_list_tile.dart';
+import 'profile_page.dart';
+import 'views/all_group_pages.dart';
 
 class MyDrawer extends StatelessWidget {
   final void Function()? onSettingsTap;
-  final void Function()? onProfileTap;
   final void Function()? onSignoutTap;
-  final void Function()? onGroupTap;
+  
 
-  MyDrawer({
+  const MyDrawer({
     super.key,
-    required this.onProfileTap,
     required this.onSettingsTap,
     required this.onSignoutTap,
-    required this.onGroupTap,
   });
 
   @override
@@ -48,13 +47,13 @@ class MyDrawer extends StatelessWidget {
               MyListTile(
                 icon: Icons.person,
                 text: 'PROFILE',
-                onTap: onProfileTap,
+                onTap: () => goToProfilePage(context),
               ),
 
               MyListTile(
                 icon: Icons.group, 
                 text: 'GROUP', 
-                onTap: onGroupTap,
+                onTap: () => goToGroupPage(context),
                 ),
             ],
           ),
@@ -71,4 +70,31 @@ class MyDrawer extends StatelessWidget {
       ),
     );
   }
+
+  void goToProfilePage(BuildContext context) {
+    Navigator.pop(context);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ProfilePage(
+          name: 'Jeb Jebson',
+          biography: "Let's go running!",
+          imageUrl: 'https://via.placeholder.com/150',
+        ),
+      ),
+    );
+  }
+
+  void goToGroupPage(BuildContext context) {
+    Navigator.pop(context);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: ((context) => const AllGroupsPage()),
+      ),
+    );
+  }
+  //Setting and signout will also be here
 }
