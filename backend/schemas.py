@@ -75,6 +75,16 @@ class GroupUpdate(BaseModel):
     description: Optional[str] = None
     private: Optional[bool] = None
 
+# INVITES
+class InviteBase(BaseModel):
+    user_id: str
+    group_id: int
+    invited_by: str
+
+class Invite(InviteBase):
+    class Config:
+        from_attributes = True
+
 # ACTIVITY
 class ActivityBase(BaseModel):
     activity_name: str
