@@ -1,13 +1,14 @@
 # Schemas will be used for presentation and data query with user
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 
 # USER
 class UserBase(BaseModel):
     username: str
+    full_name: str
 
 class UserCreate(UserBase):
-    full_name: str
+    password: str
 
 class User(UserBase):
     id: int
@@ -19,13 +20,23 @@ class User(UserBase):
 class UserList(BaseModel):
     data: List[User]
 
+class UserUpdate(BaseModel):
+    username: Optional[str] = None
+    full_name: Optional[str] = None
+
+class UserCreds(BaseModel):
+    username: str
+    password: str
+
 # GROUP
 class GroupBase(BaseModel):
     group_name: str
     description: str
+    private: bool
 
 class GroupCreate(GroupBase):
-    private: bool
+    # In case we wan't to have variables on for creation in the future
+    pass
 
 class Group(GroupBase):
     id: int
@@ -35,6 +46,11 @@ class Group(GroupBase):
 
 class GroupList(BaseModel):
     data: List[Group]
+
+class GroupUpdate(BaseModel):
+    group_name: Optional[str] = None
+    description: Optional[str] = None
+    private: Optional[bool] = None
 
 # ACTIVITY
 class ActivityBase(BaseModel):
@@ -62,7 +78,7 @@ class ChallengeBase(BaseModel):
 class ChallengeCreate(ChallengeBase):
     description: str
     difficulty_code: int
-    expiration_date: str | None = None
+    expiration_date: Optional[str] = None
     point_reward: int
 
 class Challenge(ChallengeBase):
@@ -73,3 +89,7 @@ class Challenge(ChallengeBase):
 
 class ChallengeList(BaseModel):
     data: List[Challenge]
+
+# Sessions
+class SessionUser(BaseModel):
+    id: str
