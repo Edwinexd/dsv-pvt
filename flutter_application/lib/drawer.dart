@@ -8,11 +8,11 @@ class MyDrawer extends StatelessWidget {
   final void Function()? onSignoutTap;
 
   MyDrawer({
-    Key? key, // Add Key? for constructor
+    super.key, // Add Key? for constructor
     required this.onProfileTap,
     required this.onSettingsTap,
     required this.onSignoutTap,
-  }) : super(key: key); 
+  }); 
 
   @override
   Widget build(BuildContext context) {
