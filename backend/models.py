@@ -51,7 +51,7 @@ class User(base):
         back_populates="completed_by"
     )
     completed_achievements = relationship(
-        "Achievement"
+        "Achievement",
         secondary=achievement_completions,
         back_populates="achivment_completed_by"
     )
@@ -130,7 +130,7 @@ class Achievements(base):
     requirement = Column(Integer)
 
     #Gå till en challanges
-    
+
     #Gå till personer - association table
     achivment_completed_by = relationship(
         "User",
