@@ -7,7 +7,7 @@ import 'package:http_mock_adapter/http_mock_adapter.dart';
 void main() {
   late Dio dio;
   late DioAdapter dioAdapter;
-  final backendService = BackendService();
+  late BackendService backendService;
   
   group('Backend API - Group Tests', () {
 
@@ -17,9 +17,9 @@ void main() {
         headers: {'Content-Type': 'applcation/json'},
       ));
       dioAdapter = DioAdapter(dio: dio,
-        matcher: const FullHttpRequestMatcher(needsExactBody: true),
-      );
-      backendService.dio = dio;
+            matcher: const FullHttpRequestMatcher(needsExactBody: true),
+          );
+      backendService = BackendService.withDio(dio);
     });
 
     test('fetchGroup() - return a group after successful http request', () async {
