@@ -36,12 +36,12 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('All Groups'),
-        backgroundColor: Colors.teal[300],
+        backgroundColor: const Color.fromARGB(230, 60, 71, 133),
       ),
       body: Column(
         children: [
           Container(
-            color: Colors.grey[200], // Background color of the box
+            color: Colors.grey[100], // Background color of the box
             padding: const EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -89,7 +89,15 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
               itemBuilder: (context, index) {
                 final group = filteredGroups[index];
                 return ListTile(
-                  title: Text(group.name),
+                  title: Text(
+                    group.name,
+                    style: const TextStyle(
+                      fontStyle: FontStyle.normal,
+                    
+                    ),
+                    
+                    ),
+                  
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
