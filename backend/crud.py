@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 import models, schemas
 
 #USERS
-def get_user(db_session: Session, user_id: int):
+def get_user(db_session: Session, user_id: str):
     return db_session.query(models.User).filter(models.User.id == user_id).first()
 
 def get_users(db_session: Session, skip: int = 0, limit: int = 100):
@@ -61,11 +61,14 @@ def delete_profile(db_session: Session, db_profile: models.Profile):
     db_session.commit()
 
 #GROUPS
-def create_group(db_session: Session, group: schemas.GroupCreate):
+def create_group(db_session: Session, group: schemas.GroupCreate, owner_id: str):
     db_group = models.Group(group_name = group.group_name, description = group.description, private = group.private)
-    db_session.add(db_group)
+    db_owner = get_user(db_session, owner_id)
+    db_owner.owned_groups.append(db_group)
+    db_owner.groups.append(db_group)
+    db_session.add(db_owner)
     db_session.commit()
-    db_session.refresh(db_group)
+    db_session.refresh(db_owner)
     return db_group
 
 # get a group from group_id

@@ -44,6 +44,7 @@ class User(base):
         back_populates="completed_by"
     )
     profile = relationship("Profile", uselist=False, back_populates="owner")
+    owned_groups = relationship("Group", back_populates="owner")
 
 class Profile(base):
     __tablename__ = "profiles"
@@ -64,6 +65,9 @@ class Group(base):
     group_name = Column(String)
     description = Column(String, nullable=True)
     private = Column(Boolean)
+
+    owner_id = Column(String, ForeignKey("users.id"))
+    owner = relationship("User", back_populates="owned_groups")
 
     users = relationship("User", secondary=group_memberships, back_populates="groups")
 
