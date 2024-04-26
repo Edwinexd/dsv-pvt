@@ -17,9 +17,9 @@ class AllGroupsPage extends StatefulWidget {
 class _AllGroupsPageState extends State<AllGroupsPage> {
   //List of instance groups
   final List<Group> _groups = [
-    const Group(id: 3, name: 'Lace up!', description: 'Lace up and lead the way', isPublic: true),
-    const Group(id: 2, name: 'DVK Runners', description: 'Join us!', isPublic: false),
-    const Group(id: 4, name: 'Kista Runners', description: 'Best runners!', isPublic: true),
+    const Group(id: 3, name: 'Lace up!', description: 'Lace up and lead the way', isPrivate: true),
+    const Group(id: 2, name: 'DVK Runners', description: 'Join us!', isPrivate: false),
+    const Group(id: 4, name: 'Kista Runners', description: 'Best runners!', isPrivate: true),
   ];
 
   String _searchQuery = '';
@@ -29,7 +29,7 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
   Widget build(BuildContext context) {
     List<Group> filteredGroups = _groups.where((group) {
       final name = group.name.toLowerCase();
-      final isPublic = group.isPublic;
+      final isPublic = group.isPrivate;
 
       bool matchesSearchQuery = name.contains(_searchQuery.toLowerCase());
       bool isPublicMatch = _selectedFilter == 'All' || (_selectedFilter == 'Public' && isPublic);
@@ -113,7 +113,7 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(group.description),
-                      Text(group.isPublic ? 'Public' : 'Private'),
+                      Text(group.isPrivate ? 'Private' : 'Public'),
                     ],
                   ),
                 );
