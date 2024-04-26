@@ -11,7 +11,7 @@ class UserCreate(UserBase):
     password: str
 
 class User(UserBase):
-    id: int
+    id: str
     date_created: str
 
     class Config:

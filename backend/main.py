@@ -62,7 +62,7 @@ def read_users(user: Annotated[schemas.SessionUser, Depends(get_current_user)], 
 
 #get a user from db using specific user id
 @app.get("/users/{user_id}", response_model=schemas.User)
-def read_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: int, db_session: Session = Depends(get_db_session)):
+def read_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, db_session: Session = Depends(get_db_session)):
     db_user = crud.get_user(db_session, user_id=user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -87,28 +87,28 @@ def delete_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)],
 
 #PROFILE
 @app.put("/users/{user_id}/profile", response_model=schemas.Profile)
-def create_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user)], profile: schemas.ProfileCreate, user_id: int, db_session: Session = Depends(get_db_session)):
+def create_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user)], profile: schemas.ProfileCreate, user_id: str, db_session: Session = Depends(get_db_session)):
     db_user = crud.get_user(db_session, user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return crud.create_profile(db_session, profile, user_id)
 
 @app.get("/users/{user_id}/profile", response_model=schemas.Profile)
-def read_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: int, db_session: Session = Depends(get_db_session)):
+def read_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, db_session: Session = Depends(get_db_session)):
     db_profile = crud.get_profile(db_session, user_id)
     if db_profile is None:
         raise HTTPException(status_code=404, detail="Profile not found")
     return db_profile
 
 @app.patch("/users/{user_id}/profile", response_model=schemas.Profile)
-def update_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: int, profile_update: schemas.ProfileUpdate, db_session: Session = Depends(get_db_session)):
+def update_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, profile_update: schemas.ProfileUpdate, db_session: Session = Depends(get_db_session)):
     db_profile = crud.get_profile(db_session, user_id)
     if db_profile is None:
         raise HTTPException(status_code=404, detail="Profile not found")
     return crud.update_profile(db_session, db_profile, profile_update)
 
 @app.delete("/users/{user_id}/profile")
-def delete_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: int, db_session: Session = Depends(get_db_session)):
+def delete_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, db_session: Session = Depends(get_db_session)):
     db_profile = crud.get_profile(db_session, user_id)
     if db_profile is None:
         raise HTTPException(status_code=404, detail="Profile not found")
@@ -151,7 +151,7 @@ def delete_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)]
 #MEMBERSHIPS
 # join group
 @app.put("/groups/{group_id}/members/{user_id}", response_model=schemas.Group)
-def join_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: int, group_id: int, db_session: Session = Depends(get_db_session)):
+def join_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, group_id: int, db_session: Session = Depends(get_db_session)):
     db_user = read_user(user_id=user_id, db_session=db_session)
     db_group = read_group(group_id=group_id, db_session=db_session)
     if db_user in db_group.users:
@@ -160,7 +160,7 @@ def join_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], 
 
 #leave group
 @app.delete("/groups/{group_id}/members/{user_id}", response_model=schemas.Group)
-def leave_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: int, group_id: int, db_session: Session = Depends(get_db_session)):
+def leave_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, group_id: int, db_session: Session = Depends(get_db_session)):
     db_user = read_user(user_id=user_id, db_session=db_session)
     db_group = read_group(group_id=group_id, db_session=db_session)
     if db_user not in db_group.users:
@@ -175,7 +175,7 @@ def read_members_in_group(user: Annotated[schemas.SessionUser, Depends(get_curre
 
 # get all groups a user has joined
 @app.get("/users/{user_id}/groups", response_model = schemas.GroupList)
-def read_user_groups(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: int, db_session: Session = Depends(get_db_session)):
+def read_user_groups(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, db_session: Session = Depends(get_db_session)):
     groups = schemas.GroupList(data=crud.get_user_groups(db_session=db_session, user_id=user_id))
     return groups
 

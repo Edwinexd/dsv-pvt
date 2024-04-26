@@ -27,7 +27,7 @@ challenge_completions = Table(
 class User(base):
     __tablename__ = "users"
 
-    id = Column(BigInteger, primary_key=True)
+    id = Column(String, primary_key=True)
     username = Column(String, unique=True)
     full_name = Column(String)
     date_created = Column(String)
