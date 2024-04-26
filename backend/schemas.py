@@ -23,6 +23,10 @@ class UserList(BaseModel):
 class UserUpdate(BaseModel):
     username: Optional[str] = None
     full_name: Optional[str] = None
+      
+class UserCreds(BaseModel):
+    username: str
+    password: str
 
 # PROFILE
 class ProfileBase(BaseModel):
@@ -107,3 +111,7 @@ class Challenge(ChallengeBase):
 
 class ChallengeList(BaseModel):
     data: List[Challenge]
+
+# Sessions
+class SessionUser(BaseModel):
+    id: str

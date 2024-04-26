@@ -1,8 +1,5 @@
-import os
-from datetime import datetime
 from sqlalchemy.orm import Session
 import models, schemas
-import requests #synchronous http
 from fastapi import HTTPException
 
 #USERS
@@ -12,23 +9,8 @@ def get_user(db_session: Session, user_id: int):
 def get_users(db_session: Session, skip: int = 0, limit: int = 100):
     return db_session.query(models.User).offset(skip).limit(limit).all()
 
-def create_user(db_session: Session, user: schemas.UserCreate):
-    payload = {
-        "username": user.username,
-        "password": user.password
-    }
-
-    # maybe theres a better way to do this
-    try:
-        response = requests.post(os.getenv("AUTH_URL")+"/users", json=payload)
-        response.raise_for_status()
-    except requests.exceptions.HTTPError as e:
-        raise HTTPException(e.response.status_code, detail=e.response.json()["detail"])
-
-    user_id = response.json()["id"]
-
-    date_created = datetime.today().isoformat()
-    db_user = models.User(id=user_id, username = user.username, full_name = user.full_name, date_created = date_created)
+def create_user(db_session: Session, user: schemas.User):
+    db_user = models.User(id=user.id, username = user.username, full_name = user.full_name, date_created = user.date_created)
     db_session.add(db_user)
     db_session.commit()
     db_session.refresh(db_user)
