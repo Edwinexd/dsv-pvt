@@ -23,7 +23,7 @@ class BackendService {
   Future<List<Group>> fetchGroups(int skip, int limit) async {
     final response = await dio.get(
       '/groups', 
-      queryParameters: {'skip': skip, 'limit': limit
+      queryParameters: {'skip': skip, 'limit': limit,
     });
     var groupList = response.data['data'] as List;
 
@@ -36,8 +36,8 @@ class BackendService {
       data: {
         "group_name": name,
         "description": description,
-        "private": private,
-    });
+        "private": private,},
+      );
 
     return Group.fromJson((response.data) as Map<String, dynamic>);
   }
@@ -57,7 +57,7 @@ class BackendService {
 
     final response = await dio.patch(
       '/groups/$groupId',
-      data: updateFields
+      data: updateFields,
     );
 
     return Group.fromJson((response.data) as Map<String, dynamic>);
