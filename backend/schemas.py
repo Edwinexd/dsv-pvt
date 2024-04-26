@@ -89,3 +89,7 @@ class Challenge(ChallengeBase):
 
 class ChallengeList(BaseModel):
     data: List[Challenge]
+
+# Sessions
+class SessionUser(BaseModel):
+    id: str
