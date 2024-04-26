@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/main.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/group_creation_page.dart';
+import 'package:flutter_application/drawer.dart';
+import '../profile_page.dart';
 
 
 class AllGroupsPage extends StatefulWidget {
@@ -37,6 +40,14 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
       appBar: AppBar(
         title: const Text('All Groups'),
         backgroundColor: const Color.fromARGB(230, 60, 71, 133),
+      ),
+
+      drawer: MyDrawer(
+        onProfileTap: () => goToProfilePage(context),
+        onGroupTap: () => goToGroupPage(context),
+        onSignoutTap: () {},
+        onSettingsTap: () {},
+        
       ),
       body: Column(
         children: [
@@ -125,4 +136,33 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
         ),
     );
   }
+ 
+
+  //same code from the main class, will be changed later since we do not need to write the same code one more time
+  void goToProfilePage(BuildContext context) {
+    Navigator.pop(context);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ProfilePage(
+          name: 'Jeb Jebson',
+          biography: "Let's go running!",
+          imageUrl: 'https://via.placeholder.com/150',
+        ),
+      ),
+    );
+  }
+
+  void goToGroupPage(BuildContext context) {
+    Navigator.pop(context);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: ((context) => const AllGroupsPage()),
+      ),
+    );
+  }
+
 }
