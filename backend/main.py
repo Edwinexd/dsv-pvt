@@ -12,6 +12,7 @@ import crud
 import models
 import schemas
 import auth
+from validations import validate_id
 from database import engine, session_local
 from sessions import create_session, get_session
 
@@ -68,15 +69,17 @@ def read_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)], u
     return db_user
 
 @app.patch("/users/{user_id}", response_model=schemas.User)
-def update_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: int, user_update: schemas.UserUpdate, db_session: Session = Depends(get_db_session)):
+def update_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, user_update: schemas.UserUpdate, db_session: Session = Depends(get_db_session)):
     db_user = crud.get_user(db_session, user_id)
+    validate_id(user.id, user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return crud.update_user(db_session, db_user, user_update)
 
 @app.delete("/users/{user_id}")
-def delete_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: int, db_session: Session = Depends(get_db_session)):
+def delete_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, db_session: Session = Depends(get_db_session)):
     db_user = crud.get_user(db_session, user_id)
+    validate_id(user.id, user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     crud.delete_user(db_session, db_user)
