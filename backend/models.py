@@ -22,12 +22,16 @@ challenge_completions = Table(
     Column("user_id", ForeignKey("users.id"), primary_key=True),
     Column("challenge_id", ForeignKey("challenges.id"), primary_key=True),
 )
-group_invitations = Table(
-    "group_invitations",
-    base.metadata,
-    Column("user_id", ForeignKey("users.id"), primary_key=True),
-    Column("group_id", ForeignKey("groups_id"), primary_key=True),
-)
+#association object pattern is used to get the extra field 'invited_by'
+class GroupInvitations(base):
+    __tablename__ = "group_invitations"
+
+    user_id = Column(String, ForeignKey("users.id"), primary_key=True)
+    group_id = Column(Integer, ForeignKey("groups.id"), primary_key=True)
+    invited_by = Column(String)
+
+    invited_user = relationship("User", back_populates="invited_to")
+    group = relationship("Group", back_populates="invited_users")
 
 # NORMAL TABLES
 class User(base):
@@ -39,7 +43,7 @@ class User(base):
     date_created = Column(String)
 
     groups = relationship("Group", secondary=group_memberships, back_populates="users")
-    invited_to = relationship("Group", secondary=group_invitations, back_populates="invited_users")
+    invited_to = relationship("GroupInvitations", back_populates="invited_user")
     activities = relationship(
         "Activity",
         secondary=activity_participations,
@@ -80,7 +84,7 @@ class Group(base):
 
     activities = relationship("Activity", back_populates="creator_group")
 
-    invited_users = relationship("User", secondary=group_invitations, back_populates="invited_to")
+    invited_users = relationship("GroupInvitations", back_populates="group")
 
 class Activity(base):
     __tablename__ = "activities"
