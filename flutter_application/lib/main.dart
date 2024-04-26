@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'create-profile-page.dart';  
+import 'create-profile-page.dart';
 import 'package:flutter_application/controllers/group_controller.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/group_creation_page.dart';
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const MainPage(), 
+      home: const MainPage(),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -40,21 +40,26 @@ class MainPageState extends State<MainPage> {
   int selectedIndex = 0;
 
   static const List<Widget> widgetOptions = <Widget>[
-    Text('Group Page', style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
-    Text('',),
-    Text('Start Activity Page', style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
-    Text('Placeholder Page', style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+    Text('Group Page',
+        style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+    Text(
+      '',
+    ),
+    Text('Start Activity Page',
+        style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+    Text('Placeholder Page',
+        style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
   ];
 
   void onItemtapped(int index) {
-  setState(() {
-    selectedIndex = index;
-    if (index == 1) { // Check if "Profile" bottom navigation bar item is tapped
-      goToProfilePage(context); // Navigate to the profile page
-    }
-  });
-}
-
+    setState(() {
+      selectedIndex = index;
+      if (index == 1) {
+        // Check if "Profile" bottom navigation bar item is tapped
+        goToProfilePage(context); // Navigate to the profile page
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,10 +107,9 @@ class MainPageState extends State<MainPage> {
       context,
       MaterialPageRoute(
         builder: (context) => const ProfilePage(
-          name: 'Jeb',
-          biography: 'Lets go running',
-          imageUrl: 'https://via.placeholder.com/150'
-        ),
+            name: 'Jeb',
+            biography: 'Lets go running',
+            imageUrl: 'https://via.placeholder.com/150'),
       ),
     );
   }
