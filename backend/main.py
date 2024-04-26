@@ -163,6 +163,8 @@ def join_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], 
     db_group = read_group(group_id=group_id, db_session=db_session)
     if db_user in db_group.users:
         raise HTTPException(status_code=400, detail="User already in group")
+    validate_id(user.id, user_id)
+    #TODO: if private, check if user is invited
     return crud.join_group(db_session=db_session, db_user=db_user, db_group=db_group)
 
 #leave group
@@ -172,6 +174,7 @@ def leave_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)],
     db_group = read_group(group_id=group_id, db_session=db_session)
     if db_user not in db_group.users:
         raise HTTPException(status_code=400, detail="User not in group")
+    validate_id(user.id, user_id)
     return crud.leave_group(db_session=db_session, db_user=db_user, db_group=db_group)
 
 # get all members in a group by group_id
