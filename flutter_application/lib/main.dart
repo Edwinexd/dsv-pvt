@@ -1,14 +1,11 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
-import 'create-profile-page.dart';  
-import 'package:flutter_application/controllers/backend_service.dart';
-import 'package:flutter_application/models/group.dart';
-import 'package:flutter_application/views/group_creation_page.dart';
-import 'package:flutter/widgets.dart';
 import 'profile_page.dart'; // Import the ProfilePage
 import 'drawer.dart';
 
 //Uppdaterad från PC.
-void main() {
+void main() async {
+  await dotenv.load(fileName: '.env');
   runApp(const MyApp());
 }
 
