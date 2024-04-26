@@ -141,60 +141,82 @@ void main() {
 
       expect(() async => await backendService.fetchGroups(skip, limit), throwsA(isA<DioException>()));
     });
+
+    test('updateGroup() - returns a group after successful http request', () async {
+      int groupId = 1;
+      String path = '/groups/$groupId';
+      String updatedField = 'newName';
+      var patchData = <String, dynamic> {
+        'group_name': updatedField
+      };
+
+      dioAdapter.onPatch(
+        path, 
+        (server) => server.reply(
+          200, 
+          {"id": 1,
+           "group_name": updatedField, 
+           "description": "mock", 
+           "private": true},
+        ),
+        data: patchData,
+      );
+
+      expect(await backendService.updateGroup(groupId, newName: updatedField), isA<Group>());
+    });
   }); // GROUP
-}
+
 
 
   
 
-  //   // TODO: Unfinished - Maybe 
 
-  // /*
-  //   WARNING! Production tests
-  //  */
+  /*
+    WARNING! Production tests
+   */
 
-  // group('Live tests against DB', () {
-  //   test('fetch', () async {
-  //     GroupController gc = GroupController();
-  //     int groupId = 1;
-  //     try {
-  //       Group gr = await gc.fetchGroup(groupId);
-  //       print(gr.description);
-  //     } catch (e) {
-  //       print('Error fetching group: $e');
-  //     }
-  //   });
+  group('Live tests against DB', () {
+    test('fetch', () async {
+      BackendService bs = BackendService();
+      int groupId = 1;
+      try {
+        Group gr = await bs.fetchGroup(groupId);
+        print(gr.description);
+      } catch (e) {
+        print('Error fetching group: $e');
+      }
+    });
 
-  //   test('create', () async {
-  //     GroupController gc = GroupController();
-  //     String name = "createGrup()";
-  //     String description = "JOHANTESTAR";
-  //     bool isPrivate = false;
+    test('create', () async {
+      BackendService bs = BackendService();
+      String name = "createGrup()1";
+      String description = "JOHANTESTAR1";
+      bool isPrivate = false;
       
-  //     Group gr = await gc.createGroup(name, description, isPrivate);
-  //     print(gr.description);
-  //   });
+      Group gr = await bs.createGroup(name, description, isPrivate);
+      print(gr.description);
+    });
 
-  //   test('fetchgroups', () async {
-  //     GroupController gc = GroupController();
-  //     int skip = 0;
-  //     int limit = 20;
+    test('fetchgroups', () async {
+      BackendService bs = BackendService();
+      int skip = 0;
+      int limit = 20;
 
-  //     List<Group> groups = await gc.fetchGroups(skip, limit);
+      List<Group> groups = await bs.fetchGroups(skip, limit);
 
-  //     for (final g in groups) {
-  //       print("id: ${g.id}");
+      for (final g in groups) {
+        print("id: ${g.id}");
         
-  //     }
-  //   });
+      }
+    });
 
-  //   test('updategroup', () async {
-  //     GroupController gc = GroupController();
-  //     int groupId = 1;
-  //     String newDescription = "hehe ny desc";
+    test('updategroup', () async {
+      BackendService bs = BackendService();
+      int groupId = 1;
+      String newDescription = "HEHE NY DESC IGEN";
 
-  //     Group g = await gc.updateGroup(groupId, description: newDescription);
-  //     expect(newDescription, g.description);
-  //   });
-  // });
-  
+      Group g = await bs.updateGroup(groupId, description: newDescription);
+      expect(newDescription, g.description);
+    });
+  });
+}
