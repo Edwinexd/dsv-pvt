@@ -4,10 +4,9 @@ import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/group_creation_page.dart';
 import 'package:flutter/widgets.dart';
-import 'profile_page.dart'; // Import the ProfilePage
+import 'profile_page.dart';
 import 'drawer.dart';
-import 'settings_page.dart'; // Import the SettingsPage
-
+import 'settings_page.dart'; 
 void main() {
   runApp(const MyApp());
 }
@@ -47,10 +46,10 @@ class MainPage extends StatelessWidget {
   final ValueChanged<bool> onToggleDarkMode;
 
   const MainPage({
-    Key? key,
+    super.key,
     required this.darkModeEnabled,
     required this.onToggleDarkMode,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -95,10 +94,12 @@ class MainPage extends StatelessWidget {
                   child: Center(
                     // Centers the Column within the Container
                     child: Column(
-                      mainAxisSize: MainAxisSize.min, // Makes the column take the size of its children
+                      mainAxisSize: MainAxisSize
+                      .min, // Makes the column take the size of its children
                       children: [
                         Transform.rotate(
-                          angle: 315 * (3.1415926535897932 / 180), // Rotating 90 degrees, expressed in radians
+                          angle: 315 * 
+                          (3.1415926535897932 / 180), // Rotating 90 degrees, expressed in radians
                           child: const Icon(
                             Icons.arrow_upward, // Arrow icon
                             color: Colors.white,
