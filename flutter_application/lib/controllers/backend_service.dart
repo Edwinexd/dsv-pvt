@@ -1,5 +1,6 @@
 import 'package:flutter_application/models/group.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_application/models/user.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class BackendService {
@@ -18,7 +19,6 @@ class BackendService {
 
   Future<Group> fetchGroup(int groupId) async {
     final response = await _dio.get('/groups/$groupId');
-
     return Group.fromJson((response.data) as Map<String, dynamic>);
   }
 
@@ -28,7 +28,6 @@ class BackendService {
       'limit': limit,
     });
     var groupList = response.data['data'] as List;
-
     return groupList.map((x) => Group.fromJson(x)).toList();
   }
 
@@ -42,7 +41,6 @@ class BackendService {
         "private": private,
       },
     );
-
     return Group.fromJson((response.data) as Map<String, dynamic>);
   }
 
@@ -64,7 +62,11 @@ class BackendService {
       '/groups/$groupId',
       data: updateFields,
     );
-
     return Group.fromJson((response.data) as Map<String, dynamic>);
+  }
+
+  Future<User> fetchUser(int userId) async {
+    final response = await _dio.get('/users/$userId');
+    return User.fromJson((response.data) as Map<String, dynamic>);
   }
 }
