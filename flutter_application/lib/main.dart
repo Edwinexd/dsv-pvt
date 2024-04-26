@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/views/all_group_pages.dart';
 import 'create-profile-page.dart';  
-import 'package:flutter_application/controllers/group_controller.dart';
+import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/group_creation_page.dart';
 import 'profile_page.dart'; // Import the ProfilePage
