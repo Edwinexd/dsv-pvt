@@ -43,13 +43,26 @@ class User(base):
         secondary=challenge_completions,
         back_populates="completed_by"
     )
+    profile = relationship("Profile", uselist=False, back_populates="owner")
+
+class Profile(base):
+    __tablename__ = "profiles"
+
+    description = Column(String, nullable=True)
+    age = Column(Integer, nullable=True)
+    interests = Column(String, nullable=True)
+    skill_level = Column(Integer) # will be mapped to a running pace in client
+    is_private = Column(Boolean)
+
+    owner_id = Column(BigInteger, ForeignKey("users.id"), primary_key=True)
+    owner = relationship("User", back_populates="profile")
 
 class Group(base):
     __tablename__ = "groups"
 
     id = Column(Integer, primary_key=True)
     group_name = Column(String)
-    description = Column(String)
+    description = Column(String, nullable=True)
     private = Column(Boolean)
 
     users = relationship("User", secondary=group_memberships, back_populates="groups")
