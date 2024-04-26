@@ -57,7 +57,7 @@ class MyDrawer extends StatelessWidget {
                 ),
             ],
           ),
-          //logout list title
+          
           Padding(
             padding: const EdgeInsets.only(bottom: 25.0),
             child: MyListTile(
@@ -72,8 +72,6 @@ class MyDrawer extends StatelessWidget {
   }
 
   void goToProfilePage(BuildContext context) {
-    Navigator.pop(context);
-
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -87,8 +85,6 @@ class MyDrawer extends StatelessWidget {
   }
 
   void goToGroupPage(BuildContext context) {
-    Navigator.pop(context);
-
     Navigator.push(
       context,
       MaterialPageRoute(
