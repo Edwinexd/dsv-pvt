@@ -9,7 +9,7 @@ void main() {
   late DioAdapter dioAdapter;
   final backendService = BackendService();
   
-  group('Backend API Group Tests', () {
+  group('Backend API - Group Tests', () {
 
     setUp(() {
       dio = Dio(BaseOptions(
@@ -17,7 +17,8 @@ void main() {
         headers: {'Content-Type': 'applcation/json'},
       ));
       dioAdapter = DioAdapter(dio: dio,
-        matcher: const FullHttpRequestMatcher(needsExactBody: true),);
+        // matcher: const FullHttpRequestMatcher(needsExactBody: true),
+      );
       backendService.dio = dio;
     });
 
@@ -39,7 +40,7 @@ void main() {
       expect(await backendService.fetchGroup(groupId), isA<Group>());
     });
 
-    test('fetchGroup() - throws exception after unsuccessful http request', () async {
+    test('fetchGroup() - throws DioException after unsuccessful http request', () async {
       int groupId = 4;
       String path = '/groups/$groupId';
 
@@ -60,29 +61,34 @@ void main() {
         throwsA(isA<DioException>())
       );
     });
+
+      test('createGroup() - returns a group after successful http request', () async {
+      String path = '/groups';
+      String name = "mock";
+      String description = "mock";
+      bool isPrivate = true;
+
+      dioAdapter.onPost(
+        path,
+        (server) => server.reply(
+          200,
+          {"id": 4,
+          "group_name": name,
+          "description": description,
+          "private": isPrivate}
+        ),
+        data: {"group_name": name,
+          "description": description,
+          "private": isPrivate}
+      );
+
+      expect(await backendService.createGroup(name, description, isPrivate), isA<Group>());
+    });
   });
 }
 
 
-  //   test('createGroup() - returns a group after successful http request', () async {
-  //     String name = "test";
-  //     String description = "";
-  //     bool isPrivate = false;
-
-  //     when(client.post(
-  //       Uri.parse(groupUrl), 
-  //       headers: <String,String> {
-  //         'Content-Type' : 'application/json'
-  //       },
-  //       body: jsonEncode({
-  //         "group_name": name,
-  //         "description": description,
-  //         "private": isPrivate,
-  //       }),
-  //     )).thenAnswer((_) async => http.Response('{"id": 1, "group_name": "mock", "description": "mock", "private": true}', 200));
-
-  //     expect(await groupController.createGroup(name, description, isPrivate), isA<Group>());
-  //   });
+  
 
   //   // TODO: Unfinished - Maybe 
   //   test('fetchGroups() - return a list of groups after successful http request', () async {
