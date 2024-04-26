@@ -12,7 +12,7 @@ import crud
 import models
 import schemas
 import auth
-from validations import validate_id
+from validations import validate_id, validate_user_in_group, validate_owns_group
 from database import engine, session_local
 from sessions import create_session, get_session
 
@@ -143,6 +143,7 @@ def update_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)]
     db_group = crud.get_group(db_session, group_id=group_id)
     if db_group is None:
         raise HTTPException(status_code=404, detail="Group not found")
+    validate_owns_group(user.id, db_group)
     return crud.update_group(db_session, db_group, group_update)
 
 @app.delete("/groups/{group_id}")
@@ -150,6 +151,7 @@ def delete_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)]
     db_group = crud.get_group(db_session, group_id=group_id)
     if db_group is None:
         raise HTTPException(status_code=404, detail="Group not found")
+    validate_owns_group(user.id, db_group)
     crud.delete_group(db_session, db_group)
     return {"message": "Group deleted successfully"}
 

@@ -62,6 +62,7 @@ class GroupCreate(GroupBase):
 
 class Group(GroupBase):
     id: int
+    owner_id: str
 
     class Config:
         from_attributes = True
