@@ -1,4 +1,7 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
+import 'profile_page.dart'; // Import the ProfilePage
+import 'drawer.dart';
 import 'create-profile-page.dart';  
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
@@ -7,7 +10,9 @@ import 'package:flutter/widgets.dart';
 import 'profile_page.dart';
 import 'drawer.dart';
 
-void main() {
+//Uppdaterad från PC.
+void main() async {
+  await dotenv.load(fileName: '.env');
   runApp(const MyApp());
 }
 
