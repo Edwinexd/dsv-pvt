@@ -41,16 +41,20 @@ class MainPageState extends State<MainPage> {
 
   static const List<Widget> widgetOptions = <Widget>[
     Text('Group Page', style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
-    Text('Friends Page', style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+    Text('',),
     Text('Start Activity Page', style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
     Text('Placeholder Page', style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
   ];
 
   void onItemtapped(int index) {
-    setState(() {
-      selectedIndex = index;
-    });
-  }
+  setState(() {
+    selectedIndex = index;
+    if (index == 1) { // Check if "Profile" bottom navigation bar item is tapped
+      goToProfilePage(context); // Navigate to the profile page
+    }
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +78,7 @@ class MainPageState extends State<MainPage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'Friends',
+            label: 'Profile',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.play_arrow),
