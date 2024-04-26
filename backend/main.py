@@ -71,17 +71,17 @@ def read_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)], u
 @app.patch("/users/{user_id}", response_model=schemas.User)
 def update_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, user_update: schemas.UserUpdate, db_session: Session = Depends(get_db_session)):
     db_user = crud.get_user(db_session, user_id)
-    validate_id(user.id, user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
+    validate_id(user.id, user_id)
     return crud.update_user(db_session, db_user, user_update)
 
 @app.delete("/users/{user_id}")
 def delete_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, db_session: Session = Depends(get_db_session)):
     db_user = crud.get_user(db_session, user_id)
-    validate_id(user.id, user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
+    validate_id(user.id, user_id)
     crud.delete_user(db_session, db_user)
     return {"message": "User deleted successfully"}
 
@@ -91,6 +91,7 @@ def create_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user
     db_user = crud.get_user(db_session, user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
+    validate_id(user.id, user_id)
     return crud.create_profile(db_session, profile, user_id)
 
 @app.get("/users/{user_id}/profile", response_model=schemas.Profile)
@@ -98,6 +99,8 @@ def read_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user)]
     db_profile = crud.get_profile(db_session, user_id)
     if db_profile is None:
         raise HTTPException(status_code=404, detail="Profile not found")
+    if db_profile.is_private:
+        validate_id(user.id, user_id)
     return db_profile
 
 @app.patch("/users/{user_id}/profile", response_model=schemas.Profile)
@@ -105,6 +108,7 @@ def update_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user
     db_profile = crud.get_profile(db_session, user_id)
     if db_profile is None:
         raise HTTPException(status_code=404, detail="Profile not found")
+    validate_id(user.id, user_id)
     return crud.update_profile(db_session, db_profile, profile_update)
 
 @app.delete("/users/{user_id}/profile")
@@ -112,6 +116,7 @@ def delete_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user
     db_profile = crud.get_profile(db_session, user_id)
     if db_profile is None:
         raise HTTPException(status_code=404, detail="Profile not found")
+    validate_id(user.id, user_id)
     crud.delete_profile(db_session, db_profile)
     return {"message": "Profile deleted successfully"}
 
