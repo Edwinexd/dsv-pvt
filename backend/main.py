@@ -84,28 +84,28 @@ def delete_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)],
 
 #PROFILE
 @app.put("/users/{user_id}/profile", response_model=schemas.Profile)
-def create_profile(profile: schemas.ProfileCreate, user_id: int, db_session: Session = Depends(get_db_session)):
+def create_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user)], profile: schemas.ProfileCreate, user_id: int, db_session: Session = Depends(get_db_session)):
     db_user = crud.get_user(db_session, user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return crud.create_profile(db_session, profile, user_id)
 
 @app.get("/users/{user_id}/profile", response_model=schemas.Profile)
-def read_profile(user_id: int, db_session: Session = Depends(get_db_session)):
+def read_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: int, db_session: Session = Depends(get_db_session)):
     db_profile = crud.get_profile(db_session, user_id)
     if db_profile is None:
         raise HTTPException(status_code=404, detail="Profile not found")
     return db_profile
 
 @app.patch("/users/{user_id}/profile", response_model=schemas.Profile)
-def update_profile(user_id: int, profile_update: schemas.ProfileUpdate, db_session: Session = Depends(get_db_session)):
+def update_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: int, profile_update: schemas.ProfileUpdate, db_session: Session = Depends(get_db_session)):
     db_profile = crud.get_profile(db_session, user_id)
     if db_profile is None:
         raise HTTPException(status_code=404, detail="Profile not found")
     return crud.update_profile(db_session, db_profile, profile_update)
 
 @app.delete("/users/{user_id}/profile")
-def delete_profile(user_id: int, db_session: Session = Depends(get_db_session)):
+def delete_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: int, db_session: Session = Depends(get_db_session)):
     db_profile = crud.get_profile(db_session, user_id)
     if db_profile is None:
         raise HTTPException(status_code=404, detail="Profile not found")
