@@ -23,10 +23,32 @@ class UserList(BaseModel):
 class UserUpdate(BaseModel):
     username: Optional[str] = None
     full_name: Optional[str] = None
-
+      
 class UserCreds(BaseModel):
     username: str
     password: str
+
+# PROFILE
+class ProfileBase(BaseModel):
+    description: Optional[str] = None
+    age: Optional[int] = None
+    interests: Optional[str] = None
+    skill_level: int
+    is_private: bool
+
+class ProfileCreate(ProfileBase):
+    pass
+
+class Profile(ProfileBase):
+    class Config:
+        from_attributes = True
+
+class ProfileUpdate(BaseModel):
+    description: Optional[str] = None
+    age: Optional[int] = None
+    interests: Optional[str] = None
+    skill_level: Optional[int] = None
+    is_private: Optional[bool] = None
 
 # GROUP
 class GroupBase(BaseModel):
