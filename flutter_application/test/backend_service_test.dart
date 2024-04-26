@@ -17,7 +17,7 @@ void main() {
         headers: {'Content-Type': 'applcation/json'},
       ));
       dioAdapter = DioAdapter(dio: dio,
-        // matcher: const FullHttpRequestMatcher(needsExactBody: true),
+        matcher: const FullHttpRequestMatcher(needsExactBody: true),
       );
       backendService.dio = dio;
     });
@@ -52,8 +52,8 @@ void main() {
             requestOptions: RequestOptions(
               path: path
             )
-          )
-        );}
+          ));
+        }
       );
 
       expect(
@@ -83,6 +83,31 @@ void main() {
       );
 
       expect(await backendService.createGroup(name, description, isPrivate), isA<Group>());
+    });
+
+    test('createGroup() - throws DioException after unsuccessful http request', () async {
+      String path = '/groups';
+      String name = "mock";
+      String description = "mock";
+      bool isPrivate = true;
+
+      dioAdapter.onPost(
+        path, 
+        (server) {server.throws(
+          404, 
+          DioException(
+            requestOptions: RequestOptions(
+              path: path
+            )
+          ));
+        },
+
+      );
+
+      expect(
+        () async => await backendService.createGroup(name, description, isPrivate), 
+        throwsA(isA<DioException>())
+      );
     });
   });
 }
