@@ -140,9 +140,9 @@ def get_groups_invited_to(db_session: Session, user_id: str):
     return groups_invited_to
 
 def delete_invitation(db_session: Session, user_id: str, group_id: int):
-    db_session.query(models.GroupInvitations).filter(models.GroupInvitations.user_id == user_id and models.GroupInvitations.group_id == group_id).delete()
+    db_session.query(models.GroupInvitations).filter(models.GroupInvitations.user_id == user_id, models.GroupInvitations.group_id == group_id).delete()
     db_session.commit()
 
 def get_invitation(db_session: Session, user_id: str, group_id: int):
-    invitation = db_session.query(models.GroupInvitations).filter(models.GroupInvitations.user_id == user_id and models.GroupInvitations.group_id == group_id).first()
+    invitation = db_session.query(models.GroupInvitations).filter(models.GroupInvitations.user_id == user_id, models.GroupInvitations.group_id == group_id).first()
     return invitation
