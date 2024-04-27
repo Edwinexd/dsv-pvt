@@ -172,7 +172,6 @@ def join_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], 
     if db_group.private:
         validate_user_invited(read_user_me(user, db_session), crud.get_invited_users(db_session, group_id))
         crud.delete_invitation(db_session, user.id, group_id)
-    #TODO: if private, check if user is invited
     return crud.join_group(db_session=db_session, db_user=db_user, db_group=db_group)
 
 #leave group
