@@ -224,6 +224,8 @@ def invite_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)],
 #get invited users in group
 @app.get("/groups/{group_id}/invites", response_model = schemas.UserList)
 def read_invited_users_in_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, db_session: Session = Depends(get_db_session)):
+    db_group = read_group(user, group_id=group_id, db_session=db_session)
+    validate_user_in_group(crud.get_user(db_session, user.id), db_group)
     invited_users = schemas.UserList(data=crud.get_invited_users(db_session, group_id))
     return invited_users
 
