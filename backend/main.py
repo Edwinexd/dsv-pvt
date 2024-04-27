@@ -129,7 +129,8 @@ def delete_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user
 # group creation
 @app.post("/groups", response_model = schemas.Group)
 def create_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group: schemas.GroupCreate, db_session: Session = Depends(get_db_session)):
-    return crud.create_group(db_session=db_session, group=group, owner_id = user.id)
+    validate_id(user.id, group.owner_id)
+    return crud.create_group(db_session=db_session, group=group)
 
 @app.get("/groups/{group_id}", response_model=schemas.Group)
 def read_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, db_session: Session = Depends(get_db_session)):

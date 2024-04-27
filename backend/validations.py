@@ -18,7 +18,5 @@ def validate_user_invited(user: models.User, invited_users: list[models.User]):
         raise HTTPException(status_code=403, detail="You are not invited to this group!")
     
 def validate_current_is_inviter(current_user: models.User, invitation: models.GroupInvitations):
-    print(current_user.id)
-    print(invitation.invited_by)
     if current_user.id != invitation.invited_by:
         raise HTTPException(status_code=403, detail="You cannot delete another users invitation!")

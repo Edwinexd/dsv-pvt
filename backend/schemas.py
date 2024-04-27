@@ -55,6 +55,7 @@ class GroupBase(BaseModel):
     group_name: str
     description: str
     private: bool
+    owner_id: str
 
 class GroupCreate(GroupBase):
     # In case we wan't to have variables on for creation in the future
@@ -62,7 +63,6 @@ class GroupCreate(GroupBase):
 
 class Group(GroupBase):
     id: int
-    owner_id: str
 
     class Config:
         from_attributes = True
