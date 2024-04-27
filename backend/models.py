@@ -30,8 +30,8 @@ class GroupInvitations(base):
     group_id = Column(Integer, ForeignKey("groups.id"), primary_key=True)
     invited_by = Column(String)
 
-    invited_user = relationship("User", back_populates="invited_to")
-    group = relationship("Group", back_populates="invited_users")
+    invited_user = relationship("User", back_populates="group_invitation_associations")
+    group = relationship("Group", back_populates="user_invitation_associations")
 
 # NORMAL TABLES
 class User(base):
@@ -43,7 +43,9 @@ class User(base):
     date_created = Column(String)
 
     groups = relationship("Group", secondary=group_memberships, back_populates="users")
-    invited_to = relationship("GroupInvitations", back_populates="invited_user")
+    group_invitation_associations = relationship("GroupInvitations", back_populates="invited_user")
+    groups_invited_to = relationship("Group", secondary="group_invitations", back_populates="invited_users")
+    
     activities = relationship(
         "Activity",
         secondary=activity_participations,
@@ -84,7 +86,8 @@ class Group(base):
 
     activities = relationship("Activity", back_populates="creator_group")
 
-    invited_users = relationship("GroupInvitations", back_populates="group")
+    user_invitation_associations = relationship("GroupInvitations", back_populates="group")
+    invited_users = relationship("User", secondary="group_invitations", back_populates="groups_invited_to")
 
 class Activity(base):
     __tablename__ = "activities"

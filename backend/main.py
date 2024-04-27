@@ -171,7 +171,7 @@ def join_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], 
         raise HTTPException(status_code=400, detail="User already in group")
     validate_id(user.id, user_id)
     if db_group.private:
-        validate_user_invited(read_user_me(user, db_session), crud.get_invited_users(db_session, group_id))
+        validate_user_invited(read_user_me(user, db_session), crud.get_invited_users(db_session, db_group))
         crud.delete_invitation(db_session, user.id, group_id)
     return crud.join_group(db_session=db_session, db_user=db_user, db_group=db_group)
 
@@ -216,7 +216,7 @@ def invite_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)],
     
     validate_user_in_group(crud.get_user(db_session, user.id), db_group) # user can only invite to group if user is in the group
 
-    if db_user in crud.get_invited_users(db_session, group_id):
+    if db_user in crud.get_invited_users(db_session, db_group):
         raise HTTPException(status_code=400, detail="User already invited to group!")
     if db_user in db_group.users:
         raise HTTPException(status_code=400, detail="User already in group!")
@@ -227,13 +227,14 @@ def invite_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)],
 def read_invited_users_in_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, db_session: Session = Depends(get_db_session)):
     db_group = read_group(user, group_id=group_id, db_session=db_session)
     validate_user_in_group(crud.get_user(db_session, user.id), db_group)
-    invited_users = schemas.UserList(data=crud.get_invited_users(db_session, group_id))
+    invited_users = schemas.UserList(data=crud.get_invited_users(db_session, db_group))
     return invited_users
 
 #get groups current user is invited to
 @app.get("/users/me/invites", response_model = schemas.GroupList)
 def read_groups_invited_to(user: Annotated[schemas.SessionUser, Depends(get_current_user)], db_session: Session = Depends(get_db_session)):
-    invited_to = schemas.GroupList(data=crud.get_groups_invited_to(db_session, user.id))
+    db_user = read_user(user, user.id, db_session)
+    invited_to = schemas.GroupList(data=crud.get_groups_invited_to(db_session, db_user))
     return invited_to
 
 @app.delete("/groups/{group_id}/invites/me")

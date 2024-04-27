@@ -124,20 +124,11 @@ def invite_user(db_session: Session, db_user: models.User, db_group: models.Grou
     db_session.refresh(db_invitation)
     return db_invitation
 
-#super hacky but works, open to improvement suggestions
-def get_invited_users(db_session: Session, group_id: int):
-    inv_rows = db_session.query(models.GroupInvitations).filter(models.GroupInvitations.group_id == group_id).all()
-    invited_users = []
-    for g in inv_rows:
-        invited_users.append(get_user(db_session, g.user_id))
-    return invited_users
+def get_invited_users(db_session: Session, db_group: models.Group):
+    return db_group.invited_users
 
-def get_groups_invited_to(db_session: Session, user_id: str):
-    inv_rows = db_session.query(models.GroupInvitations).filter(models.GroupInvitations.user_id == user_id).all()
-    groups_invited_to = []
-    for g in inv_rows:
-        groups_invited_to.append(get_group(db_session, g.group_id))
-    return groups_invited_to
+def get_groups_invited_to(db_session: Session, db_user: models.User):
+    return db_user.groups_invited_to
 
 def delete_invitation(db_session: Session, user_id: str, group_id: int):
     db_session.query(models.GroupInvitations).filter(models.GroupInvitations.user_id == user_id, models.GroupInvitations.group_id == group_id).delete()
