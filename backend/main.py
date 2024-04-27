@@ -235,6 +235,15 @@ def read_groups_invited_to(user: Annotated[schemas.SessionUser, Depends(get_curr
     invited_to = schemas.GroupList(data=crud.get_groups_invited_to(db_session, user.id))
     return invited_to
 
+@app.delete("/groups/{group_id}/invites/me")
+def decline_invitation(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, db_session: Session = Depends(get_db_session)):
+    db_group = read_group(user, group_id, db_session)
+    invitation = crud.get_invitation(db_session, user.id, group_id)
+    if invitation is None:
+        raise HTTPException(status_code=404, detail="Invitation not found")
+    crud.delete_invitation(db_session, user.id, group_id)
+    return {"message" : "invitation successfully declined!"}
+
 @app.delete("/groups/{group_id}/invites/{user_id}")
 def delete_invitation(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, group_id: int, db_session: Session = Depends(get_db_session)):
     db_user = read_user(user, user_id, db_session)
@@ -251,15 +260,6 @@ def delete_invitation(user: Annotated[schemas.SessionUser, Depends(get_current_u
     validate_current_is_inviter(read_user_me(user, db_session), invitation)
     crud.delete_invitation(db_session, user_id, group_id)
     return {"message": "Invitation successfully deleted!"}
-
-@app.delete("/users/me/invites/{group_id}")
-def decline_invitation(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, db_session: Session = Depends(get_db_session)):
-    db_group = read_group(user, group_id, db_session)
-    invitation = crud.get_invitation(db_session, user.id, group_id)
-    if invitation is None:
-        raise HTTPException(status_code=404, detail="Invitation not found")
-    crud.delete_invitation(db_session, user.id, group_id)
-    return {"message" : "invitation successfully declined!"}
 
 #TODO: moderators, admins
 
