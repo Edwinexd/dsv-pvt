@@ -206,7 +206,7 @@ def read_user_groups(user: Annotated[schemas.SessionUser, Depends(get_current_us
 
 #INVITATIONS
 # All of this needs extensive testing
-@app.put("/groups/{group_id}/invited-users/{user_id}", response_model = schemas.Invite)
+@app.put("/groups/{group_id}/invites/{user_id}", response_model = schemas.Invite)
 def invite_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, group_id: int, db_session: Session = Depends(get_db_session)):
     db_user = read_user(user, user_id=user_id, db_session=db_session)
     db_group = read_group(user, group_id=group_id, db_session=db_session)
@@ -222,7 +222,7 @@ def invite_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)],
     return crud.invite_user(db_session, db_user, db_group, user.id)
 
 #get invited users in group
-@app.get("/groups/{group_id}/invited-users", response_model = schemas.UserList)
+@app.get("/groups/{group_id}/invites", response_model = schemas.UserList)
 def read_invited_users_in_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, db_session: Session = Depends(get_db_session)):
     invited_users = schemas.UserList(data=crud.get_invited_users(db_session, group_id))
     return invited_users
@@ -233,7 +233,7 @@ def read_groups_invited_to(user: Annotated[schemas.SessionUser, Depends(get_curr
     invited_to = schemas.GroupList(data=crud.get_groups_invited_to(db_session, user.id))
     return invited_to
 
-@app.delete("/groups/{group_id}/invited-users/{user_id}")
+@app.delete("/groups/{group_id}/invites/{user_id}")
 def delete_invitation(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, group_id: int, db_session: Session = Depends(get_db_session)):
     db_user = read_user(user, user_id, db_session)
     db_group = read_group(user, group_id, db_session)
