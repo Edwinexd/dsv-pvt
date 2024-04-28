@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, Integer, String, Table
+from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, Integer, String, Table, ForeignKeyConstraint
 from sqlalchemy.orm import relationship
 
 from database import base
@@ -26,12 +26,17 @@ challenge_completions = Table(
 class GroupInvitations(base):
     __tablename__ = "group_invitations"
 
-    user_id = Column(String, ForeignKey("users.id"), primary_key=True)
     group_id = Column(Integer, ForeignKey("groups.id"), primary_key=True)
-    invited_by = Column(String)
+    user_id = Column(String, ForeignKey("users.id"), primary_key=True)
+    invited_by = Column(String, ForeignKey("users.id"))
 
-    invited_user = relationship("User", back_populates="group_invitation_associations")
-    group = relationship("Group", back_populates="user_invitation_associations")
+    group = relationship("Group", back_populates="user_invitation_associations", foreign_keys=[group_id])
+    user = relationship("User", back_populates="group_invitation_associations", foreign_keys=[user_id])
+    inviter = relationship("User", foreign_keys=[invited_by])
+
+    #invited_user = relationship("User", back_populates="group_invitation_associations", foreign_keys=[user_id])
+    #group = relationship("Group", back_populates="user_invitation_associations", foreign_keys=[group_id])
+    #inviter = relationship("User", foreign_keys=invited_by)
 
 # NORMAL TABLES
 class User(base):
@@ -43,9 +48,12 @@ class User(base):
     date_created = Column(String)
 
     groups = relationship("Group", secondary=group_memberships, back_populates="users")
-    group_invitation_associations = relationship("GroupInvitations", back_populates="invited_user")
-    groups_invited_to = relationship("Group", secondary="group_invitations", back_populates="invited_users")
-    
+
+    group_invitation_associations = relationship("GroupInvitations", back_populates="user", foreign_keys='GroupInvitations.user_id')
+    groups_invited_to = relationship("Group", secondary="group_invitations", back_populates="invited_users", primaryjoin="User.id == GroupInvitations.user_id", secondaryjoin="GroupInvitations.group_id == Group.id")
+    #inviter_associations = relationship("GroupInvitations", back_populates="inviter", foreign_keys='GroupInvitations.invited_by')
+    #sent_invites = relationship("Group", foreign_keys='GroupInvitations.invited_by')
+
     activities = relationship(
         "Activity",
         secondary=activity_participations,
@@ -86,8 +94,8 @@ class Group(base):
 
     activities = relationship("Activity", back_populates="creator_group")
 
-    user_invitation_associations = relationship("GroupInvitations", back_populates="group")
-    invited_users = relationship("User", secondary="group_invitations", back_populates="groups_invited_to")
+    user_invitation_associations = relationship("GroupInvitations", back_populates="group", foreign_keys='GroupInvitations.group_id')
+    invited_users = relationship("User", secondary="group_invitations", back_populates="groups_invited_to", primaryjoin="Group.id == GroupInvitations.group_id", secondaryjoin="GroupInvitations.user_id == User.id")
 
 class Activity(base):
     __tablename__ = "activities"
