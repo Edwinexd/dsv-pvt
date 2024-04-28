@@ -3,6 +3,7 @@ import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() {
   late Dio dio;
@@ -11,10 +12,14 @@ void main() {
   
   group('Backend API - Group Tests', () {
 
+    setUpAll(() async {
+      await dotenv.load(fileName: '.env');
+    });
+
     setUp(() {
       dio = Dio(BaseOptions(
-        baseUrl: 'http://10.97.231.1:81',
-        headers: {'Content-Type': 'applcation/json'},
+        baseUrl: dotenv.env['BACKEND_API_URL']!,
+        headers: {'Content-Type': 'application/json'},
       ));
       dioAdapter = DioAdapter(dio: dio,
             matcher: const FullHttpRequestMatcher(needsExactBody: true),
