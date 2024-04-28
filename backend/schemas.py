@@ -11,7 +11,7 @@ class UserCreate(UserBase):
     password: str
 
 class User(UserBase):
-    id: int
+    id: str
     date_created: str
 
     class Config:
@@ -55,6 +55,7 @@ class GroupBase(BaseModel):
     group_name: str
     description: str
     private: bool
+    owner_id: str
 
 class GroupCreate(GroupBase):
     # In case we wan't to have variables on for creation in the future
@@ -73,6 +74,16 @@ class GroupUpdate(BaseModel):
     group_name: Optional[str] = None
     description: Optional[str] = None
     private: Optional[bool] = None
+
+# INVITES
+class InviteBase(BaseModel):
+    user_id: str
+    group_id: int
+    invited_by: str
+
+class Invite(InviteBase):
+    class Config:
+        from_attributes = True
 
 # ACTIVITY
 class ActivityBase(BaseModel):
