@@ -34,10 +34,6 @@ class GroupInvitations(base):
     user = relationship("User", back_populates="group_invitation_associations", foreign_keys=[user_id])
     inviter = relationship("User", foreign_keys=[invited_by])
 
-    #invited_user = relationship("User", back_populates="group_invitation_associations", foreign_keys=[user_id])
-    #group = relationship("Group", back_populates="user_invitation_associations", foreign_keys=[group_id])
-    #inviter = relationship("User", foreign_keys=invited_by)
-
 # NORMAL TABLES
 class User(base):
     __tablename__ = "users"
@@ -51,8 +47,6 @@ class User(base):
 
     group_invitation_associations = relationship("GroupInvitations", back_populates="user", foreign_keys='GroupInvitations.user_id')
     groups_invited_to = relationship("Group", secondary="group_invitations", back_populates="invited_users", primaryjoin="User.id == GroupInvitations.user_id", secondaryjoin="GroupInvitations.group_id == Group.id")
-    #inviter_associations = relationship("GroupInvitations", back_populates="inviter", foreign_keys='GroupInvitations.invited_by')
-    #sent_invites = relationship("Group", foreign_keys='GroupInvitations.invited_by')
 
     activities = relationship(
         "Activity",
