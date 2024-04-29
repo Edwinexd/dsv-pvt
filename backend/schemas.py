@@ -88,21 +88,29 @@ class Invite(InviteBase):
 # ACTIVITY
 class ActivityBase(BaseModel):
     activity_name: str
+    scheduled_date: str #ISO-check!
+    difficulty_code: int
 
 class ActivityCreate(ActivityBase):
-    scheduled_date: str
-    scheduled_time: str
-    difficulty_code: int
+    pass
 
 class Activity(ActivityBase):
     id: int
-    completed: int
+    is_completed: bool
+    group_id: str
+    owner_id: str
 
     class Config:
         from_attributes = True
 
 class ActivityList(BaseModel):
     data: List[Activity]
+
+class ActivityUpdate(BaseModel):
+    activity_name: Optional[str] = None
+    scheduled_date: Optional[str] = None
+    difficulty_code: Optional[int] = None
+    is_completed: Optional[bool] = None
 
 # CHALLENGE
 class ChallengeBase(BaseModel):

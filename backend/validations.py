@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 import models
+from datetime import datetime
 
 def validate_id(current_user_id, requested_user_id):
     if current_user_id != requested_user_id:
@@ -20,3 +21,9 @@ def validate_user_invited(user: models.User, invited_users: list[models.User]):
 def validate_current_is_inviter(current_user: models.User, invitation: models.GroupInvitations):
     if current_user.id != invitation.invited_by:
         raise HTTPException(status_code=403, detail="You cannot delete another users invitation!")
+    
+def validate_isoformat(date: str):
+    try:
+        datetime.fromisoformat(date)
+    except:
+        raise HTTPException(status_code = 400, detail = "Scheduled date is not in ISO-format!")

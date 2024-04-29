@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, Integer, String, Table, ForeignKeyConstraint
+from sqlalchemy import Column, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import relationship
 
 from database import base
@@ -53,6 +53,7 @@ class User(base):
         secondary=activity_participations,
         back_populates="participants"
     )
+    owned_activities = relationship("Activity", back_populates = "owner")
     completed_challenges = relationship(
         "Challenge",
         secondary=challenge_completions,
@@ -97,16 +98,15 @@ class Activity(base):
     id = Column(Integer, primary_key=True)
     activity_name = Column(String)
     scheduled_date = Column(String)
-    scheduled_time = Column(String)
-    completed = Column(Integer) # 1 - completed, 0 - uncompleted (can this be constrained?)
     difficulty_code = Column(Integer)
+    is_completed = Column(Integer) # 1 - completed, 0 - uncompleted (can this be constrained?)
 
     # user who created activity
-    creator_id = Column(String, ForeignKey("users.id"))
+    owner_id = Column(String, ForeignKey("users.id"))
+    owner = relationship("User", uselist=False, back_populates="owned_activities")
     # the group where activity resides
     creator_group_id = Column(Integer, ForeignKey("groups.id"))
-
-    creator_group = relationship("Group", back_populates="activities")
+    creator_group = relationship("Group", uselist = False, back_populates="activities")
 
     participants = relationship(
         "User",

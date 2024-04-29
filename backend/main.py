@@ -12,7 +12,7 @@ import crud
 import models
 import schemas
 import auth
-from validations import validate_id, validate_user_in_group, validate_owns_group, validate_user_invited, validate_current_is_inviter
+import validations
 from database import engine, session_local
 from sessions import create_session, get_session
 
@@ -78,7 +78,7 @@ def update_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)],
     db_user = crud.get_user(db_session, user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
-    validate_id(user.id, user_id)
+    validations.validate_id(user.id, user_id)
     return crud.update_user(db_session, db_user, user_update)
 
 @app.delete("/users/{user_id}")
@@ -86,7 +86,7 @@ def delete_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)],
     db_user = crud.get_user(db_session, user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
-    validate_id(user.id, user_id)
+    validations.validate_id(user.id, user_id)
     crud.delete_user(db_session, db_user)
     return {"message": "User deleted successfully"}
 
@@ -96,7 +96,7 @@ def create_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user
     db_user = crud.get_user(db_session, user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
-    validate_id(user.id, user_id)
+    validations.validate_id(user.id, user_id)
     return crud.create_profile(db_session, profile, user_id)
 
 @app.get("/users/{user_id}/profile", response_model=schemas.Profile)
@@ -105,7 +105,7 @@ def read_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user)]
     if db_profile is None:
         raise HTTPException(status_code=404, detail="Profile not found")
     if db_profile.is_private != 0:
-        validate_id(user.id, user_id)
+        validations.validate_id(user.id, user_id)
     return db_profile
 
 @app.patch("/users/{user_id}/profile", response_model=schemas.Profile)
@@ -113,7 +113,7 @@ def update_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user
     db_profile = crud.get_profile(db_session, user_id)
     if db_profile is None:
         raise HTTPException(status_code=404, detail="Profile not found")
-    validate_id(user.id, user_id)
+    validations.validate_id(user.id, user_id)
     return crud.update_profile(db_session, db_profile, profile_update)
 
 @app.delete("/users/{user_id}/profile")
@@ -121,7 +121,7 @@ def delete_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user
     db_profile = crud.get_profile(db_session, user_id)
     if db_profile is None:
         raise HTTPException(status_code=404, detail="Profile not found")
-    validate_id(user.id, user_id)
+    validations.validate_id(user.id, user_id)
     crud.delete_profile(db_session, db_profile)
     return {"message": "Profile deleted successfully"}
 
@@ -129,7 +129,7 @@ def delete_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user
 # group creation
 @app.post("/groups", response_model = schemas.Group)
 def create_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group: schemas.GroupCreate, db_session: Session = Depends(get_db_session)):
-    validate_id(user.id, group.owner_id)
+    validations.validate_id(user.id, group.owner_id)
     return crud.create_group(db_session=db_session, group=group)
 
 @app.get("/groups/{group_id}", response_model=schemas.Group)
@@ -149,7 +149,7 @@ def update_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)]
     db_group = crud.get_group(db_session, group_id=group_id)
     if db_group is None:
         raise HTTPException(status_code=404, detail="Group not found")
-    validate_owns_group(user.id, db_group)
+    validations.validate_owns_group(user.id, db_group)
     return crud.update_group(db_session, db_group, group_update)
 
 @app.delete("/groups/{group_id}")
@@ -157,7 +157,7 @@ def delete_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)]
     db_group = crud.get_group(db_session, group_id=group_id)
     if db_group is None:
         raise HTTPException(status_code=404, detail="Group not found")
-    validate_owns_group(user.id, db_group)
+    validations.validate_owns_group(user.id, db_group)
     crud.delete_group(db_session, db_group)
     return {"message": "Group deleted successfully"}
 
@@ -169,9 +169,9 @@ def join_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], 
     db_group = read_group(user, group_id=group_id, db_session=db_session)
     if db_user in db_group.users:
         raise HTTPException(status_code=400, detail="User already in group")
-    validate_id(user.id, user_id)
+    validations.validate_id(user.id, user_id)
     if db_group.is_private != 0:
-        validate_user_invited(read_user_me(user, db_session), crud.get_invited_users(db_session, db_group))
+        validations.validate_user_invited(read_user_me(user, db_session), crud.get_invited_users(db_session, db_group))
         crud.delete_invitation(db_session, user.id, group_id)
     return crud.join_group(db_session=db_session, db_user=db_user, db_group=db_group)
 
@@ -182,7 +182,7 @@ def leave_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)],
     db_group = read_group(user, group_id=group_id, db_session=db_session)
     if db_user not in db_group.users:
         raise HTTPException(status_code=400, detail="User not in group")
-    validate_id(user.id, user_id)
+    validations.validate_id(user.id, user_id)
     return crud.leave_group(db_session=db_session, db_user=db_user, db_group=db_group)
 
 # get all members in a group by group_id
@@ -214,7 +214,7 @@ def invite_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)],
     if db_group.is_private == 0:
         raise HTTPException(status_code=400, detail="Can't create invite to public group!")
     
-    validate_user_in_group(crud.get_user(db_session, user.id), db_group) # user can only invite to group if user is in the group
+    validations.validate_user_in_group(crud.get_user(db_session, user.id), db_group) # user can only invite to group if user is in the group
 
     if db_user in crud.get_invited_users(db_session, db_group):
         raise HTTPException(status_code=400, detail="User already invited to group!")
@@ -226,7 +226,7 @@ def invite_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)],
 @app.get("/groups/{group_id}/invites", response_model = schemas.UserList)
 def read_invited_users_in_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, db_session: Session = Depends(get_db_session)):
     db_group = read_group(user, group_id=group_id, db_session=db_session)
-    validate_user_in_group(crud.get_user(db_session, user.id), db_group)
+    validations.validate_user_in_group(crud.get_user(db_session, user.id), db_group)
     invited_users = schemas.UserList(data=crud.get_invited_users(db_session, db_group))
     return invited_users
 
@@ -259,9 +259,42 @@ def delete_invitation(user: Annotated[schemas.SessionUser, Depends(get_current_u
     if invitation is None:
         raise HTTPException(status_code=404, detail="Invitation not found")
     
-    validate_current_is_inviter(read_user_me(user, db_session), invitation)
+    validations.validate_current_is_inviter(read_user_me(user, db_session), invitation)
     crud.delete_invitation(db_session, user_id, group_id)
     return {"message": "Invitation successfully deleted!"}
+
+# ACTIVITIES
+@app.post("/groups/{group_id}/activities", response_model = schemas.Activity)
+def create_activity(user: Annotated[schemas.SessionUser, Depends(get_current_user)], activity_payload: schemas.ActivityCreate, group_id: int, db_session: Session = Depends(get_db_session)):
+    db_user = read_user_me(user, db_session)
+    db_group = read_group(user, group_id, db_session)
+    validations.validate_user_in_group(db_user, db_group)
+
+    validations.validate_isoformat(activity_payload.scheduled_date)
+    activity = schemas.Activity(
+        activity_name=activity_payload.activity_name,
+        scheduled_date=activity_payload.scheduled_date,
+        difficulty_code=activity_payload.difficulty_code,
+        group_id=group_id,
+        owner_id=user.id
+    )
+    return crud.create_activity(db_session, activity)
+
+@app.get("/groups/{group_id}/activities", response_model = schemas.ActivityList)
+def read_activities(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, db_session: Session = Depends(get_db_session)):
+    pass
+
+@app.get("/groups/{group_id}/activities/{activity_id}", response_model = schemas.Activity)
+def read_activity(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, activity_id: int, db_session: Session = Depends(get_db_session)):
+    pass
+
+@app.patch("/groups/{group_id}/activities/{activity_id}", response_model = schemas.Activity)
+def update_activity(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, activity_id: int, db_session: Session = Depends(get_db_session)):
+    pass
+
+@app.delete("/groups/{group_id}/activities/{activity_id}")
+def delete_activity(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, activity_id: int, db_session: Session = Depends(get_db_session)):
+    pass
 
 #TODO: moderators, admins
 

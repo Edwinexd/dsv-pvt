@@ -137,3 +137,17 @@ def delete_invitation(db_session: Session, user_id: str, group_id: int):
 def get_invitation(db_session: Session, user_id: str, group_id: int):
     invitation = db_session.query(models.GroupInvitations).filter(models.GroupInvitations.user_id == user_id, models.GroupInvitations.group_id == group_id).first()
     return invitation
+
+#ACTIVITIES
+def create_activity(db_session: Session, activity: schemas.Activity):
+    db_activity = models.Activity(
+        id = activity.id,
+        activity_name = activity.activity_name,
+        scheduled_date = activity.scheduled_date,
+        difficulty_code = activity.difficulty_code,
+        is_completed = 0
+    )
+    get_group(db_session, activity.group_id).activities.append(db_activity)
+    get_user(db_session, activity.owner_id).owned_activities.append(db_activity)
+    db_session.commit()
+    return db_activity
