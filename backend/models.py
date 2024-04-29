@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, Integer, String, Table
+from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, Integer, String, Table, ForeignKeyConstraint
 from sqlalchemy.orm import relationship
 
 from database import base
@@ -22,17 +22,38 @@ challenge_completions = Table(
     Column("user_id", ForeignKey("users.id"), primary_key=True),
     Column("challenge_id", ForeignKey("challenges.id"), primary_key=True),
 )
+#association object pattern is used to get the extra field 'invited_by'
+class GroupInvitations(base):
+    __tablename__ = "group_invitations"
+
+    group_id = Column(Integer, ForeignKey("groups.id"), primary_key=True)
+    user_id = Column(String, ForeignKey("users.id"), primary_key=True)
+    invited_by = Column(String, ForeignKey("users.id"))
+
+    group = relationship("Group", back_populates="user_invitation_associations", foreign_keys=[group_id])
+    user = relationship("User", back_populates="group_invitation_associations", foreign_keys=[user_id])
+    inviter = relationship("User", foreign_keys=[invited_by])
+
+    #invited_user = relationship("User", back_populates="group_invitation_associations", foreign_keys=[user_id])
+    #group = relationship("Group", back_populates="user_invitation_associations", foreign_keys=[group_id])
+    #inviter = relationship("User", foreign_keys=invited_by)
 
 # NORMAL TABLES
 class User(base):
     __tablename__ = "users"
 
-    id = Column(BigInteger, primary_key=True)
+    id = Column(String, primary_key=True)
     username = Column(String, unique=True)
     full_name = Column(String)
     date_created = Column(String)
 
     groups = relationship("Group", secondary=group_memberships, back_populates="users")
+
+    group_invitation_associations = relationship("GroupInvitations", back_populates="user", foreign_keys='GroupInvitations.user_id')
+    groups_invited_to = relationship("Group", secondary="group_invitations", back_populates="invited_users", primaryjoin="User.id == GroupInvitations.user_id", secondaryjoin="GroupInvitations.group_id == Group.id")
+    #inviter_associations = relationship("GroupInvitations", back_populates="inviter", foreign_keys='GroupInvitations.invited_by')
+    #sent_invites = relationship("Group", foreign_keys='GroupInvitations.invited_by')
+
     activities = relationship(
         "Activity",
         secondary=activity_participations,
@@ -44,6 +65,7 @@ class User(base):
         back_populates="completed_by"
     )
     profile = relationship("Profile", uselist=False, back_populates="owner")
+    owned_groups = relationship("Group", back_populates="owner")
 
 class Profile(base):
     __tablename__ = "profiles"
@@ -54,7 +76,7 @@ class Profile(base):
     skill_level = Column(Integer) # will be mapped to a running pace in client
     is_private = Column(Boolean)
 
-    owner_id = Column(BigInteger, ForeignKey("users.id"), primary_key=True)
+    owner_id = Column(String, ForeignKey("users.id"), primary_key=True)
     owner = relationship("User", back_populates="profile")
 
 class Group(base):
@@ -65,9 +87,15 @@ class Group(base):
     description = Column(String, nullable=True)
     private = Column(Boolean)
 
+    owner_id = Column(String, ForeignKey("users.id"))
+    owner = relationship("User", back_populates="owned_groups")
+
     users = relationship("User", secondary=group_memberships, back_populates="groups")
 
     activities = relationship("Activity", back_populates="creator_group")
+
+    user_invitation_associations = relationship("GroupInvitations", back_populates="group", foreign_keys='GroupInvitations.group_id')
+    invited_users = relationship("User", secondary="group_invitations", back_populates="groups_invited_to", primaryjoin="Group.id == GroupInvitations.group_id", secondaryjoin="GroupInvitations.user_id == User.id")
 
 class Activity(base):
     __tablename__ = "activities"

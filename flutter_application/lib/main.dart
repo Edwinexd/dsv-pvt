@@ -1,14 +1,17 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/views/all_group_pages.dart';
+import 'profile_page.dart'; // Import the ProfilePage
+import 'drawer.dart';
 import 'create-profile-page.dart';  
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/group_creation_page.dart';
-import 'profile_page.dart'; // Import the ProfilePage
-import 'drawer.dart';
+import 'package:flutter/widgets.dart';
 
 //Uppdaterad från PC.
-void main() {
+void main() async {
+  await dotenv.load(fileName: '.env');
   runApp(const MyApp());
 }
 
@@ -17,23 +20,55 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Profile Page Demo',
-      home: MainPage(),
+    return MaterialApp(
+      title: 'Midnattsloppet Now',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: const MainPage(),
       debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class MainPage extends StatelessWidget {
+class MainPage extends StatefulWidget {
   const MainPage({super.key});
+
+  @override
+  State<MainPage> createState() => MainPageState();
+}
+
+class MainPageState extends State<MainPage> {
+  int selectedIndex = 0;
+
+  static const List<Widget> widgetOptions = <Widget>[
+    Text('Group Page',
+        style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+    Text(
+      '',
+    ),
+    Text('Start Activity Page',
+        style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+    Text('Placeholder Page',
+        style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+  ];
+
+  void onItemtapped(int index) {
+    setState(() {
+      selectedIndex = index;
+      if (index == 1) {
+        // Check if "Profile" bottom navigation bar item is tapped
+        goToProfilePage(context); // Navigate to the profile page
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Main Page'),
-        //backgroundColor: Colors.deepPurple[700],
+        title: const Text('Midnattsloppet Now'),
       ),
       drawer: MyDrawer(
         onSignoutTap: () {},
@@ -41,63 +76,33 @@ class MainPage extends StatelessWidget {
         
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Stack(
-              children: <Widget>[
-                Container(
-                  height: 200.0,
-                  width: 200,
-                  decoration: BoxDecoration(
-                    color: Colors.teal[900],
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        spreadRadius: 0,
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
-                      )
-                    ],
-                    borderRadius: BorderRadius.circular(20), // Rounded corners
-                  ),
-                  child: Center(
-                    // Centers the Column within the Container
-                    child: Column(
-                      mainAxisSize: MainAxisSize
-                          .min, // Makes the column take the size of its children
-                      children: [
-                        Transform.rotate(
-                          angle: 315 *
-                              (3.1415926535897932/180), // Rotating 90 degrees, expressed in radians
-                          child: const Icon(
-                            Icons.arrow_upward, // Arrow icon
-                            color: Colors.white,
-                            size: 24, // Icon size
-                          ),
-                        ),
-                        SizedBox(height: 10), // Spacing between icon and text
-                        const Text(
-                          'Press the \nmenu button',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.white, // Text color
-                            fontSize: 16, // Font size
-                            fontWeight: FontWeight.bold, // Font weight
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            )
-          ],
-        ),
+        child: widgetOptions.elementAt(selectedIndex),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.group),
+            label: 'Groups',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.play_arrow),
+            label: 'Start',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.question_mark),
+            label: 'Placeholder',
+          ),
+        ],
+        currentIndex: selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        unselectedItemColor: Colors.deepPurple[900],
+        onTap: onItemtapped,
       ),
     );
   }
 
 }
-
-

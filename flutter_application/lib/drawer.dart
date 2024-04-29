@@ -29,7 +29,8 @@ class MyDrawer extends StatelessWidget {
                 Icons.person,
                 color: Colors.white,
                 size: 64,
-              )),
+                )
+              ),
               //Home list title
               MyListTile(
                 icon: Icons.home,

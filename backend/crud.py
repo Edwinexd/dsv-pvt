@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 import models, schemas
-from fastapi import HTTPException
+from typing import List
 
 #USERS
-def get_user(db_session: Session, user_id: int):
+def get_user(db_session: Session, user_id: str):
     return db_session.query(models.User).filter(models.User.id == user_id).first()
 
 def get_users(db_session: Session, skip: int = 0, limit: int = 100):
@@ -41,7 +41,8 @@ def create_profile(db_session: Session, profile: schemas.ProfileCreate, user_id:
         is_private=profile.is_private
     )
     db_user = get_user(db_session, user_id)
-    db_session.delete(db_user.profile)
+    if db_user.profile is not None:
+        db_session.delete(db_user.profile)
     db_user.profile = db_profile
     db_session.add(db_user)
     db_session.commit()
@@ -63,9 +64,12 @@ def delete_profile(db_session: Session, db_profile: models.Profile):
 #GROUPS
 def create_group(db_session: Session, group: schemas.GroupCreate):
     db_group = models.Group(group_name = group.group_name, description = group.description, private = group.private)
-    db_session.add(db_group)
+    db_owner = get_user(db_session, group.owner_id)
+    db_owner.owned_groups.append(db_group)
+    db_owner.groups.append(db_group)
+    db_session.add(db_owner)
     db_session.commit()
-    db_session.refresh(db_group)
+    db_session.refresh(db_owner)
     return db_group
 
 # get a group from group_id
@@ -105,11 +109,31 @@ def leave_group(db_session: Session, db_user: models.User, db_group: models.Grou
     return db_group
 
 # get all groups a user is member of
-def get_user_groups(db_session: Session, user_id: int):
-    db_user = get_user(db_session, user_id)
+def get_user_groups(db_session: Session, db_user: models.User):
     return db_user.groups
 
 # get all users in a group
-def get_group_users(db_session: Session, group_id: int):
-    db_group = get_group(db_session, group_id)
+def get_group_users(db_session: Session, db_group: models.Group):
     return db_group.users
+
+#INVITATIONS
+def invite_user(db_session: Session, db_user: models.User, db_group: models.Group, invited_by: str):
+    db_invitation = models.GroupInvitations(user_id=db_user.id, group_id=db_group.id, invited_by=invited_by)
+    db_session.add(db_invitation)
+    db_session.commit()
+    db_session.refresh(db_invitation)
+    return db_invitation
+
+def get_invited_users(db_session: Session, db_group: models.Group):
+    return db_group.invited_users
+
+def get_groups_invited_to(db_session: Session, db_user: models.User):
+    return db_user.groups_invited_to
+
+def delete_invitation(db_session: Session, user_id: str, group_id: int):
+    db_session.query(models.GroupInvitations).filter(models.GroupInvitations.user_id == user_id, models.GroupInvitations.group_id == group_id).delete()
+    db_session.commit()
+
+def get_invitation(db_session: Session, user_id: str, group_id: int):
+    invitation = db_session.query(models.GroupInvitations).filter(models.GroupInvitations.user_id == user_id, models.GroupInvitations.group_id == group_id).first()
+    return invitation
