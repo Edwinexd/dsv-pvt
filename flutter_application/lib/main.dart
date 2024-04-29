@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/my_achievements.dart';
 
 void main() {
-  runApp(const MyApp());
+  //runApp(const MyApp());
+  runApp(MaterialApp(home: MyAchievements(),) );
 }
 
 class MyApp extends StatelessWidget {
