@@ -151,7 +151,7 @@ def create_activity(db_session: Session, activity_payload: schemas.ActivityPaylo
     db_session.add(db_activity)
     db_session.commit()
     db_session.refresh(db_activity)
-    #get_group(db_session, activity_payload.group_id).activities.append(db_activity)
-    #get_user(db_session, activity_payload.owner_id).owned_activities.append(db_activity)
-    #db_session.commit()
     return db_activity
+
+def get_activities(db_session: Session, group_id: int, skip: int, limit: int):
+    return db_session.query(models.Activity).filter(models.Activity.group_id == group_id).offset(skip).limit(limit).all()

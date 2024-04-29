@@ -186,20 +186,20 @@ def leave_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)],
     return crud.leave_group(db_session=db_session, db_user=db_user, db_group=db_group)
 
 # get all members in a group by group_id
-@app.get("/groups/{group_id}/members", response_model = schemas.UserList)
+@app.get("/groups/{group_id}/members", response_model = schemas.UserList) # TODO: skip,limit
 def read_members_in_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, db_session: Session = Depends(get_db_session)):
     db_group = read_group(user, group_id, db_session)
     users = schemas.UserList(data=crud.get_group_users(db_session=db_session, db_group=db_group))
     return users
 
-@app.get("/users/me/groups", response_model = schemas.GroupList)
+@app.get("/users/me/groups", response_model = schemas.GroupList) #TODO: skip,limit
 def read_user_groups_me(user: Annotated[schemas.SessionUser, Depends(get_current_user)], db_session: Session = Depends(get_db_session)):
     db_user = read_user_me(user, db_session)
     groups = schemas.GroupList(data=crud.get_user_groups(db_session=db_session, db_user=db_user))
     return groups
 
 # get all groups a user has joined
-@app.get("/users/{user_id}/groups", response_model = schemas.GroupList)
+@app.get("/users/{user_id}/groups", response_model = schemas.GroupList) #TODO: skip,limit
 def read_user_groups(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, db_session: Session = Depends(get_db_session)):
     db_user = read_user(user, user_id, db_session)
     groups = schemas.GroupList(data=crud.get_user_groups(db_session=db_session, db_user=db_user))
@@ -223,7 +223,7 @@ def invite_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)],
     return crud.invite_user(db_session, db_user, db_group, user.id)
 
 #get invited users in group
-@app.get("/groups/{group_id}/invites", response_model = schemas.UserList)
+@app.get("/groups/{group_id}/invites", response_model = schemas.UserList) #TODO: skip, limit
 def read_invited_users_in_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, db_session: Session = Depends(get_db_session)):
     db_group = read_group(user, group_id=group_id, db_session=db_session)
     validations.validate_user_in_group(crud.get_user(db_session, user.id), db_group)
@@ -231,7 +231,7 @@ def read_invited_users_in_group(user: Annotated[schemas.SessionUser, Depends(get
     return invited_users
 
 #get groups current user is invited to
-@app.get("/users/me/invites", response_model = schemas.GroupList)
+@app.get("/users/me/invites", response_model = schemas.GroupList) #TODO: skip, limit
 def read_groups_invited_to(user: Annotated[schemas.SessionUser, Depends(get_current_user)], db_session: Session = Depends(get_db_session)):
     db_user = read_user(user, user.id, db_session)
     invited_to = schemas.GroupList(data=crud.get_groups_invited_to(db_session, db_user))
@@ -281,8 +281,12 @@ def create_activity(user: Annotated[schemas.SessionUser, Depends(get_current_use
     return crud.create_activity(db_session, activity_payload)
 
 @app.get("/groups/{group_id}/activities", response_model = schemas.ActivityList)
-def read_activities(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, db_session: Session = Depends(get_db_session)):
-    pass
+def read_activities(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, skip: int = 0, limit: int = 100, db_session: Session = Depends(get_db_session)):
+    db_user = read_user_me(user, db_session)
+    db_group = read_group(user, group_id, db_session)
+    validations.validate_user_in_group(db_user, db_group)
+
+    return schemas.ActivityList(data=crud.get_activities(db_session, group_id, skip, limit))
 
 @app.get("/groups/{group_id}/activities/{activity_id}", response_model = schemas.Activity)
 def read_activity(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, activity_id: int, db_session: Session = Depends(get_db_session)):
