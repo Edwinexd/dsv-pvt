@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application/main.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/group_creation_page.dart';
 import 'package:flutter_application/drawer.dart';
-import '../profile_page.dart';
 
 
 class AllGroupsPage extends StatefulWidget {
   const AllGroupsPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _AllGroupsPageState createState() => _AllGroupsPageState();
 }
 
