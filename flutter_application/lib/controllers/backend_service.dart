@@ -65,8 +65,22 @@ class BackendService {
     return Group.fromJson((response.data) as Map<String, dynamic>);
   }
 
+  void deleteGroup(int groupdId) async {
+    final response = await _dio.delete('groups/$groupdId');
+    // TODO: Successful api call returns message in body: "message": "Group deleted successfully"
+  }
+
   Future<User> fetchUser(int userId) async {
     final response = await _dio.get('/users/$userId');
     return User.fromJson((response.data) as Map<String, dynamic>);
+  }
+
+  Future<List<User>> fetchUsers(int skip, int limit) async {
+    final response = await _dio.get('/users', queryParameters: {
+      'skip': skip,
+      'limit': limit,
+    });
+    var userList = response.data['data'] as List;
+    return userList.map((x) => User.fromJson(x)).toList();
   }
 }

@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
+import 'package:flutter_application/models/user.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -10,7 +11,7 @@ void main() {
   late DioAdapter dioAdapter;
   late BackendService backendService;
   
-  group('Backend API - Group Tests', () {
+  group('Backend API Test', () {
 
     setUpAll(() async {
       await dotenv.load(fileName: '.env');
@@ -187,7 +188,37 @@ void main() {
 
       expect(() async => await backendService.updateGroup(groupId, newName: updatedField), throwsA(isA<DioException>()));
     });
+
+    test('fetchUser() - successful api call', () async {
+      int userId = 1;
+      String path = '/users/$userId';
+
+      dioAdapter.onGet(
+        path, 
+        (server) => server.reply(
+          200, 
+          {
+            "username": "string",
+            "full_name": "string",
+            "id": 0,
+            "date_created": "string"
+          }
+        )
+      );
+      expect(await backendService.fetchUser(userId), isA<User>());
+    });
+
+    test('fetchUsers() - successful api call', () async {
+
+    });
+    test('test', () async {
+      BackendService bs = BackendService();
+      User user = await bs.fetchUser(1);
+      print(user.fullName);
+
+    });
   }); // GROUP
+
 
 
   /*
