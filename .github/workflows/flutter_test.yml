@@ -6,6 +6,7 @@ on:
     branches: [ master ]
 
 jobs:
+    
   build:
     runs-on: ubuntu-latest
 
@@ -22,6 +23,15 @@ jobs:
         - name: Get all Flutter Packages
           run: flutter pub get
           working-directory: ./flutter_application
+
+        - name: Make envfile
+          uses: SpicyPizza/create-envfile@v2.0
+          with:
+            envkey_BACKEND_API_URL: http://example.com
+            directory: ./flutter_application
+            file_name: .env
+            fail_on_empty: false
+            sort_keys: false
 
         - name: Run Flutter Test
           run: flutter test
