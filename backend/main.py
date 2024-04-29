@@ -104,7 +104,7 @@ def read_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user)]
     db_profile = crud.get_profile(db_session, user_id)
     if db_profile is None:
         raise HTTPException(status_code=404, detail="Profile not found")
-    if db_profile.is_private:
+    if db_profile.is_private != 0:
         validate_id(user.id, user_id)
     return db_profile
 
@@ -170,7 +170,7 @@ def join_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], 
     if db_user in db_group.users:
         raise HTTPException(status_code=400, detail="User already in group")
     validate_id(user.id, user_id)
-    if db_group.private:
+    if db_group.is_private != 0:
         validate_user_invited(read_user_me(user, db_session), crud.get_invited_users(db_session, db_group))
         crud.delete_invitation(db_session, user.id, group_id)
     return crud.join_group(db_session=db_session, db_user=db_user, db_group=db_group)
@@ -211,7 +211,7 @@ def read_user_groups(user: Annotated[schemas.SessionUser, Depends(get_current_us
 def invite_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, group_id: int, db_session: Session = Depends(get_db_session)):
     db_user = read_user(user, user_id=user_id, db_session=db_session)
     db_group = read_group(user, group_id=group_id, db_session=db_session)
-    if not db_group.private:
+    if db_group.is_private == 0:
         raise HTTPException(status_code=400, detail="Can't create invite to public group!")
     
     validate_user_in_group(crud.get_user(db_session, user.id), db_group) # user can only invite to group if user is in the group
@@ -251,7 +251,7 @@ def delete_invitation(user: Annotated[schemas.SessionUser, Depends(get_current_u
     db_user = read_user(user, user_id, db_session)
     db_group = read_group(user, group_id, db_session)
 
-    if not db_group.private:
+    if db_group.is_private == 0:
         raise HTTPException(status_code=400, detail="Can't delete invite from public group!")
     
     invitation = crud.get_invitation(db_session, user_id, group_id)

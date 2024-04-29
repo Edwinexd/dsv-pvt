@@ -63,7 +63,7 @@ def delete_profile(db_session: Session, db_profile: models.Profile):
 
 #GROUPS
 def create_group(db_session: Session, group: schemas.GroupCreate):
-    db_group = models.Group(group_name = group.group_name, description = group.description, private = group.private)
+    db_group = models.Group(group_name = group.group_name, description = group.description, is_private = group.is_private)
     db_owner = get_user(db_session, group.owner_id)
     db_owner.owned_groups.append(db_group)
     db_owner.groups.append(db_group)

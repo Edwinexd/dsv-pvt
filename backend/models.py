@@ -68,7 +68,7 @@ class Profile(base):
     age = Column(Integer, nullable=True)
     interests = Column(String, nullable=True)
     skill_level = Column(Integer) # will be mapped to a running pace in client
-    is_private = Column(Boolean)
+    is_private = Column(Integer) # 1-true, 0-false
 
     owner_id = Column(String, ForeignKey("users.id"), primary_key=True)
     owner = relationship("User", back_populates="profile")
@@ -79,7 +79,7 @@ class Group(base):
     id = Column(Integer, primary_key=True)
     group_name = Column(String)
     description = Column(String, nullable=True)
-    private = Column(Boolean)
+    is_private = Column(Integer) # 1-true, 0-false
 
     owner_id = Column(String, ForeignKey("users.id"))
     owner = relationship("User", back_populates="owned_groups")
@@ -98,11 +98,11 @@ class Activity(base):
     activity_name = Column(String)
     scheduled_date = Column(String)
     scheduled_time = Column(String)
-    completed = Column(Boolean)
+    completed = Column(Integer) # 1 - completed, 0 - uncompleted (can this be constrained?)
     difficulty_code = Column(Integer)
 
     # user who created activity
-    creator_id = Column(Integer, ForeignKey("users.id"))
+    creator_id = Column(String, ForeignKey("users.id"))
     # the group where activity resides
     creator_group_id = Column(Integer, ForeignKey("groups.id"))
 
