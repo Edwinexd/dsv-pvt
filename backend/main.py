@@ -265,20 +265,20 @@ def delete_invitation(user: Annotated[schemas.SessionUser, Depends(get_current_u
 
 # ACTIVITIES
 @app.post("/groups/{group_id}/activities", response_model = schemas.Activity)
-def create_activity(user: Annotated[schemas.SessionUser, Depends(get_current_user)], activity_payload: schemas.ActivityCreate, group_id: int, db_session: Session = Depends(get_db_session)):
+def create_activity(user: Annotated[schemas.SessionUser, Depends(get_current_user)], activity: schemas.ActivityCreate, group_id: int, db_session: Session = Depends(get_db_session)):
     db_user = read_user_me(user, db_session)
     db_group = read_group(user, group_id, db_session)
     validations.validate_user_in_group(db_user, db_group)
 
-    validations.validate_isoformat(activity_payload.scheduled_date)
-    activity = schemas.Activity(
-        activity_name=activity_payload.activity_name,
-        scheduled_date=activity_payload.scheduled_date,
-        difficulty_code=activity_payload.difficulty_code,
+    validations.validate_isoformat(activity.scheduled_date)
+    activity_payload = schemas.ActivityPayload(
+        activity_name=activity.activity_name,
+        scheduled_date=activity.scheduled_date,
+        difficulty_code=activity.difficulty_code,
         group_id=group_id,
         owner_id=user.id
     )
-    return crud.create_activity(db_session, activity)
+    return crud.create_activity(db_session, activity_payload)
 
 @app.get("/groups/{group_id}/activities", response_model = schemas.ActivityList)
 def read_activities(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, db_session: Session = Depends(get_db_session)):

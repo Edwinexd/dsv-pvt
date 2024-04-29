@@ -139,15 +139,19 @@ def get_invitation(db_session: Session, user_id: str, group_id: int):
     return invitation
 
 #ACTIVITIES
-def create_activity(db_session: Session, activity: schemas.Activity):
+def create_activity(db_session: Session, activity_payload: schemas.ActivityPayload):
     db_activity = models.Activity(
-        id = activity.id,
-        activity_name = activity.activity_name,
-        scheduled_date = activity.scheduled_date,
-        difficulty_code = activity.difficulty_code,
-        is_completed = 0
+        activity_name = activity_payload.activity_name,
+        scheduled_date = activity_payload.scheduled_date,
+        difficulty_code = activity_payload.difficulty_code,
+        is_completed = 0,
+        owner_id = activity_payload.owner_id,
+        group_id = activity_payload.group_id
     )
-    get_group(db_session, activity.group_id).activities.append(db_activity)
-    get_user(db_session, activity.owner_id).owned_activities.append(db_activity)
+    db_session.add(db_activity)
     db_session.commit()
+    db_session.refresh(db_activity)
+    #get_group(db_session, activity_payload.group_id).activities.append(db_activity)
+    #get_user(db_session, activity_payload.owner_id).owned_activities.append(db_activity)
+    #db_session.commit()
     return db_activity

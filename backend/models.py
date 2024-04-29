@@ -87,7 +87,7 @@ class Group(base):
 
     users = relationship("User", secondary=group_memberships, back_populates="groups")
 
-    activities = relationship("Activity", back_populates="creator_group")
+    activities = relationship("Activity", back_populates="group")
 
     user_invitation_associations = relationship("GroupInvitations", back_populates="group", foreign_keys='GroupInvitations.group_id')
     invited_users = relationship("User", secondary="group_invitations", back_populates="groups_invited_to", primaryjoin="Group.id == GroupInvitations.group_id", secondaryjoin="GroupInvitations.user_id == User.id")
@@ -105,8 +105,8 @@ class Activity(base):
     owner_id = Column(String, ForeignKey("users.id"))
     owner = relationship("User", uselist=False, back_populates="owned_activities")
     # the group where activity resides
-    creator_group_id = Column(Integer, ForeignKey("groups.id"))
-    creator_group = relationship("Group", uselist = False, back_populates="activities")
+    group_id = Column(Integer, ForeignKey("groups.id"))
+    group = relationship("Group", uselist = False, back_populates="activities")
 
     participants = relationship(
         "User",

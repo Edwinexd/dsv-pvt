@@ -94,10 +94,14 @@ class ActivityBase(BaseModel):
 class ActivityCreate(ActivityBase):
     pass
 
+class ActivityPayload(ActivityBase):
+    group_id: int
+    owner_id: str
+
 class Activity(ActivityBase):
     id: int
     is_completed: bool
-    group_id: str
+    group_id: int
     owner_id: str
 
     class Config:
