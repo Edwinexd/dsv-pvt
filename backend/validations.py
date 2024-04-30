@@ -1,6 +1,9 @@
-from fastapi import HTTPException
+import os
+from fastapi import HTTPException, Header
 import models
 from datetime import datetime
+
+API_KEY = os.getenv("API_KEY")
 
 def validate_id(current_user_id, requested_user_id):
     if current_user_id != requested_user_id:
@@ -29,3 +32,7 @@ def validate_user_invited(user: models.User, invited_users: list[models.User]):
 def validate_current_is_inviter(current_user: models.User, invitation: models.GroupInvitations):
     if current_user.id != invitation.invited_by:
         raise HTTPException(status_code=403, detail="You cannot delete another users invitation!")
+    
+def validate_api_key(api_key: str = Header(alias="ADMIN-API-Key")):
+    if api_key != API_KEY:
+        raise HTTPException(status_code=403, detail="Invalid API-key")

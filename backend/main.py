@@ -2,10 +2,8 @@ import os
 from datetime import datetime
 from typing import Annotated
 
-import requests
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Header
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from fastapi.security.base import SecurityBase
 from sqlalchemy.orm import Session
 
 import crud
@@ -15,9 +13,9 @@ import auth
 import validations
 from database import engine, session_local
 from sessions import create_session, get_session
+from validations import validate_api_key
 
 models.base.metadata.create_all(bind = engine)
-
 
 app = FastAPI()
 
@@ -36,7 +34,6 @@ def get_current_user(token: Annotated[HTTPAuthorizationCredentials, Depends(head
         raise HTTPException(status_code=401, detail="Unauthorized", headers={"WWW-Authenticate": "Bearer"})
     
     return session
-
 
 #USER
 #login
@@ -89,6 +86,11 @@ def delete_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)],
     validations.validate_id(user.id, user_id)
     crud.delete_user(db_session, db_user)
     return {"message": "User deleted successfully"}
+
+# ADMINS
+@app.post("/admins")
+def create_admin(admin_payload: schemas.AdminPayload, db_session: Session = Depends(get_db_session), _: None = Depends(validate_api_key)):
+    pass
 
 #PROFILE
 @app.put("/users/{user_id}/profile", response_model=schemas.Profile)

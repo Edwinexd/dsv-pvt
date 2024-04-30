@@ -29,6 +29,10 @@ class UserCreds(BaseModel):
     username: str
     password: str
 
+# ADMIN
+class AdminPayload(UserCreate):
+    secret: str
+
 # PROFILE
 class ProfileBase(BaseModel):
     description: Optional[str] = None
