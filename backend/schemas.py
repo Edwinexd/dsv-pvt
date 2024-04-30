@@ -1,6 +1,7 @@
 # Schemas will be used for presentation and data query with user
 from typing import List, Optional
 from pydantic import BaseModel
+from datetime import datetime
 
 # USER
 class UserBase(BaseModel):
@@ -88,7 +89,8 @@ class Invite(InviteBase):
 # ACTIVITY
 class ActivityBase(BaseModel):
     activity_name: str
-    scheduled_date: str #ISO-check!
+    scheduled_date: datetime
+    #scheduled_date: str #ISO-check!
     difficulty_code: int
 
 class ActivityCreate(ActivityBase):
@@ -100,7 +102,7 @@ class ActivityPayload(ActivityBase):
 
 class Activity(ActivityBase):
     id: int
-    is_completed: bool
+    is_completed: int
     group_id: int
     owner_id: str
 
@@ -114,7 +116,7 @@ class ActivityUpdate(BaseModel):
     activity_name: Optional[str] = None
     scheduled_date: Optional[str] = None
     difficulty_code: Optional[int] = None
-    is_completed: Optional[bool] = None
+    is_completed: Optional[int] = None
 
 # CHALLENGE
 class ChallengeBase(BaseModel):

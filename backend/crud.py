@@ -144,7 +144,6 @@ def create_activity(db_session: Session, activity_payload: schemas.ActivityPaylo
         activity_name = activity_payload.activity_name,
         scheduled_date = activity_payload.scheduled_date,
         difficulty_code = activity_payload.difficulty_code,
-        is_completed = 0,
         owner_id = activity_payload.owner_id,
         group_id = activity_payload.group_id
     )
@@ -154,7 +153,7 @@ def create_activity(db_session: Session, activity_payload: schemas.ActivityPaylo
     return db_activity
 
 def get_activities(db_session: Session, group_id: int, skip: int, limit: int):
-    return db_session.query(models.Activity).filter(models.Activity.group_id == group_id).offset(skip).limit(limit).all()
+    return db_session.query(models.Activity).filter(models.Activity.group_id == group_id).order_by(models.Activity.id.asc()).offset(skip).limit(limit).all()
 
 def get_activity(db_session: Session, group_id: int, activity_id: int):
     return db_session.query(models.Activity).filter(models.Activity.group_id == group_id, models.Activity.id == activity_id).first()

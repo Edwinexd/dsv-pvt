@@ -1,5 +1,6 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, Table
+from sqlalchemy import Column, ForeignKey, Integer, String, Table, DateTime
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 
 from database import base
 
@@ -41,7 +42,7 @@ class User(base):
     id = Column(String, primary_key=True)
     username = Column(String, unique=True)
     full_name = Column(String)
-    date_created = Column(String)
+    date_created = Column(String) #TODO: calculate timestamp in db server, not in client
 
     groups = relationship("Group", secondary=group_memberships, back_populates="users")
 
@@ -98,9 +99,9 @@ class Activity(base):
 
     id = Column(Integer, primary_key=True)
     activity_name = Column(String)
-    scheduled_date = Column(String)
+    scheduled_date = Column(DateTime(timezone=True))
     difficulty_code = Column(Integer)
-    is_completed = Column(Integer) # 1 - completed, 0 - uncompleted (can this be constrained?)
+    is_completed = Column(Integer, default=0)
 
     # user who created activity
     owner_id = Column(String, ForeignKey("users.id"))

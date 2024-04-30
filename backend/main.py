@@ -269,7 +269,6 @@ def create_activity(user: Annotated[schemas.SessionUser, Depends(get_current_use
     db_group = read_group(user, group_id, db_session)
     validations.validate_user_in_group(db_user, db_group)
 
-    validations.validate_isoformat(activity.scheduled_date)
     activity_payload = schemas.ActivityPayload(
         activity_name=activity.activity_name,
         scheduled_date=activity.scheduled_date,
