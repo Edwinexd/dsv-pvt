@@ -1,3 +1,4 @@
+import 'package:flutter_application/sign_in_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'profile_page.dart'; // Import the ProfilePage
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const MainPage(),
+      home: const SignInPage(),
       debugShowCheckedModeBanner: false,
     );
   }
