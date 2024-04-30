@@ -14,6 +14,10 @@ def validate_owns_group(user_id: str, group: models.Group):
     if group.owner_id != user_id:
         raise HTTPException(status_code=403, detail="User does not own this group!")
     
+def validate_owns_activity(user_id: str, activity: models.Activity):
+    if activity.owner_id != user_id:
+        raise HTTPException(status_code=403, detail="User does not own this activity!")
+    
 def validate_user_invited(user: models.User, invited_users: list[models.User]):
     if user not in invited_users:
         raise HTTPException(status_code=403, detail="You are not invited to this group!")

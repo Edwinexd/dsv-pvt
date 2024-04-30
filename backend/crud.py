@@ -155,3 +155,18 @@ def create_activity(db_session: Session, activity_payload: schemas.ActivityPaylo
 
 def get_activities(db_session: Session, group_id: int, skip: int, limit: int):
     return db_session.query(models.Activity).filter(models.Activity.group_id == group_id).offset(skip).limit(limit).all()
+
+def get_activity(db_session: Session, group_id: int, activity_id: int):
+    return db_session.query(models.Activity).filter(models.Activity.group_id == group_id, models.Activity.id == activity_id).first()
+
+def update_activity(db_session: Session, db_activity: models.Activity, activity_update: schemas.ActivityUpdate):
+    update_data = activity_update.model_dump(exclude_unset=True)
+    for k, v in update_data.items():
+        setattr(db_activity, k, v)
+    db_session.commit()
+    db_session.refresh(db_activity)
+    return db_activity
+
+def delete_activity(db_session: Session, db_activity: models.Activity):
+    db_session.delete(db_activity)
+    db_session.commit()

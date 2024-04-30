@@ -290,18 +290,36 @@ def read_activities(user: Annotated[schemas.SessionUser, Depends(get_current_use
 
 @app.get("/groups/{group_id}/activities/{activity_id}", response_model = schemas.Activity)
 def read_activity(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, activity_id: int, db_session: Session = Depends(get_db_session)):
-    pass
+    db_user = read_user_me(user, db_session)
+    db_group = read_group(user, group_id, db_session)
+    validations.validate_user_in_group(db_user, db_group)
+
+    db_activity = crud.get_activity(db_session, group_id, activity_id)
+    if db_activity is None:
+        raise HTTPException(status_code=404, detail="Activity not found")
+    return db_activity
 
 @app.patch("/groups/{group_id}/activities/{activity_id}", response_model = schemas.Activity)
-def update_activity(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, activity_id: int, db_session: Session = Depends(get_db_session)):
-    pass
+def update_activity(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, activity_id, activity_update: schemas.ActivityUpdate, db_session: Session = Depends(get_db_session)):
+    db_activity = read_activity(user, group_id, activity_id, db_session)
+    validations.validate_owns_activity(user.id, db_activity)
+    return crud.update_activity(db_session, db_activity, activity_update)
 
+#TODO: currently only the owner of the activity can remove it. Moderators/admins should also be able to remove them
 @app.delete("/groups/{group_id}/activities/{activity_id}")
 def delete_activity(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, activity_id: int, db_session: Session = Depends(get_db_session)):
-    pass
+    db_activity = read_activity(user, group_id, activity_id, db_session)
+    validations.validate_owns_activity(user.id, db_activity)
+    crud.delete_activity(db_session, db_activity)
+    return {"message" : "Activity successfully deleted!"}
+
+# ACTIVITY PARTICIPATION
+@app.put("/group/{group_id}/activities/{activity_id}/participants/{participant_id}")
+def join_activity(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, activity_id: int, participant_id: str, db_session: Session = Depends(get_db_session)):
+    db_user = read_user(user, user_id = participant_id)
+    
 
 #TODO: moderators, admins
-
 #TODO: activity creation, activity deletion, activity participation, activity reading
 #TODO: challenge creation (by superusers), adding challenges to activities
 #TODO: reading all challanges, challenge-trophy link (?), reading all challenges in activity
