@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/views/all_group_pages.dart';
 import 'profile_page.dart'; // Import the ProfilePage
 import 'drawer.dart';
+import 'package:flutter_application/views/login_page.dart';
 import 'create-profile-page.dart';  
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const MainPage(),
+      home: const LoginPage(),
       debugShowCheckedModeBanner: false,
     );
   }
