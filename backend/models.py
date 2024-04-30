@@ -51,7 +51,8 @@ class User(base):
     activities = relationship(
         "Activity",
         secondary=activity_participations,
-        back_populates="participants"
+        back_populates="participants",
+        lazy="dynamic"
     )
     owned_activities = relationship("Activity", back_populates = "owner")
     completed_challenges = relationship(

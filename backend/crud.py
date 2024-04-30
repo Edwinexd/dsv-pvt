@@ -180,3 +180,12 @@ def join_activity(db_session: Session, db_user: models.User, db_activity: models
 
 def get_participants(db_session: Session, db_activity: models.Activity, skip: int, limit: int):
     return db_activity.participants.offset(skip).limit(limit)
+
+def get_user_activities(db_session: Session, db_user: models.User, skip: int, limit: int):
+    return db_user.activities.offset(skip).limit(limit)
+
+def leave_activity(db_session: Session, db_user: models.User, db_activity: models.Activity):
+    db_activity.participants.remove(db_user)
+    db_session.add(db_activity)
+    db_session.commit()
+    db_session.refresh(db_activity)

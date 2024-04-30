@@ -180,8 +180,7 @@ def join_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], 
 def leave_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, group_id: int, db_session: Session = Depends(get_db_session)):
     db_user = read_user(user, user_id=user_id, db_session=db_session)
     db_group = read_group(user, group_id=group_id, db_session=db_session)
-    if db_user not in db_group.users:
-        raise HTTPException(status_code=400, detail="User not in group")
+    validations.validate_user_in_group(db_user, db_group)
     validations.validate_id(user.id, user_id)
     return crud.leave_group(db_session=db_session, db_user=db_user, db_group=db_group)
 
@@ -337,6 +336,25 @@ def read_participants(user: Annotated[schemas.SessionUser, Depends(get_current_u
     db_activity = read_activity(user, group_id, activity_id, db_session)
 
     return schemas.UserList(data=crud.get_participants(db_session, db_activity, skip, limit))
+
+@app.get("/users/{user_id}/activities", response_model = schemas.ActivityList)
+def read_user_activities(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, skip: int = 0, limit: int = 100, db_session: Session = Depends(get_db_session)):
+    db_user = read_user(user, user_id, db_session)
+    validations.validate_id(user.id, user_id)
+    return schemas.ActivityList(data=crud.get_user_activities(db_session, db_user, skip, limit))
+
+@app.delete("/groups/{group_id}/activities/{activity_id}/participants/{participant_id}")
+def leave_activity(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, activity_id: int, participant_id: str, db_session: Session = Depends(get_db_session)):
+    db_user = read_user(user, participant_id, db_session)
+    db_group = read_group(user, group_id, db_session)
+    db_activity = read_activity(user, group_id, activity_id, db_session)
+    validations.validate_id(user.id, participant_id)
+    validations.validate_user_in_group(db_user, db_group)
+    validations.validate_user_in_activity(db_user, db_activity)
+    
+    crud.leave_activity(db_session, db_user, db_activity)
+    return {"message": "activity successfully left!"}
+
 
 #TODO: moderators, admins
 #TODO: challenge creation (by superusers), adding challenges to activities
