@@ -52,7 +52,7 @@ class ProfilePage extends StatelessWidget {
           const SizedBox(height: 20),
           IconButton(
             icon: const Icon(Icons.edit),
-            onPressed: () => EditProfilePage(),
+            onPressed: () => goToEditProfile(context),
           ),
         ],
       ),
