@@ -12,30 +12,30 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.grey[300],
-        body: const SafeArea(
+        backgroundColor: Colors.grey[200],
+        body: SafeArea(
             child: Center(
           child: Column(
-            children: [
-              SizedBox(height: 50),
+            children: <Widget>[
+              const SizedBox(height: 50),
               //logo
-              Icon(
+              const Icon(
                 Icons.person,
                 size: 100,
               ),
                            
-              SizedBox(height: 50),
+              const SizedBox(height: 50),
 
               //welcome back, youve been missed
               Text(
                 'Welcome back!',
                 style: TextStyle(
-                  color: Colors.black,
+                  color: Colors.grey[700],
                   fontSize: 16,
                 )
               ),
 
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
 
               // username textfield
               MyTextField(
@@ -44,7 +44,7 @@ class LoginPage extends StatelessWidget {
                 obscureText: false,
               ),
 
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               
               //password textfield
               MyTextField(
@@ -53,10 +53,26 @@ class LoginPage extends StatelessWidget {
                 obscureText: true,
               ),
 
+              const SizedBox(height: 10),
+
               //forgot password?
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Forgot Password?',
+                      style: TextStyle(color: Colors.grey[600]),
+                    )
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 10),
 
               //sign in button
-
+              
               //or continue with
 
               //google + apple sign in
