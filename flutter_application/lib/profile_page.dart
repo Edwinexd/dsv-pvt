@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/edit_profile_page.dart';
 
 class ProfilePage extends StatelessWidget {
   final String name;
@@ -51,11 +52,17 @@ class ProfilePage extends StatelessWidget {
           const SizedBox(height: 20),
           IconButton(
             icon: const Icon(Icons.edit),
-            onPressed: () {
-              // Implement editing functionality here
-            },
+            onPressed: () => EditProfilePage(),
           ),
         ],
+      ),
+    );
+  }
+  void goToEditProfile(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: ((context) => EditProfilePage()),
       ),
     );
   }
