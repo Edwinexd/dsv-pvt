@@ -111,7 +111,8 @@ class Activity(base):
     participants = relationship(
         "User",
         secondary=activity_participations,
-        back_populates="activities"
+        back_populates="activities",
+        lazy="dynamic"
     )
 
 class Challenge(base):

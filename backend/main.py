@@ -316,10 +316,28 @@ def delete_activity(user: Annotated[schemas.SessionUser, Depends(get_current_use
 # ACTIVITY PARTICIPATION
 @app.put("/group/{group_id}/activities/{activity_id}/participants/{participant_id}")
 def join_activity(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, activity_id: int, participant_id: str, db_session: Session = Depends(get_db_session)):
-    db_user = read_user(user, user_id = participant_id)
+    db_user = read_user(user, participant_id, db_session)
+    db_group = read_group(user, group_id, db_session)
+    validations.validate_user_in_group(db_user, db_group)
+    validations.validate_id(user.id, participant_id)
+
+    db_activity = read_activity(user, group_id, activity_id, db_session)
+    if db_user in db_activity.participants:
+        raise HTTPException(status_code=400, detail="User already in activity")
     
+    crud.join_activity(db_session, db_user, db_activity)
+    return {"message" : "Activity successfully joined!"}
+
+@app.get("/group/{group_id}/activities/{activity_id}/participants", response_model = schemas.UserList)
+def read_participants(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, activity_id: int, skip: int = 0, limit: int = 100, db_session: Session = Depends(get_db_session)):
+    db_user = read_user_me(user, db_session)
+    db_group = read_group(user, group_id, db_session)
+    validations.validate_user_in_group(db_user, db_group)
+
+    db_activity = read_activity(user, group_id, activity_id, db_session)
+
+    return schemas.UserList(data=crud.get_participants(db_session, db_activity, skip, limit))
 
 #TODO: moderators, admins
-#TODO: activity creation, activity deletion, activity participation, activity reading
 #TODO: challenge creation (by superusers), adding challenges to activities
 #TODO: reading all challanges, challenge-trophy link (?), reading all challenges in activity

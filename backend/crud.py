@@ -170,3 +170,13 @@ def update_activity(db_session: Session, db_activity: models.Activity, activity_
 def delete_activity(db_session: Session, db_activity: models.Activity):
     db_session.delete(db_activity)
     db_session.commit()
+
+# ACTIVITY PARTICIPATION
+def join_activity(db_session: Session, db_user: models.User, db_activity: models.Activity):
+    db_activity.participants.append(db_user)
+    db_session.add(db_activity)
+    db_session.commit()
+    db_session.refresh(db_activity)
+
+def get_participants(db_session: Session, db_activity: models.Activity, skip: int, limit: int):
+    return db_activity.participants.offset(skip).limit(limit)
