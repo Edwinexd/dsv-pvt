@@ -59,7 +59,6 @@ class _SignInPageState extends State<SignInPage> {
             if (value == null || value.isEmpty) {
               return 'Please enter your email';
             }
-            // You can add more validation logic here if needed
             return null;
           },
         ),
