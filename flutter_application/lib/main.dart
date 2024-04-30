@@ -61,6 +61,10 @@ class MainPageState extends State<MainPage> {
         // Check if "Profile" bottom navigation bar item is tapped
         goToProfilePage(context); // Navigate to the profile page
       }
+      //Kommer ändras när vi har en homepage
+      if (index == 0) {
+        goToGroupPage(context); // Nu har vi ingen home-page och indexen av grupp-ikonen är 0
+      }
     });
   }
 
@@ -101,6 +105,28 @@ class MainPageState extends State<MainPage> {
         selectedItemColor: Colors.amber[800],
         unselectedItemColor: Colors.deepPurple[900],
         onTap: onItemtapped,
+      ),
+    );
+  }
+
+  void goToProfilePage(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ProfilePage(
+          name: 'Jeb Jebson',
+          biography: "Let's go running!",
+          imageUrl: 'https://via.placeholder.com/150',
+        ),
+      ),
+    );
+  }
+
+  void goToGroupPage(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: ((context) => const AllGroupsPage()),
       ),
     );
   }
