@@ -1,6 +1,6 @@
 from enum import Enum, auto
 
 class Roles(Enum):
-    ADMIN = auto()
-    MODERATOR = auto()
-    NORMAL = auto()
+    ADMIN = 0
+    MODERATOR = 1
+    NORMAL = 2
