@@ -1,3 +1,4 @@
+import 'package:flutter_application/activity_create.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/views/all_group_pages.dart';
@@ -50,6 +51,8 @@ class MainPageState extends State<MainPage> {
     ),
     Text('Start Activity Page',
         style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+    Text('Create Activity Page',
+        style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
     Text('Placeholder Page',
         style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
   ];
@@ -64,6 +67,15 @@ class MainPageState extends State<MainPage> {
       //Kommer ändras när vi har en homepage
       if (index == 0) {
         goToGroupPage(context); // Nu har vi ingen home-page och indexen av grupp-ikonen är 0
+      }
+
+      if (index == 3) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ActivityCreatePage(groupId: "1234"),
+          ),
+        );
       }
     });
   }
@@ -95,6 +107,10 @@ class MainPageState extends State<MainPage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.play_arrow),
             label: 'Start',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add),
+            label: 'Create Activity',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.question_mark),
