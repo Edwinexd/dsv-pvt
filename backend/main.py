@@ -14,7 +14,7 @@ import schemas
 import auth
 import validations
 from database import engine, session_local
-from sessions import create_session, get_session
+from sessions import create_session, get_session, revoke_sessions
 
 models.base.metadata.create_all(bind = engine)
 
@@ -46,6 +46,11 @@ def login(credentials: schemas.UserCreds):
     user_id = auth.login(credentials)
     session = create_session(user_id)
     return {"bearer": f"Bearer {session}"}
+
+#should maybe be delete?
+@app.post("/users/logout")
+def logout(user: Annotated[schemas.SessionUser, Depends(get_current_user)]):
+    revoke_sessions(user.id)
 
 # user creation
 @app.post("/users", response_model = schemas.User)
