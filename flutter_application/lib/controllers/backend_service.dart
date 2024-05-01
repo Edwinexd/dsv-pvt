@@ -62,6 +62,10 @@ class BackendService {
     return User.fromJson((response.data) as Map<String, dynamic>);
   }
 
+  void deleteUser(int userId) async {
+    final response = await _dioClient.dio.delete('/users/$userId');
+  }
+
   Future<User> updateUser(int userId, {String? userName, String? fullName}) async {
     Map<String, dynamic> updateFields = {};
     if (userName != null) {
@@ -132,6 +136,5 @@ class BackendService {
 
   void deleteGroup(int groupdId) async {
     final response = await _dioClient.dio.delete('groups/$groupdId');
-    // TODO: Successful api call returns message in body: "message": "Group deleted successfully"
   }
 }
