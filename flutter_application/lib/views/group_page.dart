@@ -84,6 +84,9 @@ class GroupPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 //Will replace this with actual member info/data
                 return ListTile(
+                  leading: const CircleAvatar(
+                    child: Icon(Icons.person), //Will replace the placeholder with the actual member's profile picture
+                  ),
                   title: Text("Member $index"),
                 );
               },
