@@ -2,7 +2,6 @@ import 'package:flutter_application/models/dio_client.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/models/user.dart';
 
-
 class BackendService {
   // late Dio _dio;
   late DioClient _dioClient;
@@ -15,6 +14,29 @@ class BackendService {
   // BackendService.withDio(Dio dio) {
   //   _dio = dio;
   // }
+
+  // --------- USERS/ ---------
+  Future<User> fetchMe() async {
+    final response = await _dioClient.dio.get('/users/me');
+    return User.fromJson(response.data as Map<String, dynamic>);
+  }
+
+  Future<User> fetchUser(int userId) async {
+    final response = await _dioClient.dio.get('/users/$userId');
+    return User.fromJson((response.data) as Map<String, dynamic>);
+  }
+
+  Future<List<User>> fetchUsers(int skip, int limit) async {
+    final response = await _dioClient.dio.get('/users', queryParameters: {
+      'skip': skip,
+      'limit': limit,
+    });
+    var userList = response.data['data'] as List;
+    return userList.map((x) => User.fromJson(x)).toList();
+  }
+
+
+  // --------- GROUPS ---------
 
   Future<Group> fetchGroup(int groupId) async {
     final response = await _dioClient.dio.get('/groups/$groupId');
@@ -67,19 +89,5 @@ class BackendService {
   void deleteGroup(int groupdId) async {
     final response = await _dioClient.dio.delete('groups/$groupdId');
     // TODO: Successful api call returns message in body: "message": "Group deleted successfully"
-  }
-
-  Future<User> fetchUser(int userId) async {
-    final response = await _dioClient.dio.get('/users/$userId');
-    return User.fromJson((response.data) as Map<String, dynamic>);
-  }
-
-  Future<List<User>> fetchUsers(int skip, int limit) async {
-    final response = await _dioClient.dio.get('/users', queryParameters: {
-      'skip': skip,
-      'limit': limit,
-    });
-    var userList = response.data['data'] as List;
-    return userList.map((x) => User.fromJson(x)).toList();
   }
 }
