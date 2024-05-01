@@ -7,7 +7,8 @@ class AuthInterceptor extends Interceptor {
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
     String? token = await SecureStorage().getToken();
     if (token != null) {
-      options.headers['Authorization'] = 'Bearer $token}';
+      // options.headers['Authorization'] = 'Bearer $token'; // TODO affects backend_service.dart
+      options.headers['Authorization'] = token;
     }
     handler.next(options);
   }
