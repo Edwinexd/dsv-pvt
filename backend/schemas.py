@@ -1,6 +1,7 @@
 # Schemas will be used for presentation and data query with user
 from typing import List, Optional
 from pydantic import BaseModel
+from datetime import datetime
 
 # USER
 class UserBase(BaseModel):
@@ -34,7 +35,7 @@ class ProfileBase(BaseModel):
     age: Optional[int] = None
     interests: Optional[str] = None
     skill_level: int
-    is_private: bool
+    is_private: int
 
 class ProfileCreate(ProfileBase):
     pass
@@ -48,13 +49,13 @@ class ProfileUpdate(BaseModel):
     age: Optional[int] = None
     interests: Optional[str] = None
     skill_level: Optional[int] = None
-    is_private: Optional[bool] = None
+    is_private: Optional[int] = None
 
 # GROUP
 class GroupBase(BaseModel):
     group_name: str
     description: str
-    private: bool
+    is_private: int
     owner_id: str
 
 class GroupCreate(GroupBase):
@@ -73,7 +74,7 @@ class GroupList(BaseModel):
 class GroupUpdate(BaseModel):
     group_name: Optional[str] = None
     description: Optional[str] = None
-    private: Optional[bool] = None
+    is_private: Optional[int] = None
 
 # INVITES
 class InviteBase(BaseModel):
@@ -88,21 +89,34 @@ class Invite(InviteBase):
 # ACTIVITY
 class ActivityBase(BaseModel):
     activity_name: str
+    scheduled_date: datetime
+    #scheduled_date: str #ISO-check!
+    difficulty_code: int
 
 class ActivityCreate(ActivityBase):
-    scheduled_date: str
-    scheduled_time: str
-    difficulty_code: int
+    pass
+
+class ActivityPayload(ActivityBase):
+    group_id: int
+    owner_id: str
 
 class Activity(ActivityBase):
     id: int
-    completed: bool
+    is_completed: int
+    group_id: int
+    owner_id: str
 
     class Config:
         from_attributes = True
 
 class ActivityList(BaseModel):
     data: List[Activity]
+
+class ActivityUpdate(BaseModel):
+    activity_name: Optional[str] = None
+    scheduled_date: Optional[str] = None
+    difficulty_code: Optional[int] = None
+    is_completed: Optional[int] = None
 
 # CHALLENGE
 class ChallengeBase(BaseModel):

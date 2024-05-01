@@ -63,7 +63,7 @@ def delete_profile(db_session: Session, db_profile: models.Profile):
 
 #GROUPS
 def create_group(db_session: Session, group: schemas.GroupCreate):
-    db_group = models.Group(group_name = group.group_name, description = group.description, private = group.private)
+    db_group = models.Group(group_name = group.group_name, description = group.description, is_private = group.is_private)
     db_owner = get_user(db_session, group.owner_id)
     db_owner.owned_groups.append(db_group)
     db_owner.groups.append(db_group)
@@ -137,3 +137,54 @@ def delete_invitation(db_session: Session, user_id: str, group_id: int):
 def get_invitation(db_session: Session, user_id: str, group_id: int):
     invitation = db_session.query(models.GroupInvitations).filter(models.GroupInvitations.user_id == user_id, models.GroupInvitations.group_id == group_id).first()
     return invitation
+
+#ACTIVITIES
+def create_activity(db_session: Session, activity_payload: schemas.ActivityPayload):
+    db_activity = models.Activity(
+        activity_name = activity_payload.activity_name,
+        scheduled_date = activity_payload.scheduled_date,
+        difficulty_code = activity_payload.difficulty_code,
+        owner_id = activity_payload.owner_id,
+        group_id = activity_payload.group_id
+    )
+    db_session.add(db_activity)
+    db_session.commit()
+    db_session.refresh(db_activity)
+    return db_activity
+
+def get_activities(db_session: Session, group_id: int, skip: int, limit: int):
+    return db_session.query(models.Activity).filter(models.Activity.group_id == group_id).order_by(models.Activity.id.asc()).offset(skip).limit(limit).all()
+
+def get_activity(db_session: Session, group_id: int, activity_id: int):
+    return db_session.query(models.Activity).filter(models.Activity.group_id == group_id, models.Activity.id == activity_id).first()
+
+def update_activity(db_session: Session, db_activity: models.Activity, activity_update: schemas.ActivityUpdate):
+    update_data = activity_update.model_dump(exclude_unset=True)
+    for k, v in update_data.items():
+        setattr(db_activity, k, v)
+    db_session.commit()
+    db_session.refresh(db_activity)
+    return db_activity
+
+def delete_activity(db_session: Session, db_activity: models.Activity):
+    db_session.delete(db_activity)
+    db_session.commit()
+
+# ACTIVITY PARTICIPATION
+def join_activity(db_session: Session, db_user: models.User, db_activity: models.Activity):
+    db_activity.participants.append(db_user)
+    db_session.add(db_activity)
+    db_session.commit()
+    db_session.refresh(db_activity)
+
+def get_participants(db_session: Session, db_activity: models.Activity, skip: int, limit: int):
+    return db_activity.participants.offset(skip).limit(limit)
+
+def get_user_activities(db_session: Session, db_user: models.User, skip: int, limit: int):
+    return db_user.activities.offset(skip).limit(limit)
+
+def leave_activity(db_session: Session, db_user: models.User, db_activity: models.Activity):
+    db_activity.participants.remove(db_user)
+    db_session.add(db_activity)
+    db_session.commit()
+    db_session.refresh(db_activity)

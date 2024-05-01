@@ -1,5 +1,6 @@
-from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, Integer, String, Table, ForeignKeyConstraint
+from sqlalchemy import Column, ForeignKey, Integer, String, Table, DateTime
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 
 from database import base
 
@@ -34,10 +35,6 @@ class GroupInvitations(base):
     user = relationship("User", back_populates="group_invitation_associations", foreign_keys=[user_id])
     inviter = relationship("User", foreign_keys=[invited_by])
 
-    #invited_user = relationship("User", back_populates="group_invitation_associations", foreign_keys=[user_id])
-    #group = relationship("Group", back_populates="user_invitation_associations", foreign_keys=[group_id])
-    #inviter = relationship("User", foreign_keys=invited_by)
-
 # NORMAL TABLES
 class User(base):
     __tablename__ = "users"
@@ -45,20 +42,20 @@ class User(base):
     id = Column(String, primary_key=True)
     username = Column(String, unique=True)
     full_name = Column(String)
-    date_created = Column(String)
+    date_created = Column(String) #TODO: calculate timestamp in db server, not in client
 
     groups = relationship("Group", secondary=group_memberships, back_populates="users")
 
     group_invitation_associations = relationship("GroupInvitations", back_populates="user", foreign_keys='GroupInvitations.user_id')
     groups_invited_to = relationship("Group", secondary="group_invitations", back_populates="invited_users", primaryjoin="User.id == GroupInvitations.user_id", secondaryjoin="GroupInvitations.group_id == Group.id")
-    #inviter_associations = relationship("GroupInvitations", back_populates="inviter", foreign_keys='GroupInvitations.invited_by')
-    #sent_invites = relationship("Group", foreign_keys='GroupInvitations.invited_by')
 
     activities = relationship(
         "Activity",
         secondary=activity_participations,
-        back_populates="participants"
+        back_populates="participants",
+        lazy="dynamic"
     )
+    owned_activities = relationship("Activity", back_populates = "owner")
     completed_challenges = relationship(
         "Challenge",
         secondary=challenge_completions,
@@ -74,7 +71,7 @@ class Profile(base):
     age = Column(Integer, nullable=True)
     interests = Column(String, nullable=True)
     skill_level = Column(Integer) # will be mapped to a running pace in client
-    is_private = Column(Boolean)
+    is_private = Column(Integer) # 1-true, 0-false
 
     owner_id = Column(String, ForeignKey("users.id"), primary_key=True)
     owner = relationship("User", back_populates="profile")
@@ -85,14 +82,14 @@ class Group(base):
     id = Column(Integer, primary_key=True)
     group_name = Column(String)
     description = Column(String, nullable=True)
-    private = Column(Boolean)
+    is_private = Column(Integer) # 1-true, 0-false
 
     owner_id = Column(String, ForeignKey("users.id"))
     owner = relationship("User", back_populates="owned_groups")
 
     users = relationship("User", secondary=group_memberships, back_populates="groups")
 
-    activities = relationship("Activity", back_populates="creator_group")
+    activities = relationship("Activity", back_populates="group")
 
     user_invitation_associations = relationship("GroupInvitations", back_populates="group", foreign_keys='GroupInvitations.group_id')
     invited_users = relationship("User", secondary="group_invitations", back_populates="groups_invited_to", primaryjoin="Group.id == GroupInvitations.group_id", secondaryjoin="GroupInvitations.user_id == User.id")
@@ -102,22 +99,22 @@ class Activity(base):
 
     id = Column(Integer, primary_key=True)
     activity_name = Column(String)
-    scheduled_date = Column(String)
-    scheduled_time = Column(String)
-    completed = Column(Boolean)
+    scheduled_date = Column(DateTime(timezone=True))
     difficulty_code = Column(Integer)
+    is_completed = Column(Integer, default=0)
 
     # user who created activity
-    creator_id = Column(Integer, ForeignKey("users.id"))
+    owner_id = Column(String, ForeignKey("users.id"))
+    owner = relationship("User", uselist=False, back_populates="owned_activities")
     # the group where activity resides
-    creator_group_id = Column(Integer, ForeignKey("groups.id"))
-
-    creator_group = relationship("Group", back_populates="activities")
+    group_id = Column(Integer, ForeignKey("groups.id"))
+    group = relationship("Group", uselist = False, back_populates="activities")
 
     participants = relationship(
         "User",
         secondary=activity_participations,
-        back_populates="activities"
+        back_populates="activities",
+        lazy="dynamic"
     )
 
 class Challenge(base):
