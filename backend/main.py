@@ -11,6 +11,7 @@ import models
 import schemas
 import auth
 import validations
+from user_roles import Roles
 from database import engine, session_local
 from sessions import create_session, get_session
 from validations import validate_api_key
@@ -75,7 +76,8 @@ def update_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)],
     db_user = crud.get_user(db_session, user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
-    validations.validate_id(user.id, user_id)
+    if db_user.role is not Roles.Admin:
+        validations.validate_id(user.id, user_id)
     return crud.update_user(db_session, db_user, user_update)
 
 @app.delete("/users/{user_id}")
@@ -89,8 +91,10 @@ def delete_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)],
 
 # ADMINS
 @app.post("/admins")
-def create_admin(admin_payload: schemas.AdminPayload, db_session: Session = Depends(get_db_session), _: None = Depends(validate_api_key)):
-    pass
+def create_admin(admin_payload: schemas.UserCreate, db_session: Session = Depends(get_db_session), _: None = Depends(validate_api_key)):
+    user_id = auth.create_user(admin_payload)
+    user = schemas.User(id=user_id, username=admin_payload.username, full_name=admin_payload.full_name, date_created = datetime.today().isoformat(), role = Roles.ADMIN)
+    return crud.create_user(db_session=db_session, user=user)
 
 #PROFILE
 @app.put("/users/{user_id}/profile", response_model=schemas.Profile)

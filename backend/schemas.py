@@ -1,7 +1,8 @@
 # Schemas will be used for presentation and data query with user
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, field_serializer
 from datetime import datetime
+from user_roles import Roles
 
 # USER
 class UserBase(BaseModel):
@@ -14,9 +15,15 @@ class UserCreate(UserBase):
 class User(UserBase):
     id: str
     date_created: str
+    role: Roles = Roles.NORMAL
 
     class Config:
         from_attributes = True
+
+    # Incase we want the api to present the Role as the name instead of the value
+    @field_serializer("role")
+    def serialize_group(self, role: Roles, _info):
+        return role.name
 
 class UserList(BaseModel):
     data: List[User]
@@ -28,10 +35,6 @@ class UserUpdate(BaseModel):
 class UserCreds(BaseModel):
     username: str
     password: str
-
-# ADMIN
-class AdminPayload(UserCreate):
-    secret: str
 
 # PROFILE
 class ProfileBase(BaseModel):
