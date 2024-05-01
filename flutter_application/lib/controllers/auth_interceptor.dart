@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_application/models/secure_storage.dart';
+import 'package:flutter_application/controllers/secure_storage.dart';
 
 class AuthInterceptor extends Interceptor {
 

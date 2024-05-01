@@ -1,6 +1,6 @@
 import 'package:flutter_application/controllers/dio_client.dart';
 import 'package:flutter_application/models/group.dart';
-import 'package:flutter_application/models/secure_storage.dart';
+import 'package:flutter_application/controllers/secure_storage.dart';
 import 'package:flutter_application/models/user.dart';
 
 class BackendService {
