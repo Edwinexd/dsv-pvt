@@ -53,27 +53,36 @@ class _MyGroupsState extends State<MyGroups> {
               itemCount: myGroups.length, 
               itemBuilder:  (context, index) {
                 final groupName = myGroups[index];
-                return ListTile(
-                  title: Text(groupName),
-                  onTap: () {
-                    Navigator.push(
-                      context, 
-                      MaterialPageRoute(
-                        builder: ((context) => GroupPage(groupName: groupName, isPrivate: true))
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(200, 207, 186, 234), //Background color of the box according to Figma-prototype
+                      borderRadius: BorderRadius.circular(8.0), 
+                    ),
+                    child: ListTile(
+                    title: Text(groupName),
+                    onTap: () {
+                      Navigator.push(
+                        context, 
+                        MaterialPageRoute(
+                          builder: ((context) => GroupPage(groupName: groupName, isPrivate: true))
                         ),
-                    );
-                  },
-                );
-              }
-            ),
-          ),
-        ],
+                      );
+                    },
+                    ),
+                  ),
+            );
+          }
+        ),
+      ),
+      ],
       ),
       bottomNavigationBar: BottomAppBar(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            IconButton(
+            TextButton.icon(
               onPressed: () {
                 Navigator.push(
                   context, 
@@ -81,23 +90,21 @@ class _MyGroupsState extends State<MyGroups> {
                     builder: (context) => const GroupCreation()
                   ),
                 );
-                //Navigate to creation
-
               },
               icon: const Icon(Icons.add),
-              tooltip: 'Create a group',
+              label: const Text('Create a group'),
             ),  
-            IconButton(
+            TextButton.icon(
               onPressed: () {
                 Navigator.push(
                   context, 
                   MaterialPageRoute(
                     builder: (context) => const AllGroupsPage()),
                 );
-                //Navigate to search
-              }, icon: const Icon(Icons.search),
-              tooltip: 'Search groups',
-              ),  
+              }, 
+              icon: const Icon(Icons.search),
+              label: const Text('Search groups'),
+            ),  
           ],
         ),
       ),

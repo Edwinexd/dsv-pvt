@@ -1,3 +1,4 @@
+import 'package:flutter_application/views/my_groups.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/views/all_group_pages.dart';
@@ -126,7 +127,7 @@ class MainPageState extends State<MainPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: ((context) => const AllGroupsPage()),
+        builder: ((context) => const MyGroups()),
       ),
     );
   }
