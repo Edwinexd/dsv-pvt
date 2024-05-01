@@ -79,36 +79,46 @@ class _MyGroupsState extends State<MyGroups> {
       ],
       ),
       bottomNavigationBar: BottomAppBar(
+        color: const Color.fromARGB(225, 172, 176, 255), 
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            TextButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context, 
-                  MaterialPageRoute(
-                    builder: (context) => const GroupCreation()
-                  ),
-                );
-              },
-              icon: const Icon(Icons.add),
-              label: const Text('Create a group'),
-            ),  
-            TextButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context, 
-                  MaterialPageRoute(
-                    builder: (context) => const AllGroupsPage()),
-                );
-              }, 
-              icon: const Icon(Icons.search),
-              label: const Text('Search groups'),
-            ),  
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context, 
+                      MaterialPageRoute(
+                        builder: (context) => const GroupCreation()
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.add),
+                  label: const Text('Create a group'),
+                ),
+              ],
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context, 
+                      MaterialPageRoute(
+                        builder: (context) => const AllGroupsPage()),
+                    );
+                  }, 
+                  icon: const Icon(Icons.search),
+                  label: const Text('Search groups'),
+                ),
+              ],
+            ),
           ],
         ),
       ),
-    );
-    
+    ); 
   }
 }
