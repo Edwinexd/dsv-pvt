@@ -1,13 +1,16 @@
 import 'package:flutter_application/models/dio_client.dart';
 import 'package:flutter_application/models/group.dart';
+import 'package:flutter_application/models/secure_storage.dart';
 import 'package:flutter_application/models/user.dart';
 
 class BackendService {
   // late Dio _dio;
   late DioClient _dioClient;
+  late SecureStorage storage;
 
   BackendService(DioClient dioClient) {
     _dioClient = dioClient;
+    storage = SecureStorage();
   }
 
   // TODO: TA BORT?
@@ -16,6 +19,39 @@ class BackendService {
   // }
 
   // --------- USERS/ ---------
+
+  void login(String userName, String password) async {
+    final response = await _dioClient.dio.post(
+      '/users/login',
+      data: {
+        "username": userName,
+        "password": password,
+      },
+    );
+    storage.setToken(response.data['bearer']);
+  }
+
+  Future<User> createUser(String userName, String fullName, String password) async {
+    final response = await _dioClient.dio.post(
+      '/users',
+      data: {
+        "username": userName,
+        "full_name": fullName,
+        "password": password,
+      },
+    );
+    return User.fromJson((response.data) as Map<String, dynamic>);
+  } 
+
+  Future<List<User>> fetchUsers(int skip, int limit) async {
+    final response = await _dioClient.dio.get('/users', queryParameters: {
+      'skip': skip,
+      'limit': limit,
+    });
+    var userList = response.data['data'] as List;
+    return userList.map((x) => User.fromJson(x)).toList();
+  }
+
   Future<User> fetchMe() async {
     final response = await _dioClient.dio.get('/users/me');
     return User.fromJson(response.data as Map<String, dynamic>);
@@ -26,14 +62,22 @@ class BackendService {
     return User.fromJson((response.data) as Map<String, dynamic>);
   }
 
-  Future<List<User>> fetchUsers(int skip, int limit) async {
-    final response = await _dioClient.dio.get('/users', queryParameters: {
-      'skip': skip,
-      'limit': limit,
-    });
-    var userList = response.data['data'] as List;
-    return userList.map((x) => User.fromJson(x)).toList();
-  }
+  Future<User> updateUser(int userId, {String? userName, String? fullName}) async {
+    Map<String, dynamic> updateFields = {};
+    if (userName != null) {
+      updateFields['username'] = userName;
+    }
+    if (fullName != null) {
+      updateFields['full_name'] = fullName;
+    }
+
+    final response = await _dioClient.dio.patch(
+      '/users/$userId',
+      data: updateFields,
+    );
+    return User.fromJson((response.data) as Map<String, dynamic>);
+  }  
+
 
 
   // --------- GROUPS ---------
