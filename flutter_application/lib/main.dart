@@ -1,3 +1,4 @@
+import 'package:flutter_application/settings.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/views/all_group_pages.dart';
@@ -15,25 +16,47 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool _darkModeEnabled = false;
+
+  void _toggleDarkMode(bool enabled) {
+    setState(() {
+      _darkModeEnabled = enabled;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Midnattsloppet Now',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+      home: MainPage(
+        darkModeEnabled: _darkModeEnabled,
+        onToggleDarkMode: _toggleDarkMode,
       ),
-      home: const MainPage(),
       debugShowCheckedModeBanner: false,
+      theme: _darkModeEnabled ? ThemeData.dark() : ThemeData.light(),
     );
   }
 }
 
+
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  final bool darkModeEnabled;
+  final ValueChanged<bool> onToggleDarkMode;
+
+  const MainPage({
+    super.key,
+    required this.darkModeEnabled,
+    required this.onToggleDarkMode,
+
+  });
 
   @override
   State<MainPage> createState() => MainPageState();
@@ -76,7 +99,16 @@ class MainPageState extends State<MainPage> {
       ),
       drawer: MyDrawer(
         onSignoutTap: () {},
-        onSettingsTap: () {},
+        onSettingsTap: () {
+          Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => SettingsPage(
+            onToggleDarkMode: widget.onToggleDarkMode,
+            initialDarkMode: widget.darkModeEnabled,
+          )),
+        );
+
+        },
         
       ),
       body: Center(
