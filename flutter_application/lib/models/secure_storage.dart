@@ -11,4 +11,10 @@ class SecureStorage {
   Future<String?> getToken() async {
     return await storage.read(key: 'USER_TOKEN');
   }
+
+  void setToken(String token) async {
+    storage.write(key: 'USER_TOKEN', value: token);
+  }
+
+
 }
