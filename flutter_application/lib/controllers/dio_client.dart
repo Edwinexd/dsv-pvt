@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_application/models/auth_interceptor.dart';
+import 'package:flutter_application/controllers/auth_interceptor.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class DioClient {
