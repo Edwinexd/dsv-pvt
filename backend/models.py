@@ -132,10 +132,10 @@ class Achievement(base):
     requirement = Column(Integer)
     #completed = Column(Boolean)
 
-    #Gå till en challanges
+    #Go to a challenge
     challenge_match = relationship("Challenge", back_populates= "achievement_match")
 
-    #Gå till personer - association table
+    #Go to users - associaion table
     achievement_completed_by = relationship(
         "User",
         secondary=achievement_completions,
