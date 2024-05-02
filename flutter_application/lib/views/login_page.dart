@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_application/components/my_button.dart';
 import 'package:flutter_application/components/my_textfield.dart';
+import 'package:flutter_application/components/square_tile.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
@@ -15,11 +16,12 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.grey[200],
+        backgroundColor: Colors.grey[300],
         body: SafeArea(
             child: Center(
           child: Column(
-            children: <Widget>[
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
               const SizedBox(height: 50),
               //logo
               const Icon(
@@ -27,7 +29,7 @@ class LoginPage extends StatelessWidget {
                 size: 100,
               ),
 
-              const SizedBox(height: 50),
+              const SizedBox(height: 40),
 
               //welcome back, youve been missed
               Text('Welcome back!',
@@ -107,17 +109,48 @@ class LoginPage extends StatelessWidget {
                 ),
               ),
 
+              const SizedBox(
+                height: 50,
+              ),
+
               //google + apple sign in
-              Row(
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset(
-                    'lib/images/google.png',
-                    height: 72,
-                    ),
+                  //google button
+                  SquareTile(imagePath: 'lib/images/google.png'),
+
+                  const SizedBox(width: 25),
+
+                  //apple button
+                  SquareTile(imagePath: 'lib/images/apple.png'),
                 ],
-              )
+              ),
+
+              const SizedBox(height: 50),
 
               //Not a member? register now
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Not a member?',
+                    style: TextStyle(
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 4,
+                  ),
+                  const Text(
+                    'Register Now',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              )
             ],
           ),
         )));
