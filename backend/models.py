@@ -53,7 +53,7 @@ class User(base):
     completed_achievements = relationship(
         "Achievement",
         secondary=achievement_completions,
-        back_populates="achivment_completed_by"
+        back_populates="achievement_completed_by"
     )
     profile = relationship("Profile", uselist=False, back_populates="owner")
 
@@ -117,26 +117,27 @@ class Challenge(base):
     completed_by = relationship(
         "User",
         secondary=challenge_completions,
-        back_populates="completed_challenges"
-    )
+        back_populates="completed_challenges")
+    
+    achievement_match = relationship("Profile", uselist = False, back_populated = "challenge_match")
+    
 
 
-class Achievements(base):
+class Achievement(base):
     __tablename__ = "achievements"
 
     id = Column(Integer, primary_key = True)
     achievement_name = Column(String)
     description = Column(String)
     requirement = Column(Integer)
+    #completed = Column(Boolean)
 
     #Gå till en challanges
+    challenge_match = relationship("Challenge", back_populates= "achievement_match")
 
     #Gå till personer - association table
-    achivment_completed_by = relationship(
+    achievement_completed_by = relationship(
         "User",
         secondary=achievement_completions,
         back_populates="completed_achievements"
     )
-
-
-

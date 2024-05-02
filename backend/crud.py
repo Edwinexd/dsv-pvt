@@ -116,11 +116,46 @@ def get_group_users(db_session: Session, group_id: int):
 
 
 
-
 #ACHIEVEMENTS
-
 #create
-#get
-#get all
+def create_achievement(db_session: Session, achievement: schemas.AchievementCreate):
+    db_achievement = models.Achievement(id = achievement.id, achievement_name = achievement.achievement_name, description = achievement.descripton, requirement = achievement.requirement)
+    db_session.add(db_achievement)
+    db_session.commit()
+    db_session.refresh(db_achievement)
+    return db_achievement
+
+#get achievement from id
+def get_achievement(db_session: Session, achievement_id: int):
+    return db_session.query(models.Achievement).filter(models.Achievement.id == achievement_id). first()
+
+#get list of achievements
+def get_achievements(db_session: Session, skip: int = 0, limit: int = 100):
+    return db_session.query(models.Achievement).offset(skip).limit(limit).all()
+
+#update
+def update_achievement(db_session: Session, db_achievement: models.Achievement, achievement_update: schemas.AchievementUpdate):
+    update_date = achievement_update.model_dump(exclude_unset=True)
+    for k, v in update_date.items():
+        setattr(db_achievement, k, v)
+    db_session.commit()
+    db_session.refresh(db_achievement)
+    return db_achievement
+
 #delete
+def delete_achievement(db_session: Session, db_achievement: models.Achievement):
+    db_session.delete(db_achievement)
+    db_session.commit()
+
+#get all achievements a users completed
+def get_achievements(db_session: Session, user_id: int):
+    db_user = get_achievements(db_session, user_id)
+    return db_user.completed_achievements
+
+#get achievement from a challenge id 
+def get_achievement_challenge(db_session: Session, challenge_id: int):
+    db_challenge = get_achievement(db_session, challenge_id)
+    return db_challenge.achievement_match
+
+
 
