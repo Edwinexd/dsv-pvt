@@ -2,10 +2,8 @@ import os
 from datetime import datetime
 from typing import Annotated
 
-import requests
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Header
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from fastapi.security.base import SecurityBase
 from sqlalchemy.orm import Session
 
 import crud
@@ -13,11 +11,12 @@ import models
 import schemas
 import auth
 import validations
+from user_roles import Roles
 from database import engine, session_local
 from sessions import create_session, get_session, revoke_session
+from validations import validate_api_key
 
 models.base.metadata.create_all(bind = engine)
-
 
 app = FastAPI()
 
@@ -79,20 +78,31 @@ def read_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)], u
 
 @app.patch("/users/{user_id}", response_model=schemas.User)
 def update_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, user_update: schemas.UserUpdate, db_session: Session = Depends(get_db_session)):
+    current_user = read_user_me(user, db_session)
     db_user = crud.get_user(db_session, user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
-    validations.validate_id(user.id, user_id)
-    return crud.update_user(db_session, db_user, user_update)
+    if current_user.role is not Roles.ADMIN:
+        validations.validate_id(user.id, user_id)
+    return crud.update_user(db_session, db_user, user_update) #TODO: if name is updated, it needs to be mirrored in auth DB!
 
 @app.delete("/users/{user_id}")
 def delete_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, db_session: Session = Depends(get_db_session)):
+    current_user = read_user_me(user, db_session)
     db_user = crud.get_user(db_session, user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
-    validations.validate_id(user.id, user_id)
+    if current_user.role is not Roles.ADMIN:
+        validations.validate_id(user.id, user_id)
     crud.delete_user(db_session, db_user)
     return {"message": "User deleted successfully"}
+
+# ADMINS
+@app.post("/admins")
+def create_admin(admin_payload: schemas.UserCreate, db_session: Session = Depends(get_db_session), _: None = Depends(validate_api_key)):
+    user_id = auth.create_user(admin_payload)
+    user = schemas.User(id=user_id, username=admin_payload.username, full_name=admin_payload.full_name, date_created = datetime.today().isoformat(), role = Roles.ADMIN)
+    return crud.create_user(db_session=db_session, user=user)
 
 #PROFILE
 @app.put("/users/{user_id}/profile", response_model=schemas.Profile)
@@ -105,27 +115,32 @@ def create_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user
 
 @app.get("/users/{user_id}/profile", response_model=schemas.Profile)
 def read_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, db_session: Session = Depends(get_db_session)):
+    current_user = read_user_me(user, db_session)
     db_profile = crud.get_profile(db_session, user_id)
     if db_profile is None:
         raise HTTPException(status_code=404, detail="Profile not found")
-    if db_profile.is_private != 0:
+    if db_profile.is_private != 0 and current_user.role is not Roles.ADMIN:
         validations.validate_id(user.id, user_id)
     return db_profile
 
 @app.patch("/users/{user_id}/profile", response_model=schemas.Profile)
 def update_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, profile_update: schemas.ProfileUpdate, db_session: Session = Depends(get_db_session)):
+    current_user = read_user_me(user, db_session)
     db_profile = crud.get_profile(db_session, user_id)
     if db_profile is None:
         raise HTTPException(status_code=404, detail="Profile not found")
-    validations.validate_id(user.id, user_id)
+    if current_user.role is not Roles.ADMIN:
+        validations.validate_id(user.id, user_id)
     return crud.update_profile(db_session, db_profile, profile_update)
 
 @app.delete("/users/{user_id}/profile")
 def delete_profile(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, db_session: Session = Depends(get_db_session)):
+    current_user = read_user_me(user, db_session) #TODO: refactor later
     db_profile = crud.get_profile(db_session, user_id)
     if db_profile is None:
         raise HTTPException(status_code=404, detail="Profile not found")
-    validations.validate_id(user.id, user_id)
+    if current_user.role is not Roles.ADMIN:
+        validations.validate_id(user.id, user_id)
     crud.delete_profile(db_session, db_profile)
     return {"message": "Profile deleted successfully"}
 
@@ -150,18 +165,22 @@ def read_groups(user: Annotated[schemas.SessionUser, Depends(get_current_user)],
 
 @app.patch("/groups/{group_id}", response_model=schemas.Group)
 def update_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, group_update: schemas.GroupUpdate, db_session: Session = Depends(get_db_session)):
+    current_user = read_user_me(user, db_session)
     db_group = crud.get_group(db_session, group_id=group_id)
     if db_group is None:
         raise HTTPException(status_code=404, detail="Group not found")
-    validations.validate_owns_group(user.id, db_group)
+    if current_user.role is not Roles.ADMIN:
+        validations.validate_owns_group(user.id, db_group)
     return crud.update_group(db_session, db_group, group_update)
 
 @app.delete("/groups/{group_id}")
 def delete_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, db_session: Session = Depends(get_db_session)):
+    current_user = read_user_me(user, db_session)
     db_group = crud.get_group(db_session, group_id=group_id)
     if db_group is None:
         raise HTTPException(status_code=404, detail="Group not found")
-    validations.validate_owns_group(user.id, db_group)
+    if current_user.role is not Roles.ADMIN:
+        validations.validate_owns_group(user.id, db_group)
     crud.delete_group(db_session, db_group)
     return {"message": "Group deleted successfully"}
 
@@ -182,10 +201,12 @@ def join_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], 
 #leave group
 @app.delete("/groups/{group_id}/members/{user_id}", response_model=schemas.Group)
 def leave_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, group_id: int, db_session: Session = Depends(get_db_session)):
+    current_user = read_user_me(user, db_session)
     db_user = read_user(user, user_id=user_id, db_session=db_session)
     db_group = read_group(user, group_id=group_id, db_session=db_session)
-    validations.validate_user_in_group(db_user, db_group)
-    validations.validate_id(user.id, user_id)
+    if current_user.role is not Roles.ADMIN:
+        validations.validate_user_in_group(db_user, db_group)
+        validations.validate_id(user.id, user_id)
     return crud.leave_group(db_session=db_session, db_user=db_user, db_group=db_group)
 
 # get all members in a group by group_id
@@ -228,8 +249,10 @@ def invite_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)],
 #get invited users in group
 @app.get("/groups/{group_id}/invites", response_model = schemas.UserList) #TODO: skip, limit
 def read_invited_users_in_group(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, db_session: Session = Depends(get_db_session)):
+    current_user = read_user_me(user, db_session)
     db_group = read_group(user, group_id=group_id, db_session=db_session)
-    validations.validate_user_in_group(crud.get_user(db_session, user.id), db_group)
+    if current_user.role is not Roles.ADMIN:
+        validations.validate_user_in_group(current_user, db_group)
     invited_users = schemas.UserList(data=crud.get_invited_users(db_session, db_group))
     return invited_users
 
@@ -251,6 +274,7 @@ def decline_invitation(user: Annotated[schemas.SessionUser, Depends(get_current_
 
 @app.delete("/groups/{group_id}/invites/{user_id}")
 def delete_invitation(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, group_id: int, db_session: Session = Depends(get_db_session)):
+    current_user = read_user_me(user, db_session)
     db_user = read_user(user, user_id, db_session)
     db_group = read_group(user, group_id, db_session)
 
@@ -262,16 +286,19 @@ def delete_invitation(user: Annotated[schemas.SessionUser, Depends(get_current_u
     if invitation is None:
         raise HTTPException(status_code=404, detail="Invitation not found")
     
-    validations.validate_current_is_inviter(read_user_me(user, db_session), invitation)
+    if current_user.role is not Roles.ADMIN:
+        validations.validate_current_is_inviter(current_user, invitation)
     crud.delete_invitation(db_session, user_id, group_id)
     return {"message": "Invitation successfully deleted!"}
 
 # ACTIVITIES
 @app.post("/groups/{group_id}/activities", response_model = schemas.Activity)
 def create_activity(user: Annotated[schemas.SessionUser, Depends(get_current_user)], activity: schemas.ActivityCreate, group_id: int, db_session: Session = Depends(get_db_session)):
+    current_user = read_user_me(user, db_session)
     db_user = read_user_me(user, db_session)
     db_group = read_group(user, group_id, db_session)
-    validations.validate_user_in_group(db_user, db_group)
+    if current_user.role is not Roles.ADMIN:
+        validations.validate_user_in_group(db_user, db_group)
 
     activity_payload = schemas.ActivityPayload(
         activity_name=activity.activity_name,
@@ -284,17 +311,21 @@ def create_activity(user: Annotated[schemas.SessionUser, Depends(get_current_use
 
 @app.get("/groups/{group_id}/activities", response_model = schemas.ActivityList)
 def read_activities(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, skip: int = 0, limit: int = 100, db_session: Session = Depends(get_db_session)):
+    current_user = read_user_me(user, db_session)
     db_user = read_user_me(user, db_session)
     db_group = read_group(user, group_id, db_session)
-    validations.validate_user_in_group(db_user, db_group)
+    if current_user.role is not Roles.ADMIN:
+        validations.validate_user_in_group(db_user, db_group)
 
     return schemas.ActivityList(data=crud.get_activities(db_session, group_id, skip, limit))
 
 @app.get("/groups/{group_id}/activities/{activity_id}", response_model = schemas.Activity)
 def read_activity(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, activity_id: int, db_session: Session = Depends(get_db_session)):
+    current_user = read_user_me(user, db_session)
     db_user = read_user_me(user, db_session)
     db_group = read_group(user, group_id, db_session)
-    validations.validate_user_in_group(db_user, db_group)
+    if current_user.role is not Roles.ADMIN:
+        validations.validate_user_in_group(db_user, db_group)
 
     db_activity = crud.get_activity(db_session, group_id, activity_id)
     if db_activity is None:
@@ -303,15 +334,18 @@ def read_activity(user: Annotated[schemas.SessionUser, Depends(get_current_user)
 
 @app.patch("/groups/{group_id}/activities/{activity_id}", response_model = schemas.Activity)
 def update_activity(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, activity_id, activity_update: schemas.ActivityUpdate, db_session: Session = Depends(get_db_session)):
+    current_user = read_user_me(user, db_session)
     db_activity = read_activity(user, group_id, activity_id, db_session)
-    validations.validate_owns_activity(user.id, db_activity)
+    if current_user.role is not Roles.ADMIN:
+        validations.validate_owns_activity(user.id, db_activity)
     return crud.update_activity(db_session, db_activity, activity_update)
 
-#TODO: currently only the owner of the activity can remove it. Moderators/admins should also be able to remove them
 @app.delete("/groups/{group_id}/activities/{activity_id}")
 def delete_activity(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, activity_id: int, db_session: Session = Depends(get_db_session)):
+    current_user = read_user_me(user, db_session)
     db_activity = read_activity(user, group_id, activity_id, db_session)
-    validations.validate_owns_activity(user.id, db_activity)
+    if current_user.role is not Roles.ADMIN:
+        validations.validate_owns_activity(user.id, db_activity)
     crud.delete_activity(db_session, db_activity)
     return {"message" : "Activity successfully deleted!"}
 
@@ -332,9 +366,10 @@ def join_activity(user: Annotated[schemas.SessionUser, Depends(get_current_user)
 
 @app.get("/group/{group_id}/activities/{activity_id}/participants", response_model = schemas.UserList)
 def read_participants(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, activity_id: int, skip: int = 0, limit: int = 100, db_session: Session = Depends(get_db_session)):
-    db_user = read_user_me(user, db_session)
+    current_user = read_user_me(user, db_session)
     db_group = read_group(user, group_id, db_session)
-    validations.validate_user_in_group(db_user, db_group)
+    if current_user.role is not Roles.ADMIN:
+        validations.validate_user_in_group(current_user, db_group)
 
     db_activity = read_activity(user, group_id, activity_id, db_session)
 
@@ -342,18 +377,22 @@ def read_participants(user: Annotated[schemas.SessionUser, Depends(get_current_u
 
 @app.get("/users/{user_id}/activities", response_model = schemas.ActivityList)
 def read_user_activities(user: Annotated[schemas.SessionUser, Depends(get_current_user)], user_id: str, skip: int = 0, limit: int = 100, db_session: Session = Depends(get_db_session)):
+    current_user = read_user_me(user, db_session)
     db_user = read_user(user, user_id, db_session)
-    validations.validate_id(user.id, user_id)
+    if current_user.role is not Roles.ADMIN:
+        validations.validate_id(user.id, user_id)
     return schemas.ActivityList(data=crud.get_user_activities(db_session, db_user, skip, limit))
 
 @app.delete("/groups/{group_id}/activities/{activity_id}/participants/{participant_id}")
 def leave_activity(user: Annotated[schemas.SessionUser, Depends(get_current_user)], group_id: int, activity_id: int, participant_id: str, db_session: Session = Depends(get_db_session)):
+    current_user = read_user_me(user, db_session)
     db_user = read_user(user, participant_id, db_session)
     db_group = read_group(user, group_id, db_session)
     db_activity = read_activity(user, group_id, activity_id, db_session)
-    validations.validate_id(user.id, participant_id)
-    validations.validate_user_in_group(db_user, db_group)
-    validations.validate_user_in_activity(db_user, db_activity)
+    if current_user.role is not Roles.ADMIN:
+        validations.validate_id(user.id, participant_id)
+        validations.validate_user_in_group(db_user, db_group)
+        validations.validate_user_in_activity(db_user, db_activity)
     
     crud.leave_activity(db_session, db_user, db_activity)
     return {"message": "activity successfully left!"}

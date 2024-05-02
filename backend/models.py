@@ -1,6 +1,8 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, Table, DateTime
+from sqlalchemy import Column, ForeignKey, Integer, String, Table, DateTime, Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+
+from user_roles import Roles
 
 from database import base
 
@@ -43,6 +45,7 @@ class User(base):
     username = Column(String, unique=True)
     full_name = Column(String)
     date_created = Column(String) #TODO: calculate timestamp in db server, not in client
+    role = Column(Enum(Roles), default=Roles.NORMAL)
 
     groups = relationship("Group", secondary=group_memberships, back_populates="users")
 
