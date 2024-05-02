@@ -1,17 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_application/components/sign_in_button.dart';
+import 'package:flutter_application/components/MyButton.dart';
 import 'package:flutter_application/components/my_textfield.dart';
 import 'package:flutter_application/components/square_tile.dart';
+import 'package:flutter_application/views/sign_up_page.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   LoginPage({super.key});
 
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   // text editing controllers
   final usernameController = TextEditingController();
+
   final passwordController = TextEditingController();
 
-  void signUserIn() {}
+  void signUserIn() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+
+    //Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +95,7 @@ class LoginPage extends StatelessWidget {
 
               //sign in button
               MyButton(
+                buttonText: 'Sign In',
                 onTap: signUserIn,
               ),
 
@@ -131,6 +150,7 @@ class LoginPage extends StatelessWidget {
               const SizedBox(height: 50),
 
               //Not a member? register now
+              // Not a member? Register now
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -143,11 +163,20 @@ class LoginPage extends StatelessWidget {
                   const SizedBox(
                     width: 4,
                   ),
-                  const Text(
-                    'Register Now',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontWeight: FontWeight.bold,
+                  GestureDetector(
+                    onTap: () {
+                      // Navigate to the SignUpPage
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SignUpPage()),
+                      );
+                    },
+                    child: const Text(
+                      'Register Now',
+                      style: TextStyle(
+                        color: Colors.blue,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
