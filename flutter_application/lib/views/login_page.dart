@@ -24,9 +24,10 @@ class LoginPage extends StatelessWidget {
             children: [
               const SizedBox(height: 50),
               //logo
-              const Icon(
+              Icon(
                 Icons.person,
                 size: 100,
+                color: Colors.grey[800],
               ),
 
               const SizedBox(height: 40),
