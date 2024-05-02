@@ -47,10 +47,9 @@ def login(credentials: schemas.UserCreds):
     return {"bearer": f"Bearer {session}"}
 
 #should maybe be delete?
-@app.post("/users/logout")
+@app.post("/users/logout", status_code=204)
 def logout(token: Annotated[HTTPAuthorizationCredentials, Depends(header_scheme)]):
     revoke_session(token.credentials)
-    return {"message": "Session revoked"}
 
 # user creation
 @app.post("/users", response_model = schemas.User)
