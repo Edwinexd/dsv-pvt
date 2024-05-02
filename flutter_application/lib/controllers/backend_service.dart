@@ -6,12 +6,6 @@ import 'package:flutter_application/models/group_invite.dart';
 import 'package:flutter_application/models/profile.dart';
 import 'package:flutter_application/models/user.dart';
 
-/* TODO:
-   * 
-   * - REFACTOR: groups owner_id
-   * - REFACTOR: user roles
-   */
-
 class BackendService {
   // late Dio _dio;
   late DioClient _dioClient;
