@@ -119,7 +119,7 @@ def get_group_users(db_session: Session, group_id: int):
 #ACHIEVEMENTS
 #create
 def create_achievement(db_session: Session, achievement: schemas.AchievementCreate):
-    db_achievement = models.Achievement(id = achievement.id, achievement_name = achievement.achievement_name, description = achievement.descripton, requirement = achievement.requirement)
+    db_achievement = models.Achievement(id = achievement.id, achievement_name = achievement.achievement_name, description = achievement.description, requirement = achievement.requirement)
     db_session.add(db_achievement)
     db_session.commit()
     db_session.refresh(db_achievement)
@@ -135,8 +135,8 @@ def get_achievements(db_session: Session, skip: int = 0, limit: int = 100):
 
 #update
 def update_achievement(db_session: Session, db_achievement: models.Achievement, achievement_update: schemas.AchievementUpdate):
-    update_date = achievement_update.model_dump(exclude_unset=True)
-    for k, v in update_date.items():
+    update_data = achievement_update.model_dump(exclude_unset=True)
+    for k, v in update_data.items():
         setattr(db_achievement, k, v)
     db_session.commit()
     db_session.refresh(db_achievement)

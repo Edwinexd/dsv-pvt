@@ -132,5 +132,12 @@ class Achievement(AchievementBase):
     class Config:
         from_attributed = True
 
+
+#achievementupdate  ?
+class AchievementUpdate(BaseModel):
+    achievement_name: Optional[str] = None
+    description: Optional[str] = None
+    requirement: Optional[int] = None
+
 class AchievementList(BaseModel):
     data: List[Achievement]
