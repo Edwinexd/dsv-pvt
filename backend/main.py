@@ -52,7 +52,7 @@ def login(credentials: schemas.UserCreds):
 @app.post("/users", response_model = schemas.User)
 def create_user(user_payload: schemas.UserCreate, db_session: Session = Depends(get_db_session)):
     user_id = auth.create_user(user_payload)
-    user = schemas.User(id=user_id, username=user_payload.username, full_name=user_payload.full_name, date_created = datetime.today().isoformat())
+    user = schemas.UserModel(id=user_id, username=user_payload.username, full_name=user_payload.full_name)
     return crud.create_user(db_session=db_session, user=user)
 
 # get a list of users from db using a offset and size limit
@@ -95,7 +95,7 @@ def delete_user(current_user: Annotated[models.User, Depends(get_db_user)], user
 @app.post("/admins")
 def create_admin(admin_payload: schemas.UserCreate, db_session: Session = Depends(get_db_session), _: None = Depends(validate_api_key)):
     user_id = auth.create_user(admin_payload)
-    user = schemas.User(id=user_id, username=admin_payload.username, full_name=admin_payload.full_name, date_created = datetime.today().isoformat(), role = Roles.ADMIN)
+    user = schemas.UserModel(id=user_id, username=admin_payload.username, full_name=admin_payload.full_name, role = Roles.ADMIN)
     return crud.create_user(db_session=db_session, user=user)
 
 #PROFILE

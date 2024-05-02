@@ -12,17 +12,19 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
 
-class User(UserBase):
+class UserModel(UserBase):
     id: str
-    date_created: str
     role: Roles = Roles.NORMAL
+
+class User(UserModel):
+    date_created: datetime
 
     class Config:
         from_attributes = True
 
     # Incase we want the api to present the Role as the name instead of the value
     @field_serializer("role")
-    def serialize_group(self, role: Roles, _info):
+    def serialize_role(self, role: Roles, _info):
         return role.name
 
 class UserList(BaseModel):
@@ -97,7 +99,6 @@ class Invite(InviteBase):
 class ActivityBase(BaseModel):
     activity_name: str
     scheduled_date: datetime
-    #scheduled_date: str #ISO-check!
     difficulty_code: int
 
 class ActivityCreate(ActivityBase):
