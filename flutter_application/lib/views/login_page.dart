@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_application/components/my_button.dart';
 import 'package:flutter_application/components/my_textfield.dart';
 
 class LoginPage extends StatelessWidget {
@@ -8,6 +9,8 @@ class LoginPage extends StatelessWidget {
   // text editing controllers
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
+
+  void signUserIn() {}
 
   @override
   Widget build(BuildContext context) {
@@ -23,17 +26,15 @@ class LoginPage extends StatelessWidget {
                 Icons.person,
                 size: 100,
               ),
-                           
+
               const SizedBox(height: 50),
 
               //welcome back, youve been missed
-              Text(
-                'Welcome back!',
-                style: TextStyle(
-                  color: Colors.grey[700],
-                  fontSize: 16,
-                )
-              ),
+              Text('Welcome back!',
+                  style: TextStyle(
+                    color: Colors.grey[700],
+                    fontSize: 16,
+                  )),
 
               const SizedBox(height: 25),
 
@@ -45,7 +46,7 @@ class LoginPage extends StatelessWidget {
               ),
 
               const SizedBox(height: 10),
-              
+
               //password textfield
               MyTextField(
                 controller: passwordController,
@@ -72,10 +73,51 @@ class LoginPage extends StatelessWidget {
               const SizedBox(height: 10),
 
               //sign in button
-              
+              MyButton(
+                onTap: signUserIn,
+              ),
+
+              const SizedBox(height: 50),
+
               //or continue with
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Divider(
+                        thickness: 0.5,
+                        color: Colors.grey[400],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Text(
+                        'Or continue with',
+                        style: TextStyle(color: Colors.grey[700]),
+                      ),
+                    ),
+                    Expanded(
+                      child: Divider(
+                        thickness: 0.5,
+                        color: Colors.grey[400],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
 
               //google + apple sign in
+              Row(
+                children: [
+                  Image.asset(
+                    'lib/images/google.png',
+                    height: 72,
+                    ),
+                ],
+              )
+
+              //Not a member? register now
             ],
           ),
         )));
