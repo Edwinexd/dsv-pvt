@@ -33,9 +33,19 @@ class GroupInvitations(base):
     user_id = Column(String, ForeignKey("users.id"), primary_key=True)
     invited_by = Column(String, ForeignKey("users.id"))
 
-    group = relationship("Group", back_populates="user_invitation_associations", foreign_keys=[group_id])
-    user = relationship("User", back_populates="group_invitation_associations", foreign_keys=[user_id])
-    inviter = relationship("User", foreign_keys=[invited_by])
+    group = relationship("Group", 
+                         #back_populates="user_invitation_associations", 
+                         #back_populates="invited_users",
+                         viewonly=True,
+                         foreign_keys=[group_id])
+    user = relationship("User", 
+                        #back_populates="group_invitation_associations", 
+                        #back_populates="groups_invited_to",
+                        viewonly=True,
+                        foreign_keys=[user_id])
+    inviter = relationship("User", 
+                           viewonly=True,
+                           foreign_keys=[invited_by])
 
 # NORMAL TABLES
 class User(base):
@@ -49,7 +59,7 @@ class User(base):
 
     groups = relationship("Group", secondary=group_memberships, back_populates="users")
 
-    group_invitation_associations = relationship("GroupInvitations", back_populates="user", foreign_keys='GroupInvitations.user_id')
+    #group_invitation_associations = relationship("GroupInvitations", back_populates="user", foreign_keys='GroupInvitations.user_id')
     groups_invited_to = relationship("Group", secondary="group_invitations", back_populates="invited_users", primaryjoin="User.id == GroupInvitations.user_id", secondaryjoin="GroupInvitations.group_id == Group.id")
 
     activities = relationship(
@@ -94,7 +104,7 @@ class Group(base):
 
     activities = relationship("Activity", back_populates="group")
 
-    user_invitation_associations = relationship("GroupInvitations", back_populates="group", foreign_keys='GroupInvitations.group_id')
+    #user_invitation_associations = relationship("GroupInvitations", back_populates="group", foreign_keys='GroupInvitations.group_id')
     invited_users = relationship("User", secondary="group_invitations", back_populates="groups_invited_to", primaryjoin="Group.id == GroupInvitations.group_id", secondaryjoin="GroupInvitations.user_id == User.id")
 
 class Activity(base):

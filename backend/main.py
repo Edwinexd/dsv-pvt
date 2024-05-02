@@ -34,7 +34,6 @@ def get_current_user(token: Annotated[HTTPAuthorizationCredentials, Depends(head
     
     return session
 
-#TODO: get db user depends get current user
 def get_db_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)], db_session: Session = Depends(get_db_session)):
     return crud.get_user(db_session, user.id)
 
@@ -219,7 +218,7 @@ def invite_user(current_user: Annotated[models.User, Depends(get_db_user)], user
     if db_group.is_private == 0:
         raise HTTPException(status_code=400, detail="Can't create invite to public group!")
     
-    validations.validate_user_in_group(current_user, db_group) # user can only invite to group if user is in the group
+    validations.validate_user_in_group(current_user, current_user, db_group) # user can only invite to group if user is in the group
 
     if db_user in crud.get_invited_users(db_session, db_group):
         raise HTTPException(status_code=400, detail="User already invited to group!")
@@ -320,7 +319,7 @@ def delete_activity(current_user: Annotated[models.User, Depends(get_db_user)], 
 def join_activity(current_user: Annotated[models.User, Depends(get_db_user)], group_id: int, activity_id: int, participant_id: str, db_session: Session = Depends(get_db_session)):
     db_user = read_user(current_user, participant_id, db_session)
     db_group = read_group(current_user, group_id, db_session)
-    validations.validate_user_in_group(db_user, db_group)
+    validations.validate_user_in_group(current_user, db_user, db_group)
     validations.validate_id(current_user, participant_id)
 
     db_activity = read_activity(current_user, group_id, activity_id, db_session)
@@ -357,7 +356,5 @@ def leave_activity(current_user: Annotated[models.User, Depends(get_db_user)], g
     crud.leave_activity(db_session, db_user, db_activity)
     return {"message": "activity successfully left!"}
 
-
-#TODO: moderators, admins
 #TODO: challenge creation (by superusers), adding challenges to activities
 #TODO: reading all challanges, challenge-trophy link (?), reading all challenges in activity
