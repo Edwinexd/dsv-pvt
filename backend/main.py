@@ -50,7 +50,7 @@ def login(credentials: schemas.UserCreds):
 @app.post("/users/logout")
 def logout(token: Annotated[HTTPAuthorizationCredentials, Depends(header_scheme)]):
     revoke_session(token.credentials)
-    return {"message": "logged out!"}
+    return {"message": "Session revoked"}
 
 # user creation
 @app.post("/users", response_model = schemas.User)
