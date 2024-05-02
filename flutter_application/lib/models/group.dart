@@ -1,5 +1,5 @@
 class Group {
-  final String id;
+  final int id;
   final String name;
   final String description;
   final bool isPrivate;
@@ -14,7 +14,7 @@ class Group {
   factory Group.fromJson(Map<String, dynamic> json) {
     return switch (json) {
       {
-        'id': String id,
+        'id': int id,
         'group_name': String name,
         'description': String description,
         'is_private': bool isPrivate,

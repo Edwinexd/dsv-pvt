@@ -10,7 +10,6 @@ import 'package:flutter_application/models/user.dart';
    * 
    * - REFACTOR: groups owner_id
    * - REFACTOR: user roles
-   * - DateTime: from db to model in Activity
    */
 
 class BackendService {
@@ -232,7 +231,7 @@ class BackendService {
     return Group.fromJson((response.data) as Map<String, dynamic>);
   }
 
-  Future<Group> leaveGroup(String userId, String groupId) async {
+  Future<Group> leaveGroup(String userId, int groupId) async {
     final response =
         await _dioClient.dio.delete('/groups/$groupId/members/$userId');
     return Group.fromJson((response.data) as Map<String, dynamic>);
