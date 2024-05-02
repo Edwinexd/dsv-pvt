@@ -37,9 +37,9 @@ def get_current_user(token: Annotated[HTTPAuthorizationCredentials, Depends(head
     
     return session
 
-def revoke_current_user(token: Annotated[HTTPAuthorizationCredentials, Depends(header_scheme)]):
+def get_current_users_token(token: Annotated[HTTPAuthorizationCredentials, Depends(header_scheme)]):
     get_current_user(token) #checks if session exists
-    revoke_session(token.credentials)
+    return token.credentials
 
 
 #USER
@@ -53,7 +53,8 @@ def login(credentials: schemas.UserCreds):
 
 #should maybe be delete?
 @app.post("/users/logout")
-def logout(user: Annotated[schemas.SessionUser, Depends(revoke_current_user)]):
+def logout(token: str = Depends(get_current_users_token)):
+    revoke_session(token)
     return {"message": "logged out!"}
 
 # user creation
