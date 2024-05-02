@@ -13,7 +13,7 @@ import auth
 import validations
 from user_roles import Roles
 from database import engine, session_local
-from sessions import create_session, get_session
+from sessions import create_session, get_session, revoke_session
 from validations import validate_api_key
 
 models.base.metadata.create_all(bind = engine)
@@ -44,6 +44,11 @@ def login(credentials: schemas.UserCreds):
     user_id = auth.login(credentials)
     session = create_session(user_id)
     return {"bearer": f"Bearer {session}"}
+
+#should maybe be delete?
+@app.post("/users/logout", status_code=204)
+def logout(token: Annotated[HTTPAuthorizationCredentials, Depends(header_scheme)]):
+    revoke_session(token.credentials)
 
 # user creation
 @app.post("/users", response_model = schemas.User)
