@@ -37,11 +37,6 @@ def get_current_user(token: Annotated[HTTPAuthorizationCredentials, Depends(head
     
     return session
 
-def get_current_users_token(token: Annotated[HTTPAuthorizationCredentials, Depends(header_scheme)]):
-    get_current_user(token) #checks if session exists
-    return token.credentials
-
-
 #USER
 #login
 # TODO: Properly annotate in OPENAPI that it requires credentials
@@ -53,8 +48,8 @@ def login(credentials: schemas.UserCreds):
 
 #should maybe be delete?
 @app.post("/users/logout")
-def logout(token: str = Depends(get_current_users_token)):
-    revoke_session(token)
+def logout(token: Annotated[HTTPAuthorizationCredentials, Depends(header_scheme)]):
+    revoke_session(token.credentials)
     return {"message": "logged out!"}
 
 # user creation
