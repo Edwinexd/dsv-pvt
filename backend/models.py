@@ -37,8 +37,6 @@ class GroupInvitations(base):
                          viewonly=True,
                          foreign_keys=[group_id])
     user = relationship("User", 
-                        #back_populates="group_invitation_associations", 
-                        #back_populates="groups_invited_to",
                         viewonly=True,
                         foreign_keys=[user_id])
     inviter = relationship("User", 
