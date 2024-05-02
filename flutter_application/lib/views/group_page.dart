@@ -1,93 +1,109 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-class GroupPage extends StatelessWidget {
-  final String groupName = "Group Name";
-  final bool isPrivate = true;
+class GroupPage extends StatefulWidget {
+  final String groupName;
+  final bool isPrivate;
 
-  const GroupPage({super.key, required String groupName, required bool isPrivate});
+  const GroupPage({super.key, required this.groupName, required this.isPrivate});
+
+  @override
+  _GroupPageState createState() => _GroupPageState();
+}
+
+class _GroupPageState extends State<GroupPage> {
+  late List<String> allMembers;
+  late List<String> displayedMembers;
+  TextEditingController searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    //List of members(just an example)
+    allMembers = List.generate(20, (index) => 'Member $index');
+    displayedMembers = List.from(allMembers);
+    //added listener to search text field
+    searchController.addListener(_searchMembers);
+  }
+
+  @override
+  void dispose() {
+    //cleans up the controller when the widget is disposed
+    searchController.dispose();
+    super.dispose();
+  }
+
+  void _searchMembers() {
+    String query = searchController.text.toLowerCase();
+    setState(() {
+      displayedMembers = allMembers.where((member) => member.toLowerCase().contains(query)).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(250, 60, 71, 133),
         title: Text(
-          'Lace Up & Lead The Way',
-          style: GoogleFonts.lato(
+          widget.groupName,
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 24.0,
-          ),
+          ), 
         ),
-        backgroundColor: const Color.fromARGB(230, 60, 71, 133),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: () {
-                    //Will handle create activity button press
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.lightBlue[100],
-                  ),
-                  label: const Text("Create an activity"),
-                  icon: const Icon(Icons.run_circle_sharp), //Can change later 
-                ),
-                
-                const SizedBox(height: 16),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    //Will handle invite friend button press
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.lightBlue[100],
-                  ),
-                  label: const Text("Invite a friend"),
-                  icon: const Icon(Icons.person_add),
-                  
-                ),
-              ],
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton.icon(
+              onPressed: () {
+                //Will handle create activity button later
+              },
+              label: const Text('Create an activity'),
+              icon: const Icon(Icons.run_circle_sharp),
             ),
           ),
-          const SizedBox(height: 16),
-          const Text(
-            "Members",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton.icon(
+              onPressed: () {
+                //Will handle invite friend button later
+              },
+              icon: const Icon(Icons.add),
+              label: const Text('Invite a friend'),
             ),
           ),
-          const SizedBox(height: 8),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text(
+              'Members',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
+              controller: searchController,
               decoration: const InputDecoration(
-                labelText: "Search members...",
+                labelText: 'Search members...',
                 border: OutlineInputBorder(),
-                suffixIcon: Icon(Icons.search),
               ),
-              onChanged: (value) {
-                //Will handle search query
-              },
             ),
           ),
-          const Divider(),
-          //Members section
           Expanded(
             child: ListView.builder(
-              itemCount: 20, //Number of members here
+              itemCount: displayedMembers.length,
               itemBuilder: (context, index) {
-                //Will replace this with actual member info/data
                 return ListTile(
                   leading: const CircleAvatar(
-                    child: Icon(Icons.person), //Will replace the placeholder with the actual member's profile picture
+                    //will add user profile picture here
+                    child: Icon(Icons.photo), //Placeholder for profile picture
                   ),
-                  title: Text("Member $index"),
+                  title: Text(displayedMembers[index]),
                 );
               },
             ),
