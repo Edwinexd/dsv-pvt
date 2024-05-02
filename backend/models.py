@@ -99,7 +99,6 @@ class Group(base):
 
     activities = relationship("Activity", back_populates="group")
 
-    #user_invitation_associations = relationship("GroupInvitations", back_populates="group", foreign_keys='GroupInvitations.group_id')
     invited_users = relationship("User", secondary="group_invitations", back_populates="groups_invited_to", primaryjoin="Group.id == GroupInvitations.group_id", secondaryjoin="GroupInvitations.user_id == User.id")
 
 class Activity(base):
