@@ -6,6 +6,13 @@ import 'package:flutter_application/models/group_invite.dart';
 import 'package:flutter_application/models/profile.dart';
 import 'package:flutter_application/models/user.dart';
 
+/* TODO:
+   * 
+   * - REFACTOR: groups owner_id
+   * - REFACTOR: user roles
+   * - DateTime: from db to model in Activity
+   */
+
 class BackendService {
   // late Dio _dio;
   late DioClient _dioClient;
@@ -280,11 +287,11 @@ class BackendService {
 
   // --------- ACTIVITIES ---------
   Future<Activity> createActivity(
-      int groupId, String name, String scheduled, int difficulty) async {
+      int groupId, String name, DateTime scheduled, int difficulty) async {
     final response =
         await _dioClient.dio.post('/groups/$groupId/activities', data: {
       "activity_name": name,
-      "scheduled_date": scheduled,
+      "scheduled_date": scheduled, // toString()? - INTE TESTAT ÄN
       "difficulty_code": difficulty,
     });
     return Activity.fromJson((response.data) as Map<String, dynamic>);
@@ -309,7 +316,7 @@ class BackendService {
 
   Future<Activity> updateActivity(int groupId, int activityId,
       {String? name,
-      String? scheduled,
+      DateTime? scheduled,
       int? difficulty,
       bool? isCompleted}) async {
     Map<String, dynamic> updateFields = {};
@@ -317,7 +324,7 @@ class BackendService {
       updateFields['activity_name'] = name;
     }
     if (scheduled != null) {
-      updateFields['scheduled_date'] = scheduled;
+      updateFields['scheduled_date'] = scheduled.toString();
     }
     if (difficulty != null) {
       updateFields['difficulty_code'] = difficulty;
@@ -371,11 +378,4 @@ class BackendService {
   void leaveActivity(int groupId, int acitivityId, String participantId) async {
     final response = await _dioClient.dio.delete('/groups/$groupId/activities/$acitivityId/participants/$participantId');
   }
-
-  /* TODO:
-   * 
-   * - REFACTOR: groups owner_id
-   * - REFACTOR: user roles
-   * - DateTime: from db to model in Activity
-   */
 }
