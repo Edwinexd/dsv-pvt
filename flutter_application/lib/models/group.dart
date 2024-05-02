@@ -1,5 +1,5 @@
 class Group {
-  final int id;
+  final String id;
   final String name;
   final String description;
   final bool isPrivate;
@@ -14,10 +14,10 @@ class Group {
   factory Group.fromJson(Map<String, dynamic> json) {
     return switch (json) {
       {
-        'id': int id,
+        'id': String id,
         'group_name': String name,
         'description': String description,
-        'private': bool isPrivate,
+        'is_private': bool isPrivate,
       } =>
         Group(
           id: id,
@@ -29,11 +29,11 @@ class Group {
     };
   }
 
-  static Map<String, dynamic> toJson(Group value) => {
-    'id': value.id, 
-    'group_name': value.name, 
-    'description': value.description, 
-    'private': value.isPrivate,
-    };
+  // static Map<String, dynamic> toJson(Group value) => {
+  //   'id': value.id, 
+  //   'group_name': value.name, 
+  //   'description': value.description, 
+  //   'is_private': value.isPrivate,
+  //   };
 }
 

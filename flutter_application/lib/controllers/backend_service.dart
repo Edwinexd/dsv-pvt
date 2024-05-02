@@ -57,16 +57,12 @@ class BackendService {
     return User.fromJson(response.data as Map<String, dynamic>);
   }
 
-  Future<User> fetchUser(int userId) async {
+  Future<User> fetchUser(String userId) async {
     final response = await _dioClient.dio.get('/users/$userId');
     return User.fromJson((response.data) as Map<String, dynamic>);
   }
 
-  void deleteUser(int userId) async {
-    final response = await _dioClient.dio.delete('/users/$userId');
-  }
-
-  Future<User> updateUser(int userId, {String? userName, String? fullName}) async {
+  Future<User> updateUser(String userId, {String? userName, String? fullName}) async {
     Map<String, dynamic> updateFields = {};
     if (userName != null) {
       updateFields['username'] = userName;
@@ -80,14 +76,31 @@ class BackendService {
       data: updateFields,
     );
     return User.fromJson((response.data) as Map<String, dynamic>);
-  }  
+  }
 
+  void deleteUser(String userId) async {
+    final response = await _dioClient.dio.delete('/users/$userId');
+  }
 
+  /* TODO: 
+   * - Create Profile
+   * - Read Profile
+   * - Update Profile
+   * - Delete Profile
+   */ 
 
   // --------- GROUPS ---------
 
-  Future<Group> fetchGroup(int groupId) async {
-    final response = await _dioClient.dio.get('/groups/$groupId');
+  Future<Group> createGroup(
+      String name, String description, bool isPrivate) async {
+    final response = await _dioClient.dio.post(
+      '/groups',
+      data: {
+        "group_name": name,
+        "description": description,
+        "is_private": isPrivate,
+      },
+    );
     return Group.fromJson((response.data) as Map<String, dynamic>);
   }
 
@@ -100,16 +113,8 @@ class BackendService {
     return groupList.map((x) => Group.fromJson(x)).toList();
   }
 
-  Future<Group> createGroup(
-      String name, String description, bool private) async {
-    final response = await _dioClient.dio.post(
-      '/groups',
-      data: {
-        "group_name": name,
-        "description": description,
-        "private": private,
-      },
-    );
+  Future<Group> fetchGroup(int groupId) async {
+    final response = await _dioClient.dio.get('/groups/$groupId');
     return Group.fromJson((response.data) as Map<String, dynamic>);
   }
 
@@ -124,7 +129,7 @@ class BackendService {
       updateFields['description'] = description;
     }
     if (isPrivate != null) {
-      updateFields['private'] = isPrivate;
+      updateFields['is_private'] = isPrivate;
     }
 
     final response = await _dioClient.dio.patch(
@@ -137,4 +142,15 @@ class BackendService {
   void deleteGroup(int groupdId) async {
     final response = await _dioClient.dio.delete('groups/$groupdId');
   }
+
+  /* TODO:
+   * - Join Group
+   * - Leave Group
+   * - Read members in group
+   * - read user groups me
+   * - read user groups
+   * - invite user
+   * - delete invitation
+   * - read invited users in group
+   */
 }
