@@ -55,7 +55,7 @@ def login(credentials: schemas.UserCreds):
 @app.post("/users/logout")
 def logout(token: str = Depends(get_current_users_token)):
     revoke_session(token)
-    return {"message": "logged out!"}
+    return {"message": "Session revoked"}
 
 # user creation
 @app.post("/users", response_model = schemas.User)
