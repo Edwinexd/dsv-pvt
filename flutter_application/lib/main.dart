@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/views/all_group_pages.dart';
 import 'profile_page.dart'; // Import the ProfilePage
 import 'drawer.dart';
-import 'create-profile-page.dart';  
+import 'create-profile-page.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/group_creation_page.dart';
 import 'package:flutter/widgets.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 //Uppdaterad från PC.
 void main() async {
@@ -46,7 +47,6 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-
 class MainPage extends StatefulWidget {
   final bool darkModeEnabled;
   final ValueChanged<bool> onToggleDarkMode;
@@ -55,7 +55,6 @@ class MainPage extends StatefulWidget {
     super.key,
     required this.darkModeEnabled,
     required this.onToggleDarkMode,
-
   });
 
   @override
@@ -86,7 +85,8 @@ class MainPageState extends State<MainPage> {
       }
       //Kommer ändras när vi har en homepage
       if (index == 0) {
-        goToGroupPage(context); // Nu har vi ingen home-page och indexen av grupp-ikonen är 0
+        goToGroupPage(
+            context); // Nu har vi ingen home-page och indexen av grupp-ikonen är 0
       }
     });
   }
@@ -101,18 +101,30 @@ class MainPageState extends State<MainPage> {
         onSignoutTap: () {},
         onSettingsTap: () {
           Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => SettingsPage(
-            onToggleDarkMode: widget.onToggleDarkMode,
-            initialDarkMode: widget.darkModeEnabled,
-          )),
-        );
-
+            context,
+            MaterialPageRoute(
+                builder: (context) => SettingsPage(
+                      onToggleDarkMode: widget.onToggleDarkMode,
+                      initialDarkMode: widget.darkModeEnabled,
+                    )),
+          );
         },
-        
       ),
       body: Center(
-        child: widgetOptions.elementAt(selectedIndex),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            CountdownWidget(),
+            SignupButton(),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Implement your function for the "Challenges" button here
+              },
+              child: Text('Challenges'),
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -162,5 +174,50 @@ class MainPageState extends State<MainPage> {
       ),
     );
   }
+}
 
+class CountdownWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final raceDate = DateTime(2024, 8, 17);
+    final currentDate = DateTime.now();
+    final difference = raceDate.difference(currentDate).inDays;
+
+    return Container(
+      color: Colors.orange,
+      padding: const EdgeInsets.all(10),
+      child: Text(
+        '$difference DAYS TO RACE',
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+        ),
+      ),
+    );
+  }
+}
+
+class SignupButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.deepOrange, // background color
+      ),
+      onPressed: () async {
+        const url = 'https://midnattsloppet.com/midnattsloppet-stockholm/';
+        if (await canLaunch(url)) {
+          await launch(url);
+        } else {
+          throw 'Could not launch $url';
+        }
+      },
+      child: const Text(
+        'Sign up for midnattsloppet now!',
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
 }
