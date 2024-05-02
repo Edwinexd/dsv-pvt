@@ -34,8 +34,6 @@ class GroupInvitations(base):
     invited_by = Column(String, ForeignKey("users.id"))
 
     group = relationship("Group", 
-                         #back_populates="user_invitation_associations", 
-                         #back_populates="invited_users",
                          viewonly=True,
                          foreign_keys=[group_id])
     user = relationship("User", 
