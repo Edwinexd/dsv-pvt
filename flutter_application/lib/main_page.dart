@@ -80,9 +80,10 @@ class MainPageState extends State<MainPage> {
             SignupButton(),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                // Implement your function for the "Challenges" button here
-              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFCFBAEA), 
+              ),
+              onPressed: () {},
               child: Text('Challenges'),
             ),
           ],
@@ -145,14 +146,19 @@ class CountdownWidget extends StatelessWidget {
     final currentDate = DateTime.now();
     final difference = raceDate.difference(currentDate).inDays;
 
-    return Container(
-      color: Colors.orange,
-      padding: const EdgeInsets.all(10),
-      child: Text(
-        '$difference DAYS TO RACE',
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 20,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 90.0), 
+      child: Container(
+        width: double.infinity,
+        color: Colors.deepOrange,
+        padding: const EdgeInsets.all(10),
+        child: Text(
+          '$difference DAYS TO RACE',
+          textAlign: TextAlign.center, 
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+          ),
         ),
       ),
     );
@@ -162,22 +168,31 @@ class CountdownWidget extends StatelessWidget {
 class SignupButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.deepOrange, // background color
-      ),
-      onPressed: () async {
-        const url = 'https://midnattsloppet.com/midnattsloppet-stockholm/';
-        if (await canLaunch(url)) {
-          await launch(url);
-        } else {
-          throw 'Could not launch $url';
-        }
-      },
-      child: const Text(
-        'Sign up for midnattsloppet now!',
-        style: TextStyle(
-          color: Colors.white,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 90.0), 
+      child: Container(
+        width: double.infinity,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.orange,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.zero, 
+            ),
+          ),
+          onPressed: () async {
+            const url = 'https://midnattsloppet.com/midnattsloppet-stockholm/';
+            if (await canLaunch(url)) {
+              await launch(url);
+            } else {
+              throw 'Could not launch $url';
+            }
+          },
+          child: const Text(
+            'Sign up for midnattsloppet now!',
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
         ),
       ),
     );
