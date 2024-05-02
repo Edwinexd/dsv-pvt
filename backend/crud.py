@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 import models, schemas
-from typing import List
 
 #USERS
 def get_user(db_session: Session, user_id: str):
@@ -38,7 +37,7 @@ def create_profile(db_session: Session, profile: schemas.ProfileCreate, user_id:
         age=profile.age,
         interests=profile.interests,
         skill_level=profile.skill_level,
-        is_private=profile.is_private
+        is_private=int(profile.is_private)
     )
     db_user = get_user(db_session, user_id)
     if db_user.profile is not None:
@@ -51,6 +50,10 @@ def create_profile(db_session: Session, profile: schemas.ProfileCreate, user_id:
 
 def update_profile(db_session: Session, db_profile: models.Profile, profile_update: schemas.ProfileUpdate):
     update_data = profile_update.model_dump(exclude_unset=True)
+
+    if "is_private" in update_data:
+        update_data["is_private"] = int(update_data["is_private"])
+
     for k, v in update_data.items():
         setattr(db_profile, k, v)
     db_session.commit()
@@ -63,7 +66,11 @@ def delete_profile(db_session: Session, db_profile: models.Profile):
 
 #GROUPS
 def create_group(db_session: Session, group: schemas.GroupCreate):
-    db_group = models.Group(group_name = group.group_name, description = group.description, is_private = group.is_private)
+    db_group = models.Group(
+        group_name = group.group_name, 
+        description = group.description, 
+        is_private = int(group.is_private)
+    )
     db_owner = get_user(db_session, group.owner_id)
     db_owner.owned_groups.append(db_group)
     db_owner.groups.append(db_group)
@@ -82,6 +89,10 @@ def get_groups(db_session: Session, skip: int = 0, limit: int = 100):
 
 def update_group(db_session: Session, db_group: models.Group, group_update: schemas.GroupUpdate):
     update_data = group_update.model_dump(exclude_unset=True)
+
+    if "is_private" in update_data:
+        update_data["is_private"] = int(update_data["is_private"])
+
     for k, v in update_data.items():
         setattr(db_group, k, v)
     db_session.commit()
@@ -160,6 +171,10 @@ def get_activity(db_session: Session, group_id: int, activity_id: int):
 
 def update_activity(db_session: Session, db_activity: models.Activity, activity_update: schemas.ActivityUpdate):
     update_data = activity_update.model_dump(exclude_unset=True)
+
+    if "is_completed" in update_data:
+        update_data["is_completed"] = int(update_data["is_completed"])
+    
     for k, v in update_data.items():
         setattr(db_activity, k, v)
     db_session.commit()

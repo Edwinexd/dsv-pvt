@@ -44,7 +44,7 @@ class User(base):
     id = Column(String, primary_key=True)
     username = Column(String, unique=True)
     full_name = Column(String)
-    date_created = Column(DateTime(timezone=True), server_default=func.now()) #TODO: calculate timestamp in db server, not in client
+    date_created = Column(DateTime(timezone=True), server_default=func.now())
     role = Column(Enum(Roles), default=Roles.NORMAL)
 
     groups = relationship("Group", secondary=group_memberships, back_populates="users")

@@ -44,7 +44,7 @@ class ProfileBase(BaseModel):
     age: Optional[int] = None
     interests: Optional[str] = None
     skill_level: int
-    is_private: int
+    is_private: bool
 
 class ProfileCreate(ProfileBase):
     pass
@@ -58,13 +58,13 @@ class ProfileUpdate(BaseModel):
     age: Optional[int] = None
     interests: Optional[str] = None
     skill_level: Optional[int] = None
-    is_private: Optional[int] = None
+    is_private: Optional[bool] = None
 
 # GROUP
 class GroupBase(BaseModel):
     group_name: str
     description: str
-    is_private: int
+    is_private: bool
     owner_id: str
 
 class GroupCreate(GroupBase):
@@ -83,7 +83,7 @@ class GroupList(BaseModel):
 class GroupUpdate(BaseModel):
     group_name: Optional[str] = None
     description: Optional[str] = None
-    is_private: Optional[int] = None
+    is_private: Optional[bool] = None
 
 # INVITES
 class InviteBase(BaseModel):
@@ -110,7 +110,7 @@ class ActivityPayload(ActivityBase):
 
 class Activity(ActivityBase):
     id: int
-    is_completed: int
+    is_completed: bool
     group_id: int
     owner_id: str
 
@@ -124,7 +124,7 @@ class ActivityUpdate(BaseModel):
     activity_name: Optional[str] = None
     scheduled_date: Optional[str] = None
     difficulty_code: Optional[int] = None
-    is_completed: Optional[int] = None #TODO: change to bool
+    is_completed: Optional[bool] = None
 
 # CHALLENGE
 class ChallengeBase(BaseModel):
