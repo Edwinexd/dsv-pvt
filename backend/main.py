@@ -14,7 +14,7 @@ import schemas
 import auth
 import validations
 from database import engine, session_local
-from sessions import create_session, get_session, revoke_sessions
+from sessions import create_session, get_session, revoke_session
 
 models.base.metadata.create_all(bind = engine)
 
@@ -37,6 +37,10 @@ def get_current_user(token: Annotated[HTTPAuthorizationCredentials, Depends(head
     
     return session
 
+def revoke_current_user(token: Annotated[HTTPAuthorizationCredentials, Depends(header_scheme)]):
+    get_current_user(token) #checks if session exists
+    revoke_session(token.credentials)
+
 
 #USER
 #login
@@ -49,8 +53,8 @@ def login(credentials: schemas.UserCreds):
 
 #should maybe be delete?
 @app.post("/users/logout")
-def logout(user: Annotated[schemas.SessionUser, Depends(get_current_user)]):
-    revoke_sessions(user.id)
+def logout(user: Annotated[schemas.SessionUser, Depends(revoke_current_user)]):
+    return {"message": "logged out!"}
 
 # user creation
 @app.post("/users", response_model = schemas.User)
