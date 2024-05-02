@@ -1,4 +1,5 @@
 import 'package:flutter_application/controllers/dio_client.dart';
+import 'package:flutter_application/models/activity.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/controllers/secure_storage.dart';
 import 'package:flutter_application/models/group_invite.dart';
@@ -110,16 +111,14 @@ class BackendService {
 
   // --------- PROFILE ---------
 
-  Future<Profile> createProfile(String userId, String description, int age, String interests,
-      int skillLevel, bool isPrivate) async {
-    final response = await _dioClient.dio.post(
-      '/users/$userId/profile', 
-      data: {
-        "description": description,
-        "age": age,
-        "interests": interests,
-        "skill_level": skillLevel,
-        "is_private": isPrivate,
+  Future<Profile> createProfile(String userId, String description, int age,
+      String interests, int skillLevel, bool isPrivate) async {
+    final response = await _dioClient.dio.post('/users/$userId/profile', data: {
+      "description": description,
+      "age": age,
+      "interests": interests,
+      "skill_level": skillLevel,
+      "is_private": isPrivate,
     });
 
     return Profile.fromJson((response.data) as Map<String, dynamic>);
@@ -130,7 +129,12 @@ class BackendService {
     return Profile.fromJson((response.data) as Map<String, dynamic>);
   }
 
-  Future<Profile> updateProfile(String userId, {String? description, int? age, String? interests, int? skillLevel, bool? isPrivate}) async {
+  Future<Profile> updateProfile(String userId,
+      {String? description,
+      int? age,
+      String? interests,
+      int? skillLevel,
+      bool? isPrivate}) async {
     Map<String, dynamic> updateFields = {};
     if (description != null) {
       updateFields['description'] = description;
@@ -215,13 +219,15 @@ class BackendService {
   }
 
   Future<Group> joinGroup(String userId, int groupId) async {
-    final response = await _dioClient.dio.put('/groups/$groupId/members/$userId');
+    final response =
+        await _dioClient.dio.put('/groups/$groupId/members/$userId');
 
     return Group.fromJson((response.data) as Map<String, dynamic>);
   }
 
   Future<Group> leaveGroup(String userId, String groupId) async {
-    final response = await _dioClient.dio.delete('/groups/$groupId/members/$userId');
+    final response =
+        await _dioClient.dio.delete('/groups/$groupId/members/$userId');
     return Group.fromJson((response.data) as Map<String, dynamic>);
   }
 
@@ -246,12 +252,14 @@ class BackendService {
   // --------- GROUP INVITES ---------
 
   Future<GroupInvite> inviteUserToGroup(String userId, int groupId) async {
-    final response = await _dioClient.dio.put('/groups/$groupId/invites/$userId');
+    final response =
+        await _dioClient.dio.put('/groups/$groupId/invites/$userId');
     return GroupInvite.fromJson((response.data) as Map<String, dynamic>);
   }
 
   void deleteGroupInvite(String userId, int groupId) async {
-    final response = await _dioClient.dio.delete('/groups/$groupId/invites/$userId');
+    final response =
+        await _dioClient.dio.delete('/groups/$groupId/invites/$userId');
   }
 
   Future<List<User>> fetchInvitedUsersInGroup(int groupId) async {
@@ -270,13 +278,104 @@ class BackendService {
     final response = _dioClient.dio.delete('/groups/$groupId/invites/me');
   }
 
-  
+  // --------- ACTIVITIES ---------
+  Future<Activity> createActivity(
+      int groupId, String name, String scheduled, int difficulty) async {
+    final response =
+        await _dioClient.dio.post('/groups/$groupId/activities', data: {
+      "activity_name": name,
+      "scheduled_date": scheduled,
+      "difficulty_code": difficulty,
+    });
+    return Activity.fromJson((response.data) as Map<String, dynamic>);
+  }
 
+  Future<List<Activity>> fetchActivities(
+      int groupId, int skip, int limit) async {
+    final response = await _dioClient.dio
+        .get('/groups/$groupId/activities', queryParameters: {
+      'skip': skip,
+      'limit': limit,
+    });
+    var activityList = response.data['data'] as List;
+    return activityList.map((e) => Activity.fromJson(e)).toList();
+  }
 
+  Future<Activity> fetchActivity(int groupId, int activityId) async {
+    final response =
+        await _dioClient.dio.get('/groups/$groupId/activities/$activityId');
+    return Activity.fromJson((response.data) as Map<String, dynamic>);
+  }
+
+  Future<Activity> updateActivity(int groupId, int activityId,
+      {String? name,
+      String? scheduled,
+      int? difficulty,
+      bool? isCompleted}) async {
+    Map<String, dynamic> updateFields = {};
+    if (name != null) {
+      updateFields['activity_name'] = name;
+    }
+    if (scheduled != null) {
+      updateFields['scheduled_date'] = scheduled;
+    }
+    if (difficulty != null) {
+      updateFields['difficulty_code'] = difficulty;
+    }
+    if (isCompleted != null) {
+      updateFields['is_completed'] = isCompleted;
+    }
+
+    final response = await _dioClient.dio.patch(
+      '/groups/$groupId/activities/$activityId',
+      data: updateFields,
+    );
+    return Activity.fromJson((response.data) as Map<String, dynamic>);
+  }
+
+  void deleteActivity(int groupId, int activityId) async {
+    final response =
+        await _dioClient.dio.delete('/groups/$groupId/activities/$activityId');
+  }
+
+  void joinActivity(int groupId, int activityId, int participantId) async {
+    final response = await _dioClient.dio.put(
+        '/group/$groupId/activities/$activityId/participants/$participantId');
+  }
+
+  Future<List<User>> fetchActivityParticipants(
+      int groupId, int activityId, int skip, int limit) async {
+    final response = await _dioClient.dio.get(
+        '/group/$groupId/activities/$activityId/participants',
+        queryParameters: {
+          'skip': skip,
+          'limit': limit,
+        });
+
+    var participantList = response.data['data'] as List;
+    return participantList.map((e) => User.fromJson(e)).toList();
+  }
+
+  Future<List<Activity>> fetchUserActivities(String userId, int skip, int limit) async {
+    final response = await _dioClient.dio.get(
+      '/users/$userId/activities',
+      queryParameters: {
+          'skip': skip,
+          'limit': limit,
+    });
+
+    var activityList = response.data['data'] as List;
+    return activityList.map((e) => Activity.fromJson(e)).toList();
+  }
+
+  void leaveActivity(int groupId, int acitivityId, String participantId) async {
+    final response = await _dioClient.dio.delete('/groups/$groupId/activities/$acitivityId/participants/$participantId');
+  }
 
   /* TODO:
    * 
    * - REFACTOR: groups owner_id
    * - REFACTOR: user roles
+   * - DateTime: from db to model in Activity
    */
 }
