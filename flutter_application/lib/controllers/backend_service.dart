@@ -1,6 +1,7 @@
 import 'package:flutter_application/controllers/dio_client.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/controllers/secure_storage.dart';
+import 'package:flutter_application/models/group_invite.dart';
 import 'package:flutter_application/models/profile.dart';
 import 'package:flutter_application/models/user.dart';
 
@@ -51,7 +52,7 @@ class BackendService {
       'limit': limit,
     });
     var userList = response.data['data'] as List;
-    return userList.map((x) => User.fromJson(x)).toList();
+    return userList.map((e) => User.fromJson(e)).toList();
   }
 
   Future<User> fetchMe() async {
@@ -180,7 +181,7 @@ class BackendService {
       'limit': limit,
     });
     var groupList = response.data['data'] as List;
-    return groupList.map((x) => Group.fromJson(x)).toList();
+    return groupList.map((e) => Group.fromJson(e)).toList();
   }
 
   Future<Group> fetchGroup(int groupId) async {
@@ -213,14 +214,69 @@ class BackendService {
     final response = await _dioClient.dio.delete('groups/$groupdId');
   }
 
+  Future<Group> joinGroup(String userId, int groupId) async {
+    final response = await _dioClient.dio.put('/groups/$groupId/members/$userId');
+
+    return Group.fromJson((response.data) as Map<String, dynamic>);
+  }
+
+  Future<Group> leaveGroup(String userId, String groupId) async {
+    final response = await _dioClient.dio.delete('/groups/$groupId/members/$userId');
+    return Group.fromJson((response.data) as Map<String, dynamic>);
+  }
+
+  Future<List<User>> fetchGroupMembers(int groupId) async {
+    final response = await _dioClient.dio.get('/groups/$groupId/members');
+    var memberList = response.data['data'] as List;
+    return memberList.map((e) => User.fromJson(e)).toList();
+  }
+
+  Future<List<Group>> fetchMyGroups() async {
+    final response = await _dioClient.dio.get('/users/me/groups');
+    var groupList = response.data['data'] as List;
+    return groupList.map((e) => Group.fromJson(e)).toList();
+  }
+
+  Future<List<Group>> fetchUserGroups(String userId) async {
+    final response = await _dioClient.dio.get('/users/$userId/groups');
+    var groupList = response.data['data'] as List;
+    return groupList.map((e) => Group.fromJson(e)).toList();
+  }
+
+  // --------- GROUP INVITES ---------
+
+  Future<GroupInvite> inviteUserToGroup(String userId, int groupId) async {
+    final response = await _dioClient.dio.put('/groups/$groupId/invites/$userId');
+    return GroupInvite.fromJson((response.data) as Map<String, dynamic>);
+  }
+
+  void deleteGroupInvite(String userId, int groupId) async {
+    final response = await _dioClient.dio.delete('/groups/$groupId/invites/$userId');
+  }
+
+  Future<List<User>> fetchInvitedUsersInGroup(int groupId) async {
+    final response = await _dioClient.dio.get('/groups/$groupId/invites');
+    var userList = response.data['data'] as List;
+    return userList.map((e) => User.fromJson(e)).toList();
+  }
+
+  Future<List<Group>> fetchGroupsInvitedTo() async {
+    final response = await _dioClient.dio.get('users/me/invites');
+    var groupList = response.data['data'] as List;
+    return groupList.map((e) => Group.fromJson(e)).toList();
+  }
+
+  void declineGroupInvite(int groupId) async {
+    final response = _dioClient.dio.delete('/groups/$groupId/invites/me');
+  }
+
+  
+
+
+
   /* TODO:
-   * - Join Group
-   * - Leave Group
-   * - Read members in group
-   * - read user groups me
-   * - read user groups
-   * - invite user
-   * - delete invitation
-   * - read invited users in group
+   * 
+   * - REFACTOR: groups owner_id
+   * - REFACTOR: user roles
    */
 }
