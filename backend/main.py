@@ -25,6 +25,8 @@ def get_db_session():
     finally:
         db_session.close()
 
+DbSession = Annotated[Session, Depends(get_db_session)]
+
 header_scheme = HTTPBearer()
 
 def get_current_user(token: Annotated[HTTPAuthorizationCredentials, Depends(header_scheme)]) -> schemas.SessionUser:
@@ -34,8 +36,10 @@ def get_current_user(token: Annotated[HTTPAuthorizationCredentials, Depends(head
     
     return session
 
-def get_db_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)], db_session: Session = Depends(get_db_session)):
+def get_db_user(user: Annotated[schemas.SessionUser, Depends(get_current_user)], db_session: DbSession):
     return crud.get_user(db_session, user.id)
+
+DbUser = Annotated[models.User, Depends(get_db_user)]
 
 #USER
 #login
@@ -48,32 +52,32 @@ def login(credentials: schemas.UserCreds):
 
 # user creation
 @app.post("/users", response_model = schemas.User)
-def create_user(user_payload: schemas.UserCreate, db_session: Session = Depends(get_db_session)):
+def create_user(user_payload: schemas.UserCreate, db_session: DbSession):
     user_id = auth.create_user(user_payload)
     user = schemas.UserModel(id=user_id, username=user_payload.username, full_name=user_payload.full_name)
     return crud.create_user(db_session=db_session, user=user)
 
 # get a list of users from db using a offset and size limit
 @app.get("/users", response_model = schemas.UserList)
-def read_users(current_user: Annotated[models.User, Depends(get_db_user)], skip: int = 0, limit: int = 100, db_session: Session = Depends(get_db_session)):
+def read_users(current_user: DbUser, db_session: DbSession, skip: int = 0, limit: int = 100):
     users = schemas.UserList(data=crud.get_users(db_session, skip=skip, limit=limit))
     return users
 
 #get current user
 @app.get("/users/me", response_model=schemas.User)
-def read_user_me(current_user: Annotated[models.User, Depends(get_db_user)], db_session: Session = Depends(get_db_session)):
+def read_user_me(current_user: DbUser, db_session: DbSession):
     return current_user
 
 #get a user from db using specific user id
 @app.get("/users/{user_id}", response_model=schemas.User)
-def read_user(current_user: Annotated[models.User, Depends(get_db_user)], user_id: str, db_session: Session = Depends(get_db_session)):
+def read_user(current_user: DbUser, db_session: DbSession, user_id: str):
     db_user = crud.get_user(db_session, user_id=user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
 
 @app.patch("/users/{user_id}", response_model=schemas.User)
-def update_user(current_user: Annotated[models.User, Depends(get_db_user)], user_id: str, user_update: schemas.UserUpdate, db_session: Session = Depends(get_db_session)):
+def update_user(current_user: DbUser, db_session: DbSession, user_id: str, user_update: schemas.UserUpdate):
     db_user = crud.get_user(db_session, user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -81,7 +85,7 @@ def update_user(current_user: Annotated[models.User, Depends(get_db_user)], user
     return crud.update_user(db_session, db_user, user_update) #TODO: if name is updated, it needs to be mirrored in auth DB!
 
 @app.delete("/users/{user_id}")
-def delete_user(current_user: Annotated[models.User, Depends(get_db_user)], user_id: str, db_session: Session = Depends(get_db_session)):
+def delete_user(current_user: DbUser, db_session: DbSession, user_id: str):
     db_user = crud.get_user(db_session, user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -91,14 +95,15 @@ def delete_user(current_user: Annotated[models.User, Depends(get_db_user)], user
 
 # ADMINS
 @app.post("/admins")
-def create_admin(admin_payload: schemas.UserCreate, db_session: Session = Depends(get_db_session), _: None = Depends(validate_api_key)):
+# TODO Switch to Annotated
+def create_admin(admin_payload: schemas.UserCreate, db_session: DbSession, _: Annotated[None, Depends(validate_api_key)]):
     user_id = auth.create_user(admin_payload)
     user = schemas.UserModel(id=user_id, username=admin_payload.username, full_name=admin_payload.full_name, role = Roles.ADMIN)
     return crud.create_user(db_session=db_session, user=user)
 
 #PROFILE
 @app.put("/users/{user_id}/profile", response_model=schemas.Profile)
-def create_profile(current_user: Annotated[models.User, Depends(get_db_user)], profile: schemas.ProfileCreate, user_id: str, db_session: Session = Depends(get_db_session)):
+def create_profile(current_user: DbUser, db_session: DbSession, profile: schemas.ProfileCreate, user_id: str):
     db_user = crud.get_user(db_session, user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -106,7 +111,7 @@ def create_profile(current_user: Annotated[models.User, Depends(get_db_user)], p
     return crud.create_profile(db_session, profile, user_id)
 
 @app.get("/users/{user_id}/profile", response_model=schemas.Profile)
-def read_profile(current_user: Annotated[models.User, Depends(get_db_user)], user_id: str, db_session: Session = Depends(get_db_session)):
+def read_profile(current_user: DbUser, db_session: DbSession, user_id: str):
     db_profile = crud.get_profile(db_session, user_id)
     if db_profile is None:
         raise HTTPException(status_code=404, detail="Profile not found")
@@ -115,7 +120,7 @@ def read_profile(current_user: Annotated[models.User, Depends(get_db_user)], use
     return db_profile
 
 @app.patch("/users/{user_id}/profile", response_model=schemas.Profile)
-def update_profile(current_user: Annotated[models.User, Depends(get_db_user)], user_id: str, profile_update: schemas.ProfileUpdate, db_session: Session = Depends(get_db_session)):
+def update_profile(current_user: DbUser, db_session: DbSession, user_id: str, profile_update: schemas.ProfileUpdate):
     db_profile = crud.get_profile(db_session, user_id)
     if db_profile is None:
         raise HTTPException(status_code=404, detail="Profile not found")
@@ -123,7 +128,7 @@ def update_profile(current_user: Annotated[models.User, Depends(get_db_user)], u
     return crud.update_profile(db_session, db_profile, profile_update)
 
 @app.delete("/users/{user_id}/profile")
-def delete_profile(current_user: Annotated[models.User, Depends(get_db_user)], user_id: str, db_session: Session = Depends(get_db_session)):
+def delete_profile(current_user: DbUser, db_session: DbSession, user_id: str):
     db_profile = crud.get_profile(db_session, user_id)
     if db_profile is None:
         raise HTTPException(status_code=404, detail="Profile not found")
@@ -134,24 +139,24 @@ def delete_profile(current_user: Annotated[models.User, Depends(get_db_user)], u
 #GROUP
 # group creation
 @app.post("/groups", response_model = schemas.Group)
-def create_group(current_user: Annotated[models.User, Depends(get_db_user)], group: schemas.GroupCreate, db_session: Session = Depends(get_db_session)):
+def create_group(current_user: DbUser, db_session: DbSession, group: schemas.GroupCreate):
     validations.validate_id(current_user, group.owner_id)
     return crud.create_group(db_session=db_session, group=group)
 
 @app.get("/groups/{group_id}", response_model=schemas.Group)
-def read_group(current_user: Annotated[models.User, Depends(get_db_user)], group_id: int, db_session: Session = Depends(get_db_session)):
+def read_group(current_user: DbUser, db_session: DbSession, group_id: int):
     db_group = crud.get_group(db_session, group_id=group_id)
     if db_group is None:
         raise HTTPException(status_code=404, detail="Group not found")
     return db_group
 
 @app.get("/groups", response_model=schemas.GroupList)
-def read_groups(current_user: Annotated[models.User, Depends(get_db_user)], skip: int = 0, limit: int = 100, db_session: Session = Depends(get_db_session)):
+def read_groups(current_user: DbUser, db_session: DbSession, skip: int = 0, limit: int = 100):
     groups = schemas.GroupList(data=crud.get_groups(db_session, skip=skip, limit=limit))
     return groups
 
 @app.patch("/groups/{group_id}", response_model=schemas.Group)
-def update_group(current_user: Annotated[models.User, Depends(get_db_user)], group_id: int, group_update: schemas.GroupUpdate, db_session: Session = Depends(get_db_session)):
+def update_group(current_user: DbUser, db_session: DbSession, group_id: int, group_update: schemas.GroupUpdate):
     db_group = crud.get_group(db_session, group_id=group_id)
     if db_group is None:
         raise HTTPException(status_code=404, detail="Group not found")
@@ -159,7 +164,7 @@ def update_group(current_user: Annotated[models.User, Depends(get_db_user)], gro
     return crud.update_group(db_session, db_group, group_update)
 
 @app.delete("/groups/{group_id}")
-def delete_group(current_user: Annotated[models.User, Depends(get_db_user)], group_id: int, db_session: Session = Depends(get_db_session)):
+def delete_group(current_user: DbUser, group_id: int, db_session: DbSession):
     db_group = crud.get_group(db_session, group_id=group_id)
     if db_group is None:
         raise HTTPException(status_code=404, detail="Group not found")
@@ -170,7 +175,7 @@ def delete_group(current_user: Annotated[models.User, Depends(get_db_user)], gro
 #MEMBERSHIPS
 # join group
 @app.put("/groups/{group_id}/members/{user_id}", response_model=schemas.Group)
-def join_group(current_user: Annotated[models.User, Depends(get_db_user)], user_id: str, group_id: int, db_session: Session = Depends(get_db_session)):
+def join_group(current_user: DbUser, db_session: DbSession, user_id: str, group_id: int):
     db_user = read_user(current_user, user_id=user_id, db_session=db_session)
     db_group = read_group(current_user, group_id=group_id, db_session=db_session)
     if db_user in db_group.users:
@@ -183,7 +188,7 @@ def join_group(current_user: Annotated[models.User, Depends(get_db_user)], user_
 
 #leave group
 @app.delete("/groups/{group_id}/members/{user_id}", response_model=schemas.Group)
-def leave_group(current_user: Annotated[models.User, Depends(get_db_user)], user_id: str, group_id: int, db_session: Session = Depends(get_db_session)):
+def leave_group(current_user: DbUser, db_session: DbSession, user_id: str, group_id: int):
     db_user = read_user(current_user, user_id=user_id, db_session=db_session)
     db_group = read_group(current_user, group_id=group_id, db_session=db_session)
     validations.validate_user_in_group(current_user, db_user, db_group)
@@ -192,27 +197,28 @@ def leave_group(current_user: Annotated[models.User, Depends(get_db_user)], user
 
 # get all members in a group by group_id
 @app.get("/groups/{group_id}/members", response_model = schemas.UserList) # TODO: skip,limit
-def read_members_in_group(current_user: Annotated[models.User, Depends(get_db_user)], group_id: int, db_session: Session = Depends(get_db_session)):
-    db_group = read_group(current_user, group_id, db_session)
+def read_members_in_group(current_user: DbUser, db_session: DbSession, group_id: int):
+    # TODO: Type issue
+    db_group = read_group(db_session, current_user, group_id) # type: ignore
     users = schemas.UserList(data=crud.get_group_users(db_session=db_session, db_group=db_group))
     return users
 
 @app.get("/users/me/groups", response_model = schemas.GroupList) #TODO: skip,limit
-def read_user_groups_me(current_user: Annotated[models.User, Depends(get_db_user)], db_session: Session = Depends(get_db_session)):
+def read_user_groups_me(current_user: DbUser, db_session: DbSession):
     groups = schemas.GroupList(data=crud.get_user_groups(db_session=db_session, db_user=current_user))
     return groups
 
 # get all groups a user has joined
 @app.get("/users/{user_id}/groups", response_model = schemas.GroupList) #TODO: skip,limit
-def read_user_groups(current_user: Annotated[models.User, Depends(get_db_user)], user_id: str, db_session: Session = Depends(get_db_session)):
-    db_user = read_user(current_user, user_id, db_session)
+def read_user_groups(current_user: DbUser, db_session: DbSession, user_id: str):
+    db_user = read_user(current_user, db_session, user_id)
     groups = schemas.GroupList(data=crud.get_user_groups(db_session=db_session, db_user=db_user))
     return groups
 
 #INVITATIONS
 # All of this needs extensive testing
 @app.put("/groups/{group_id}/invites/{user_id}", response_model = schemas.Invite)
-def invite_user(current_user: Annotated[models.User, Depends(get_db_user)], user_id: str, group_id: int, db_session: Session = Depends(get_db_session)):
+def invite_user(current_user: DbUser, db_session: DbSession, user_id: str, group_id: int):
     db_user = read_user(current_user, user_id=user_id, db_session=db_session)
     db_group = read_group(current_user, group_id=group_id, db_session=db_session)
     if db_group.is_private == 0:
@@ -228,7 +234,7 @@ def invite_user(current_user: Annotated[models.User, Depends(get_db_user)], user
 
 #get invited users in group
 @app.get("/groups/{group_id}/invites", response_model = schemas.UserList) #TODO: skip, limit
-def read_invited_users_in_group(current_user: Annotated[models.User, Depends(get_db_user)], group_id: int, db_session: Session = Depends(get_db_session)):
+def read_invited_users_in_group(current_user: DbUser, db_session: DbSession, group_id: int):
     db_group = read_group(current_user, group_id=group_id, db_session=db_session)
     validations.validate_user_in_group(current_user, current_user, db_group)
     invited_users = schemas.UserList(data=crud.get_invited_users(db_session, db_group))
@@ -236,13 +242,13 @@ def read_invited_users_in_group(current_user: Annotated[models.User, Depends(get
 
 #get groups current user is invited to
 @app.get("/users/me/invites", response_model = schemas.GroupList) #TODO: skip, limit
-def read_groups_invited_to(current_user: Annotated[models.User, Depends(get_db_user)], db_session: Session = Depends(get_db_session)):
+def read_groups_invited_to(current_user: DbUser, db_session: DbSession):
     invited_to = schemas.GroupList(data=crud.get_groups_invited_to(db_session, current_user))
     return invited_to
 
 @app.delete("/groups/{group_id}/invites/me")
-def decline_invitation(current_user: Annotated[models.User, Depends(get_db_user)], group_id: int, db_session: Session = Depends(get_db_session)):
-    db_group = read_group(current_user, group_id, db_session)
+def decline_invitation(current_user: DbUser, db_session: DbSession, group_id: int):
+    db_group = read_group(current_user, db_session, group_id)
     invitation = crud.get_invitation(db_session, current_user.id, group_id)
     if invitation is None:
         raise HTTPException(status_code=404, detail="Invitation not found")
@@ -250,9 +256,9 @@ def decline_invitation(current_user: Annotated[models.User, Depends(get_db_user)
     return {"message" : "invitation successfully declined!"}
 
 @app.delete("/groups/{group_id}/invites/{user_id}")
-def delete_invitation(current_user: Annotated[models.User, Depends(get_db_user)], user_id: str, group_id: int, db_session: Session = Depends(get_db_session)):
-    db_user = read_user(current_user, user_id, db_session)
-    db_group = read_group(current_user, group_id, db_session)
+def delete_invitation(current_user: DbUser, db_session: DbSession, user_id: str, group_id: int):
+    db_user = read_user(current_user, db_session, user_id)
+    db_group = read_group(current_user, db_session, group_id)
 
     if db_group.is_private == 0:
         raise HTTPException(status_code=400, detail="Can't delete invite from public group!")
@@ -268,9 +274,9 @@ def delete_invitation(current_user: Annotated[models.User, Depends(get_db_user)]
 
 # ACTIVITIES
 @app.post("/groups/{group_id}/activities", response_model = schemas.Activity)
-def create_activity(current_user: Annotated[models.User, Depends(get_db_user)], activity: schemas.ActivityCreate, group_id: int, db_session: Session = Depends(get_db_session)):
+def create_activity(current_user: DbUser, db_session: DbSession, activity: schemas.ActivityCreate, group_id: int):
     db_user = read_user_me(current_user, db_session)
-    db_group = read_group(current_user, group_id, db_session)
+    db_group = read_group(current_user, db_session, group_id)
     validations.validate_user_in_group(current_user, db_user, db_group)
 
     activity_payload = schemas.ActivityPayload(
@@ -283,17 +289,17 @@ def create_activity(current_user: Annotated[models.User, Depends(get_db_user)], 
     return crud.create_activity(db_session, activity_payload)
 
 @app.get("/groups/{group_id}/activities", response_model = schemas.ActivityList)
-def read_activities(current_user: Annotated[models.User, Depends(get_db_user)], group_id: int, skip: int = 0, limit: int = 100, db_session: Session = Depends(get_db_session)):
+def read_activities(current_user: DbUser, db_session: DbSession, group_id: int, skip: int = 0, limit: int = 100):
     db_user = read_user_me(current_user, db_session)
-    db_group = read_group(current_user, group_id, db_session)
+    db_group = read_group(current_user, db_session, group_id)
     validations.validate_user_in_group(current_user, db_user, db_group)
 
     return schemas.ActivityList(data=crud.get_activities(db_session, group_id, skip, limit))
 
 @app.get("/groups/{group_id}/activities/{activity_id}", response_model = schemas.Activity)
-def read_activity(current_user: Annotated[models.User, Depends(get_db_user)], group_id: int, activity_id: int, db_session: Session = Depends(get_db_session)):
+def read_activity(current_user: DbUser, db_session: DbSession, group_id: int, activity_id: int):
     db_user = current_user
-    db_group = read_group(current_user, group_id, db_session)
+    db_group = read_group(current_user, db_session, group_id)
     validations.validate_user_in_group(current_user, db_user, db_group)
 
     db_activity = crud.get_activity(db_session, group_id, activity_id)
@@ -302,27 +308,27 @@ def read_activity(current_user: Annotated[models.User, Depends(get_db_user)], gr
     return db_activity
 
 @app.patch("/groups/{group_id}/activities/{activity_id}", response_model = schemas.Activity)
-def update_activity(current_user: Annotated[models.User, Depends(get_db_user)], group_id: int, activity_id, activity_update: schemas.ActivityUpdate, db_session: Session = Depends(get_db_session)):
-    db_activity = read_activity(current_user, group_id, activity_id, db_session)
+def update_activity(current_user: DbUser, db_session: DbSession, group_id: int, activity_id, activity_update: schemas.ActivityUpdate):
+    db_activity = read_activity(current_user, db_session, group_id, activity_id)
     validations.validate_owns_activity(current_user, db_activity)
     return crud.update_activity(db_session, db_activity, activity_update)
 
 @app.delete("/groups/{group_id}/activities/{activity_id}")
-def delete_activity(current_user: Annotated[models.User, Depends(get_db_user)], group_id: int, activity_id: int, db_session: Session = Depends(get_db_session)):
-    db_activity = read_activity(current_user, group_id, activity_id, db_session)
+def delete_activity(current_user: DbUser, db_session: DbSession, group_id: int, activity_id: int):
+    db_activity = read_activity(current_user, db_session, group_id, activity_id)
     validations.validate_owns_activity(current_user, db_activity)
     crud.delete_activity(db_session, db_activity)
     return {"message" : "Activity successfully deleted!"}
 
 # ACTIVITY PARTICIPATION
 @app.put("/group/{group_id}/activities/{activity_id}/participants/{participant_id}")
-def join_activity(current_user: Annotated[models.User, Depends(get_db_user)], group_id: int, activity_id: int, participant_id: str, db_session: Session = Depends(get_db_session)):
-    db_user = read_user(current_user, participant_id, db_session)
-    db_group = read_group(current_user, group_id, db_session)
+def join_activity(current_user: DbUser, db_session: DbSession, group_id: int, activity_id: int, participant_id: str):
+    db_user = read_user(current_user, db_session, participant_id)
+    db_group = read_group(current_user, db_session, group_id)
     validations.validate_user_in_group(current_user, db_user, db_group)
     validations.validate_id(current_user, participant_id)
 
-    db_activity = read_activity(current_user, group_id, activity_id, db_session)
+    db_activity = read_activity(current_user, db_session, group_id, activity_id)
     if db_user in db_activity.participants:
         raise HTTPException(status_code=400, detail="User already in activity")
     
@@ -330,25 +336,25 @@ def join_activity(current_user: Annotated[models.User, Depends(get_db_user)], gr
     return {"message" : "Activity successfully joined!"}
 
 @app.get("/group/{group_id}/activities/{activity_id}/participants", response_model = schemas.UserList)
-def read_participants(current_user: Annotated[models.User, Depends(get_db_user)], group_id: int, activity_id: int, skip: int = 0, limit: int = 100, db_session: Session = Depends(get_db_session)):
-    db_group = read_group(current_user, group_id, db_session)
+def read_participants(current_user: DbUser, db_session: DbSession, group_id: int, activity_id: int, skip: int = 0, limit: int = 100):
+    db_group = read_group(current_user, db_session, group_id)
     validations.validate_user_in_group(current_user, current_user, db_group)
 
-    db_activity = read_activity(current_user, group_id, activity_id, db_session)
+    db_activity = read_activity(current_user, db_session, group_id, activity_id)
 
     return schemas.UserList(data=crud.get_participants(db_session, db_activity, skip, limit))
 
 @app.get("/users/{user_id}/activities", response_model = schemas.ActivityList)
-def read_user_activities(current_user: Annotated[models.User, Depends(get_db_user)], user_id: str, skip: int = 0, limit: int = 100, db_session: Session = Depends(get_db_session)):
-    db_user = read_user(current_user, user_id, db_session)
+def read_user_activities(current_user: DbUser, db_session: DbSession, user_id: str, skip: int = 0, limit: int = 100):
+    db_user = read_user(current_user, db_session, user_id)
     validations.validate_id(current_user, user_id)
     return schemas.ActivityList(data=crud.get_user_activities(db_session, db_user, skip, limit))
 
 @app.delete("/groups/{group_id}/activities/{activity_id}/participants/{participant_id}")
-def leave_activity(current_user: Annotated[models.User, Depends(get_db_user)], group_id: int, activity_id: int, participant_id: str, db_session: Session = Depends(get_db_session)):
-    db_user = read_user(current_user, participant_id, db_session)
-    db_group = read_group(current_user, group_id, db_session)
-    db_activity = read_activity(current_user, group_id, activity_id, db_session)
+def leave_activity(current_user: DbUser, db_session: DbSession, group_id: int, activity_id: int, participant_id: str):
+    db_user = read_user(current_user, db_session, participant_id)
+    db_group = read_group(current_user, db_session, group_id)
+    db_activity = read_activity(current_user, db_session, group_id, activity_id)
     validations.validate_id(current_user, participant_id)
     validations.validate_user_in_group(current_user, db_user, db_group)
     validations.validate_user_in_activity(current_user, db_user, db_activity)
