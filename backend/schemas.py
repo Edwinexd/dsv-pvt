@@ -123,7 +123,7 @@ class ActivityUpdate(BaseModel):
     activity_name: Optional[str] = None
     scheduled_date: Optional[str] = None
     difficulty_code: Optional[int] = None
-    is_completed: Optional[int] = None
+    is_completed: Optional[int] = None #TODO: change to bool
 
 # CHALLENGE
 class ChallengeBase(BaseModel):
