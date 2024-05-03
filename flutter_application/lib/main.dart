@@ -5,11 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/views/all_group_pages.dart';
 import 'profile_page.dart'; // Import the ProfilePage
 import 'drawer.dart';
-import 'create-profile-page.dart';  
+import 'create-profile-page.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/group_creation_page.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_application/home_page.dart';
 
 //Uppdaterad från PC.
 void main() async {
@@ -47,7 +48,6 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-
 class MainPage extends StatefulWidget {
   final bool darkModeEnabled;
   final ValueChanged<bool> onToggleDarkMode;
@@ -56,7 +56,6 @@ class MainPage extends StatefulWidget {
     super.key,
     required this.darkModeEnabled,
     required this.onToggleDarkMode,
-
   });
 
   @override
@@ -87,7 +86,8 @@ class MainPageState extends State<MainPage> {
       }
       //Kommer ändras när vi har en homepage
       if (index == 0) {
-        goToGroupPage(context); // Nu har vi ingen home-page och indexen av grupp-ikonen är 0
+        goToGroupPage(
+            context); // Nu har vi ingen home-page och indexen av grupp-ikonen är 0
       }
     });
   }
@@ -103,19 +103,16 @@ class MainPageState extends State<MainPage> {
         onAchievementsTap: () => goToMyAchievementsPage(context),
         onSettingsTap: () {
           Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => SettingsPage(
-            onToggleDarkMode: widget.onToggleDarkMode,
-            initialDarkMode: widget.darkModeEnabled,
-          )),
-        );
-
+            context,
+            MaterialPageRoute(
+                builder: (context) => SettingsPage(
+                      onToggleDarkMode: widget.onToggleDarkMode,
+                      initialDarkMode: widget.darkModeEnabled,
+                    )),
+          );
         },
-        
       ),
-      body: Center(
-        child: widgetOptions.elementAt(selectedIndex),
-      ),
+      body: HomePage(),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -164,7 +161,6 @@ class MainPageState extends State<MainPage> {
       ),
     );
   }
-
 }
 //navigate to myAchievements
 void goToMyAchievementsPage(BuildContext context) {
