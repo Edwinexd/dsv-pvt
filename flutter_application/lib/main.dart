@@ -1,15 +1,13 @@
 import 'package:flutter_application/my_achievements.dart';
 import 'package:flutter_application/settings.dart';
+import 'package:flutter_application/views/my_groups.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application/views/all_group_pages.dart';
 import 'profile_page.dart'; // Import the ProfilePage
 import 'drawer.dart';
 import 'create-profile-page.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
-import 'package:flutter_application/views/group_creation_page.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_application/home_page.dart';
 
 //Uppdaterad från PC.
@@ -63,8 +61,7 @@ class MainPage extends StatefulWidget {
 }
 
 class MainPageState extends State<MainPage> {
-  int selectedIndex = 0;
-
+  int selectedIndex = 2;
   static const List<Widget> widgetOptions = <Widget>[
     Text('Group Page',
         style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
@@ -80,15 +77,25 @@ class MainPageState extends State<MainPage> {
   void onItemtapped(int index) {
     setState(() {
       selectedIndex = index;
-      if (index == 1) {
-        // Check if "Profile" bottom navigation bar item is tapped
-        goToProfilePage(context); // Navigate to the profile page
-      }
-      //Kommer ändras när vi har en homepage
       if (index == 0) {
-        goToGroupPage(
-            context); // Nu har vi ingen home-page och indexen av grupp-ikonen är 0
+        goToGroupPage(context);
       }
+
+      if (index == 1) {
+        goToProfilePage(context); 
+      }
+      
+      if (index == 2) {
+        goToHomePage(context);
+      }
+
+      if (index == 3) {
+        goToMyAchievementsPage(context);
+      }
+
+      if (index == 4) {
+        //will be added here
+      }      
     });
   }
 
@@ -115,6 +122,7 @@ class MainPageState extends State<MainPage> {
       body: HomePage(),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
+          
           BottomNavigationBarItem(
             icon: Icon(Icons.group),
             label: 'Groups',
@@ -124,8 +132,12 @@ class MainPageState extends State<MainPage> {
             label: 'Profile',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.play_arrow),
-            label: 'Start',
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.star),
+            label: 'Achievements',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.question_mark),
@@ -150,7 +162,12 @@ class MainPageState extends State<MainPage> {
           imageUrl: 'https://via.placeholder.com/150',
         ),
       ),
-    );
+    ).then((_) {
+      //Updating the active index when navigating back
+      setState(() {
+        selectedIndex = 2;
+      });
+    });
   }
 
   void goToGroupPage(BuildContext context) {
@@ -159,15 +176,34 @@ class MainPageState extends State<MainPage> {
       MaterialPageRoute(
         builder: ((context) => const MyGroups()),
       ),
-    );
+    ).then((_) {
+      setState(() {
+        selectedIndex = 2;
+      });
+    });
   }
-}
-//navigate to myAchievements
-void goToMyAchievementsPage(BuildContext context) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => MyAchievements(),
-    ),
-  );
+
+  void goToMyAchievementsPage(BuildContext context) {
+    Navigator.push(
+      context, 
+      MaterialPageRoute(
+        builder: (context) => MyAchievements()),
+      ).then((_) {
+        setState(() {
+          selectedIndex = 2;
+        });
+      });
+  }
+
+  void goToHomePage(BuildContext context) {
+    Navigator.push(
+      context, 
+      MaterialPageRoute(
+        builder: (context) => MyAchievements()),
+      ).then((_) {
+        setState(() {
+          selectedIndex = 2;
+        });
+      });
+  }
 }

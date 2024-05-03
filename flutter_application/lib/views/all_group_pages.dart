@@ -39,12 +39,6 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
         backgroundColor: const Color.fromARGB(230, 60, 71, 133),
       ),
 
-      drawer: MyDrawer(
-        onSettingsTap: () {}, 
-        onSignoutTap: () {},
-        onAchievementsTap: () {}, // added achievements to drawer
-        ),
-
       body: Column(
         children: [
           Container(
@@ -127,7 +121,9 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
             );
         },
         backgroundColor: Colors.grey[150],
-        child: const Icon(Icons.add),
+        child: 
+        const Icon(Icons.add),
+        
         ),
     );
   }
