@@ -1,12 +1,13 @@
 import 'package:flutter_application/models/group.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class BackendService {
   late Dio _dio;
 
   BackendService() {
     _dio = Dio(BaseOptions(
-      baseUrl: 'http://10.97.231.1:81',
+      baseUrl: dotenv.env['BACKEND_API_URL']!,
       headers: {'Content-Type': 'application/json'},
     ));
   }
