@@ -133,7 +133,6 @@ class Achievement(AchievementBase):
         from_attributed = True
 
 
-#achievementupdate  ?
 class AchievementUpdate(BaseModel):
     achievement_name: Optional[str] = None
     description: Optional[str] = None

@@ -148,14 +148,10 @@ def delete_achievement(db_session: Session, db_achievement: models.Achievement):
     db_session.commit()
 
 #get all achievements a users completed
-def get_achievements(db_session: Session, user_id: int):
-    db_user = get_achievements(db_session, user_id)
-    return db_user.completed_achievements #?
+def get_all_achievements(db_session: Session, user_id: int):
+    return get_user(db_session, user_id).completed_achievements
 
-#get achievement from a challenge id 
-def get_achievement_challenge(db_session: Session, challenge_id: int):
-    db_challenge = get_achievement(db_session, challenge_id)
-    return db_challenge.achievement_match #?
+
 
 
 

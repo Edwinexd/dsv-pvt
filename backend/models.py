@@ -118,8 +118,9 @@ class Challenge(base):
         "User",
         secondary=challenge_completions,
         back_populates="completed_challenges")
-    
-    achievement_match = relationship("Profile", uselist = False, back_populated = "challenge_match")
+
+    achievement_id = Column(BigInteger, ForeignKey("achievements.id"), primary_key=True)
+    achievement_match = relationship("Achievement", uselist = False, back_populated = "challenges")
     
 
 
@@ -130,12 +131,11 @@ class Achievement(base):
     achievement_name = Column(String)
     description = Column(String)
     requirement = Column(Integer)
-    #completed = Column(Boolean)
-
+  
     #Go to a challenge
-    challenge_match = relationship("Challenge", back_populates= "achievement_match")
+    challenges = relationship("Challenge", back_populates="achievement_match")
 
-    #Go to users - associaion table
+    #Go to users - association table
     achievement_completed_by = relationship(
         "User",
         secondary=achievement_completions,
