@@ -7,9 +7,12 @@ import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
 
 class ActivityCreatePage extends StatefulWidget {
   // Take groupId as a parameter
-  const ActivityCreatePage({Key? key, required this.groupId}) : super(key: key);
+  ActivityCreatePage({Key? key, required this.groupId}) : super(key: key);
 
   final String groupId;
+  // TODO Get from backend
+  final List<dynamic> challenges = [{"id": 0, "name": 'Spring 0 km'}, {"id": 1, "name": 'Gå 1 km'}, {"id": 2, "name": 'Hoppa 200 ggr'}];
+
 
   @override
   _ActivityCreatePageState createState() => _ActivityCreatePageState();
@@ -22,8 +25,10 @@ class _ActivityCreatePageState extends State<ActivityCreatePage> {
   TimeOfDay _pickedTime = TimeOfDay.now();
   DateTime _pickedDateTime = DateTime.now();
   int _difficultyCode = 0; // Manage skill level as an integer
-  // TODO: Location
   PickedData? _pickedData;
+  // Chosen challenges (ids)
+  List<String> _chosenChallenges = [];
+
 
   // Same skillLevels as in profiles
   List<String> skillLevels = [
@@ -36,10 +41,12 @@ class _ActivityCreatePageState extends State<ActivityCreatePage> {
 
   void _createActivity() {
     if (_formKey.currentState!.validate()) {
-      // TODO: Http to backend
+      String groupId = widget.groupId;
+      // TODO: Http to backend with groupId
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Activity Created!')));
+          .showSnackBar(SnackBar(content: Text('Activity created for $groupId!')));
     }
+    // TODO: Navigate to newly created activity
   }
 
   Future<void> _pickDate() async {
@@ -86,6 +93,7 @@ class _ActivityCreatePageState extends State<ActivityCreatePage> {
       body: /*ListView(padding: EdgeInsets.all(16.0), children: <Widget>[*/
           _pickedData == null
               ? FlutterLocationPicker(
+                  selectLocationButtonText: 'Select Location',
                   initZoom: 11,
                   minZoomLevel: 5,
                   maxZoomLevel: 16,
@@ -93,23 +101,13 @@ class _ActivityCreatePageState extends State<ActivityCreatePage> {
                   searchBarBackgroundColor: Colors.white,
                   selectedLocationButtonTextstyle:
                       const TextStyle(fontSize: 18),
-                  mapLanguage: 'en',
+                  mapLanguage: 'sv',
                   onError: (e) => print(e),
                   selectLocationButtonLeadingIcon: const Icon(Icons.check),
                   onPicked: (pickedData) {
                     setState(() {
                       _pickedData = pickedData;
                     });
-                    print(pickedData.latLong.latitude);
-                    print(pickedData.latLong.longitude);
-                    print(pickedData.address);
-                    print(pickedData.addressData);
-                  },
-                  onChanged: (pickedData) {
-                    print(pickedData.latLong.latitude);
-                    print(pickedData.latLong.longitude);
-                    print(pickedData.address);
-                    print(pickedData.addressData);
                   },
                   showContributorBadgeForOSM: true,
                 )
@@ -190,6 +188,27 @@ class _ActivityCreatePageState extends State<ActivityCreatePage> {
                           ],
                         ),
                       ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('Challenges:', style: TextStyle(fontSize: 16)),
+                          for (dynamic challenge in widget.challenges)
+                            CheckboxListTile(
+                              title: Text(challenge["name"]),
+                              value: _chosenChallenges.contains(challenge["id"].toString()),
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  if (value!) {
+                                    _chosenChallenges.add(challenge["id"].toString());
+                                  } else {
+                                    _chosenChallenges.remove(challenge["id"].toString());
+                                  }
+                                });
+                              },
+                            ),
+                        ]
+                      ),
+                      
                       ElevatedButton(
                         onPressed: _createActivity,
                         child: Text('Create Activity'),
