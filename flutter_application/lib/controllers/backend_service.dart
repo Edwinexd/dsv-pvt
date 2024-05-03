@@ -1,42 +1,69 @@
-import 'package:flutter_application/controllers/dio_client.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_application/models/activity.dart';
 import 'package:flutter_application/models/group.dart';
-import 'package:flutter_application/controllers/secure_storage.dart';
 import 'package:flutter_application/models/group_invite.dart';
 import 'package:flutter_application/models/profile.dart';
 import 'package:flutter_application/models/user.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class BackendService {
-  // late Dio _dio;
-  late DioClient _dioClient;
-  late SecureStorage storage;
+  final _storage = const FlutterSecureStorage();
+  Dio _dio = Dio();
+  
+  BackendService() {
+    _dio.options.baseUrl = dotenv.env['BACKEND_API_URL']!;
+    _dio.options.headers = {'Content-Type': 'application/json'};
+    _dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        // Adding the Authorization header directly in the interceptor
+        String? token = await getToken();
+        if (token != null) {
+          options.headers['Authorization'] = token;
+        }
+        handler.next(options); // Continue with the request
+      },
+      // onResponse: (response, handler) {
+      //   // Handle responses
+      //   handler.next(response);
+      // },
+      // onError: (DioError error, handler) {
+      //   // Handle errors
+      //   handler.next(error);
+      // }
+    ));
 
-  BackendService(DioClient dioClient) {
-    _dioClient = dioClient;
-    storage = SecureStorage();
   }
 
   // TODO: TA BORT?
-  // BackendService.withDio(Dio dio) {
-  //   _dio = dio;
-  // }
+  BackendService.withDio(Dio dio) {
+    _dio = dio;
+  }
+
+  Future<String?> getToken() async {
+    return await _storage.read(key: 'USER_TOKEN');
+  }
+
+  void setToken(String token) async {
+    _storage.write(key: 'USER_TOKEN', value: token);
+  }
 
   // --------- USERS/ ---------
 
   void login(String userName, String password) async {
-    final response = await _dioClient.dio.post(
+    final response = await _dio.post(
       '/users/login',
       data: {
         "username": userName,
         "password": password,
       },
     );
-    storage.setToken(response.data['bearer']);
+    setToken(response.data['bearer']);
   }
 
   Future<User> createUser(
       String userName, String fullName, String password) async {
-    final response = await _dioClient.dio.post(
+    final response = await _dio.post(
       '/users',
       data: {
         "username": userName,
@@ -48,7 +75,7 @@ class BackendService {
   }
 
   Future<List<User>> fetchUsers(int skip, int limit) async {
-    final response = await _dioClient.dio.get('/users', queryParameters: {
+    final response = await _dio.get('/users', queryParameters: {
       'skip': skip,
       'limit': limit,
     });
@@ -57,12 +84,12 @@ class BackendService {
   }
 
   Future<User> fetchMe() async {
-    final response = await _dioClient.dio.get('/users/me');
+    final response = await _dio.get('/users/me');
     return User.fromJson(response.data as Map<String, dynamic>);
   }
 
   Future<User> fetchUser(String userId) async {
-    final response = await _dioClient.dio.get('/users/$userId');
+    final response = await _dio.get('/users/$userId');
     return User.fromJson((response.data) as Map<String, dynamic>);
   }
 
@@ -76,7 +103,7 @@ class BackendService {
       updateFields['full_name'] = fullName;
     }
 
-    final response = await _dioClient.dio.patch(
+    final response = await _dio.patch(
       '/users/$userId',
       data: updateFields,
     );
@@ -84,7 +111,7 @@ class BackendService {
   }
 
   void deleteUser(String userId) async {
-    final response = await _dioClient.dio.delete('/users/$userId');
+    final response = await _dio.delete('/users/$userId');
   }
 
   /* TODO: 
@@ -98,7 +125,7 @@ class BackendService {
 
   Future<User> createAdmin(
       String userName, String fullName, String password) async {
-    final response = await _dioClient.dio.post(
+    final response = await _dio.post(
       '/admins',
       data: {
         "username": userName,
@@ -113,7 +140,7 @@ class BackendService {
 
   Future<Profile> createProfile(String userId, String description, int age,
       String interests, int skillLevel, bool isPrivate) async {
-    final response = await _dioClient.dio.post('/users/$userId/profile', data: {
+    final response = await _dio.post('/users/$userId/profile', data: {
       "description": description,
       "age": age,
       "interests": interests,
@@ -125,7 +152,7 @@ class BackendService {
   }
 
   Future<Profile> fetchProfile(String userId) async {
-    final response = await _dioClient.dio.get('/users/$userId');
+    final response = await _dio.get('/users/$userId');
     return Profile.fromJson((response.data) as Map<String, dynamic>);
   }
 
@@ -152,7 +179,7 @@ class BackendService {
       updateFields['is_private'] = isPrivate;
     }
 
-    final response = await _dioClient.dio.patch(
+    final response = await _dio.patch(
       '/users/$userId/profile',
       data: updateFields,
     );
@@ -161,14 +188,14 @@ class BackendService {
   }
 
   void deleteProfile(String userId) async {
-    final response = await _dioClient.dio.delete('users/$userId/profile');
+    final response = await _dio.delete('users/$userId/profile');
   }
 
   // --------- GROUPS ---------
 
   Future<Group> createGroup(
       String name, String description, bool isPrivate, String ownedId) async {
-    final response = await _dioClient.dio.post(
+    final response = await _dio.post(
       '/groups',
       data: {
         "group_name": name,
@@ -181,7 +208,7 @@ class BackendService {
   }
 
   Future<List<Group>> fetchGroups(int skip, int limit) async {
-    final response = await _dioClient.dio.get('/groups', queryParameters: {
+    final response = await _dio.get('/groups', queryParameters: {
       'skip': skip,
       'limit': limit,
     });
@@ -190,7 +217,7 @@ class BackendService {
   }
 
   Future<Group> fetchGroup(int groupId) async {
-    final response = await _dioClient.dio.get('/groups/$groupId');
+    final response = await _dio.get('/groups/$groupId');
     return Group.fromJson((response.data) as Map<String, dynamic>);
   }
 
@@ -208,7 +235,7 @@ class BackendService {
       updateFields['is_private'] = isPrivate;
     }
 
-    final response = await _dioClient.dio.patch(
+    final response = await _dio.patch(
       '/groups/$groupId',
       data: updateFields,
     );
@@ -216,36 +243,36 @@ class BackendService {
   }
 
   void deleteGroup(int groupdId) async {
-    final response = await _dioClient.dio.delete('groups/$groupdId');
+    final response = await _dio.delete('groups/$groupdId');
   }
 
   Future<Group> joinGroup(String userId, int groupId) async {
     final response =
-        await _dioClient.dio.put('/groups/$groupId/members/$userId');
+        await _dio.put('/groups/$groupId/members/$userId');
 
     return Group.fromJson((response.data) as Map<String, dynamic>);
   }
 
   Future<Group> leaveGroup(String userId, int groupId) async {
     final response =
-        await _dioClient.dio.delete('/groups/$groupId/members/$userId');
+        await _dio.delete('/groups/$groupId/members/$userId');
     return Group.fromJson((response.data) as Map<String, dynamic>);
   }
 
   Future<List<User>> fetchGroupMembers(int groupId) async {
-    final response = await _dioClient.dio.get('/groups/$groupId/members');
+    final response = await _dio.get('/groups/$groupId/members');
     var memberList = response.data['data'] as List;
     return memberList.map((e) => User.fromJson(e)).toList();
   }
 
   Future<List<Group>> fetchMyGroups() async {
-    final response = await _dioClient.dio.get('/users/me/groups');
+    final response = await _dio.get('/users/me/groups');
     var groupList = response.data['data'] as List;
     return groupList.map((e) => Group.fromJson(e)).toList();
   }
 
   Future<List<Group>> fetchUserGroups(String userId) async {
-    final response = await _dioClient.dio.get('/users/$userId/groups');
+    final response = await _dio.get('/users/$userId/groups');
     var groupList = response.data['data'] as List;
     return groupList.map((e) => Group.fromJson(e)).toList();
   }
@@ -254,36 +281,36 @@ class BackendService {
 
   Future<GroupInvite> inviteUserToGroup(String userId, int groupId) async {
     final response =
-        await _dioClient.dio.put('/groups/$groupId/invites/$userId');
+        await _dio.put('/groups/$groupId/invites/$userId');
     return GroupInvite.fromJson((response.data) as Map<String, dynamic>);
   }
 
   void deleteGroupInvite(String userId, int groupId) async {
     final response =
-        await _dioClient.dio.delete('/groups/$groupId/invites/$userId');
+        await _dio.delete('/groups/$groupId/invites/$userId');
   }
 
   Future<List<User>> fetchInvitedUsersInGroup(int groupId) async {
-    final response = await _dioClient.dio.get('/groups/$groupId/invites');
+    final response = await _dio.get('/groups/$groupId/invites');
     var userList = response.data['data'] as List;
     return userList.map((e) => User.fromJson(e)).toList();
   }
 
   Future<List<Group>> fetchGroupsInvitedTo() async {
-    final response = await _dioClient.dio.get('users/me/invites');
+    final response = await _dio.get('users/me/invites');
     var groupList = response.data['data'] as List;
     return groupList.map((e) => Group.fromJson(e)).toList();
   }
 
   void declineGroupInvite(int groupId) async {
-    final response = _dioClient.dio.delete('/groups/$groupId/invites/me');
+    final response = _dio.delete('/groups/$groupId/invites/me');
   }
 
   // --------- ACTIVITIES ---------
   Future<Activity> createActivity(
       int groupId, String name, DateTime scheduled, int difficulty) async {
     final response =
-        await _dioClient.dio.post('/groups/$groupId/activities', data: {
+        await _dio.post('/groups/$groupId/activities', data: {
       "activity_name": name,
       "scheduled_date": scheduled, // toString()? - INTE TESTAT ÄN
       "difficulty_code": difficulty,
@@ -293,7 +320,7 @@ class BackendService {
 
   Future<List<Activity>> fetchActivities(
       int groupId, int skip, int limit) async {
-    final response = await _dioClient.dio
+    final response = await _dio
         .get('/groups/$groupId/activities', queryParameters: {
       'skip': skip,
       'limit': limit,
@@ -304,7 +331,7 @@ class BackendService {
 
   Future<Activity> fetchActivity(int groupId, int activityId) async {
     final response =
-        await _dioClient.dio.get('/groups/$groupId/activities/$activityId');
+        await _dio.get('/groups/$groupId/activities/$activityId');
     return Activity.fromJson((response.data) as Map<String, dynamic>);
   }
 
@@ -327,7 +354,7 @@ class BackendService {
       updateFields['is_completed'] = isCompleted;
     }
 
-    final response = await _dioClient.dio.patch(
+    final response = await _dio.patch(
       '/groups/$groupId/activities/$activityId',
       data: updateFields,
     );
@@ -336,17 +363,17 @@ class BackendService {
 
   void deleteActivity(int groupId, int activityId) async {
     final response =
-        await _dioClient.dio.delete('/groups/$groupId/activities/$activityId');
+        await _dio.delete('/groups/$groupId/activities/$activityId');
   }
 
   void joinActivity(int groupId, int activityId, int participantId) async {
-    final response = await _dioClient.dio.put(
+    final response = await _dio.put(
         '/group/$groupId/activities/$activityId/participants/$participantId');
   }
 
   Future<List<User>> fetchActivityParticipants(
       int groupId, int activityId, int skip, int limit) async {
-    final response = await _dioClient.dio.get(
+    final response = await _dio.get(
         '/group/$groupId/activities/$activityId/participants',
         queryParameters: {
           'skip': skip,
@@ -358,7 +385,7 @@ class BackendService {
   }
 
   Future<List<Activity>> fetchUserActivities(String userId, int skip, int limit) async {
-    final response = await _dioClient.dio.get(
+    final response = await _dio.get(
       '/users/$userId/activities',
       queryParameters: {
           'skip': skip,
@@ -370,6 +397,19 @@ class BackendService {
   }
 
   void leaveActivity(int groupId, int acitivityId, String participantId) async {
-    final response = await _dioClient.dio.delete('/groups/$groupId/activities/$acitivityId/participants/$participantId');
+    final response = await _dio.delete('/groups/$groupId/activities/$acitivityId/participants/$participantId');
   }
 }
+
+// class AuthInterceptor extends Interceptor {
+
+//   @override
+//   void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+//     String? token = await getToken();
+//     if (token != null) {
+//       // options.headers['Authorization'] = 'Bearer $token'; // TODO affects backend_service.dart
+//       options.headers['Authorization'] = token;
+//     }
+//     handler.next(options);
+//   }
+// }
