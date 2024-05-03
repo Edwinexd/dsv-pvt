@@ -1,14 +1,16 @@
-import 'package:flutter_application/views/my_groups.dart';
+import 'package:flutter_application/my_achievements.dart';
+import 'package:flutter_application/settings.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/views/all_group_pages.dart';
 import 'profile_page.dart'; // Import the ProfilePage
 import 'drawer.dart';
-import 'create-profile-page.dart';  
+import 'create-profile-page.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/group_creation_page.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_application/home_page.dart';
 
 //Uppdaterad från PC.
 void main() async {
@@ -16,25 +18,45 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool _darkModeEnabled = false;
+
+  void _toggleDarkMode(bool enabled) {
+    setState(() {
+      _darkModeEnabled = enabled;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Midnattsloppet Now',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+      home: MainPage(
+        darkModeEnabled: _darkModeEnabled,
+        onToggleDarkMode: _toggleDarkMode,
       ),
-      home: const MainPage(),
       debugShowCheckedModeBanner: false,
+      theme: _darkModeEnabled ? ThemeData.dark() : ThemeData.light(),
     );
   }
 }
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  final bool darkModeEnabled;
+  final ValueChanged<bool> onToggleDarkMode;
+
+  const MainPage({
+    super.key,
+    required this.darkModeEnabled,
+    required this.onToggleDarkMode,
+  });
 
   @override
   State<MainPage> createState() => MainPageState();
@@ -64,7 +86,8 @@ class MainPageState extends State<MainPage> {
       }
       //Kommer ändras när vi har en homepage
       if (index == 0) {
-        goToGroupPage(context); // Nu har vi ingen home-page och indexen av grupp-ikonen är 0
+        goToGroupPage(
+            context); // Nu har vi ingen home-page och indexen av grupp-ikonen är 0
       }
     });
   }
@@ -77,12 +100,19 @@ class MainPageState extends State<MainPage> {
       ),
       drawer: MyDrawer(
         onSignoutTap: () {},
-        onSettingsTap: () {},
-        
+        onAchievementsTap: () => goToMyAchievementsPage(context),
+        onSettingsTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => SettingsPage(
+                      onToggleDarkMode: widget.onToggleDarkMode,
+                      initialDarkMode: widget.darkModeEnabled,
+                    )),
+          );
+        },
       ),
-      body: Center(
-        child: widgetOptions.elementAt(selectedIndex),
-      ),
+      body: HomePage(),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -131,5 +161,13 @@ class MainPageState extends State<MainPage> {
       ),
     );
   }
-
+}
+//navigate to myAchievements
+void goToMyAchievementsPage(BuildContext context) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => MyAchievements(),
+    ),
+  );
 }

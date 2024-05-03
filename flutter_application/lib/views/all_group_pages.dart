@@ -42,6 +42,7 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
       drawer: MyDrawer(
         onSettingsTap: () {}, 
         onSignoutTap: () {},
+        onAchievementsTap: () {}, // added achievements to drawer
         ),
 
       body: Column(
