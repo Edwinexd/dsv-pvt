@@ -1,3 +1,4 @@
+import 'package:flutter_application/my_achievements.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'profile_page.dart'; // Import the ProfilePage
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: const MainPage(),
+      //home: MyAchievements(), //change back
       debugShowCheckedModeBanner: false,
     );
   }
@@ -75,6 +77,7 @@ class MainPageState extends State<MainPage> {
         onProfileTap: () => goToProfilePage(context),
         onSignoutTap: () {},
         onSettingsTap: () {},
+        onAchievementsTap: () => goToMyAchievementsPage(context),
       ),
       body: Center(
         child: widgetOptions.elementAt(selectedIndex),
@@ -117,4 +120,13 @@ class MainPageState extends State<MainPage> {
       ),
     );
   }
+}
+//navigate to myAchievements
+void goToMyAchievementsPage(BuildContext context) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => MyAchievements(),
+    ),
+  );
 }

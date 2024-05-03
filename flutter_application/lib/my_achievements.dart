@@ -34,10 +34,10 @@ class _MyAchievementsState extends State<MyAchievements> {
   Widget build(BuildContext context) {    
 
     return Scaffold(
-      //appBar: AppBar(
-        //title: Text('Mina Troféer'),
-        //centerTitle: true,
-      //),
+      appBar: AppBar(
+        title: const Text('My Achievements'),
+        centerTitle: true,
+      ),
       // add header here, trophys
       body: ListView.builder(
         itemCount: trophies.length,
@@ -67,12 +67,23 @@ class AchievementCard extends StatelessWidget {
       child: Row(
         children: <Widget>[
           Icon(achievement.icon),
-          SizedBox(width: 10.0),
+          const SizedBox(width: 10.0),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(achievement.header),
-              Text(achievement.description),
+              Text(
+                achievement.header,
+                style: const TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                achievement.description,
+                style: const TextStyle(
+                  fontSize: 14.0,
+                ),
+              ),
             ],
           ),
         ],

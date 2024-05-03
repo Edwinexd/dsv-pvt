@@ -5,12 +5,14 @@ class MyDrawer extends StatelessWidget {
   final void Function()? onSettingsTap;
   final void Function()? onProfileTap;
   final void Function()? onSignoutTap;
+  final void Function()? onAchievementsTap;
 
   MyDrawer({
     super.key,
     required this.onProfileTap,
     required this.onSettingsTap,
     required this.onSignoutTap,
+    required this.onAchievementsTap,
   });
 
   @override
@@ -48,6 +50,12 @@ class MyDrawer extends StatelessWidget {
                 icon: Icons.person,
                 text: 'PROFILE',
                 onTap: onProfileTap,
+              ),
+              //To the Achivement Listing
+              MyListTile(
+                icon: Icons.star, 
+                text: 'ACHIEVEMENTS', 
+                onTap: onAchievementsTap,
               ),
             ],
           ),
