@@ -1,3 +1,4 @@
+import 'package:flutter_application/my_achievements.dart';
 import 'package:flutter_application/settings.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
@@ -99,6 +100,7 @@ class MainPageState extends State<MainPage> {
       ),
       drawer: MyDrawer(
         onSignoutTap: () {},
+        onAchievementsTap: () => goToMyAchievementsPage(context),
         onSettingsTap: () {
           Navigator.push(
             context,
@@ -159,4 +161,13 @@ class MainPageState extends State<MainPage> {
       ),
     );
   }
+}
+//navigate to myAchievements
+void goToMyAchievementsPage(BuildContext context) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => MyAchievements(),
+    ),
+  );
 }
