@@ -33,11 +33,5 @@ class Group {
     };
   }
 
-  // static Map<String, dynamic> toJson(Group value) => {
-  //   'id': value.id, 
-  //   'group_name': value.name, 
-  //   'description': value.description, 
-  //   'is_private': value.isPrivate,
-  //   };
 }
 
