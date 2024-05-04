@@ -17,6 +17,7 @@ class _LoginPageState extends State<LoginPage> {
   final usernameController = TextEditingController();
 
   final passwordController = TextEditingController();
+  //final bool isHovering = false;
 
   void signUserIn() {
     showDialog(
@@ -176,6 +177,7 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(
                         color: Colors.blue,
                         fontWeight: FontWeight.bold,
+                        //decoration: isHovering ? TextDecoration.underline : TextDecoration.none,
                       ),
                     ),
                   ),

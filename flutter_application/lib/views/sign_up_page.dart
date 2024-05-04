@@ -48,7 +48,7 @@ class SignUpPageState extends State<SignUpPage> {
                 const SizedBox(height: 20),
                 
                 Icon(
-                  Icons.person_add,
+                  Icons.person_pin,
                   size: 100,
                   color: Colors.grey[800],
                 ),
