@@ -31,27 +31,6 @@ class Activity {
     } on FormatException {
       throw const FormatException("Failed to build Activity.");
     }
-    // return switch (json) {
-    //   {
-    //     "activity_name": String name,
-    //     "scheduled_date": DateTime scheduledDateTime,
-    //     "difficulty_code": int difficulty,
-    //     "id": int id,
-    //     "is_completed": bool isCompleted,
-    //     "group_id": int groupId,
-    //     "owner_id": String ownerId,
-    //   } =>
-    //     Activity(
-    //       name: name,
-    //       scheduledDateTime: scheduledDateTime,
-    //       difficulty: difficulty,
-    //       id: id,
-    //       isCompleted: isCompleted,
-    //       groupId: groupId,
-    //       ownerId: ownerId,
-    //     ),
-    //     _ => throw const FormatException('Failed to build Activity.'),
-    // };
   }
 }
 
