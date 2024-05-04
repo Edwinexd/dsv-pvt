@@ -100,7 +100,7 @@ class BackendService {
     return User.fromJson((response.data) as Map<String, dynamic>);
   }
 
-  void deleteUser(String userId) async {
+  Future<void> deleteUser(String userId) async {
     await _dio.delete('/users/$userId');
   }
 
@@ -155,7 +155,7 @@ class BackendService {
     return Profile.fromJson((response.data) as Map<String, dynamic>);
   }
 
-  void deleteProfile(String userId) async {
+  Future<void> deleteProfile(String userId) async {
     await _dio.delete('users/$userId/profile');
   }
 
@@ -210,7 +210,7 @@ class BackendService {
     return Group.fromJson((response.data) as Map<String, dynamic>);
   }
 
-  void deleteGroup(int groupdId) async {
+  Future<void> deleteGroup(int groupdId) async {
     await _dio.delete('groups/$groupdId');
   }
 
@@ -250,7 +250,7 @@ class BackendService {
     return GroupInvite.fromJson((response.data) as Map<String, dynamic>);
   }
 
-  void deleteGroupInvite(String userId, int groupId) async {
+  Future<void> deleteGroupInvite(String userId, int groupId) async {
     await _dio.delete('/groups/$groupId/invites/$userId');
   }
 
@@ -266,7 +266,7 @@ class BackendService {
     return groupList.map((e) => Group.fromJson(e)).toList();
   }
 
-  void declineGroupInvite(int groupId) async {
+  Future<void> declineGroupInvite(int groupId) async {
     _dio.delete('/groups/$groupId/invites/me');
   }
 
@@ -323,11 +323,11 @@ class BackendService {
     return Activity.fromJson((response.data) as Map<String, dynamic>);
   }
 
-  void deleteActivity(int groupId, int activityId) async {
+  Future<void> deleteActivity(int groupId, int activityId) async {
     await _dio.delete('/groups/$groupId/activities/$activityId');
   }
 
-  void joinActivity(int groupId, int activityId, int participantId) async {
+  Future<void> joinActivity(int groupId, int activityId, int participantId) async {
     await _dio.put(
         '/group/$groupId/activities/$activityId/participants/$participantId');
   }
@@ -357,24 +357,8 @@ class BackendService {
     return activityList.map((e) => Activity.fromJson(e)).toList();
   }
 
-  void leaveActivity(int groupId, int acitivityId, String participantId) async {
+  Future<void> leaveActivity(int groupId, int acitivityId, String participantId) async {
     await _dio.delete(
         '/groups/$groupId/activities/$acitivityId/participants/$participantId');
   }
-  
-
-
 }
-
-// class AuthInterceptor extends Interceptor {
-
-//   @override
-//   void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
-//     String? token = await getToken();
-//     if (token != null) {
-//       // options.headers['Authorization'] = 'Bearer $token'; // TODO affects backend_service.dart
-//       options.headers['Authorization'] = token;
-//     }
-//     handler.next(options);
-//   }
-// }
