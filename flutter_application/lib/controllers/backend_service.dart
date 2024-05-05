@@ -34,10 +34,6 @@ class BackendService {
     }));
   }
 
-  BackendService.withDio(Dio dio) {
-    _dio = dio;
-  }
-
   // --------- USERS ---------
 
   Future<void> login(String userName, String password) async {
@@ -92,6 +88,9 @@ class BackendService {
     if (fullName != null) {
       updateFields['full_name'] = fullName;
     }
+    if (updateFields.isEmpty) {
+      throw const FormatException('updateUser called without updated arguments');
+    }
 
     final response = await _dio.patch(
       '/users/$userId',
@@ -145,6 +144,9 @@ class BackendService {
     }
     if (isPrivate != null) {
       updateFields['is_private'] = isPrivate;
+    }
+    if (updateFields.isEmpty) {
+      throw const FormatException('updateProfile called without updated arguments');
     }
 
     final response = await _dio.patch(
@@ -201,6 +203,9 @@ class BackendService {
     }
     if (isPrivate != null) {
       updateFields['is_private'] = isPrivate;
+    }
+    if (updateFields.isEmpty) {
+      throw const FormatException('updateGroup called without updated arguments');
     }
 
     final response = await _dio.patch(
@@ -314,6 +319,9 @@ class BackendService {
     }
     if (isCompleted != null) {
       updateFields['is_completed'] = isCompleted;
+    }
+    if (updateFields.isEmpty) {
+      throw const FormatException('updateActivity called without updated arguments');
     }
 
     final response = await _dio.patch(
