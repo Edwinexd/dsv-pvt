@@ -18,11 +18,13 @@ class GroupCreationState extends State<GroupCreation> {
   String _errorMessage = '';
 
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar : AppBar(
         title: const Text('Create a group'),
+        backgroundColor: const Color.fromARGB(230, 60, 71, 133),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -99,5 +101,4 @@ class GroupCreationState extends State<GroupCreation> {
       _isGroupCreated = true;
     });
   }
-
 }

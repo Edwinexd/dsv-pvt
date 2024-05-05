@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/my_list_tile.dart';
+import 'profile_page.dart';
+import 'views/all_group_pages.dart';
 
 class MyDrawer extends StatelessWidget {
   final void Function()? onSettingsTap;
-  final void Function()? onProfileTap;
   final void Function()? onSignoutTap;
+  final void Function()? onAchievementsTap;
 
-  MyDrawer({
+  const MyDrawer({
     super.key,
-    required this.onProfileTap,
     required this.onSettingsTap,
     required this.onSignoutTap,
+    required this.onAchievementsTap,
   });
 
   @override
@@ -47,11 +49,23 @@ class MyDrawer extends StatelessWidget {
               MyListTile(
                 icon: Icons.person,
                 text: 'PROFILE',
-                onTap: onProfileTap,
+                onTap: () => goToProfilePage(context),
               ),
+              //To the Achivement Listing
+              MyListTile(
+                icon: Icons.star, 
+                text: 'ACHIEVEMENTS', 
+                onTap: onAchievementsTap,
+              ),
+
+              MyListTile(
+                icon: Icons.group, 
+                text: 'GROUP', 
+                onTap: () => goToGroupPage(context),
+                ),
             ],
           ),
-          //logout list title
+          
           Padding(
             padding: const EdgeInsets.only(bottom: 25.0),
             child: MyListTile(
@@ -64,4 +78,27 @@ class MyDrawer extends StatelessWidget {
       ),
     );
   }
+
+  void goToProfilePage(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ProfilePage(
+          name: 'Jeb Jebson',
+          biography: "Let's go running!",
+          imageUrl: 'https://via.placeholder.com/150',
+        ),
+      ),
+    );
+  }
+
+  void goToGroupPage(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: ((context) => const AllGroupsPage()),
+      ),
+    );
+  }
+  //Setting and signout will also be here
 }

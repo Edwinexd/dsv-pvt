@@ -1,0 +1,4 @@
+pvt.edt.cx {
+    encode zstd gzip
+    reverse_proxy localhost:81 # Backend service
+}
