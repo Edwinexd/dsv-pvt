@@ -280,7 +280,7 @@ class BackendService {
       int groupId, String name, DateTime scheduled, int difficulty) async {
     final response = await _dio.post('/groups/$groupId/activities', data: {
       "activity_name": name,
-      "scheduled_date": scheduled, // toString()? - INTE TESTAT ÄN
+      "scheduled_date": scheduled.toIso8601String(),
       "difficulty_code": difficulty,
     });
     return Activity.fromJson((response.data) as Map<String, dynamic>);
