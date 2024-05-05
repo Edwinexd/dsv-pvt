@@ -1,6 +1,8 @@
 # Schemas will be used for presentation and data query with user
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, field_serializer
+from datetime import datetime
+from user_roles import Roles
 
 # USER
 class UserBase(BaseModel):
@@ -10,12 +12,20 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
 
-class User(UserBase):
-    id: int
-    date_created: str
+class UserModel(UserBase):
+    id: str
+    role: Roles = Roles.NORMAL
+
+class User(UserModel):
+    date_created: datetime
 
     class Config:
         from_attributes = True
+
+    # Incase we want the api to present the Role as the name instead of the value
+    @field_serializer("role")
+    def serialize_role(self, role: Roles, _info):
+        return role.name
 
 class UserList(BaseModel):
     data: List[User]
@@ -54,7 +64,8 @@ class ProfileUpdate(BaseModel):
 class GroupBase(BaseModel):
     group_name: str
     description: str
-    private: bool
+    is_private: bool
+    owner_id: str
 
 class GroupCreate(GroupBase):
     # In case we wan't to have variables on for creation in the future
@@ -72,26 +83,48 @@ class GroupList(BaseModel):
 class GroupUpdate(BaseModel):
     group_name: Optional[str] = None
     description: Optional[str] = None
-    private: Optional[bool] = None
+    is_private: Optional[bool] = None
+
+# INVITES
+class InviteBase(BaseModel):
+    user_id: str
+    group_id: int
+    invited_by: str
+
+class Invite(InviteBase):
+    class Config:
+        from_attributes = True
 
 # ACTIVITY
 class ActivityBase(BaseModel):
     activity_name: str
+    scheduled_date: datetime
+    difficulty_code: int
 
 class ActivityCreate(ActivityBase):
-    scheduled_date: str
-    scheduled_time: str
-    difficulty_code: int
+    pass
+
+class ActivityPayload(ActivityBase):
+    group_id: int
+    owner_id: str
 
 class Activity(ActivityBase):
     id: int
-    completed: bool
+    is_completed: bool
+    group_id: int
+    owner_id: str
 
     class Config:
         from_attributes = True
 
 class ActivityList(BaseModel):
     data: List[Activity]
+
+class ActivityUpdate(BaseModel):
+    activity_name: Optional[str] = None
+    scheduled_date: Optional[str] = None
+    difficulty_code: Optional[int] = None
+    is_completed: Optional[bool] = None
 
 # CHALLENGE
 class ChallengeBase(BaseModel):
