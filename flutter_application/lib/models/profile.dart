@@ -14,16 +14,13 @@ class Profile {
   });
 
   factory Profile.fromJson(Map<String, dynamic> json) {
-    try {
-      return Profile(
-        description: json['description'] as String,
-        age: json['age'] as int,
-        interests: json['interests'] as String,
-        skillLevel: json['skill_level'] as int,
-        isPrivate: json['is_private'] as bool,
-      );
-    } on FormatException {
-      throw const FormatException("Failed to build Profile.");
-    }
+    return Profile(
+      description: json['description'] as String,
+      age: json['age'] as int,
+      interests: json['interests'] as String,
+      skillLevel: json['skill_level'] as int,
+      isPrivate: json['is_private'] as bool,
+    );
+    
   }
 }

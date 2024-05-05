@@ -13,16 +13,12 @@ class Group {
       required this.ownerId});
 
   factory Group.fromJson(Map<String, dynamic> json) {
-    try {
-      return Group(
-        id: json["id"] as int,
-        name: json["group_name"] as String,
-        description: json["description"] as String,
-        isPrivate: json['is_private'] as bool,
-        ownerId: json['owner_id'] as String,
-      );
-    } on FormatException {
-      throw const FormatException("Failed to build Group.");
-    }
+    return Group(
+      id: json["id"] as int,
+      name: json["group_name"] as String,
+      description: json["description"] as String,
+      isPrivate: json['is_private'] as bool,
+      ownerId: json['owner_id'] as String,
+    );
   }
 }

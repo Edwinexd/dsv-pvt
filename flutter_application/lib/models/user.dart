@@ -16,16 +16,12 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
-    try {
-      return User(
-        id: json["id"] as String,
-        userName: json["username"] as String,
-        fullName: json["full_name"] as String,
-        dateCreated: DateTime.parse(json["date_created"] as String),
-        role: Role.parse(json["role"] as int),
-      );
-    } on FormatException {
-      throw const FormatException("Failed to build User.");
-    }
+    return User(
+      id: json["id"] as String,
+      userName: json["username"] as String,
+      fullName: json["full_name"] as String,
+      dateCreated: DateTime.parse(json["date_created"] as String),
+      role: Role.parse(json["role"] as int),
+    );
   }
 }
