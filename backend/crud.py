@@ -128,7 +128,6 @@ def get_group_users(db_session: Session, db_group: models.Group):
     return db_group.users
 
 
-
 #ACHIEVEMENTS
 #create
 def create_achievement(db_session: Session, achievement: schemas.AchievementCreate):
@@ -163,9 +162,6 @@ def delete_achievement(db_session: Session, db_achievement: models.Achievement):
 #get all achievements a users completed
 def get_all_achievements(db_session: Session, user_id: int):
     return get_user(db_session, user_id).completed_achievements
-
-
-
 
 
 #INVITATIONS

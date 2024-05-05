@@ -157,7 +157,6 @@ class AchievementBase(BaseModel):
 class AchievementCreate(AchievementBase):
     description: str
     requirement: int
-    #completed: bool
 
 class Achievement(AchievementBase):
     id: int

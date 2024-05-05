@@ -358,8 +358,15 @@ def update_achievement(current_user: DbUser, db_session: DbSession, requested_ac
     validations.validate_has_achievement(current_user, requested_achievement)
     return crud.update_achievement(db_session, requested_achievement, achievement_update)
 
-@app.delete("/achievemenst/{achievement_id}", status_code= 204)
+@app.delete("/achievements/{achievement_id}", status_code= 204)
 def delete_achievement(current_user: DbUser, requested_achievement: RequestedAchievement, db_session: DbSession):
     validations.validate_has_achievement(current_user, requested_achievement)
     crud.delete_achievement(db_session, requested_achievement)
+
+
+#get completed achievements from user id
+@app.get("/achievements/{user_id}/user", response_model=schemas.AchievementList)
+def read_achivements_user_has(current_user: DbUser, requested_user: RequestedUser):
+    achievements = schemas.AchievementList(data=RequestedUser.id)
+    return achievements
 
