@@ -5,7 +5,7 @@ class Profile {
   final int skillLevel;
   final bool isPrivate;
 
-  const Profile ({
+  const Profile({
     required this.description,
     required this.age,
     required this.interests,
@@ -14,24 +14,16 @@ class Profile {
   });
 
   factory Profile.fromJson(Map<String, dynamic> json) {
-    return switch (json) {
-    {
-      "description": String description,
-      "age": int age,
-      "interests": String interests,
-      "skill_level": int skillLevel,
-      "is_private": bool isPrivate,
-    } => 
-      Profile(
-        description: description,
-        age: age,
-        interests: interests,
-        skillLevel: skillLevel,
-        isPrivate: isPrivate,
-    ),
-    _ => throw const FormatException('Failed to build Profile.'),
-  };
-
-    
+    try {
+      return Profile(
+        description: json['description'] as String,
+        age: json['age'] as int,
+        interests: json['interests'] as String,
+        skillLevel: json['skill_level'] as int,
+        isPrivate: json['is_private'] as bool,
+      );
+    } on FormatException {
+      throw const FormatException("Failed to build Profile.");
+    }
   }
 }
