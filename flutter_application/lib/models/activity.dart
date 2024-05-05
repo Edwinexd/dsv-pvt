@@ -18,18 +18,14 @@ class Activity {
   });
 
   factory Activity.fromJson(Map<String, dynamic> json) {
-    try {
-      return Activity(
-        name: json["activity_name"] as String,
-        scheduledDateTime: DateTime.parse(json["scheduled_date"] as String),
-        difficulty: json["difficulty_code"] as int,
-        id: json["id"] as int,
-        isCompleted: json["is_completed"] as bool,
-        groupId: json["group_id"] as int,
-        ownerId: json["owner_id"] as String,
-      );
-    } on FormatException {
-      throw const FormatException("Failed to build Activity.");
-    }
+    return Activity(
+      name: json["activity_name"] as String,
+      scheduledDateTime: DateTime.parse(json["scheduled_date"] as String),
+      difficulty: json["difficulty_code"] as int,
+      id: json["id"] as int,
+      isCompleted: json["is_completed"] as bool,
+      groupId: json["group_id"] as int,
+      ownerId: json["owner_id"] as String,
+    );
   }
 }
