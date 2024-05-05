@@ -26,7 +26,7 @@ class Activity {
         id: json["id"] as int,
         isCompleted: json["is_completed"] as bool,
         groupId: json["group_id"] as int,
-        ownerId: json["owner_id"],
+        ownerId: json["owner_id"] as String,
       );
     } on FormatException {
       throw const FormatException("Failed to build Activity.");
