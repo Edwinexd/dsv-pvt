@@ -162,7 +162,7 @@ class Achievement(AchievementBase):
     id: int
 
     class Config:
-        from_attributed = True
+        from_attributes = True
 
 
 class AchievementUpdate(BaseModel):
