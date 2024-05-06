@@ -131,7 +131,7 @@ def get_group_users(db_session: Session, db_group: models.Group):
 #ACHIEVEMENTS
 #create
 def create_achievement(db_session: Session, achievement: schemas.AchievementCreate):
-    db_achievement = models.Achievement(id = achievement.id, achievement_name = achievement.achievement_name, description = achievement.description, requirement = achievement.requirement)
+    db_achievement = models.Achievement(achievement_name = achievement.achievement_name, description = achievement.description, requirement = achievement.requirement)
     db_session.add(db_achievement)
     db_session.commit()
     db_session.refresh(db_achievement)
@@ -240,3 +240,18 @@ def leave_activity(db_session: Session, db_user: models.User, db_activity: model
     db_session.add(db_activity)
     db_session.commit()
     db_session.refresh(db_activity)
+
+# CHALLENGE
+def create_challenge(db_session: Session, challenge_payload: schemas.ChallengeCreate):
+    db_challenge = models.Challenge(
+        challenge_name = challenge_payload.challenge_name,
+        description = challenge_payload.description,
+        difficulty_code = challenge_payload.difficulty_code,
+        expiration_date = challenge_payload.expiration_date,
+        point_reward = challenge_payload.point_reward,
+        achievement_id = challenge_payload.achievement_id
+    )
+    db_session.add(db_challenge)
+    db_session.commit()
+    db_session.refresh(db_challenge)
+    return db_challenge

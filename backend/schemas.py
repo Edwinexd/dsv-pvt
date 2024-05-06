@@ -129,15 +129,16 @@ class ActivityUpdate(BaseModel):
 # CHALLENGE
 class ChallengeBase(BaseModel):
     challenge_name: str
-
-class ChallengeCreate(ChallengeBase):
     description: str
     difficulty_code: int
-    expiration_date: Optional[str] = None
+    expiration_date: Optional[datetime]
     point_reward: int
+    achievement_id: int
+
+class ChallengeCreate(ChallengeBase):
+    pass
 
 class Challenge(ChallengeBase):
-    id: int
 
     class Config:
         from_attributes = True
@@ -148,7 +149,6 @@ class ChallengeList(BaseModel):
 # Sessions
 class SessionUser(BaseModel):
     id: str
-
 
 #ACHIEVEMENT
 class AchievementBase(BaseModel):

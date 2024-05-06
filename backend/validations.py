@@ -34,6 +34,10 @@ def validate_current_is_inviter(current_user: models.User, invitation: models.Gr
     if current_user.id != invitation.invited_by and current_user.role is not Roles.ADMIN:
         raise HTTPException(status_code=403, detail="You cannot delete another users invitation!")
     
+def validate_is_admin(current_user: models.User):
+    if current_user.role is not Roles.ADMIN:
+        raise HTTPException(status_code=403, detail="User is not admin")
+    
 def validate_api_key(api_key: str = Header(alias="ADMIN-API-Key")):
     if api_key != API_KEY:
         raise HTTPException(status_code=403, detail="Invalid API-key")

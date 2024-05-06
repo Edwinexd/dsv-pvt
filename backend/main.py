@@ -337,6 +337,13 @@ def leave_activity(current_user: DbUser, db_session: DbSession, requested_group:
 #TODO: challenge creation (by superusers), adding challenges to activities
 #TODO: reading all challanges, challenge-trophy link (?), reading all challenges in activity
 
+#CHALLENGES
+@app.post("/challenges", response_model = schemas.Challenge)
+def create_challenge(current_user: DbUser, db_session: DbSession, challenge_payload: schemas.ChallengeCreate):
+    validations.validate_is_admin(current_user)
+
+    return crud.create_challenge(db_session, challenge_payload)
+
 #ACHIEVEMENTS
 
 @app.get("/achievements", response_model=schemas.AchievementList)
@@ -345,9 +352,9 @@ def read_achievements(current_user: DbUser, db_session: DbSession, skip: int = 0
     return achivements
 
 #achievement creation
-@app.post("/achievemets", response_model = schemas.Achievement)
+@app.post("/achievements", response_model = schemas.Achievement)
 def create_achievement(current_user: DbUser, db_session: DbSession, achievement: schemas.AchievementCreate):
-    validations.validate_id(current_user)
+    validations.validate_is_admin(current_user)
     return crud.create_achievement(db_session=db_session, achievement=achievement)
 
 @app.get("/achievements/{achievement_id}", response_model=schemas.Achievement)
