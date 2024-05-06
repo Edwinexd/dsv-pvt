@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'profile_page.dart';
 import 'drawer.dart';
 import 'package:flutter_application/views/login_page.dart';
-import 'create-profile-page.dart';  
+import 'create_profile_page.dart';  
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/home_page.dart';
