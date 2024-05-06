@@ -6,12 +6,13 @@ import 'views/all_group_pages.dart';
 class MyDrawer extends StatelessWidget {
   final void Function()? onSettingsTap;
   final void Function()? onSignoutTap;
-  
+  final void Function()? onAchievementsTap;
 
   const MyDrawer({
     super.key,
     required this.onSettingsTap,
     required this.onSignoutTap,
+    required this.onAchievementsTap,
   });
 
   @override
@@ -49,6 +50,12 @@ class MyDrawer extends StatelessWidget {
                 icon: Icons.person,
                 text: 'PROFILE',
                 onTap: () => goToProfilePage(context),
+              ),
+              //To the Achivement Listing
+              MyListTile(
+                icon: Icons.star, 
+                text: 'ACHIEVEMENTS', 
+                onTap: onAchievementsTap,
               ),
 
               MyListTile(

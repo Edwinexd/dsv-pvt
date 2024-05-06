@@ -1,14 +1,14 @@
+import 'package:flutter_application/my_achievements.dart';
 import 'package:flutter_application/settings.dart';
+import 'package:flutter_application/views/my_groups.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application/views/all_group_pages.dart';
-import 'profile_page.dart'; // Import the ProfilePage
+import 'profile_page.dart';
 import 'drawer.dart';
-import 'create-profile-page.dart';  
+import 'create-profile-page.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
-import 'package:flutter_application/views/group_creation_page.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter_application/home_page.dart';
 
 //Uppdaterad från PC.
 void main() async {
@@ -46,7 +46,6 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-
 class MainPage extends StatefulWidget {
   final bool darkModeEnabled;
   final ValueChanged<bool> onToggleDarkMode;
@@ -55,7 +54,6 @@ class MainPage extends StatefulWidget {
     super.key,
     required this.darkModeEnabled,
     required this.onToggleDarkMode,
-
   });
 
   @override
@@ -64,7 +62,6 @@ class MainPage extends StatefulWidget {
 
 class MainPageState extends State<MainPage> {
   int selectedIndex = 0;
-
   static const List<Widget> widgetOptions = <Widget>[
     Text('Group Page',
         style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
@@ -80,14 +77,25 @@ class MainPageState extends State<MainPage> {
   void onItemtapped(int index) {
     setState(() {
       selectedIndex = index;
-      if (index == 1) {
-        // Check if "Profile" bottom navigation bar item is tapped
-        goToProfilePage(context); // Navigate to the profile page
-      }
-      //Kommer ändras när vi har en homepage
       if (index == 0) {
-        goToGroupPage(context); // Nu har vi ingen home-page och indexen av grupp-ikonen är 0
+        goToHomePage(context);
       }
+
+      if (index == 1) {
+        goToProfilePage(context); 
+      }
+      
+      if (index == 2) {
+        goToGroupPage(context);
+      }
+
+      if (index == 3) {
+        goToMyAchievementsPage(context);
+      }
+
+      if (index == 4) {
+        //will be added here
+      }      
     });
   }
 
@@ -99,34 +107,38 @@ class MainPageState extends State<MainPage> {
       ),
       drawer: MyDrawer(
         onSignoutTap: () {},
+        onAchievementsTap: () => goToMyAchievementsPage(context),
         onSettingsTap: () {
           Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => SettingsPage(
-            onToggleDarkMode: widget.onToggleDarkMode,
-            initialDarkMode: widget.darkModeEnabled,
-          )),
-        );
-
+            context,
+            MaterialPageRoute(
+                builder: (context) => SettingsPage(
+                      onToggleDarkMode: widget.onToggleDarkMode,
+                      initialDarkMode: widget.darkModeEnabled,
+                    )),
+          );
         },
-        
       ),
-      body: Center(
-        child: widgetOptions.elementAt(selectedIndex),
-      ),
+      body: HomePage(),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
+          
+          
           BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: 'Groups',
+            icon: Icon(Icons.home),
+            label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Profile',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.play_arrow),
-            label: 'Start',
+            icon: Icon(Icons.group),
+            label: 'Groups',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.star),
+            label: 'Achievements',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.question_mark),
@@ -151,16 +163,48 @@ class MainPageState extends State<MainPage> {
           imageUrl: 'https://via.placeholder.com/150',
         ),
       ),
-    );
+    ).then((_) {
+      //Updating the active index when navigating back
+      setState(() {
+        selectedIndex = 0;
+      });
+    });
   }
 
   void goToGroupPage(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: ((context) => const AllGroupsPage()),
+        builder: ((context) => const MyGroups()),
       ),
-    );
+    ).then((_) {
+      setState(() {
+        selectedIndex = 0;
+      });
+    });
   }
 
+  void goToMyAchievementsPage(BuildContext context) {
+    Navigator.push(
+      context, 
+      MaterialPageRoute(
+        builder: (context) => MyAchievements()),
+      ).then((_) {
+        setState(() {
+          selectedIndex = 0;
+        });
+      });
+  }
+
+  void goToHomePage(BuildContext context) {
+    Navigator.push(
+      context, 
+      MaterialPageRoute(
+        builder: (context) => MyAchievements()),
+      ).then((_) {
+        setState(() {
+          selectedIndex = 0;
+        });
+      });
+  }
 }
