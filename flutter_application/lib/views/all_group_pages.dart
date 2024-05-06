@@ -41,7 +41,7 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
         backgroundColor: const Color.fromARGB(230, 60, 71, 133),
       ),
 
-      body: GradientBackground(
+      body: DefaultBackground(
         children: [
           Container(
             color: Colors.grey[100], //Background color of the box

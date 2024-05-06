@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class GradientBackground extends StatelessWidget {
+class DefaultBackground extends StatelessWidget {
   final Widget? child;
   final List<Widget>? children;
 
-  GradientBackground({this.child, this.children});
+  DefaultBackground({this.child, this.children});
 
   @override
   Widget build(BuildContext context) {

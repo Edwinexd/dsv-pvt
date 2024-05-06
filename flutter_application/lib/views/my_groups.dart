@@ -29,7 +29,7 @@ class MyGroups extends StatelessWidget {
         ),
         backgroundColor: const Color.fromARGB(230, 60, 71, 133),
       ),
-      body: GradientBackground(
+      body: DefaultBackground(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [

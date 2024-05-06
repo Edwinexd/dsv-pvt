@@ -27,7 +27,7 @@ Widget build(BuildContext context) {
       title: const Text('Create a group'),
       backgroundColor: const Color.fromARGB(230, 60, 71, 133),
     ),
-    body: GradientBackground(
+    body: DefaultBackground(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
