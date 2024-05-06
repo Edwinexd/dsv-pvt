@@ -148,3 +148,27 @@ class ChallengeList(BaseModel):
 # Sessions
 class SessionUser(BaseModel):
     id: str
+
+
+#ACHIEVEMENT
+class AchievementBase(BaseModel):
+    achievement_name:str
+
+class AchievementCreate(AchievementBase):
+    description: str
+    requirement: int
+
+class Achievement(AchievementBase):
+    id: int
+
+    class Config:
+        from_attributes = True
+
+
+class AchievementUpdate(BaseModel):
+    achievement_name: Optional[str] = None
+    description: Optional[str] = None
+    requirement: Optional[int] = None
+
+class AchievementList(BaseModel):
+    data: List[Achievement]

@@ -25,6 +25,13 @@ challenge_completions = Table(
     Column("user_id", ForeignKey("users.id"), primary_key=True),
     Column("challenge_id", ForeignKey("challenges.id"), primary_key=True),
 )
+#achievements association table
+achievement_completions = Table(
+    "achievement_completions",
+    base.metadata,
+    Column("user_id", ForeignKey("users.id"), primary_key = True),
+    Column("achievement_id", ForeignKey("achievements.id"), primary_key = True),
+)
 #association object pattern is used to get the extra field 'invited_by'
 class GroupInvitations(base):
     __tablename__ = "group_invitations"
@@ -68,6 +75,11 @@ class User(base):
         "Challenge",
         secondary=challenge_completions,
         back_populates="completed_by"
+    )
+    completed_achievements = relationship(
+        "Achievement",
+        secondary=achievement_completions,
+        back_populates="achievement_completed_by"
     )
     profile = relationship("Profile", uselist=False, back_populates="owner")
     owned_groups = relationship("Group", back_populates="owner")
@@ -137,5 +149,27 @@ class Challenge(base):
     completed_by = relationship(
         "User",
         secondary=challenge_completions,
-        back_populates="completed_challenges"
+        back_populates="completed_challenges")
+
+    achievement_id = Column(Integer, ForeignKey("achievements.id"), primary_key=True)
+    achievement_match = relationship("Achievement", uselist = False, back_populates = "challenges")
+    
+
+
+class Achievement(base):
+    __tablename__ = "achievements"
+
+    id = Column(Integer, primary_key = True)
+    achievement_name = Column(String)
+    description = Column(String)
+    requirement = Column(Integer)
+  
+    #Go to a challenge
+    challenges = relationship("Challenge", back_populates="achievement_match")
+
+    #Go to users - association table
+    achievement_completed_by = relationship(
+        "User",
+        secondary=achievement_completions,
+        back_populates="completed_achievements"
     )

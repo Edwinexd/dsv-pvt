@@ -73,6 +73,14 @@ def get_activity(group_id: int, activity_id: int, db_session: DbSession):
 
 RequestedActivity = Annotated[models.Activity, Depends(get_activity)]
 
+def get_achievement(achievement_id: int, db_session: DbSession):
+    db_achievement = crud.get_achievement(db_session, achievement_id)
+    if db_achievement is None:
+        raise HTTPException(status_code=404, detail="Achievement not found")
+    return db_achievement
+
+RequestedAchievement = Annotated[models.Achievement, Depends(get_achievement)]
+
 #USER
 #login
 # TODO: Properly annotate in OPENAPI that it requires credentials
@@ -328,3 +336,37 @@ def leave_activity(current_user: DbUser, db_session: DbSession, requested_group:
 
 #TODO: challenge creation (by superusers), adding challenges to activities
 #TODO: reading all challanges, challenge-trophy link (?), reading all challenges in activity
+
+#ACHIEVEMENTS
+
+@app.get("/achievements", response_model=schemas.AchievementList)
+def read_achievements(current_user: DbUser, db_session: DbSession, skip: int = 0, limit: int = 100):
+    achivements = schemas.AchievementList(data=crud.get_achievements(db_session, skip = skip, limit=limit))
+    return achivements
+
+#achievement creation
+@app.post("/achievemets", response_model = schemas.Achievement)
+def create_achievement(current_user: DbUser, db_session: DbSession, achievement: schemas.AchievementCreate):
+    validations.validate_id(current_user)
+    return crud.create_achievement(db_session=db_session, achievement=achievement)
+
+@app.get("/achievements/{achievement_id}", response_model=schemas.Achievement)
+def read_achievement(current_user: DbUser, db_session: DbSession, requested_achievement: RequestedAchievement):
+    return requested_achievement
+
+@app.patch("/achievements/{achievement_id}", response_model=schemas.Achievement)
+def update_achievement(current_user: DbUser, db_session: DbSession, requested_achievement: RequestedAchievement, achievement_update: schemas.AchievementUpdate):
+    validations.validate_has_achievement(current_user, requested_achievement)
+    return crud.update_achievement(db_session, requested_achievement, achievement_update)
+
+@app.delete("/achievements/{achievement_id}", status_code= 204)
+def delete_achievement(current_user: DbUser, requested_achievement: RequestedAchievement, db_session: DbSession):
+    validations.validate_has_achievement(current_user, requested_achievement)
+    crud.delete_achievement(db_session, requested_achievement)
+
+#get completed achievements from user id
+@app.get("/user/{user_id}/achievements", response_model=schemas.AchievementList)
+def read_achivements_user_has(current_user: DbUser, requested_user: RequestedUser):
+    achievements = schemas.AchievementList(data=requested_user.completed_achievements)
+    return achievements
+
