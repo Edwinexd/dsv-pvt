@@ -61,7 +61,7 @@ class MainPage extends StatefulWidget {
 }
 
 class MainPageState extends State<MainPage> {
-  int selectedIndex = 2;
+  int selectedIndex = 0;
   static const List<Widget> widgetOptions = <Widget>[
     Text('Group Page',
         style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
@@ -78,7 +78,7 @@ class MainPageState extends State<MainPage> {
     setState(() {
       selectedIndex = index;
       if (index == 0) {
-        goToGroupPage(context);
+        goToHomePage(context);
       }
 
       if (index == 1) {
@@ -86,7 +86,7 @@ class MainPageState extends State<MainPage> {
       }
       
       if (index == 2) {
-        goToHomePage(context);
+        goToGroupPage(context);
       }
 
       if (index == 3) {
@@ -123,17 +123,18 @@ class MainPageState extends State<MainPage> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           
+          
           BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: 'Groups',
+            icon: Icon(Icons.home),
+            label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Profile',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+            icon: Icon(Icons.group),
+            label: 'Groups',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.star),
@@ -165,7 +166,7 @@ class MainPageState extends State<MainPage> {
     ).then((_) {
       //Updating the active index when navigating back
       setState(() {
-        selectedIndex = 2;
+        selectedIndex = 0;
       });
     });
   }
@@ -178,7 +179,7 @@ class MainPageState extends State<MainPage> {
       ),
     ).then((_) {
       setState(() {
-        selectedIndex = 2;
+        selectedIndex = 0;
       });
     });
   }
@@ -190,7 +191,7 @@ class MainPageState extends State<MainPage> {
         builder: (context) => MyAchievements()),
       ).then((_) {
         setState(() {
-          selectedIndex = 2;
+          selectedIndex = 0;
         });
       });
   }
@@ -202,7 +203,7 @@ class MainPageState extends State<MainPage> {
         builder: (context) => MyAchievements()),
       ).then((_) {
         setState(() {
-          selectedIndex = 2;
+          selectedIndex = 0;
         });
       });
   }
