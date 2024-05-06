@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/home_page.dart';
 import 'package:flutter_application/main.dart';
 
 class ForgotPassword extends StatefulWidget {
@@ -183,7 +184,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
       // After the password has been reset, navigate to the main page
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => MainPage()),
+        MaterialPageRoute(builder: (context) => HomePage()),
       );
     }
   }
