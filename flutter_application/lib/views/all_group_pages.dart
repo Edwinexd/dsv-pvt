@@ -13,9 +13,9 @@ class AllGroupsPage extends StatefulWidget {
 class _AllGroupsPageState extends State<AllGroupsPage> {
   //List of instance groups
   final List<Group> _groups = [
-    const Group(id: 3, name: 'Lace up!', description: 'Lace up and lead the way', isPrivate: true),
-    const Group(id: 2, name: 'DVK Runners', description: 'Join us!', isPrivate: false),
-    const Group(id: 4, name: 'Kista Runners', description: 'Best runners!', isPrivate: true),
+    const Group(id: 3, name: 'Lace up!', description: 'Lace up and lead the way', isPrivate: true, ownerId: '1'),
+    const Group(id: 2, name: 'DVK Runners', description: 'Join us!', isPrivate: false, ownerId: '1'),
+    const Group(id: 4, name: 'Kista Runners', description: 'Best runners!', isPrivate: true, ownerId: '1'),
   ];
 
   String _searchQuery = '';
