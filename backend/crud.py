@@ -248,6 +248,13 @@ def leave_activity(db_session: Session, db_user: models.User, db_activity: model
     db_session.commit()
     db_session.refresh(db_activity)
 
+# CHALLENGES IN ACTIVITES
+def add_challenge_to_activity(db_session: Session, db_challenge: models.Challenge, db_activity: models.Activity):
+    db_activity.challenges.append(db_challenge)
+    db_session.add(db_activity)
+    db_session.commit()
+    db_session.refresh(db_activity)
+
 # CHALLENGE
 def create_challenge(db_session: Session, challenge_payload: schemas.ChallengeCreate):
     db_challenge = models.Challenge(

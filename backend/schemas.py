@@ -129,7 +129,7 @@ class ActivityBase(BaseModel):
     activity_name: str
     scheduled_date: datetime
     difficulty_code: int
-
+#TODO: how should challenge list be displayed?
 class ActivityCreate(ActivityBase):
     challenge_list: Optional[List[int]] = None
 

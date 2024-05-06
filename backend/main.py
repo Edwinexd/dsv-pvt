@@ -342,6 +342,12 @@ def leave_activity(current_user: DbUser, db_session: DbSession, requested_group:
     
     crud.leave_activity(db_session, requested_user, requested_activity)
 
+@app.put("/group/{group_id}/activities/{activity_id}/challenges/{challenge_id}", status_code=204)
+def add_challenge_to_activity(current_user: DbUser, db_session: DbSession, requested_group: RequestedGroup, requested_activity: RequestedActivity, requesteded_challenge: RequestedChallenge):
+    validations.validate_user_in_group(current_user, current_user, requested_group)
+    validations.validate_user_owns_activity(current_user, requested_activity)
+    crud.add_challenge(db_session, requesteded_challenge, requested_activity)
+
 #TODO: adding challenges to activities
 #TODO: reading all challenges in activity
 
@@ -369,7 +375,6 @@ def delete_challenge(current_user: DbUser, requested_challenge: RequestedChallen
     validations.validate_is_admin(current_user)
     crud.delete_challenge(db_session, requested_challenge)
 
-# increment
 
 #ACHIEVEMENTS
 @app.get("/achievements", response_model=schemas.AchievementList)
