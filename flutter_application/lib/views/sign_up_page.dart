@@ -140,10 +140,10 @@ class SignUpPageState extends State<SignUpPage> {
                   //google button
                   SquareTile(imagePath: 'lib/images/google.png'),
 
-                  const SizedBox(width: 20),
+                  //const SizedBox(width: 20),
 
                   //apple button
-                  SquareTile(imagePath: 'lib/images/apple.png'),
+                  //SquareTile(imagePath: 'lib/images/apple.png'),
                 ],
               ),
 
