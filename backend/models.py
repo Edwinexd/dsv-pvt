@@ -29,7 +29,7 @@ challenge_completions = Table(
 achievement_completions = Table(
     "achievement_completions",
     base.metadata,
-    Column("user_id", ForeignKey("users.id"),primary_key = True),
+    Column("user_id", ForeignKey("users.id"), primary_key = True),
     Column("achievement_id", ForeignKey("achievements.id"), primary_key = True),
 )
 #association object pattern is used to get the extra field 'invited_by'
