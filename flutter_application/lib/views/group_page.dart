@@ -35,6 +35,7 @@ class _GroupPageState extends State<GroupPage> {
   void _searchMembers() {
     String query = searchController.text.toLowerCase();
     setState(() {
+      // TODO: Replace with fuzzy search
       displayedMembers = allMembers.where((member) => member.toLowerCase().contains(query)).toList();
     });
   }
