@@ -345,7 +345,7 @@ def read_achievements(current_user: DbUser, db_session: DbSession, skip: int = 0
     return achivements
 
 #achievement creation
-@app.post("/achievemets", response_model = schemas.Achievement)
+@app.post("/achievements", response_model = schemas.Achievement)
 def create_achievement(current_user: DbUser, db_session: DbSession, achievement: schemas.AchievementCreate):
     validations.validate_id(current_user)
     return crud.create_achievement(db_session=db_session, achievement=achievement)
