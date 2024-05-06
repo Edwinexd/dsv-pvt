@@ -37,7 +37,7 @@ class _MyButtonState extends State<MyButton> {
         padding: const EdgeInsets.all(25),
         margin: const EdgeInsets.symmetric(horizontal: 25.0),
         decoration: BoxDecoration(
-          color: _isPressed ? Colors.grey[900] : Colors.grey[800],
+          color: _isPressed ? Colors.grey[400] : Colors.grey[800],
           borderRadius: BorderRadius.circular(15),
         ),
         child: Center(
