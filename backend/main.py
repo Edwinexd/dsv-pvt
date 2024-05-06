@@ -364,7 +364,6 @@ def delete_achievement(current_user: DbUser, requested_achievement: RequestedAch
     validations.validate_has_achievement(current_user, requested_achievement)
     crud.delete_achievement(db_session, requested_achievement)
 
-
 #get completed achievements from user id
 @app.get("/achievements/{user_id}/user", response_model=schemas.AchievementList)
 def read_achivements_user_has(current_user: DbUser, requested_user: RequestedUser):

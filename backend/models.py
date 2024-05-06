@@ -152,7 +152,7 @@ class Challenge(base):
         back_populates="completed_challenges")
 
     achievement_id = Column(Integer, ForeignKey("achievements.id"), primary_key=True)
-    achievement_match = relationship("Achievement", uselist = False, back_populated = "challenges")
+    achievement_match = relationship("Achievement", uselist = False, back_populates = "challenges")
     
 
 
