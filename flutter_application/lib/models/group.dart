@@ -3,37 +3,22 @@ class Group {
   final String name;
   final String description;
   final bool isPrivate;
+  final String ownerId;
 
-  const Group({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.isPrivate,
-  });
+  const Group(
+      {required this.id,
+      required this.name,
+      required this.description,
+      required this.isPrivate,
+      required this.ownerId});
 
   factory Group.fromJson(Map<String, dynamic> json) {
-    return switch (json) {
-      {
-        'id': int id,
-        'group_name': String name,
-        'description': String description,
-        'private': bool isPrivate,
-      } =>
-        Group(
-          id: id,
-          name: name,
-          description: description,
-          isPrivate: isPrivate,
-        ),
-        _ => throw const FormatException('Failed to build Group.'),
-    };
+    return Group(
+      id: json["id"] as int,
+      name: json["group_name"] as String,
+      description: json["description"] as String,
+      isPrivate: json['is_private'] as bool,
+      ownerId: json['owner_id'] as String,
+    );
   }
-
-  static Map<String, dynamic> toJson(Group value) => {
-    'id': value.id, 
-    'group_name': value.name, 
-    'description': value.description, 
-    'private': value.isPrivate,
-    };
 }
-
