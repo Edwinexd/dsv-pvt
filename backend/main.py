@@ -338,6 +338,12 @@ def leave_activity(current_user: DbUser, db_session: DbSession, requested_group:
 #TODO: reading all challanges, challenge-trophy link (?), reading all challenges in activity
 
 #ACHIEVEMENTS
+
+@app.get("/achievements", response_model=schemas.AchievementList)
+def read_achievements(current_user: DbUser, db_session: DbSession, skip: int = 0, limit: int = 100):
+    achivements = schemas.AchievementList(data=crud.get_achievements(db_session, skip = skip, limit=limit))
+    return achivements
+
 #achievement creation
 @app.post("/achievemets", response_model = schemas.Achievement)
 def create_achievement(current_user: DbUser, db_session: DbSession, achievement: schemas.AchievementCreate):
@@ -348,12 +354,7 @@ def create_achievement(current_user: DbUser, db_session: DbSession, achievement:
 def read_achievement(current_user: DbUser, db_session: DbSession, requested_achievement: RequestedAchievement):
     return requested_achievement
 
-@app.get("/achievement", response_model=schemas.AchievementList)
-def read_achievements(current_user: DbUser, db_session: DbSession, skip: int = 0, limit: int = 100):
-    achivements = schemas.AchievementList(data=crud.get_achievements(db_session, skip = skip, limit=limit))
-    return achivements
-
-@app.patch("/achievement/{achievement_id}", response_model=schemas.Achievement)
+@app.patch("/achievements/{achievement_id}", response_model=schemas.Achievement)
 def update_achievement(current_user: DbUser, db_session: DbSession, requested_achievement: RequestedAchievement, achievement_update: schemas.AchievementUpdate):
     validations.validate_has_achievement(current_user, requested_achievement)
     return crud.update_achievement(db_session, requested_achievement, achievement_update)
