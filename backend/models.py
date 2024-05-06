@@ -143,8 +143,8 @@ class Challenge(base):
     challenge_name = Column(String)
     description = Column(String)
     difficulty_code = Column(Integer)
-    expiration_date = Column(String, nullable=True)
-    point_reward = Column(Integer)
+    expiration_date = Column(DateTime(timezone=True), nullable=True)
+    point_reward = Column(Integer)git stat
 
     completed_by = relationship(
         "User",
@@ -154,8 +154,6 @@ class Challenge(base):
     achievement_id = Column(Integer, ForeignKey("achievements.id"), primary_key=True)
     achievement_match = relationship("Achievement", uselist = False, back_populates = "challenges")
     
-
-
 class Achievement(base):
     __tablename__ = "achievements"
 
