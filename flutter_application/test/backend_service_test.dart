@@ -7,6 +7,10 @@
 // import 'package:http_mock_adapter/http_mock_adapter.dart';
 // import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+void main() {
+  // Needs to be here
+}
+
 // void main() {
 //   late Dio dio;
 //   late DioAdapter dioAdapter;
