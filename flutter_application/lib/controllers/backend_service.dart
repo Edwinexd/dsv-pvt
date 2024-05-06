@@ -7,10 +7,15 @@ import 'package:flutter_application/models/user.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class BackendService {
+  static final BackendService _singleton = BackendService._internal();
   late Dio _dio;
   String? token;
 
-  BackendService() {
+  factory BackendService() {
+    return _singleton;
+  }
+
+  BackendService._internal() {
     _dio = Dio();
     _dio.options.baseUrl = dotenv.env['BACKEND_API_URL']!;
     _dio.options.headers = {
