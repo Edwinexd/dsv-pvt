@@ -358,7 +358,14 @@ def read_challenges(current_user: DbUser, db_session: DbSession, skip: int = 0, 
 def read_challenge(current_user: DbUser, db_session: DbSession, requested_challenge: RequestedChallenge):
     return requested_challenge
 
+@app.patch("/challenges/{challenge_id}", response_model = schemas.Challenge)
+def update_challenge(current_user: DbUser, db_session: DbSession, requested_challenge: RequestedChallenge, challenge_update: schemas.ChallengeUpdate):
+    validations.validate_is_admin(current_user)
+    return crud.update_challenge(db_session, requested_challenge, challenge_update)
 
+@app.delete("/challenges/{challenge_id}", status_code=204)
+def delete_challenge(current_user: DbUser, requested_challenge: RequestedChallenge, db_session: DbSession):
+    pass
 
 #ACHIEVEMENTS
 
@@ -379,12 +386,12 @@ def read_achievement(current_user: DbUser, db_session: DbSession, requested_achi
 
 @app.patch("/achievements/{achievement_id}", response_model=schemas.Achievement)
 def update_achievement(current_user: DbUser, db_session: DbSession, requested_achievement: RequestedAchievement, achievement_update: schemas.AchievementUpdate):
-    validations.validate_has_achievement(current_user, requested_achievement)
+    validations.validate_is_admin(current_user)
     return crud.update_achievement(db_session, requested_achievement, achievement_update)
 
 @app.delete("/achievements/{achievement_id}", status_code= 204)
 def delete_achievement(current_user: DbUser, requested_achievement: RequestedAchievement, db_session: DbSession):
-    validations.validate_has_achievement(current_user, requested_achievement)
+    validations.validate_is_admin(current_user)
     crud.delete_achievement(db_session, requested_achievement)
 
 #get completed achievements from user id
@@ -392,4 +399,3 @@ def delete_achievement(current_user: DbUser, requested_achievement: RequestedAch
 def read_achivements_user_has(current_user: DbUser, requested_user: RequestedUser):
     achievements = schemas.AchievementList(data=requested_user.completed_achievements)
     return achievements
-

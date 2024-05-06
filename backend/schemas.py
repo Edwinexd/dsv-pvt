@@ -131,8 +131,9 @@ class ChallengeBase(BaseModel):
     challenge_name: str
     description: str
     difficulty_code: int
-    expiration_date: datetime
+    expiration_date: Optional[datetime] = None
     point_reward: int
+    achievement_id: Optional[int] = None
 
 class ChallengeCreate(ChallengeBase):
     pass
@@ -142,6 +143,14 @@ class Challenge(ChallengeBase):
 
     class Config:
         from_attributes = True
+
+class ChallengeUpdate(BaseModel):
+    challenge_name: Optional[str] = None
+    description: Optional[str] = None
+    difficulty_code: Optional[int] = None
+    expiration_date: Optional[datetime] = None
+    point_reward: Optional[int] = None
+    achievement_id: Optional[int] = None
 
 class ChallengeList(BaseModel):
     data: List[Challenge]
@@ -163,7 +172,6 @@ class Achievement(AchievementBase):
 
     class Config:
         from_attributes = True
-
 
 class AchievementUpdate(BaseModel):
     achievement_name: Optional[str] = None
