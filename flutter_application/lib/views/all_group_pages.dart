@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/group_creation_page.dart';
 
@@ -40,7 +41,7 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
         backgroundColor: const Color.fromARGB(230, 60, 71, 133),
       ),
 
-      body: Column(
+      body: GradientBackground(
         children: [
           Container(
             color: Colors.grey[100], //Background color of the box

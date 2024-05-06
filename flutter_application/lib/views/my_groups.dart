@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/views/all_group_pages.dart';
 import 'package:flutter_application/views/group_creation_page.dart';
 import 'package:flutter_application/views/group_page.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 
 class MyGroups extends StatelessWidget {
   MyGroups({super.key});
@@ -27,20 +29,7 @@ class MyGroups extends StatelessWidget {
         ),
         backgroundColor: const Color.fromARGB(230, 60, 71, 133),
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color.fromARGB(200, 171, 171, 252),
-              Color.fromARGB(200, 170, 108, 252),
-              Color.fromARGB(200, 210, 120, 252),
-              Color.fromARGB(200, 238, 172, 252)
-              
-            ],
-          ),
-        ),
+      body: GradientBackground(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -107,7 +96,7 @@ class MyGroups extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: const Color.fromARGB(250, 240, 160, 80),
+                        color: const Color.fromARGB(255, 254, 192, 173),
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       child: ListTile(
