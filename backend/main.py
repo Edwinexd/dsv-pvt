@@ -81,6 +81,14 @@ def get_achievement(achievement_id: int, db_session: DbSession):
 
 RequestedAchievement = Annotated[models.Achievement, Depends(get_achievement)]
 
+def get_challenge(challenge_id: int, db_session: DbSession):
+    db_challenge = crud.get_challenge(db_session, challenge_id)
+    if db_challenge is None:
+        raise HTTPException(status_code=404, detail="Challenge not found")
+    return db_challenge
+
+RequestedChallenge = Annotated[models.Challenge, Depends(get_challenge)]
+
 #USER
 #login
 # TODO: Properly annotate in OPENAPI that it requires credentials
@@ -318,7 +326,6 @@ def join_activity(current_user: DbUser, db_session: DbSession, requested_group: 
 @app.get("/group/{group_id}/activities/{activity_id}/participants", response_model = schemas.UserList)
 def read_participants(current_user: DbUser, db_session: DbSession, requested_group: RequestedGroup, requested_activity: RequestedActivity, skip: int = 0, limit: int = 100):
     validations.validate_user_in_group(current_user, current_user, requested_group)
-
     return schemas.UserList(data=crud.get_participants(db_session, requested_activity, skip, limit))
 
 @app.get("/users/{user_id}/activities", response_model = schemas.ActivityList)
@@ -341,8 +348,17 @@ def leave_activity(current_user: DbUser, db_session: DbSession, requested_group:
 @app.post("/challenges", response_model = schemas.Challenge)
 def create_challenge(current_user: DbUser, db_session: DbSession, challenge_payload: schemas.ChallengeCreate):
     validations.validate_is_admin(current_user)
-
     return crud.create_challenge(db_session, challenge_payload)
+
+@app.get("/challenges", response_model=schemas.ChallengeList)
+def read_challenges(current_user: DbUser, db_session: DbSession, skip: int = 0, limit: int = 100):
+    return schemas.ChallengeList(data=crud.get_challenges(db_session, skip, limit))
+
+@app.get("/challenges/{challenge_id}", response_model=schemas.Challenge)
+def read_challenge(current_user: DbUser, db_session: DbSession, requested_challenge: RequestedChallenge):
+    return requested_challenge
+
+
 
 #ACHIEVEMENTS
 

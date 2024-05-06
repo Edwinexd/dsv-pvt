@@ -23,7 +23,7 @@ challenge_completions = Table(
     "challenge_completions",
     base.metadata,
     Column("user_id", ForeignKey("users.id"), primary_key=True),
-    Column("challenge_id", ForeignKey("challenges.achievement_id"), primary_key=True),
+    Column("challenge_id", ForeignKey("challenges.id"), primary_key=True),
 )
 #achievements association table
 achievement_completions = Table(
@@ -139,7 +139,7 @@ class Activity(base):
 class Challenge(base):
     __tablename__ = "challenges"
 
-    #id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
     challenge_name = Column(String)
     description = Column(String)
     difficulty_code = Column(Integer)
@@ -152,7 +152,7 @@ class Challenge(base):
         back_populates="completed_challenges"
     )
 
-    achievement_id = Column(Integer, ForeignKey("achievements.id"), primary_key=True)
+    achievement_id = Column(Integer, ForeignKey("achievements.id"))
     achievement_match = relationship("Achievement", uselist = False, back_populates = "challenges")
     
 class Achievement(base):

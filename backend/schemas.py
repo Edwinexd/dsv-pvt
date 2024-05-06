@@ -131,14 +131,14 @@ class ChallengeBase(BaseModel):
     challenge_name: str
     description: str
     difficulty_code: int
-    expiration_date: Optional[datetime]
+    expiration_date: datetime
     point_reward: int
-    achievement_id: int
 
 class ChallengeCreate(ChallengeBase):
     pass
 
 class Challenge(ChallengeBase):
+    id: int
 
     class Config:
         from_attributes = True

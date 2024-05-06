@@ -248,10 +248,15 @@ def create_challenge(db_session: Session, challenge_payload: schemas.ChallengeCr
         description = challenge_payload.description,
         difficulty_code = challenge_payload.difficulty_code,
         expiration_date = challenge_payload.expiration_date,
-        point_reward = challenge_payload.point_reward,
-        achievement_id = challenge_payload.achievement_id
+        point_reward = challenge_payload.point_reward
     )
     db_session.add(db_challenge)
     db_session.commit()
     db_session.refresh(db_challenge)
     return db_challenge
+
+def get_challenges(db_session: Session, skip: int, limit: int):
+    return db_session.query(models.Challenge).offset(skip).limit(limit).all()
+
+def get_challenge(db_session: Session, challenge_id: int):
+    return db_session.query(models.Challenge).filter(models.Challenge.id == challenge_id).first()
