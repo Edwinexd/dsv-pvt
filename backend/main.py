@@ -365,10 +365,12 @@ def update_challenge(current_user: DbUser, db_session: DbSession, requested_chal
 
 @app.delete("/challenges/{challenge_id}", status_code=204)
 def delete_challenge(current_user: DbUser, requested_challenge: RequestedChallenge, db_session: DbSession):
-    pass
+    validations.validate_is_admin(current_user)
+    crud.delete_challenge(db_session, requested_challenge)
+
+# increment
 
 #ACHIEVEMENTS
-
 @app.get("/achievements", response_model=schemas.AchievementList)
 def read_achievements(current_user: DbUser, db_session: DbSession, skip: int = 0, limit: int = 100):
     achivements = schemas.AchievementList(data=crud.get_achievements(db_session, skip = skip, limit=limit))

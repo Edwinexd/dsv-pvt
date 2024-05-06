@@ -271,3 +271,7 @@ def update_challenge(db_session: Session, db_challenge: models.Challenge, challe
     db_session.commit()
     db_session.refresh(db_challenge)
     return db_challenge
+
+def delete_challenge(db_session: Session, db_challenge: models.Challenge):
+    db_session.delete(db_challenge)
+    db_session.commit()
