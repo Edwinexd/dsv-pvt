@@ -286,7 +286,8 @@ def create_activity(current_user: DbUser, db_session: DbSession, activity: schem
         scheduled_date=activity.scheduled_date,
         difficulty_code=activity.difficulty_code,
         group_id=requested_group.id,
-        owner_id=current_user.id
+        owner_id=current_user.id,
+        challenge_list = activity.challenge_list
     )
     return crud.create_activity(db_session, activity_payload)
 
@@ -341,8 +342,8 @@ def leave_activity(current_user: DbUser, db_session: DbSession, requested_group:
     
     crud.leave_activity(db_session, requested_user, requested_activity)
 
-#TODO: challenge creation (by superusers), adding challenges to activities
-#TODO: reading all challanges, challenge-trophy link (?), reading all challenges in activity
+#TODO: adding challenges to activities
+#TODO: reading all challenges in activity
 
 #CHALLENGES
 @app.post("/challenges", response_model = schemas.Challenge)

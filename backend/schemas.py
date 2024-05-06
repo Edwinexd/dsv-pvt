@@ -95,37 +95,6 @@ class Invite(InviteBase):
     class Config:
         from_attributes = True
 
-# ACTIVITY
-class ActivityBase(BaseModel):
-    activity_name: str
-    scheduled_date: datetime
-    difficulty_code: int
-
-class ActivityCreate(ActivityBase):
-    pass
-
-class ActivityPayload(ActivityBase):
-    group_id: int
-    owner_id: str
-
-class Activity(ActivityBase):
-    id: int
-    is_completed: bool
-    group_id: int
-    owner_id: str
-
-    class Config:
-        from_attributes = True
-
-class ActivityList(BaseModel):
-    data: List[Activity]
-
-class ActivityUpdate(BaseModel):
-    activity_name: Optional[str] = None
-    scheduled_date: Optional[str] = None
-    difficulty_code: Optional[int] = None
-    is_completed: Optional[bool] = None
-
 # CHALLENGE
 class ChallengeBase(BaseModel):
     challenge_name: str
@@ -154,6 +123,39 @@ class ChallengeUpdate(BaseModel):
 
 class ChallengeList(BaseModel):
     data: List[Challenge]
+
+# ACTIVITY
+class ActivityBase(BaseModel):
+    activity_name: str
+    scheduled_date: datetime
+    difficulty_code: int
+
+class ActivityCreate(ActivityBase):
+    challenge_list: Optional[List[int]] = None
+
+class ActivityPayload(ActivityBase):
+    group_id: int
+    owner_id: str
+    challenge_list: Optional[List[int]] = None
+
+class Activity(ActivityBase):
+    id: int
+    is_completed: bool
+    group_id: int
+    owner_id: str
+
+    class Config:
+        from_attributes = True
+
+class ActivityList(BaseModel):
+    data: List[Activity]
+
+class ActivityUpdate(BaseModel):
+    activity_name: Optional[str] = None
+    scheduled_date: Optional[str] = None
+    difficulty_code: Optional[int] = None
+    is_completed: Optional[bool] = None
+    challenge_list: Optional[List[int]] = None
 
 # Sessions
 class SessionUser(BaseModel):

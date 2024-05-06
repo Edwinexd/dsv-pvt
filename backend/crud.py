@@ -196,6 +196,13 @@ def create_activity(db_session: Session, activity_payload: schemas.ActivityPaylo
         group_id = activity_payload.group_id
     )
     db_session.add(db_activity)
+
+    for i in activity_payload.challenge_list:
+        c = get_challenge(db_session, i)
+        if c is None:
+            continue
+        db_activity.challenges.append(c)
+
     db_session.commit()
     db_session.refresh(db_activity)
     return db_activity
