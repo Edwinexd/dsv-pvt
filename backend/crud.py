@@ -127,6 +127,43 @@ def get_user_groups(db_session: Session, db_user: models.User):
 def get_group_users(db_session: Session, db_group: models.Group):
     return db_group.users
 
+
+#ACHIEVEMENTS
+#create
+def create_achievement(db_session: Session, achievement: schemas.AchievementCreate):
+    db_achievement = models.Achievement(id = achievement.id, achievement_name = achievement.achievement_name, description = achievement.description, requirement = achievement.requirement)
+    db_session.add(db_achievement)
+    db_session.commit()
+    db_session.refresh(db_achievement)
+    return db_achievement
+
+#get achievement from id
+def get_achievement(db_session: Session, achievement_id: int):
+    return db_session.query(models.Achievement).filter(models.Achievement.id == achievement_id). first()
+
+#get list of achievements
+def get_achievements(db_session: Session, skip: int = 0, limit: int = 100):
+    return db_session.query(models.Achievement).offset(skip).limit(limit).all()
+
+#update
+def update_achievement(db_session: Session, db_achievement: models.Achievement, achievement_update: schemas.AchievementUpdate):
+    update_data = achievement_update.model_dump(exclude_unset=True)
+    for k, v in update_data.items():
+        setattr(db_achievement, k, v)
+    db_session.commit()
+    db_session.refresh(db_achievement)
+    return db_achievement
+
+#delete
+def delete_achievement(db_session: Session, db_achievement: models.Achievement):
+    db_session.delete(db_achievement)
+    db_session.commit()
+
+#get all achievements a users completed
+def get_all_achievements(db_session: Session, user_id: int):
+    return get_user(db_session, user_id).completed_achievements
+
+
 #INVITATIONS
 def invite_user(db_session: Session, db_user: models.User, db_group: models.Group, invited_by: str):
     db_invitation = models.GroupInvitations(user_id=db_user.id, group_id=db_group.id, invited_by=invited_by)
