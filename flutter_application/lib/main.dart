@@ -176,7 +176,7 @@ class MainPageState extends State<MainPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: ((context) => const MyGroups()),
+        builder: ((context) => MyGroups()),
       ),
     ).then((_) {
       setState(() {

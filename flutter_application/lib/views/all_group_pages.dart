@@ -28,7 +28,9 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
       final isPrivate = group.isPrivate;
 
       bool matchesSearchQuery = name.contains(_searchQuery.toLowerCase());
-      bool isPublicMatch = _selectedFilter == 'All' || (_selectedFilter == 'Public' && !isPrivate);
+      bool isPublicMatch = (_selectedFilter == 'All') 
+      || (_selectedFilter == 'Public' && !isPrivate)
+      || (_selectedFilter == 'Private' && isPrivate);
       return matchesSearchQuery && isPublicMatch;
     }).toList();
 
@@ -37,12 +39,6 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
         title: const Text('All Groups'),
         backgroundColor: const Color.fromARGB(230, 60, 71, 133),
       ),
-
-      drawer: MyDrawer(
-        onSettingsTap: () {}, 
-        onSignoutTap: () {},
-        onAchievementsTap: () {}, // added achievements to drawer
-        ),
 
       body: Column(
         children: [
@@ -82,6 +78,7 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
                   items: const [
                     DropdownMenuItem(value: 'All', child: Text('All')),
                     DropdownMenuItem(value: 'Public', child: Text('Show only public groups')),
+                    DropdownMenuItem(value: 'Private', child: Text('Show only private groups')),
                   ],
                 ),
               ],
@@ -125,9 +122,12 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
             MaterialPageRoute(builder: (context) => GroupCreation()), 
           );
         },
-        backgroundColor: Colors.grey[150],
-        child: const Icon(Icons.add),
+        style: TextButton.styleFrom(
+        backgroundColor: const Color.fromARGB(255, 233, 159, 73),
         ),
+        icon: const Icon(Icons.add),
+        label: const Text('Create a group'),
+      ),
     );
   }
 }
