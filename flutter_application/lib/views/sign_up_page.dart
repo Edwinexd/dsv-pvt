@@ -16,7 +16,7 @@ class SignUpPageState extends State<SignUpPage> {
   final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-
+ 
   void registerUser() {
     // Here you can add the logic to handle user registration
     showDialog(
