@@ -74,6 +74,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             TextFormField(
               controller: _emailController,
               decoration: InputDecoration(labelText: 'Email'),
+              // TODO: Use proper email validation
               validator: (value) => !value!.contains('@') ? 'Please enter a valid email' : null,
             ),
             TextFormField(
