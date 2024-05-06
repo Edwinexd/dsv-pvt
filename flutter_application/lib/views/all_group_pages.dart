@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/group_creation_page.dart';
-import 'package:flutter_application/drawer.dart';
 
 
 class AllGroupsPage extends StatefulWidget {
@@ -38,11 +37,6 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
         title: const Text('All Groups'),
         backgroundColor: const Color.fromARGB(230, 60, 71, 133),
       ),
-
-      drawer: MyDrawer(
-        onSettingsTap: () {}, 
-        onSignoutTap: () {},
-        ),
 
       body: Column(
         children: [
@@ -118,17 +112,19 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
         ],
       ),
       
-      floatingActionButton: FloatingActionButton(
-        onPressed:() {
+      floatingActionButton: TextButton.icon(
+        onPressed: () {
           Navigator.push(
             context, 
             MaterialPageRoute(builder: (context) => GroupCreation()), 
-            );
+          );
         },
-        backgroundColor: Colors.grey[150],
-        child: const Icon(Icons.add),
+        style: TextButton.styleFrom(
+        backgroundColor: const Color.fromARGB(255, 233, 159, 73),
         ),
+        icon: const Icon(Icons.add),
+        label: const Text('Create a group'),
+      ),
     );
   }
-
 }
