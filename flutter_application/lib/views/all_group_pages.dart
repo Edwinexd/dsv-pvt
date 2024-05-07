@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/group_creation_page.dart';
 
@@ -28,7 +29,9 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
       final isPrivate = group.isPrivate;
 
       bool matchesSearchQuery = name.contains(_searchQuery.toLowerCase());
-      bool isPublicMatch = _selectedFilter == 'All' || (_selectedFilter == 'Public' && !isPrivate);
+      bool isPublicMatch = (_selectedFilter == 'All') 
+      || (_selectedFilter == 'Public' && !isPrivate)
+      || (_selectedFilter == 'Private' && isPrivate);
       return matchesSearchQuery && isPublicMatch;
     }).toList();
 
@@ -38,7 +41,7 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
         backgroundColor: const Color.fromARGB(230, 60, 71, 133),
       ),
 
-      body: Column(
+      body: DefaultBackground(
         children: [
           Container(
             color: Colors.grey[100], //Background color of the box
@@ -76,6 +79,7 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
                   items: const [
                     DropdownMenuItem(value: 'All', child: Text('All')),
                     DropdownMenuItem(value: 'Public', child: Text('Show only public groups')),
+                    DropdownMenuItem(value: 'Private', child: Text('Show only private groups')),
                   ],
                 ),
               ],
