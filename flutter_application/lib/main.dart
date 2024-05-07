@@ -1,4 +1,5 @@
 import 'package:flutter_application/activity_create.dart';
+import 'package:flutter_application/bars.dart';
 import 'package:flutter_application/my_achievements.dart';
 import 'package:flutter_application/settings.dart';
 import 'package:flutter_application/views/my_groups.dart';
@@ -106,18 +107,12 @@ class MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Midnattsloppet Now'),
-        backgroundColor: const Color.fromARGB(230, 60, 71, 133),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              goToProfilePage(context);
-            },
-          ),
-        ],
+     return Scaffold(
+      appBar: buildAppBar( 
+        onPressed: () {
+          goToProfilePage(context);
+        },
+        title: 'Midnattsloppet Now',
       ),
       drawer: MyDrawer(
         onSignoutTap: () {},
@@ -134,30 +129,9 @@ class MainPageState extends State<MainPage> {
         },
       ),
       body: HomePage(),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color.fromARGB(230, 60, 71, 133),
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: 'Groups',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Friends',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month),
-            label: 'My Activity',
-          ),
-        ],
-        currentIndex: selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        unselectedItemColor: Colors.deepPurple[900],
-        onTap: onItemtapped,
+      bottomNavigationBar: buildBottomNavigationBar( // Use buildBottomNavigationBar from bars.dart
+        selectedIndex: selectedIndex,
+        onItemTapped: onItemtapped,
       ),
     );
   }
