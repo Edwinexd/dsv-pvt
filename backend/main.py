@@ -99,7 +99,7 @@ def logout(token: Annotated[HTTPAuthorizationCredentials, Depends(header_scheme)
 @app.post("/users", response_model = schemas.User)
 def create_user(user_payload: schemas.UserCreate, db_session: DbSession):
     user_id = auth.create_user(user_payload)
-    user = schemas.UserModel(id=user_id, username=user_payload.username, full_name=user_payload.full_name)
+    user = schemas.UserModel(id=user_id, email=user_payload.email, username=user_payload.username, full_name=user_payload.full_name)
     return crud.create_user(db_session=db_session, user=user)
 
 # get a list of users from db using a offset and size limit
@@ -135,7 +135,7 @@ def delete_user(current_user: DbUser, db_session: DbSession, requested_user: Req
 # TODO Switch to Annotated
 def create_admin(admin_payload: schemas.UserCreate, db_session: DbSession, _: Annotated[None, Depends(validate_api_key)]):
     user_id = auth.create_user(admin_payload)
-    user = schemas.UserModel(id=user_id, username=admin_payload.username, full_name=admin_payload.full_name, role = Roles.ADMIN)
+    user = schemas.UserModel(id=user_id, email=admin_payload.email, username=admin_payload.username, full_name=admin_payload.full_name, role = Roles.ADMIN)
     return crud.create_user(db_session=db_session, user=user)
 
 #PROFILE
