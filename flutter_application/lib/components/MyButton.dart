@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class MyButton extends StatefulWidget {
   final Function()? onTap;
-  final String buttonText; // This will store the button text
+  final String buttonText; 
 
   const MyButton({Key? key, required this.onTap, required this.buttonText})
       : super(key: key);
@@ -44,7 +44,7 @@ class _MyButtonState extends State<MyButton> {
         ),
         child: Center(
           child: Text(
-            widget.buttonText, // Use buttonText here
+            widget.buttonText, 
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,

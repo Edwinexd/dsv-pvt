@@ -11,18 +11,18 @@ class GradientButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 220,  // Set width to fit your layout or use MediaQuery for responsiveness
-        height: 48,  // Set height to fit your design
+        width: 220,  
+        height: 48,  
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [
-              Color(0xFFA840C8),  // Start color of the gradient
-              Color(0xFFF344F7)   // End color of the gradient
+              Color(0xFFA840C8),
+              Color(0xFFF344F7)  
             ],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
-          borderRadius: BorderRadius.circular(30),  // Adjust radius to match your design
+          borderRadius: BorderRadius.circular(30),  
         ),
         child: Center(
           child: Text(
