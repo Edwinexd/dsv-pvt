@@ -217,7 +217,7 @@ class MainPageState extends State<MainPage> {
     Navigator.push(
       context, 
       MaterialPageRoute(
-        builder: (context) => MyAchievements()),
+        builder: (context) => HomePage()),
       ).then((_) {
         setState(() {
           selectedIndex = 0;
