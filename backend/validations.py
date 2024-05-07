@@ -3,6 +3,7 @@ from fastapi import HTTPException, Header, Query
 import models
 from user_roles import Roles
 from datetime import datetime
+import re
 
 API_KEY = os.getenv("API_KEY")
 
