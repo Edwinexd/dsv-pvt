@@ -38,9 +38,9 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Midnattsloppet Now',
-      home: LoginPage(
-        //darkModeEnabled: _darkModeEnabled,
-        //onToggleDarkMode: _toggleDarkMode,
+      home: MainPage(
+        darkModeEnabled: _darkModeEnabled,
+        onToggleDarkMode: _toggleDarkMode,
       ),
       debugShowCheckedModeBanner: false,
       theme: _darkModeEnabled ? ThemeData.dark() : ThemeData.light(),
