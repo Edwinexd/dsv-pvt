@@ -175,9 +175,11 @@ class MainPageState extends State<MainPage> {
       context,
       MaterialPageRoute(
         builder: (context) => const ProfilePage(
-          name: 'Jeb Jebson',
+          name: 'Axel Andersson',
           biography: "Let's go running!",
           imageUrl: 'https://via.placeholder.com/150',
+          username: 'Oltan53',
+          joinedYear: 2001,
         ),
       ),
     ).then((_) {

@@ -87,6 +87,8 @@ class MyDrawer extends StatelessWidget {
           name: 'Jeb Jebson',
           biography: "Let's go running!",
           imageUrl: 'https://via.placeholder.com/150',
+          username: 'Oltan53',
+          joinedYear: 2001,
         ),
       ),
     );
