@@ -3,7 +3,7 @@ import sqlalchemy
 from database import add_user, get_user
 from passwords import create_password_hash, generate_salt, validate
 
-class UsernameInUseError(Exception):
+class EmailInUseError(Exception):
     pass
 
 def create_user(username: str, password: str):
@@ -13,7 +13,7 @@ def create_user(username: str, password: str):
     try:
         return add_user(username, password_hash, salt)
     except sqlalchemy.exc.IntegrityError as e:
-        raise UsernameInUseError() from e
+        raise EmailInUseError() from e
 
 def find_user(username: str, password: str):
     # NOTE: Susceptible to timing attacks

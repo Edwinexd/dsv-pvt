@@ -6,10 +6,12 @@ from user_roles import Roles
 
 # USER
 class UserBase(BaseModel):
+    email: str
     username: str
     full_name: str
 
 class UserCreate(UserBase):
+    email: str
     password: str
 
 class UserModel(UserBase):
@@ -35,7 +37,7 @@ class UserUpdate(BaseModel):
     full_name: Optional[str] = None
       
 class UserCreds(BaseModel):
-    username: str
+    email: str
     password: str
 
 # PROFILE
