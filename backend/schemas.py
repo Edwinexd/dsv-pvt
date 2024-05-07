@@ -134,14 +134,15 @@ class ActivityBase(BaseModel):
     activity_name: str
     scheduled_date: datetime
     difficulty_code: int
+    challenges: Optional[List[Challenge]] = None
 
 class ActivityCreate(ActivityBase):
-    challenge_list: Optional[List[Challenge]] = None
+    pass
 
 class ActivityPayload(ActivityBase):
     group_id: int
     owner_id: str
-    challenge_list: Optional[List[Challenge]] = None
+    challenges: Optional[List[Challenge]] = None
 
 class Activity(ActivityBase):
     id: int
@@ -160,7 +161,7 @@ class ActivityUpdate(BaseModel):
     scheduled_date: Optional[str] = None
     difficulty_code: Optional[int] = None
     is_completed: Optional[bool] = None
-    challenge_list: Optional[List[Challenge]] = None
+    challenges: Optional[List[Challenge]] = None
 
 # Sessions
 class SessionUser(BaseModel):

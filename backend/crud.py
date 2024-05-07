@@ -218,6 +218,15 @@ def update_activity(db_session: Session, db_activity: models.Activity, activity_
 
     if "is_completed" in update_data:
         update_data["is_completed"] = int(update_data["is_completed"])
+
+    #special case, update includes challenge list
+    if "challenges" in update_data:
+        for c in activity_update.challenges:
+            db_challenge = get_challenge(db_session, c.id)
+            if db_challenge is None:
+                continue
+            db_activity.challenges.append(db_challenge)
+        update_data.pop("challenges")
     
     for k, v in update_data.items():
         setattr(db_activity, k, v)
