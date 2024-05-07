@@ -13,7 +13,7 @@ def login(creds: UserCreds):
 
 def create_user(user_payload: UserCreate):
     auth_payload = {
-        "username": user_payload.username,
+        "email": user_payload.email,
         "password": user_payload.password
     }
     response = requests.post(f"{AUTH_URL}/users", json=auth_payload)

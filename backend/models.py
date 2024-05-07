@@ -55,6 +55,7 @@ class User(base):
     __tablename__ = "users"
 
     id = Column(String, primary_key=True)
+    email = Column(String, unique=True)
     username = Column(String, unique=True)
     full_name = Column(String)
     date_created = Column(DateTime(timezone=True), server_default=func.now())
