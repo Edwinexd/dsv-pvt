@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/group_creation_page.dart';
 
@@ -13,9 +14,9 @@ class AllGroupsPage extends StatefulWidget {
 class _AllGroupsPageState extends State<AllGroupsPage> {
   //List of instance groups
   final List<Group> _groups = [
-    const Group(id: 3, name: 'Lace up!', description: 'Lace up and lead the way', isPrivate: true),
-    const Group(id: 2, name: 'DVK Runners', description: 'Join us!', isPrivate: false),
-    const Group(id: 4, name: 'Kista Runners', description: 'Best runners!', isPrivate: true),
+    const Group(id: 3, name: 'Lace up!', description: 'Lace up and lead the way', isPrivate: true, ownerId: '1'),
+    const Group(id: 2, name: 'DVK Runners', description: 'Join us!', isPrivate: false, ownerId: '1'),
+    const Group(id: 4, name: 'Kista Runners', description: 'Best runners!', isPrivate: true, ownerId: '1'),
   ];
 
   String _searchQuery = '';
@@ -28,7 +29,9 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
       final isPrivate = group.isPrivate;
 
       bool matchesSearchQuery = name.contains(_searchQuery.toLowerCase());
-      bool isPublicMatch = _selectedFilter == 'All' || (_selectedFilter == 'Public' && !isPrivate);
+      bool isPublicMatch = (_selectedFilter == 'All') 
+      || (_selectedFilter == 'Public' && !isPrivate)
+      || (_selectedFilter == 'Private' && isPrivate);
       return matchesSearchQuery && isPublicMatch;
     }).toList();
 
@@ -38,7 +41,7 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
         backgroundColor: const Color.fromARGB(230, 60, 71, 133),
       ),
 
-      body: Column(
+      body: DefaultBackground(
         children: [
           Container(
             color: Colors.grey[100], //Background color of the box
@@ -76,6 +79,7 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
                   items: const [
                     DropdownMenuItem(value: 'All', child: Text('All')),
                     DropdownMenuItem(value: 'Public', child: Text('Show only public groups')),
+                    DropdownMenuItem(value: 'Private', child: Text('Show only private groups')),
                   ],
                 ),
               ],

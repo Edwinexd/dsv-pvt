@@ -1,3 +1,4 @@
+import 'package:flutter_application/activity_create.dart';
 import 'package:flutter_application/my_achievements.dart';
 import 'package:flutter_application/settings.dart';
 import 'package:flutter_application/views/my_groups.dart';
@@ -71,6 +72,8 @@ class MainPageState extends State<MainPage> {
     ),
     Text('Start Activity Page',
         style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+    Text('Create Activity Page',
+        style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
     Text('Placeholder Page',
         style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
   ];
@@ -95,8 +98,17 @@ class MainPageState extends State<MainPage> {
       }
 
       if (index == 4) {
+        // Prob broken after merge conflict but needs to be redone anyways
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ActivityCreatePage(groupId: "1234"),
+          ),
+        );
+      }
+      if (index == 5) {
         //will be added here
-      }      
+      }
     });
   }
 
@@ -142,6 +154,10 @@ class MainPageState extends State<MainPage> {
             label: 'Achievements',
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.add),
+            label: 'Create Activity',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.question_mark),
             label: 'Placeholder',
           ),
@@ -176,7 +192,7 @@ class MainPageState extends State<MainPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: ((context) => const MyGroups()),
+        builder: ((context) => MyGroups()),
       ),
     ).then((_) {
       setState(() {
