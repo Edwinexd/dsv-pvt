@@ -73,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => ForgotPassword()), 
+                            MaterialPageRoute(builder: (context) => const ForgotPassword()), 
                           );
                         },
                         child: const Text('Forgot Password?', style: TextStyle(color: Color.fromARGB(255, 16, 14, 99))),
