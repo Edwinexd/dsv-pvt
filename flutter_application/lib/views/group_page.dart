@@ -4,7 +4,8 @@ class GroupPage extends StatefulWidget {
   final String groupName;
   final bool isPrivate;
 
-  const GroupPage({super.key, required this.groupName, required this.isPrivate});
+  const GroupPage(
+      {super.key, required this.groupName, required this.isPrivate});
 
   @override
   _GroupPageState createState() => _GroupPageState();
@@ -36,7 +37,9 @@ class _GroupPageState extends State<GroupPage> {
     String query = searchController.text.toLowerCase();
     setState(() {
       // TODO: Replace with fuzzy search
-      displayedMembers = allMembers.where((member) => member.toLowerCase().contains(query)).toList();
+      displayedMembers = allMembers
+          .where((member) => member.toLowerCase().contains(query))
+          .toList();
     });
   }
 
@@ -49,7 +52,7 @@ class _GroupPageState extends State<GroupPage> {
           widget.groupName,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
-          ), 
+          ),
         ),
       ),
       body: Column(

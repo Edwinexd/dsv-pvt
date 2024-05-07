@@ -5,7 +5,6 @@ import 'package:flutter_application/views/group_creation_page.dart';
 import 'package:flutter_application/views/group_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
 class MyGroups extends StatelessWidget {
   MyGroups({super.key});
 
@@ -105,8 +104,8 @@ class MyGroups extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: ((context) =>
-                                  GroupPage(groupName: groupName, isPrivate: true)),
+                              builder: ((context) => GroupPage(
+                                  groupName: groupName, isPrivate: true)),
                             ),
                           );
                         },
@@ -121,5 +120,4 @@ class MyGroups extends StatelessWidget {
       ),
     );
   }
-  
 }
