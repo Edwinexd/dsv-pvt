@@ -127,8 +127,8 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Not a member?',
-                        style: const TextStyle(color: Color.fromARGB(255, 16,14,99))),
+                    const Text('Not a member?',
+                        style: TextStyle(color: Color.fromARGB(255, 16,14,99))),
                     const SizedBox(width: 4),
                     GestureDetector(
                       onTap: () {

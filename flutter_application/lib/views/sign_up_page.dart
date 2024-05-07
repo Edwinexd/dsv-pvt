@@ -28,7 +28,7 @@ class _SignUpPageState extends State<SignUpPage> {
     );
 
     Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pop(context); // Dismiss the CircularProgressIndicator
+      Navigator.pop(context); 
     });
   }
 
@@ -113,8 +113,8 @@ class _SignUpPageState extends State<SignUpPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Already have an account?',
-                          style: const TextStyle(color: Color.fromARGB(255, 16,14,99))),
+                      const Text('Already have an account?',
+                          style: TextStyle(color: Color.fromARGB(255, 16,14,99))),
                       GestureDetector(
                         onTap: () => Navigator.pop(context),
                         child: const Text(' Sign In',
