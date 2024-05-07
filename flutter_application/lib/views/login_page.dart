@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_application/components/MyButton.dart';
 import 'package:flutter_application/components/my_textfield.dart';
 import 'package:flutter_application/components/square_tile.dart';
+import 'package:flutter_application/forgot_password.dart';
 import 'package:flutter_application/views/sign_up_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -13,23 +13,16 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // text editing controllers
-  final usernameController = TextEditingController();
-
-  final passwordController = TextEditingController();
-  //final bool isHovering = false;
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   void signUserIn() {
     showDialog(
       context: context,
-      builder: (context) {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      },
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
     );
-
-    //Navigator.pop(context);
   }
 
   @override
@@ -55,14 +48,9 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 50),
-                const Icon(
-                  Icons.person,
-                  size: 100,
-                  color: Color.fromARGB(255, 16,14,99),
-                ),
+                const Icon(Icons.person, size: 100, color: Color.fromARGB(255, 16, 14, 99)),
                 const SizedBox(height: 40),
-                const Text('Welcome!',
-                    style: TextStyle(color: Color.fromARGB(255, 16,14,99), fontSize: 16)),
+                const Text('Welcome!', style: TextStyle(color: Color.fromARGB(255, 16, 14, 99), fontSize: 16)),
                 const SizedBox(height: 25),
                 MyTextField(
                   controller: usernameController,
@@ -76,13 +64,20 @@ class _LoginPageState extends State<LoginPage> {
                   obscureText: true,
                 ),
                 const SizedBox(height: 10),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 25.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Text('Forgot Password?',
-                          style: TextStyle(color: Color.fromARGB(255, 16,14,99)))
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const ForgotPassword()), 
+                          );
+                        },
+                        child: const Text('Forgot Password?', style: TextStyle(color: Color.fromARGB(255, 16, 14, 99))),
+                      ),
                     ],
                   ),
                 ),
@@ -99,18 +94,18 @@ class _LoginPageState extends State<LoginPage> {
                       Expanded(
                         child: Divider(
                           thickness: 0.5,
-                          color: Color.fromARGB(255, 16,14,99),
+                          color: Color.fromARGB(255, 16, 14, 99),
                         ),
                       ),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10.0),
                         child: Text('Or continue with',
-                            style: TextStyle(color: Color.fromARGB(255, 16,14,99))),
+                            style: TextStyle(color: Color.fromARGB(255, 16, 14, 99))),
                       ),
                       Expanded(
                         child: Divider(
                           thickness: 0.5,
-                          color: Color.fromARGB(255, 16,14,99),
+                          color: Color.fromARGB(255, 16, 14, 99),
                         ),
                       ),
                     ],
@@ -127,20 +122,18 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('Not a member?',
-                        style: TextStyle(color: Color.fromARGB(255, 16,14,99))),
+                    const Text('Not a member?', style: TextStyle(color: Color.fromARGB(255, 16, 14, 99))),
                     const SizedBox(width: 4),
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => SignUpPage()));
+                          context,
+                          MaterialPageRoute(builder: (context) => SignUpPage()),
+                        );
                       },
                       child: const Text(
                         'Register Now',
-                        style: TextStyle(
-                            color: Colors.blue, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
