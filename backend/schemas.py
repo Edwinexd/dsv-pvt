@@ -1,8 +1,10 @@
 # Schemas will be used for presentation and data query with user
 from typing import List, Optional
-from pydantic import BaseModel, field_serializer
+from pydantic import BaseModel, Field, field_serializer
 from datetime import datetime
 from user_roles import Roles
+
+EMAIL_REGEX = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
 
 # USER
 class UserBase(BaseModel):
@@ -11,7 +13,7 @@ class UserBase(BaseModel):
     full_name: str
 
 class UserCreate(UserBase):
-    email: str
+    email: str = Field(pattern=EMAIL_REGEX)
     password: str
 
 class UserModel(UserBase):
@@ -37,6 +39,7 @@ class UserUpdate(BaseModel):
     full_name: Optional[str] = None
       
 class UserCreds(BaseModel):
+    # Email is intentionally not validated due to compatability with old accounts
     email: str
     password: str
 
