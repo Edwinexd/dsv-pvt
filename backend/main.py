@@ -348,9 +348,6 @@ def add_challenge_to_activity(current_user: DbUser, db_session: DbSession, reque
     validations.validate_user_owns_activity(current_user, requested_activity)
     crud.add_challenge(db_session, requesteded_challenge, requested_activity)
 
-#TODO: adding challenges to activities
-#TODO: reading all challenges in activity
-
 #CHALLENGES
 @app.post("/challenges", response_model = schemas.Challenge)
 def create_challenge(current_user: DbUser, db_session: DbSession, challenge_payload: schemas.ChallengeCreate):
