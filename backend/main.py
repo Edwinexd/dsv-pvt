@@ -294,7 +294,7 @@ def create_activity(current_user: DbUser, db_session: DbSession, activity: schem
         difficulty_code=activity.difficulty_code,
         group_id=requested_group.id,
         owner_id=current_user.id,
-        challenge_list = activity.challenge_list
+        challenges = activity.challenges
     )
     return crud.create_activity(db_session, activity_payload)
 
@@ -311,9 +311,14 @@ def read_activity(current_user: DbUser, requested_activity: RequestedActivity):
     return requested_activity
 
 @app.patch("/groups/{group_id}/activities/{activity_id}", response_model = schemas.Activity)
-def update_activity(current_user: DbUser, db_session: DbSession, requested_activity: RequestedActivity, activity_update: schemas.ActivityUpdate):
+def update_activity(current_user: DbUser, db_session: DbSession, requested_group: RequestedGroup, requested_activity: RequestedActivity, activity_update: schemas.ActivityUpdate):
     validations.validate_owns_activity(current_user, requested_activity)
-    return crud.update_activity(db_session, requested_activity, activity_update)
+    validations.validate_activity_is_not_completed(current_user, requested_activity)
+    db_activity = crud.update_activity(db_session, requested_activity, activity_update)
+
+    if db_activity.is_completed != 0: # special case, activity has been marked as complete
+        crud.complete_activity(db_session, db_activity, requested_group)
+    return db_activity
 
 @app.delete("/groups/{group_id}/activities/{activity_id}", status_code=204)
 def delete_activity(current_user: DbUser, db_session: DbSession, requested_activity: RequestedActivity):

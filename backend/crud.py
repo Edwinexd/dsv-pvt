@@ -195,9 +195,11 @@ def create_activity(db_session: Session, activity_payload: schemas.ActivityPaylo
         owner_id = activity_payload.owner_id,
         group_id = activity_payload.group_id
     )
+    owner = get_user(db_session, activity_payload.owner_id)
+    owner.activities.append(db_activity)
     db_session.add(db_activity)
 
-    for c in activity_payload.challenge_list:
+    for c in activity_payload.challenges:
         db_challenge = get_challenge(db_session, c.id)
         if db_challenge is None:
             continue
@@ -236,6 +238,19 @@ def update_activity(db_session: Session, db_activity: models.Activity, activity_
 
 def delete_activity(db_session: Session, db_activity: models.Activity):
     db_session.delete(db_activity)
+    db_session.commit()
+
+def complete_activity(db_session: Session, db_activity: models.Activity, db_group: models.Group):    
+    points = 0
+    achievements = []
+    for c in db_activity.challenges:
+        points += c.point_reward
+        if c.achievement_match is not None:
+            achievements.append(c.achievement_match)
+    db_group.points += points # group gets the total points from the challenges
+    for u in db_activity.participants: #each participant gets their achievement(s)
+        for a in achievements:
+            u.completed_achievements.append(a)
     db_session.commit()
 
 # ACTIVITY PARTICIPATION

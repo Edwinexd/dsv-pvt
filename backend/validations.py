@@ -42,3 +42,7 @@ def validate_is_admin(current_user: models.User):
 def validate_api_key(api_key: str = Header(alias="ADMIN-API-Key")):
     if api_key != API_KEY:
         raise HTTPException(status_code=403, detail="Invalid API-key")
+
+def validate_activity_is_not_completed(current_user: models.User, activity: models.Activity):
+    if activity.is_completed != 0 and current_user.role is not Roles.ADMIN:
+        raise HTTPException(status_code=400, detail="Activity is already completed and as such cannot be updated")
