@@ -55,14 +55,14 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 50),
-                Icon(
+                const Icon(
                   Icons.person,
                   size: 100,
-                  color: Colors.grey[800],
+                  color: Color.fromARGB(255, 16,14,99),
                 ),
                 const SizedBox(height: 40),
-                Text('Welcome!',
-                    style: TextStyle(color: Colors.grey[700], fontSize: 16)),
+                const Text('Welcome!',
+                    style: TextStyle(color: Color.fromARGB(255, 16,14,99), fontSize: 16)),
                 const SizedBox(height: 25),
                 MyTextField(
                   controller: usernameController,
@@ -76,13 +76,13 @@ class _LoginPageState extends State<LoginPage> {
                   obscureText: true,
                 ),
                 const SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 25.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text('Forgot Password?',
-                          style: TextStyle(color: Colors.grey[600]))
+                          style: TextStyle(color: Color.fromARGB(255, 16,14,99)))
                     ],
                   ),
                 ),
@@ -92,25 +92,25 @@ class _LoginPageState extends State<LoginPage> {
                   onTap: signUserIn,
                 ),
                 const SizedBox(height: 50),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 25.0),
                   child: Row(
                     children: [
                       Expanded(
                         child: Divider(
                           thickness: 0.5,
-                          color: Colors.grey[400],
+                          color: Color.fromARGB(255, 16,14,99),
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        padding: EdgeInsets.symmetric(horizontal: 10.0),
                         child: Text('Or continue with',
-                            style: TextStyle(color: Colors.grey[700])),
+                            style: TextStyle(color: Color.fromARGB(255, 16,14,99))),
                       ),
                       Expanded(
                         child: Divider(
                           thickness: 0.5,
-                          color: Colors.grey[400],
+                          color: Color.fromARGB(255, 16,14,99),
                         ),
                       ),
                     ],
@@ -128,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text('Not a member?',
-                        style: TextStyle(color: Colors.grey[700])),
+                        style: const TextStyle(color: Color.fromARGB(255, 16,14,99))),
                     const SizedBox(width: 4),
                     GestureDetector(
                       onTap: () {

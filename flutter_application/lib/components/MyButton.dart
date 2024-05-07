@@ -34,11 +34,13 @@ class _MyButtonState extends State<MyButton> {
       },
       onTap: widget.onTap,
       child: Container(
-        padding: const EdgeInsets.all(25),
+        width: 175,
+        height: 50,
+        padding: const EdgeInsets.all(10),
         margin: const EdgeInsets.symmetric(horizontal: 25.0),
         decoration: BoxDecoration(
-          color: _isPressed ? Colors.grey[400] : Colors.grey[800],
-          borderRadius: BorderRadius.circular(15),
+          color: _isPressed ? const Color.fromARGB(255, 245, 156, 104) : const Color.fromARGB(255,255,92,00),
+          borderRadius: BorderRadius.circular(25),
         ),
         child: Center(
           child: Text(

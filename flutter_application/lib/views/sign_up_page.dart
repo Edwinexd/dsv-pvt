@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/components/gradient_button.dart';
 import 'package:flutter_application/components/my_textfield.dart';
 import 'package:flutter_application/components/MyButton.dart';
 import 'package:flutter_application/components/square_tile.dart';
@@ -7,18 +8,16 @@ class SignUpPage extends StatefulWidget {
   SignUpPage({super.key});
 
   @override
-  State<SignUpPage> createState() => SignUpPageState();
+  State<SignUpPage> createState() => _SignUpPageState();
 }
 
-class SignUpPageState extends State<SignUpPage> {
-  // text editing controllers
+class _SignUpPageState extends State<SignUpPage> {
   final nameController = TextEditingController();
   final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
   void registerUser() {
-    // Here you can add the logic to handle user registration
     showDialog(
       context: context,
       builder: (context) {
@@ -28,9 +27,8 @@ class SignUpPageState extends State<SignUpPage> {
       },
     );
 
-    // Simulate a delay for the registration process
-    Future.delayed(Duration(seconds: 3), () {
-      Navigator.pop(context); // This dismisses the CircularProgressIndicator
+    Future.delayed(const Duration(seconds: 3), () {
+      Navigator.pop(context); // Dismiss the CircularProgressIndicator
     });
   }
 
@@ -57,104 +55,72 @@ class SignUpPageState extends State<SignUpPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 20),
-                  Icon(
-                    Icons.person_pin,
-                    size: 100,
-                    color: Colors.grey[800],
-                  ),
-                  const SizedBox(height: 20),
-                  Text('Sign Up',
-                      style: TextStyle(
-                        color: Colors.grey[700],
-                        fontSize: 24,
-                      )),
-                  const SizedBox(height: 20),
+                  const Icon(Icons.person_pin, size: 100, color: Color.fromARGB(255, 16,14,99)),
+                  SizedBox(height: 20),
+                  const Text('Sign Up',
+                      style: TextStyle(color: Color.fromARGB(255, 16,14,99), fontSize: 24)),
+                  SizedBox(height: 20),
                   MyTextField(
-                    controller: nameController,
-                    hintText: 'Full Name',
-                    obscureText: false,
-                  ),
-                  const SizedBox(height: 10),
+                      controller: nameController,
+                      hintText: 'Full Name',
+                      obscureText: false),
+                  SizedBox(height: 10),
                   MyTextField(
-                    controller: usernameController,
-                    hintText: 'Username',
-                    obscureText: false,
-                  ),
-                  const SizedBox(height: 10),
+                      controller: usernameController,
+                      hintText: 'Username',
+                      obscureText: false),
+                  SizedBox(height: 10),
                   MyTextField(
-                    controller: emailController,
-                    hintText: 'Email',
-                    obscureText: false,
-                  ),
-                  const SizedBox(height: 10),
+                      controller: emailController,
+                      hintText: 'Email',
+                      obscureText: false),
+                  SizedBox(height: 10),
                   MyTextField(
-                    controller: passwordController,
-                    hintText: 'Password',
-                    obscureText: true,
-                  ),
-                  const SizedBox(height: 20),
-                  MyButton(
+                      controller: passwordController,
+                      hintText: 'Password',
+                      obscureText: true),
+                  SizedBox(height: 20),
+                  GradientButton(
+                    buttonText: "Create account",
                     onTap: registerUser,
-                    buttonText: 'Sign Up',
                   ),
-                  const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  SizedBox(height: 20),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 25.0),
                     child: Row(
                       children: [
                         Expanded(
-                          child: Divider(
-                            thickness: 0.5,
-                            color: Colors.grey[400],
-                          ),
-                        ),
+                            child: Divider(
+                                color: Color.fromARGB(255, 16,14,99), thickness: 0.5)),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          child: Text(
-                            'Or continue with',
-                            style: TextStyle(color: Colors.grey[700]),
-                          ),
+                          padding: EdgeInsets.symmetric(horizontal: 10.0),
+                          child: Text('Or continue with',
+                              style: TextStyle(color: Color.fromARGB(255, 16,14,99))),
                         ),
                         Expanded(
-                          child: Divider(
-                            thickness: 0.5,
-                            color: Colors.grey[400],
-                          ),
-                        ),
+                            child: Divider(
+                                color: Color.fromARGB(255, 16,14,99), thickness: 0.5)),
                       ],
                     ),
                   ),
-                  const SizedBox(
-                    height: 25,
-                  ),
+                  SizedBox(height: 25),
                   const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SquareTile(imagePath: 'lib/images/google.png'),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SquareTile(imagePath: 'lib/images/google.png')
+                      ]),
+                  SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'Already have an account?',
-                        style: TextStyle(
-                          color: Colors.grey[700],
-                        ),
-                      ),
+                      Text('Already have an account?',
+                          style: const TextStyle(color: Color.fromARGB(255, 16,14,99))),
                       GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text(
-                          ' Sign In',
-                          style: TextStyle(
-                            color: Colors.blue,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        onTap: () => Navigator.pop(context),
+                        child: const Text(' Sign In',
+                            style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold)),
                       ),
                     ],
                   )
