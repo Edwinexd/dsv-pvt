@@ -117,7 +117,7 @@ class ProfilePage extends StatelessWidget {
                   onPressed: () {
                     // View achievements
                   },
-                  child: const Text('View Achievements'),
+                  child: const Text('Trophies'),
                 ),
                 const SizedBox(height: 10),
               ],
