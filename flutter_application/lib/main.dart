@@ -37,7 +37,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Midnattsloppet Now',
+      title: 'Lace up & lead the way',
       home: MainPage(
         darkModeEnabled: _darkModeEnabled,
         onToggleDarkMode: _toggleDarkMode,
@@ -112,7 +112,7 @@ class MainPageState extends State<MainPage> {
         onPressed: () {
           goToProfilePage(context);
         },
-        title: 'Midnattsloppet Now',
+        title: 'Lace up & lead the way',
       ),
       drawer: MyDrawer(
         onSignoutTap: () {},
@@ -129,7 +129,7 @@ class MainPageState extends State<MainPage> {
         },
       ),
       body: HomePage(),
-      bottomNavigationBar: buildBottomNavigationBar( // Use buildBottomNavigationBar from bars.dart
+      bottomNavigationBar: buildBottomNavigationBar( 
         selectedIndex: selectedIndex,
         onItemTapped: onItemtapped,
       ),
@@ -147,7 +147,6 @@ class MainPageState extends State<MainPage> {
         ),
       ),
     ).then((_) {
-      //Updating the active index when navigating back
       setState(() {
         selectedIndex = 0;
       });
