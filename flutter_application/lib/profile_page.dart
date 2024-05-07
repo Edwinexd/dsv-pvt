@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/edit_profile_page.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -18,46 +19,50 @@ class ProfilePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile Page'),
-        backgroundColor: Colors.deepOrange,
       ),
-      body: Column(
-        children: <Widget>[
-          Stack(
-            alignment: Alignment.center,
+      body: DefaultBackground( 
+        child: SingleChildScrollView(  
+          child: Column(
             children: <Widget>[
-              Container(
-                height: 220.0,
-                decoration: BoxDecoration(
-                  color: Colors.deepOrange,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      spreadRadius: 0,
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
+              Stack(
+                alignment: Alignment.center,
+                children: <Widget>[
+                  Container(
+                    height: 220.0,
+                    decoration: BoxDecoration(
+                      color: Colors.deepOrange,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          spreadRadius: 0,
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  CircleAvatar(
+                    radius: 70.0,
+                    backgroundImage: NetworkImage(imageUrl),
+                  ),
+                ],
               ),
-              CircleAvatar(
-                radius: 70.0,
-                backgroundImage: NetworkImage(imageUrl),
+              const SizedBox(height: 10),
+              Text(name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 10),
+              Text(biography, style: const TextStyle(fontSize: 18)),
+              const SizedBox(height: 20),
+              IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () => goToEditProfile(context),
               ),
             ],
           ),
-          const SizedBox(height: 10),
-          Text(name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 10),
-          Text(biography, style: const TextStyle(fontSize: 18)),
-          const SizedBox(height: 20),
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () => goToEditProfile(context),
-          ),
-        ],
+        ),
       ),
     );
   }
+
   void goToEditProfile(BuildContext context) {
     Navigator.push(
       context,
