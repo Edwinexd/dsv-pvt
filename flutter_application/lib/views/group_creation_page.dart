@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
-//member invites?
+import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
 
 class GroupCreation extends StatefulWidget {
   const GroupCreation({super.key});
@@ -11,10 +11,21 @@ class GroupCreation extends StatefulWidget {
 
 class GroupCreationState extends State<GroupCreation> {
   final _nameController = TextEditingController();
+  final _locationController = TextEditingController();
   final _descriptionController = TextEditingController();
   bool _isPublic = false;
+  int _memberLimit = 10; //Default member limit
+  int _skillLevel = 0; 
   bool _isGroupCreated = false;
   String _errorMessage = '';
+
+  List<String> skillLevels = [
+    'Beginner: 10 - 8 min/km',
+    'Intermediate: 8 - 6 min/km',
+    'Advanced: 6 - 5 min/km',
+    'Professional: 5 - 4 min/km',
+    'Elite: < 4 min/km'
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -33,16 +44,46 @@ class GroupCreationState extends State<GroupCreation> {
                 controller: _nameController,
                 decoration: const InputDecoration(labelText: 'Group Name'),
               ),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
+              const SizedBox(height: 16.0),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _locationController,
+                      decoration: InputDecoration(
+                        labelText: 'Location',
+                        suffixIcon: Icon(Icons.location_on),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(
-                height: 16.0,
+              const SizedBox(height: 16.0),
+              Text(
+                'Skill Level:',
+                style: TextStyle(fontSize: 16),
               ),
+              Slider(
+                value: _skillLevel.toDouble(),
+                min: 0,
+                max: 4,
+                divisions: 4,
+                onChanged: (double value) {
+                  setState(() {
+                    _skillLevel = value.round();
+                  });
+                },
+              ),
+              Center(
+                child: Text(
+                  skillLevels[_skillLevel],
+                  style: TextStyle(fontSize: 12),
+                ),
+              ),
+              const SizedBox(height: 16.0),
               Row(
                 children: <Widget>[
-                  const Text(
+                  Text(
                     'Public',
                     style: TextStyle(fontSize: 12.0),
                   ),
@@ -54,12 +95,37 @@ class GroupCreationState extends State<GroupCreation> {
                       });
                     },
                   ),
-                  const Text(
+                  Text(
                     'Private',
                     style: TextStyle(fontSize: 12.0),
                   ),
+                  const SizedBox(width: 16.0),
+                  Text(
+                    'Member Limit:',
+                    style: TextStyle(fontSize: 12.0),
+                  ),
+                  const SizedBox(width: 8.0),
+                  Expanded(
+                    child: TextFormField(
+                      initialValue: _memberLimit.toString(),
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
+                        setState(() {
+                          _memberLimit = int.tryParse(value) ?? 0;
+                        });
+                      },
+                    ),
+                  ),
                 ],
               ),
+              const SizedBox(height: 16.0),
+              TextFormField(
+                controller: _descriptionController,
+                decoration:
+                    const InputDecoration(labelText: 'Group Description'),
+                maxLines: 3,
+              ),
+              const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: () {
                   createGroup();
