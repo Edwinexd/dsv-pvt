@@ -37,3 +37,7 @@ def validate_current_is_inviter(current_user: models.User, invitation: models.Gr
 def validate_api_key(api_key: str = Header(alias="ADMIN-API-Key")):
     if api_key != API_KEY:
         raise HTTPException(status_code=403, detail="Invalid API-key")
+
+def validate_has_achievement(user: models.User, achivement: models.Achievement):
+    if achivement not in user.completed_achievements:
+        raise HTTPException(status_code=403, detail="User does not have this achievement")
