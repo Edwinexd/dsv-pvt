@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 class SkillLevelSlider extends StatefulWidget {
   final int initialSkillLevel;
-  final Function(int) onSkillLevelChanged;
+  final Function(int)? onSkillLevelChanged; 
   final bool readOnly;
 
   const SkillLevelSlider({
     super.key,
     this.initialSkillLevel = 0,
-    required this.onSkillLevelChanged,
-    this.readOnly = false, // Default is false to allow changes
+    this.onSkillLevelChanged,
+    this.readOnly = false, 
   });
 
   @override
@@ -32,6 +32,10 @@ class SkillLevelSliderState extends State<SkillLevelSlider> {
     _skillLevel = widget.initialSkillLevel;
   }
 
+  void _defaultChangeFunction(int level) {
+    // This function does nothing. It's just a placeholder.
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -44,12 +48,16 @@ class SkillLevelSliderState extends State<SkillLevelSlider> {
             max: 4,
             divisions: 4,
             label: skillLevels[_skillLevel],
-            onChanged: widget.readOnly ? null : (double value) { // If readOnly is true, onChanged is null
-              setState(() {
-                _skillLevel = value.round();
-                widget.onSkillLevelChanged(_skillLevel);
-              });
-            },
+            onChanged: widget.readOnly
+                ? null
+                : (double value) {
+                    setState(() {
+                      _skillLevel = value.round();
+                      // Call the provided callback, or use the default no-op function
+                      (widget.onSkillLevelChanged ??
+                          _defaultChangeFunction)(_skillLevel);
+                    });
+                  },
             activeColor: const Color.fromARGB(255, 255, 92, 00),
             inactiveColor: const Color.fromARGB(255, 206, 150, 118),
           ),
