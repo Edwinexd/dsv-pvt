@@ -32,8 +32,8 @@ achievement_completions = Table(
     Column("user_id", ForeignKey("users.id"), primary_key = True),
     Column("achievement_id", ForeignKey("achievements.id"), primary_key = True),
 )
-planned_challenges = Table(
-    "planned_challenges",
+activity_challenges = Table(
+    "activity_challenges",
     base.metadata,
     Column("challenge_id", ForeignKey("challenges.id"), primary_key=True),
     Column("activity_id", ForeignKey("activities.id"), primary_key=True)
@@ -145,7 +145,7 @@ class Activity(base):
     )
     challenges = relationship(
         "Challenge",
-        secondary=planned_challenges,
+        secondary=activity_challenges,
         back_populates="activities",
         lazy="dynamic"
     )
@@ -171,7 +171,7 @@ class Challenge(base):
 
     activities = relationship(
         "Activity",
-        secondary=planned_challenges,
+        secondary=activity_challenges,
         back_populates="challenges",
         lazy="dynamic"
     )
