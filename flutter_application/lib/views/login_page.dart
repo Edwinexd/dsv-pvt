@@ -33,6 +33,7 @@ class _LoginPageState extends State<LoginPage> {
 
     if (email.isEmpty || password.isEmpty) {
       // TODO: Handle email and password is empty
+      return;
     }
 
     showDialog(
