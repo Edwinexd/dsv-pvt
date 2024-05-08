@@ -23,24 +23,29 @@ app = fastapi.FastAPI()
 
 setup()
 
+
 class LoginPayload(BaseModel):
     email: str
     password: str
 
+
 class RegisterPayload(LoginPayload):
     email: str = Field(pattern=EMAIL_REGEX)
+
 
 class BasicUserInfo(BaseModel):
     id: int
 
+
 @app.post("/users/login")
 def login(payload: LoginPayload) -> BasicUserInfo:
     user = find_user(payload.email, payload.password)
-    
+
     if user is None:
         raise fastapi.HTTPException(401, detail="Invalid email and/or password")
 
     return BasicUserInfo(id=user.id)
+
 
 @app.post("/users")
 def create_user_(payload: RegisterPayload) -> BasicUserInfo:
