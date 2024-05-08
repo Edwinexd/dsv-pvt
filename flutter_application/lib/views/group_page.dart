@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/activity_create.dart';
 import 'package:flutter_application/background_for_pages.dart';
+import 'package:flutter_application/views/group_members.dart';
 
 class GroupPage extends StatefulWidget {
   final String groupName;
   final bool isPrivate;
 
   const GroupPage(
-    {super.key, required this.groupName, required this.isPrivate});
+      {super.key, required this.groupName, required this.isPrivate});
 
   @override
   _GroupPageState createState() => _GroupPageState();
@@ -119,8 +120,12 @@ class _GroupPageState extends State<GroupPage> {
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: () {
-              //Handle members button press
-              //Navigate to members page which we do not have it rn
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const GroupMembersPage(),                    
+                ),
+              );
             },
             icon: const Icon(Icons.group),
             label: const Text('Members'),
