@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/components/MyButton.dart';
 import 'package:flutter_application/components/my_textfield.dart';
 import 'package:flutter_application/components/square_tile.dart';
+import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/forgot_password.dart';
+import 'package:flutter_application/home_page.dart';
+import 'package:flutter_application/main.dart';
 import 'package:flutter_application/views/sign_up_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -15,14 +18,38 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final BackendService _backendService = BackendService();
 
-  void signUserIn() {
-    showDialog(
-      context: context,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
+  void signUserIn() async {
+    final String email = usernameController.text.trim();
+    final String password = passwordController.text.trim();
+
+    if (email.isNotEmpty && password.isNotEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      await _backendService.login(email, password);
+      print(_backendService.token);
+      if (_backendService.token != null) {
+        // navigate to the main app
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MainPage(
+            darkModeEnabled: false, 
+            onToggleDarkMode: (bool value) {  },
+          ))
+        );
+      } else {
+        // handle login failure
+      }
+    } else {
+      // handle email and password is empty
+    }
+
   }
 
   @override
