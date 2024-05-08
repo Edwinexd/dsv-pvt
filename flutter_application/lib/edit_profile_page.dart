@@ -49,11 +49,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
             Center(
               child: GestureDetector(
                 onTap: _pickImage,
-                child: CircleAvatar(
+                child: const CircleAvatar(
                   radius: 60,
                   // Use a placeholder image if no image is selected
                   backgroundImage: AssetImage('assets/images/profile_placeholder.png'),
-                  child: const Align(
+                  child: Align(
                     alignment: Alignment.bottomRight,
                     child: CircleAvatar(
                       backgroundColor: Colors.white,
@@ -77,11 +77,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ),
             TextFormField(
               controller: _interestsController,
-              decoration: InputDecoration(labelText: 'Interests'),
+              decoration: const InputDecoration(labelText: 'Interests'),
               validator: (value) => value!.isEmpty ? 'Interests cannot be empty' : null,
             ),
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 20),
+              padding: const EdgeInsets.symmetric(vertical: 20),
               child: SkillLevelSlider(
                 initialSkillLevel: _skillLevel,
                 onSkillLevelChanged: (int newLevel) {
@@ -93,7 +93,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ),
             ElevatedButton(
               onPressed: _saveProfile,
-              child: Text('Save Profile'),
+              child: const Text('Save Profile'),
             ),
           ],
         ),
