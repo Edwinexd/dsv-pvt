@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
+import 'package:flutter_application/components/skill_level_slider.dart';
 import 'package:flutter_application/edit_profile_page.dart';
 import 'package:flutter_application/settings.dart';
 
@@ -84,10 +85,12 @@ class ProfilePage extends StatelessWidget {
                           ],
                         ),
                         child: IconButton(
-                          icon: const Icon(Icons.edit,
-                              color: Color.fromARGB(255, 255, 92, 00)),
-                          onPressed: () => goToEditProfile(context),
-                        ),
+                            icon: const Icon(Icons.edit,
+                                color: Color.fromARGB(255, 255, 92, 00)),
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => EditProfilePage()));
+                            }),
                       ),
                     ),
                   ],
@@ -111,7 +114,12 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const SkillLevelSlider(),
+                SkillLevelSlider(
+                  initialSkillLevel: 2,
+                  onSkillLevelChanged: (newLevel) {
+                    print("Skill level updated to: $newLevel");
+                  },
+                ),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
@@ -125,59 +133,6 @@ class ProfilePage extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  void goToEditProfile(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: ((context) => EditProfilePage()),
-      ),
-    );
-  }
-}
-
-class SkillLevelSlider extends StatefulWidget {
-  const SkillLevelSlider({super.key});
-
-  @override
-  SkillLevelSliderState createState() => SkillLevelSliderState();
-}
-
-class SkillLevelSliderState extends State<SkillLevelSlider> {
-  int _skillLevel = 0;
-  final List<String> skillLevels = [
-    'Beginner',
-    'Intermediate',
-    'Advanced',
-    'Expert',
-    'Master'
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Container(
-          width: 400,
-          child: Slider(
-            value: _skillLevel.toDouble(),
-            min: 0,
-            max: 4,
-            divisions: 4,
-            label: skillLevels[_skillLevel],
-            onChanged: (double value) {
-              setState(() {
-                _skillLevel = value.round();
-              });
-            },
-            activeColor: const Color.fromARGB(255, 255, 92, 00),
-            inactiveColor: const Color.fromARGB(255, 206, 150, 118),
-          ),
-        ),
-        Text(skillLevels[_skillLevel], style: const TextStyle(fontSize: 16)),
-      ],
     );
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/components/gradient_button.dart';
 import 'package:flutter_application/components/my_textfield.dart';
-import 'package:flutter_application/components/MyButton.dart';
 import 'package:flutter_application/components/square_tile.dart';
 
 class SignUpPage extends StatefulWidget {

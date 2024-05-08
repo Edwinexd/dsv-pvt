@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application/components/MyButton.dart';
+import 'package:flutter_application/components/my_button.dart';
 import 'package:flutter_application/components/my_textfield.dart';
 import 'package:flutter_application/components/square_tile.dart';
 import 'package:flutter_application/forgot_password.dart';
