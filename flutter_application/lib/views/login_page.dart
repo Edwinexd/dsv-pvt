@@ -4,12 +4,19 @@ import 'package:flutter_application/components/my_textfield.dart';
 import 'package:flutter_application/components/square_tile.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/forgot_password.dart';
-import 'package:flutter_application/home_page.dart';
 import 'package:flutter_application/main.dart';
 import 'package:flutter_application/views/sign_up_page.dart';
 
 class LoginPage extends StatefulWidget {
-  LoginPage({super.key});
+  final bool darkModeEnabled;
+  final ValueChanged<bool> onToggleDarkMode;
+
+  LoginPage({
+    Key? key,
+    required this.darkModeEnabled,
+    required this.onToggleDarkMode,
+  }) : super(key: key);
+
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -33,14 +40,13 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       await _backendService.login(email, password);
-      print(_backendService.token);
       if (_backendService.token != null) {
         // navigate to the main app
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => MainPage(
-            darkModeEnabled: false, 
-            onToggleDarkMode: (bool value) {  },
+            darkModeEnabled: widget.darkModeEnabled, 
+            onToggleDarkMode: widget.onToggleDarkMode,
           ))
         );
       } else {

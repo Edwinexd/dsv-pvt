@@ -7,9 +7,6 @@ import 'package:flutter/material.dart';
 import 'profile_page.dart';
 import 'drawer.dart';
 import 'package:flutter_application/views/login_page.dart';
-import 'create_profile_page.dart';  
-import 'package:flutter_application/controllers/backend_service.dart';
-import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/home_page.dart';
 
 //Uppdaterad från PC.
@@ -38,7 +35,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Midnattsloppet Now',
-      home: MainPage(
+      home: LoginPage(
         darkModeEnabled: _darkModeEnabled,
         onToggleDarkMode: _toggleDarkMode,
       ),
