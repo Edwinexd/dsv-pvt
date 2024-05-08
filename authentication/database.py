@@ -14,9 +14,11 @@ ID_GENERATOR = IdGenerator()
 
 ENGINE = create_engine(os.getenv("DATABASE_URL", "sqlite:///:memory:"))
 
+EMAIL_REGEX = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
+
 class User(SQLModel, table=True):
     id: int = Field(sa_column=Column(BigInteger(), default=None, primary_key=True))
-    email: str = Field(unique=True, index=True)
+    email: str = Field(unique=True, index=True, regex=EMAIL_REGEX)
     password_hash: str
     salt: str
     oauth_users: List["OauthUser"] = Relationship(back_populates="user")
