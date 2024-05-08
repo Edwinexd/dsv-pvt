@@ -1,3 +1,4 @@
+import logging
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException
@@ -85,8 +86,14 @@ RequestedAchievement = Annotated[models.Achievement, Depends(get_achievement)]
 #login
 # TODO: Properly annotate in OPENAPI that it requires credentials
 @app.post("/users/login")
-def login(credentials: schemas.UserCreds):
+def login(credentials: schemas.UserCreds, db_session: DbSession):
     user_id = auth.login(credentials)
+    # Attempt to get user from db before creating session
+    db_user = crud.get_user(db_session, user_id)
+    if db_user is None:
+        logging.error("User (id: %s) not found in database!", user_id)
+        raise HTTPException(status_code=500, detail="State mismatch")
+
     session = create_session(user_id)
     return {"bearer": f"Bearer {session}"}
 
