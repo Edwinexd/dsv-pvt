@@ -166,15 +166,17 @@ class MainPageState extends State<MainPage> {
   }
 
   void goToProfilePage(BuildContext context) {
+    DateTime joinedDate = DateTime(2021, 4, 12);
+
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const ProfilePage(
+        builder: (context) => ProfilePage(
           name: 'Axel Andersson',
           biography: "Let's go running!",
           imageUrl: 'https://via.placeholder.com/150',
           username: 'Oltan53',
-          joinedYear: 2001,
+          joinedDate: joinedDate,
         ),
       ),
     ).then((_) {

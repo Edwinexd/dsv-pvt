@@ -9,7 +9,7 @@ class ProfilePage extends StatelessWidget {
   final String name;
   final String biography;
   final String imageUrl;
-  final int joinedYear;
+  final DateTime joinedDate;
 
   const ProfilePage({
     super.key,
@@ -17,7 +17,7 @@ class ProfilePage extends StatelessWidget {
     required this.name,
     required this.biography,
     required this.imageUrl,
-    required this.joinedYear,
+    required this.joinedDate,
   });
 
   @override
@@ -80,7 +80,7 @@ class ProfilePage extends StatelessWidget {
                               color: Colors.black.withOpacity(0.3),
                               spreadRadius: 1,
                               blurRadius: 3,
-                              offset: Offset(0, 1),
+                              offset: const Offset(0, 1),
                             ),
                           ],
                         ),
@@ -97,7 +97,7 @@ class ProfilePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(name, style: const TextStyle(fontSize: 20)),
-                Text('Joined: $joinedYear',
+                Text('Joined: $joinedDate',
                     style: const TextStyle(fontSize: 16)),
                 const SizedBox(height: 10),
                 Container(
