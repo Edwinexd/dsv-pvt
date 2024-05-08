@@ -146,11 +146,7 @@ class MainPageState extends State<MainPage> {
           imageUrl: 'https://via.placeholder.com/150',
         ),
       ),
-    ).then((_) {
-      setState(() {
-        selectedIndex = 0;
-      });
-    });
+    );
   }
 
   void goToGroupPage(BuildContext context) {
@@ -161,7 +157,7 @@ class MainPageState extends State<MainPage> {
       ),
     ).then((_) {
       setState(() {
-        selectedIndex = 0;
+        selectedIndex = 1;
       });
     });
   }
@@ -170,11 +166,7 @@ class MainPageState extends State<MainPage> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => MyAchievements()),
-    ).then((_) {
-      setState(() {
-        selectedIndex = 0;
-      });
-    });
+    );
   }
 
   void goToHomePage(BuildContext context) {
