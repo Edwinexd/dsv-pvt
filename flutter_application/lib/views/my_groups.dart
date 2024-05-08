@@ -20,7 +20,7 @@ class MyGroups extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Groups',
-          style: GoogleFonts.roboto(
+          style: GoogleFonts.poppins(
             textStyle: const TextStyle(
               fontSize: 20.0,
             ),
@@ -36,10 +36,12 @@ class MyGroups extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Groups',
-                    style: TextStyle(
-                      fontSize: 24.0,
+                    style: GoogleFonts.poppins(
+                      textStyle: const TextStyle(
+                        fontSize: 20.0,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 8),

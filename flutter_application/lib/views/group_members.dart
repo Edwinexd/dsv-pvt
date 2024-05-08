@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 
 class GroupMembersPage extends StatelessWidget {
   const GroupMembersPage({super.key});
@@ -8,7 +10,14 @@ class GroupMembersPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Members'),
+        title: Text(
+          'Groups',
+          style: GoogleFonts.poppins(
+            textStyle: const TextStyle(
+              fontSize: 20.0,
+            ),
+          ),
+        ),
       ),
       body: DefaultBackground(
         children: [

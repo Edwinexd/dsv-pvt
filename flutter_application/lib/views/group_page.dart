@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/activity_create.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/views/group_members.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class GroupPage extends StatefulWidget {
   final String groupName;
@@ -28,10 +29,12 @@ class _GroupPageState extends State<GroupPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(250, 60, 71, 133),
-        title: const Text(
+        title: Text(
           'Groups',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
+          style: GoogleFonts.poppins(
+            textStyle: const TextStyle(
+              fontSize: 20.0,
+            ),
           ),
         ),
       ),
