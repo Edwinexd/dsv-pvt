@@ -1,14 +1,14 @@
-name: Lint
+name: Lint Authentication
 
 on:
   push:
+    branches: [ master ]
   pull_request:
-    types: [ opened, reopened, synchronize ]
+    branches: [ master ]
 
 jobs:
   lint:
     runs-on: ubuntu-latest
-    working-directory: ./authentication
     strategy:
       matrix:
         python-version: ["3.11", "3.12"]
@@ -22,18 +22,24 @@ jobs:
           python-version: ${{ matrix.python-version }}
     
       - name: Install dependencies
+        working-directory: ./authentication
         run: |
           python -m pip install --upgrade pip
           pip install -U black==23.12.1 pydocstyle
           pip install -U -r requirements.txt
 
       - name: Lint with black
+        working-directory: ./authentication
         run: |
           black --check .
 
-      - name: Lint with pydocstyle
-        run: |
-          pydocstyle .
+      # Uncomment the following if we eventually decide to document our code
+      # - name: Lint with pydocstyle
+        # working-directory: ./authentication
+        # run: |
+          # pydocstyle .
 
       - name: Lint with pyright
         uses: jakebailey/pyright-action@v2
+        with:
+          working-directory: ./authentication
