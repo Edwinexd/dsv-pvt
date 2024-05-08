@@ -32,6 +32,12 @@ achievement_completions = Table(
     Column("user_id", ForeignKey("users.id"), primary_key=True),
     Column("achievement_id", ForeignKey("achievements.id"), primary_key=True),
 )
+activity_challenges = Table(
+    "activity_challenges",
+    base.metadata,
+    Column("challenge_id", ForeignKey("challenges.id"), primary_key=True),
+    Column("activity_id", ForeignKey("activities.id"), primary_key=True),
+)
 
 
 # association object pattern is used to get the extra field 'invited_by'
@@ -148,6 +154,12 @@ class Activity(base):
         back_populates="activities",
         lazy="dynamic",
     )
+    challenges = relationship(
+        "Challenge",
+        secondary=activity_challenges,
+        back_populates="activities",
+        lazy="dynamic",
+    )
 
 
 class Challenge(base):
@@ -157,16 +169,23 @@ class Challenge(base):
     challenge_name = Column(String)
     description = Column(String)
     difficulty_code = Column(Integer)
-    expiration_date = Column(String, nullable=True)
+    expiration_date = Column(DateTime(timezone=True), nullable=True)
     point_reward = Column(Integer)
 
     completed_by = relationship(
         "User", secondary=challenge_completions, back_populates="completed_challenges"
     )
 
-    achievement_id = Column(Integer, ForeignKey("achievements.id"), primary_key=True)
+    achievement_id = Column(Integer, ForeignKey("achievements.id"))
     achievement_match = relationship(
         "Achievement", uselist=False, back_populates="challenges"
+    )
+
+    activities = relationship(
+        "Activity",
+        secondary=activity_challenges,
+        back_populates="challenges",
+        lazy="dynamic",
     )
 
 
