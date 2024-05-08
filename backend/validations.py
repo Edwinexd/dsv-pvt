@@ -41,23 +41,42 @@ def validate_owns_activity(current_user: models.User, activity: models.Activity)
 
 def validate_user_invited(current_user: models.User, invited_users: list[models.User]):
     if current_user not in invited_users and current_user.role is not Roles.ADMIN:
-        raise HTTPException(status_code=403, detail="You are not invited to this group!")
-    
-def validate_current_is_inviter(current_user: models.User, invitation: models.GroupInvitations):
-    if current_user.id != invitation.invited_by and current_user.role is not Roles.ADMIN:
-        raise HTTPException(status_code=403, detail="You cannot delete another users invitation!")
-    
+        raise HTTPException(
+            status_code=403, detail="You are not invited to this group!"
+        )
+
+
+def validate_current_is_inviter(
+    current_user: models.User, invitation: models.GroupInvitations
+):
+    if (
+        current_user.id != invitation.invited_by
+        and current_user.role is not Roles.ADMIN
+    ):
+        raise HTTPException(
+            status_code=403, detail="You cannot delete another users invitation!"
+        )
+
+
 def validate_is_admin(current_user: models.User):
     if current_user.role is not Roles.ADMIN:
         raise HTTPException(status_code=403, detail="User is not admin")
-    
+
+
 def validate_api_key(api_key: str = Header(alias="ADMIN-API-Key")):
     if api_key != API_KEY:
         raise HTTPException(status_code=403, detail="Invalid API-key")
 
-def validate_activity_is_not_completed(current_user: models.User, activity: models.Activity):
+
+def validate_activity_is_not_completed(
+    current_user: models.User, activity: models.Activity
+):
     if activity.is_completed != 0 and current_user.role is not Roles.ADMIN:
-        raise HTTPException(status_code=400, detail="Activity is already completed and as such cannot be updated")
+        raise HTTPException(
+            status_code=400,
+            detail="Activity is already completed and as such cannot be updated",
+        )
+
 
 def validate_has_achievement(user: models.User, achivement: models.Achievement):
     # Type issues with relationship attributes

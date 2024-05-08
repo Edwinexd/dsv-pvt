@@ -6,6 +6,7 @@ from user_roles import Roles
 
 EMAIL_REGEX = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
 
+
 # USER
 class UserBase(BaseModel):
     email: str
@@ -118,6 +119,7 @@ class Invite(InviteBase):
     class Config:
         from_attributes = True
 
+
 # CHALLENGE
 class ChallengeBase(BaseModel):
     challenge_name: str
@@ -127,14 +129,17 @@ class ChallengeBase(BaseModel):
     point_reward: int
     achievement_id: Optional[int] = None
 
+
 class ChallengeCreate(ChallengeBase):
     pass
+
 
 class Challenge(ChallengeBase):
     id: int
 
     class Config:
         from_attributes = True
+
 
 class ChallengeUpdate(BaseModel):
     challenge_name: Optional[str] = None
@@ -144,8 +149,10 @@ class ChallengeUpdate(BaseModel):
     point_reward: Optional[int] = None
     achievement_id: Optional[int] = None
 
+
 class ChallengeList(BaseModel):
     data: List[Challenge]
+
 
 # ACTIVITY
 class ActivityBase(BaseModel):
@@ -207,6 +214,7 @@ class Achievement(AchievementBase):
 
     class Config:
         from_attributes = True
+
 
 class AchievementUpdate(BaseModel):
     achievement_name: Optional[str] = None

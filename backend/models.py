@@ -36,9 +36,11 @@ activity_challenges = Table(
     "activity_challenges",
     base.metadata,
     Column("challenge_id", ForeignKey("challenges.id"), primary_key=True),
-    Column("activity_id", ForeignKey("activities.id"), primary_key=True)
+    Column("activity_id", ForeignKey("activities.id"), primary_key=True),
 )
-#association object pattern is used to get the extra field 'invited_by'
+
+
+# association object pattern is used to get the extra field 'invited_by'
 class GroupInvitations(base):
     __tablename__ = "group_invitations"
 
@@ -156,7 +158,7 @@ class Activity(base):
         "Challenge",
         secondary=activity_challenges,
         back_populates="activities",
-        lazy="dynamic"
+        lazy="dynamic",
     )
 
 
@@ -171,21 +173,22 @@ class Challenge(base):
     point_reward = Column(Integer)
 
     completed_by = relationship(
-        "User",
-        secondary=challenge_completions,
-        back_populates="completed_challenges"
+        "User", secondary=challenge_completions, back_populates="completed_challenges"
     )
 
     achievement_id = Column(Integer, ForeignKey("achievements.id"))
-    achievement_match = relationship("Achievement", uselist = False, back_populates = "challenges")
+    achievement_match = relationship(
+        "Achievement", uselist=False, back_populates="challenges"
+    )
 
     activities = relationship(
         "Activity",
         secondary=activity_challenges,
         back_populates="challenges",
-        lazy="dynamic"
+        lazy="dynamic",
     )
-    
+
+
 class Achievement(base):
     __tablename__ = "achievements"
 

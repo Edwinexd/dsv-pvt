@@ -106,16 +106,19 @@ def get_achievement(achievement_id: int, db_session: DbSession):
 
 RequestedAchievement = Annotated[models.Achievement, Depends(get_achievement)]
 
+
 def get_challenge(challenge_id: int, db_session: DbSession):
     db_challenge = crud.get_challenge(db_session, challenge_id)
     if db_challenge is None:
         raise HTTPException(status_code=404, detail="Challenge not found")
     return db_challenge
 
+
 RequestedChallenge = Annotated[models.Challenge, Depends(get_challenge)]
 
-#USER
-#login
+
+# USER
+# login
 # TODO: Properly annotate in OPENAPI that it requires credentials
 @app.post("/users/login")
 def login(credentials: schemas.UserCreds, db_session: DbSession):
@@ -269,14 +272,16 @@ def create_group(
 
 
 @app.get("/groups/{group_id}", response_model=schemas.Group)
-def read_group(current_user: DbUser, db_session: DbSession, requested_group: RequestedGroup):
+def read_group(
+    current_user: DbUser, db_session: DbSession, requested_group: RequestedGroup
+):
     return schemas.Group(
         group_name=requested_group.group_name,
         description=requested_group.description,
         is_private=requested_group.is_private,
         owner_id=requested_group.owner_id,
         id=requested_group.id,
-        points=crud.get_group_points(requested_group)
+        points=crud.get_group_points(requested_group),
     )
 
 
@@ -457,7 +462,7 @@ def create_activity(
         difficulty_code=activity.difficulty_code,
         group_id=requested_group.id,
         owner_id=current_user.id,
-        challenges = activity.challenges
+        challenges=activity.challenges,
     )
     return crud.create_activity(db_session, activity_payload)
 
@@ -485,13 +490,24 @@ def read_activity(current_user: DbUser, requested_activity: RequestedActivity):
 
     return requested_activity
 
-@app.patch("/groups/{group_id}/activities/{activity_id}", response_model = schemas.Activity)
-def update_activity(current_user: DbUser, db_session: DbSession, requested_group: RequestedGroup, requested_activity: RequestedActivity, activity_update: schemas.ActivityUpdate):
+
+@app.patch(
+    "/groups/{group_id}/activities/{activity_id}", response_model=schemas.Activity
+)
+def update_activity(
+    current_user: DbUser,
+    db_session: DbSession,
+    requested_group: RequestedGroup,
+    requested_activity: RequestedActivity,
+    activity_update: schemas.ActivityUpdate,
+):
     validations.validate_owns_activity(current_user, requested_activity)
     validations.validate_activity_is_not_completed(current_user, requested_activity)
     db_activity = crud.update_activity(db_session, requested_activity, activity_update)
 
-    if db_activity.is_completed != 0: # special case, activity has been marked as complete
+    if (
+        db_activity.is_completed != 0
+    ):  # special case, activity has been marked as complete
         crud.complete_activity(db_session, db_activity, requested_group)
     return db_activity
 
@@ -576,38 +592,70 @@ def leave_activity(
 
     crud.leave_activity(db_session, requested_user, requested_activity)
 
-@app.put("/group/{group_id}/activities/{activity_id}/challenges/{challenge_id}", status_code=204)
-def add_challenge_to_activity(current_user: DbUser, db_session: DbSession, requested_group: RequestedGroup, requested_activity: RequestedActivity, requesteded_challenge: RequestedChallenge):
+
+@app.put(
+    "/group/{group_id}/activities/{activity_id}/challenges/{challenge_id}",
+    status_code=204,
+)
+def add_challenge_to_activity(
+    current_user: DbUser,
+    db_session: DbSession,
+    requested_group: RequestedGroup,
+    requested_activity: RequestedActivity,
+    requesteded_challenge: RequestedChallenge,
+):
     validations.validate_user_in_group(current_user, current_user, requested_group)
     validations.validate_owns_activity(current_user, requested_activity)
-    crud.add_challenge_to_activity(db_session, requesteded_challenge, requested_activity)
+    crud.add_challenge_to_activity(
+        db_session, requesteded_challenge, requested_activity
+    )
 
-#CHALLENGES
-@app.post("/challenges", response_model = schemas.Challenge)
-def create_challenge(current_user: DbUser, db_session: DbSession, challenge_payload: schemas.ChallengeCreate):
+
+# CHALLENGES
+@app.post("/challenges", response_model=schemas.Challenge)
+def create_challenge(
+    current_user: DbUser,
+    db_session: DbSession,
+    challenge_payload: schemas.ChallengeCreate,
+):
     validations.validate_is_admin(current_user)
     return crud.create_challenge(db_session, challenge_payload)
 
+
 @app.get("/challenges", response_model=schemas.ChallengeList)
-def read_challenges(current_user: DbUser, db_session: DbSession, skip: int = 0, limit: int = 100):
+def read_challenges(
+    current_user: DbUser, db_session: DbSession, skip: int = 0, limit: int = 100
+):
     return schemas.ChallengeList(data=crud.get_challenges(db_session, skip, limit))
 
+
 @app.get("/challenges/{challenge_id}", response_model=schemas.Challenge)
-def read_challenge(current_user: DbUser, db_session: DbSession, requested_challenge: RequestedChallenge):
+def read_challenge(
+    current_user: DbUser, db_session: DbSession, requested_challenge: RequestedChallenge
+):
     return requested_challenge
 
-@app.patch("/challenges/{challenge_id}", response_model = schemas.Challenge)
-def update_challenge(current_user: DbUser, db_session: DbSession, requested_challenge: RequestedChallenge, challenge_update: schemas.ChallengeUpdate):
+
+@app.patch("/challenges/{challenge_id}", response_model=schemas.Challenge)
+def update_challenge(
+    current_user: DbUser,
+    db_session: DbSession,
+    requested_challenge: RequestedChallenge,
+    challenge_update: schemas.ChallengeUpdate,
+):
     validations.validate_is_admin(current_user)
     return crud.update_challenge(db_session, requested_challenge, challenge_update)
 
+
 @app.delete("/challenges/{challenge_id}", status_code=204)
-def delete_challenge(current_user: DbUser, requested_challenge: RequestedChallenge, db_session: DbSession):
+def delete_challenge(
+    current_user: DbUser, requested_challenge: RequestedChallenge, db_session: DbSession
+):
     validations.validate_is_admin(current_user)
     crud.delete_challenge(db_session, requested_challenge)
 
 
-#ACHIEVEMENTS
+# ACHIEVEMENTS
 @app.get("/achievements", response_model=schemas.AchievementList)
 def read_achievements(
     current_user: DbUser, db_session: DbSession, skip: int = 0, limit: int = 100
@@ -617,11 +665,15 @@ def read_achievements(
     )
     return achivements
 
-#achievement creation
-@app.post("/achievements", response_model = schemas.Achievement)
-def create_achievement(current_user: DbUser, db_session: DbSession, achievement: schemas.AchievementCreate):
+
+# achievement creation
+@app.post("/achievements", response_model=schemas.Achievement)
+def create_achievement(
+    current_user: DbUser, db_session: DbSession, achievement: schemas.AchievementCreate
+):
     validations.validate_is_admin(current_user)
     return crud.create_achievement(db_session=db_session, achievement=achievement)
+
 
 @app.get("/achievements/{achievement_id}", response_model=schemas.Achievement)
 def read_achievement(
@@ -631,17 +683,31 @@ def read_achievement(
 ):
     return requested_achievement
 
-@app.patch("/achievements/{achievement_id}", response_model=schemas.Achievement)
-def update_achievement(current_user: DbUser, db_session: DbSession, requested_achievement: RequestedAchievement, achievement_update: schemas.AchievementUpdate):
-    validations.validate_is_admin(current_user)
-    return crud.update_achievement(db_session, requested_achievement, achievement_update)
 
-@app.delete("/achievements/{achievement_id}", status_code= 204)
-def delete_achievement(current_user: DbUser, requested_achievement: RequestedAchievement, db_session: DbSession):
+@app.patch("/achievements/{achievement_id}", response_model=schemas.Achievement)
+def update_achievement(
+    current_user: DbUser,
+    db_session: DbSession,
+    requested_achievement: RequestedAchievement,
+    achievement_update: schemas.AchievementUpdate,
+):
+    validations.validate_is_admin(current_user)
+    return crud.update_achievement(
+        db_session, requested_achievement, achievement_update
+    )
+
+
+@app.delete("/achievements/{achievement_id}", status_code=204)
+def delete_achievement(
+    current_user: DbUser,
+    requested_achievement: RequestedAchievement,
+    db_session: DbSession,
+):
     validations.validate_is_admin(current_user)
     crud.delete_achievement(db_session, requested_achievement)
 
-#get completed achievements from user id
+
+# get completed achievements from user id
 @app.get("/users/{user_id}/achievements", response_model=schemas.AchievementList)
 def read_achivements_user_has(current_user: DbUser, requested_user: RequestedUser):
     achievements = schemas.AchievementList(data=requested_user.completed_achievements)
