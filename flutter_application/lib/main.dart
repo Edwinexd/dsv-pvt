@@ -180,7 +180,7 @@ class MainPageState extends State<MainPage> {
   void goToHomePage(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => MyAchievements()),
+      MaterialPageRoute(builder: (context) => HomePage()),
     ).then((_) {
       setState(() {
         selectedIndex = 0;
