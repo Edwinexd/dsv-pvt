@@ -83,6 +83,14 @@ def create_group(db_session: Session, group: schemas.GroupCreate):
 def get_group(db_session: Session, group_id: int):
     return db_session.query(models.Group).filter(models.Group.id == group_id).first()
 
+def get_group_points(db_group: models.Group):
+    points = 0
+    for a in db_group.activities:
+        if a.is_completed:
+            for c in a.challenges:
+                points += c.point_reward
+    return points
+
 # get a list of groups
 def get_groups(db_session: Session, skip: int = 0, limit: int = 100):
     return db_session.query(models.Group).offset(skip).limit(limit).all()
@@ -241,13 +249,10 @@ def delete_activity(db_session: Session, db_activity: models.Activity):
     db_session.commit()
 
 def complete_activity(db_session: Session, db_activity: models.Activity, db_group: models.Group):    
-    points = 0
     achievements = []
     for c in db_activity.challenges:
-        points += c.point_reward
         if c.achievement_match is not None:
             achievements.append(c.achievement_match)
-    db_group.points += points # group gets the total points from the challenges
     for u in db_activity.participants: #each participant gets their achievement(s)
         for a in achievements:
             u.completed_achievements.append(a)

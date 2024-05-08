@@ -184,11 +184,20 @@ def create_group(current_user: DbUser, db_session: DbSession, group: schemas.Gro
 
 @app.get("/groups/{group_id}", response_model=schemas.Group)
 def read_group(current_user: DbUser, db_session: DbSession, requested_group: RequestedGroup):
-    return requested_group
+    return schemas.Group(
+        group_name=requested_group.group_name,
+        description=requested_group.description,
+        is_private=requested_group.is_private,
+        owner_id=requested_group.owner_id,
+        id=requested_group.id,
+        points=crud.get_group_points(requested_group)
+    )
 
 @app.get("/groups", response_model=schemas.GroupList)
 def read_groups(current_user: DbUser, db_session: DbSession, skip: int = 0, limit: int = 100):
     groups = schemas.GroupList(data=crud.get_groups(db_session, skip=skip, limit=limit))
+    for g in groups.data:
+        g.points = crud.get_group_points(crud.get_group(db_session, g.id))
     return groups
 
 @app.patch("/groups/{group_id}", response_model=schemas.Group)
@@ -357,8 +366,8 @@ def leave_activity(current_user: DbUser, db_session: DbSession, requested_group:
 @app.put("/group/{group_id}/activities/{activity_id}/challenges/{challenge_id}", status_code=204)
 def add_challenge_to_activity(current_user: DbUser, db_session: DbSession, requested_group: RequestedGroup, requested_activity: RequestedActivity, requesteded_challenge: RequestedChallenge):
     validations.validate_user_in_group(current_user, current_user, requested_group)
-    validations.validate_user_owns_activity(current_user, requested_activity)
-    crud.add_challenge(db_session, requesteded_challenge, requested_activity)
+    validations.validate_owns_activity(current_user, requested_activity)
+    crud.add_challenge_to_activity(db_session, requesteded_challenge, requested_activity)
 
 #CHALLENGES
 @app.post("/challenges", response_model = schemas.Challenge)

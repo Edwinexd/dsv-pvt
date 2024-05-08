@@ -78,7 +78,7 @@ class GroupCreate(GroupBase):
 
 class Group(GroupBase):
     id: int
-    points: int
+    points: int = 0
 
     class Config:
         from_attributes = True
