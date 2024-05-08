@@ -12,13 +12,16 @@ class UserBase(BaseModel):
     username: str
     full_name: str
 
+
 class UserCreate(UserBase):
     email: str = Field(pattern=EMAIL_REGEX)
     password: str
 
+
 class UserModel(UserBase):
     id: str
     role: Roles = Roles.NORMAL
+
 
 class User(UserModel):
     date_created: datetime
@@ -31,17 +34,21 @@ class User(UserModel):
     def serialize_role(self, role: Roles, _info):
         return role.name
 
+
 class UserList(BaseModel):
     data: List[User]
+
 
 class UserUpdate(BaseModel):
     username: Optional[str] = None
     full_name: Optional[str] = None
-      
+
+
 class UserCreds(BaseModel):
     # Email is intentionally not validated due to compatability with old accounts
     email: str
     password: str
+
 
 # PROFILE
 class ProfileBase(BaseModel):
@@ -51,12 +58,15 @@ class ProfileBase(BaseModel):
     skill_level: int
     is_private: bool
 
+
 class ProfileCreate(ProfileBase):
     pass
+
 
 class Profile(ProfileBase):
     class Config:
         from_attributes = True
+
 
 class ProfileUpdate(BaseModel):
     description: Optional[str] = None
@@ -65,6 +75,7 @@ class ProfileUpdate(BaseModel):
     skill_level: Optional[int] = None
     is_private: Optional[bool] = None
 
+
 # GROUP
 class GroupBase(BaseModel):
     group_name: str
@@ -72,9 +83,11 @@ class GroupBase(BaseModel):
     is_private: bool
     owner_id: str
 
+
 class GroupCreate(GroupBase):
     # In case we wan't to have variables on for creation in the future
     pass
+
 
 class Group(GroupBase):
     id: int
@@ -83,19 +96,23 @@ class Group(GroupBase):
     class Config:
         from_attributes = True
 
+
 class GroupList(BaseModel):
     data: List[Group]
+
 
 class GroupUpdate(BaseModel):
     group_name: Optional[str] = None
     description: Optional[str] = None
     is_private: Optional[bool] = None
 
+
 # INVITES
 class InviteBase(BaseModel):
     user_id: str
     group_id: int
     invited_by: str
+
 
 class Invite(InviteBase):
     class Config:
@@ -137,13 +154,16 @@ class ActivityBase(BaseModel):
     difficulty_code: int
     challenges: Optional[List[Challenge]] = None
 
+
 class ActivityCreate(ActivityBase):
     pass
+
 
 class ActivityPayload(ActivityBase):
     group_id: int
     owner_id: str
     challenges: Optional[List[Challenge]] = None
+
 
 class Activity(ActivityBase):
     id: int
@@ -154,8 +174,10 @@ class Activity(ActivityBase):
     class Config:
         from_attributes = True
 
+
 class ActivityList(BaseModel):
     data: List[Activity]
+
 
 class ActivityUpdate(BaseModel):
     activity_name: Optional[str] = None
@@ -164,17 +186,21 @@ class ActivityUpdate(BaseModel):
     is_completed: Optional[bool] = None
     challenges: Optional[List[Challenge]] = None
 
+
 # Sessions
 class SessionUser(BaseModel):
     id: str
 
-#ACHIEVEMENT
+
+# ACHIEVEMENT
 class AchievementBase(BaseModel):
-    achievement_name:str
+    achievement_name: str
+
 
 class AchievementCreate(AchievementBase):
     description: str
     requirement: int
+
 
 class Achievement(AchievementBase):
     id: int
@@ -186,6 +212,7 @@ class AchievementUpdate(BaseModel):
     achievement_name: Optional[str] = None
     description: Optional[str] = None
     requirement: Optional[int] = None
+
 
 class AchievementList(BaseModel):
     data: List[Achievement]
