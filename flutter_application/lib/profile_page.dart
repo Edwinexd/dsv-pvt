@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
+import 'package:flutter_application/components/my_button.dart';
 import 'package:flutter_application/components/skill_level_slider.dart';
 import 'package:flutter_application/edit_profile_page.dart';
+import 'package:flutter_application/my_achievements.dart';
 import 'package:flutter_application/settings.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -121,11 +123,12 @@ class ProfilePage extends StatelessWidget {
                   },
                 ),
                 const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    // View achievements
+                MyButton(
+                  buttonText: 'Trophies',
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => MyAchievements()));
                   },
-                  child: const Text('Trophies'),
                 ),
                 const SizedBox(height: 10),
               ],
