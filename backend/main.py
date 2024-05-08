@@ -586,8 +586,10 @@ def read_achievements(
 def create_achievement(
     current_user: DbUser, db_session: DbSession, achievement: schemas.AchievementCreate
 ):
-    validations.validate_id(current_user)
-    return crud.create_achievement(db_session=db_session, achievement=achievement)
+    # TODO: @thea @alfred vad ska hända här?
+    raise NotImplementedError
+    # validations.validate_id(current_user, achievement.owner_id)
+    # return crud.create_achievement(db_session=db_session, achievement=achievement)
 
 
 @app.get("/achievements/{achievement_id}", response_model=schemas.Achievement)

@@ -42,11 +42,14 @@ def delete_user(db_session: Session, db_user: models.User):
 
 
 # PROFILES
-def get_profile(db_session: Session, user_id: int):
-    return get_user(db_session, user_id).profile
+def get_profile(db_session: Session, user_id: str):
+    user = get_user(db_session, user_id)
+    if user is None:
+        return None
+    return user.profile
 
 
-def create_profile(db_session: Session, profile: schemas.ProfileCreate, user_id: int):
+def create_profile(db_session: Session, profile: schemas.ProfileCreate, user_id: str):
     db_profile = models.Profile(
         description=profile.description,
         age=profile.age,
@@ -55,6 +58,8 @@ def create_profile(db_session: Session, profile: schemas.ProfileCreate, user_id:
         is_private=int(profile.is_private),
     )
     db_user = get_user(db_session, user_id)
+    if db_user is None:
+        return None
     if db_user.profile is not None:
         db_session.delete(db_user.profile)
     db_user.profile = db_profile
@@ -94,6 +99,8 @@ def create_group(db_session: Session, group: schemas.GroupCreate):
         is_private=int(group.is_private),
     )
     db_owner = get_user(db_session, group.owner_id)
+    if db_owner is None:
+        return None
     db_owner.owned_groups.append(db_group)
     db_owner.groups.append(db_group)
     db_session.add(db_owner)
@@ -164,7 +171,6 @@ def get_group_users(db_session: Session, db_group: models.Group):
 # create
 def create_achievement(db_session: Session, achievement: schemas.AchievementCreate):
     db_achievement = models.Achievement(
-        id=achievement.id,
         achievement_name=achievement.achievement_name,
         description=achievement.description,
         requirement=achievement.requirement,
@@ -210,8 +216,11 @@ def delete_achievement(db_session: Session, db_achievement: models.Achievement):
 
 
 # get all achievements a users completed
-def get_all_achievements(db_session: Session, user_id: int):
-    return get_user(db_session, user_id).completed_achievements
+def get_all_achievements(db_session: Session, user_id: str):
+    user = get_user(db_session, user_id)
+    if user is None:
+        return None
+    return user.completed_achievements
 
 
 # INVITATIONS

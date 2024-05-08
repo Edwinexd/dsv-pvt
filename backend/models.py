@@ -55,6 +55,8 @@ class User(base):
     email = Column(String, unique=True)
     username = Column(String, unique=True)
     full_name = Column(String)
+    # func.now() is improperly typed
+    # pylint: disable=not-callable
     date_created = Column(DateTime(timezone=True), server_default=func.now())
     role = Column(Enum(Roles), default=Roles.NORMAL)
 

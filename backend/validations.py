@@ -16,14 +16,16 @@ def validate_id(current_user: models.User, requested_user_id: str):
 def validate_user_in_group(
     current_user: models.User, user: models.User, group: models.Group
 ):
-    if user not in group.users and current_user.role is not Roles.ADMIN:
+    # Type issues with relationship attributes
+    if user not in group.users and current_user.role is not Roles.ADMIN:  # type: ignore
         raise HTTPException(status_code=403, detail="User is not in this group")
 
 
 def validate_user_in_activity(
     current_user: models.User, user: models.User, activity: models.Activity
 ):
-    if user not in activity.participants and current_user.role is not Roles.ADMIN:
+    # Type issues with relationship attributes
+    if user not in activity.participants and current_user.role is not Roles.ADMIN:  # type: ignore
         raise HTTPException(status_code=403, detail="User is not in this activity")
 
 
@@ -62,7 +64,8 @@ def validate_api_key(api_key: str = Header(alias="ADMIN-API-Key")):
 
 
 def validate_has_achievement(user: models.User, achivement: models.Achievement):
-    if achivement not in user.completed_achievements:
+    # Type issues with relationship attributes
+    if achivement not in user.completed_achievements:  # type: ignore
         raise HTTPException(
             status_code=403, detail="User does not have this achievement"
         )
