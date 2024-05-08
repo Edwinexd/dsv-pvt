@@ -283,14 +283,16 @@ def create_activity(db_session: Session, activity_payload: schemas.ActivityPaylo
         group_id=activity_payload.group_id,
     )
     owner = get_user(db_session, activity_payload.owner_id)
-    owner.activities.append(db_activity)
+    if owner is not None:
+        owner.activities.append(db_activity)
     db_session.add(db_activity)
 
-    for c in activity_payload.challenges:
-        db_challenge = get_challenge(db_session, c.id)
-        if db_challenge is None:
-            continue
-        db_activity.challenges.append(db_challenge)
+    if activity_payload.challenges is not None:
+        for c in activity_payload.challenges:
+            db_challenge = get_challenge(db_session, c.id)
+            if db_challenge is None:
+                continue
+            db_activity.challenges.append(db_challenge)
 
     db_session.commit()
     db_session.refresh(db_activity)
@@ -327,7 +329,7 @@ def update_activity(
         update_data["is_completed"] = int(update_data["is_completed"])
 
     # special case, update includes challenge list
-    if "challenges" in update_data:
+    if activity_update.challenges is not None:
         for c in activity_update.challenges:
             db_challenge = get_challenge(db_session, c.id)
             if db_challenge is None:
