@@ -31,31 +31,30 @@ class _LoginPageState extends State<LoginPage> {
     final String email = usernameController.text.trim();
     final String password = passwordController.text.trim();
 
-    if (email.isNotEmpty && password.isNotEmpty) {
-      showDialog(
-        context: context,
-        builder: (context) => const Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-
-      await _backendService.login(email, password);
-      if (_backendService.token != null) {
-        // navigate to the main app
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => MainPage(
-            darkModeEnabled: widget.darkModeEnabled, 
-            onToggleDarkMode: widget.onToggleDarkMode,
-          ))
-        );
-      } else {
-        // handle login failure
-      }
-    } else {
-      // handle email and password is empty
+    if (email.isEmpty || password.isEmpty) {
+      // TODO: Handle email and password is empty
     }
 
+    showDialog(
+      context: context,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+
+    await _backendService.login(email, password);
+
+    if (_backendService.token == null) {      
+      // TODO: Handle login failure
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MainPage(
+        darkModeEnabled: widget.darkModeEnabled, 
+        onToggleDarkMode: widget.onToggleDarkMode,
+      ))
+    );
   }
 
   @override
