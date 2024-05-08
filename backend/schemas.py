@@ -92,6 +92,7 @@ class GroupCreate(GroupBase):
 
 class Group(GroupBase):
     id: int
+    points: int = 0
 
     class Config:
         from_attributes = True
@@ -119,11 +120,46 @@ class Invite(InviteBase):
         from_attributes = True
 
 
+# CHALLENGE
+class ChallengeBase(BaseModel):
+    challenge_name: str
+    description: str
+    difficulty_code: int
+    expiration_date: Optional[datetime] = None
+    point_reward: int
+    achievement_id: Optional[int] = None
+
+
+class ChallengeCreate(ChallengeBase):
+    pass
+
+
+class Challenge(ChallengeBase):
+    id: int
+
+    class Config:
+        from_attributes = True
+
+
+class ChallengeUpdate(BaseModel):
+    challenge_name: Optional[str] = None
+    description: Optional[str] = None
+    difficulty_code: Optional[int] = None
+    expiration_date: Optional[datetime] = None
+    point_reward: Optional[int] = None
+    achievement_id: Optional[int] = None
+
+
+class ChallengeList(BaseModel):
+    data: List[Challenge]
+
+
 # ACTIVITY
 class ActivityBase(BaseModel):
     activity_name: str
     scheduled_date: datetime
     difficulty_code: int
+    challenges: Optional[List[Challenge]] = None
 
 
 class ActivityCreate(ActivityBase):
@@ -133,6 +169,7 @@ class ActivityCreate(ActivityBase):
 class ActivityPayload(ActivityBase):
     group_id: int
     owner_id: str
+    challenges: Optional[List[Challenge]] = None
 
 
 class Activity(ActivityBase):
@@ -154,29 +191,7 @@ class ActivityUpdate(BaseModel):
     scheduled_date: Optional[str] = None
     difficulty_code: Optional[int] = None
     is_completed: Optional[bool] = None
-
-
-# CHALLENGE
-class ChallengeBase(BaseModel):
-    challenge_name: str
-
-
-class ChallengeCreate(ChallengeBase):
-    description: str
-    difficulty_code: int
-    expiration_date: Optional[str] = None
-    point_reward: int
-
-
-class Challenge(ChallengeBase):
-    id: int
-
-    class Config:
-        from_attributes = True
-
-
-class ChallengeList(BaseModel):
-    data: List[Challenge]
+    challenges: Optional[List[Challenge]] = None
 
 
 # Sessions
