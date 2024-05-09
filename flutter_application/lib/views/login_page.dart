@@ -47,6 +47,7 @@ class _LoginPageState extends State<LoginPage> {
 
     if (_backendService.token == null) {      
       // TODO: Handle login failure
+      return;
     }
 
     Navigator.push(
