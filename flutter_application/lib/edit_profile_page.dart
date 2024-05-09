@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/components/my_button.dart';
-import 'package:flutter_application/components/my_textfield.dart';
 import 'package:flutter_application/components/skill_level_slider.dart';
 import 'package:flutter_application/background_for_pages.dart';
 
@@ -24,12 +23,32 @@ class _EditProfilePageState extends State<EditProfilePage> {
     'Workout': false,
     'Cycling': false,
   };
+  String? age;
+  bool ageEntered = false;
+  bool bioWritten = false;
 
   void _saveProfile() {
     if (_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Profile Saved!')));
     }
+  }
+
+  Widget buildInterestCheckbox(String interest) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Checkbox(
+          value: interests[interest],
+          onChanged: (bool? newValue) {
+            setState(() {
+              interests[interest] = newValue ?? false;
+            });
+          },
+        ),
+        Text(interest),
+      ],
+    );
   }
 
   @override
@@ -53,9 +72,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Username', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                      Text('Username',
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold)),
                       IconButton(
-                        icon: Icon(Icons.edit, color: Theme.of(context).primaryColor),
+                        icon: Icon(Icons.edit,
+                            color: Theme.of(context).primaryColor),
                         onPressed: () {},
                       ),
                     ],
@@ -87,8 +109,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             ],
                           ),
                           child: IconButton(
-                              icon: const Icon(Icons.camera_alt, color: Color.fromARGB(255, 255, 92, 00)),
-                              onPressed: () {},
+                            icon: const Icon(Icons.camera_alt,
+                                color: Color.fromARGB(255, 255, 92, 00)),
+                            onPressed: () {},
                           ),
                         ),
                       ),
@@ -100,30 +123,44 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       Expanded(
                         flex: 1,
                         child: TextField(
+                          onChanged: (text) {
+                            setState(() {
+                              ageEntered = text
+                                  .isNotEmpty; // Update state based on input
+                            });
+                          },
                           decoration: InputDecoration(
-                            labelText: 'Age',
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.grey.shade400, width: 1.0),
+                            labelText: ageEntered
+                                ? null
+                                : 'Age', 
+                            enabledBorder: const OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Colors.transparent, width: 1.0),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.grey.shade400),
+                              borderSide:
+                                  BorderSide(color: Colors.grey.shade400),
                             ),
                             fillColor: Colors.white,
                             filled: true,
                           ),
                         ),
                       ),
-                      SizedBox(width: 10), 
+                      SizedBox(width: 10),
                       Expanded(
                         flex: 3,
                         child: DropdownButtonFormField<String>(
                           decoration: InputDecoration(
-                            labelText: 'Location',
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.grey.shade400, width: 1.0),
+                            labelText: selectedLocation == null
+                                ? 'Location'
+                                : null,
+                            enabledBorder: const OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Colors.transparent, width: 1.0),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.grey.shade400),
+                              borderSide:
+                                  BorderSide(color: Colors.grey.shade400),
                             ),
                             fillColor: Colors.white,
                             filled: true,
@@ -134,7 +171,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               selectedLocation = newValue;
                             });
                           },
-                          items: locations.map<DropdownMenuItem<String>>((String value) {
+                          items: locations
+                              .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(value),
@@ -146,9 +184,70 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
                   SizedBox(height: 20),
                   TextFormField(
-                    decoration: InputDecoration(labelText: 'Bio'),
+                    onChanged: (text) {
+                      setState(() {
+                        bioWritten = text.isNotEmpty;
+                      });
+                    },
+                    maxLines: null,
+                    minLines: 3,
+                    decoration: InputDecoration(
+                      labelText: bioWritten ? null : 'About Me',
+                      alignLabelWithHint: true,
+                      enabledBorder: const OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Colors.transparent, width: 1.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey.shade400),
+                      ),
+                      fillColor: Colors.white,
+                      filled: true,
+                    ),
                   ),
+                  
                   SizedBox(height: 20),
+                  
+                  const Row(
+                    children: [
+                      Expanded(
+                            child: Divider(
+                              thickness: 0.5,
+                              color: Color.fromARGB(255, 16, 14, 99),
+                            ),
+                          ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Text('Interests',
+                            style: TextStyle(color: Color.fromARGB(255, 16, 14, 99),fontSize: 16)),
+                      ),
+                      Expanded(
+                        child: Divider(
+                          thickness: 0.5,
+                          color: Color.fromARGB(255, 16, 14, 99),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: 5),
+
+                  GridView.count(
+                    padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                    shrinkWrap: true,
+                    crossAxisCount: 2, //No. of boxes per row
+                    childAspectRatio: 4, //space vertically
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 2,
+                    physics:
+                      NeverScrollableScrollPhysics(),
+                    children: interests.keys.map((String key) {
+                      return buildInterestCheckbox(key);
+                    }).toList(),
+                  ),
+
+                  SizedBox(height: 20),
+                  
                   SkillLevelSlider(
                     initialSkillLevel: _skillLevel,
                     onSkillLevelChanged: (newLevel) {
@@ -157,7 +256,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       });
                     },
                   ),
-                  SizedBox(height: 20),
+
+                  SizedBox(height: 20,),
+
                   MyButton(
                     buttonText: 'Save Profile',
                     onTap: _saveProfile,
