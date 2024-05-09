@@ -14,18 +14,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final _interestsController = TextEditingController();
   int _skillLevel = 0;
 
-  List<String> skillLevels = [
-    'Beginner: 10 - 8 min/km',
-    'Intermediate: 8 - 6 min/km',
-    'Advanced: 6 - 5 min/km',
-    'Professional: 5 - 4 min/km',
-    'Elite: < 4 min/km'
-  ];
+  String imageUrl = 'https://example.com/new_profile.jpg'; 
 
   void _saveProfile() {
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Profile Saved!')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Profile Saved!'))
+      );
     }
   }
 
@@ -39,13 +34,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Widget build(BuildContext context) {
     return DefaultBackground(
       child: Scaffold(
-        backgroundColor:
-            Colors.transparent, 
+        backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: Text('Edit Profile'),
-          backgroundColor: Colors
-              .transparent, 
+          title: const Text('Edit Profile', style: TextStyle(color: Colors.white),),
+          backgroundColor: Colors.transparent,
           elevation: 0,
+          iconTheme: const IconThemeData(color: Colors.white,),
         ),
         body: Form(
           key: _formKey,
@@ -53,42 +47,47 @@ class _EditProfilePageState extends State<EditProfilePage> {
             padding: EdgeInsets.all(16.0),
             children: <Widget>[
               Center(
-                child: GestureDetector(
-                  onTap: _pickImage,
-                  child: const CircleAvatar(
-                    radius: 60,
-                    backgroundImage:
-                        AssetImage('assets/images/profile_placeholder.png'),
-                    child: Align(
-                      alignment: Alignment.bottomRight,
-                      child: CircleAvatar(
-                        backgroundColor: Colors.white,
-                        radius: 15,
-                        child: Icon(Icons.camera_alt,
-                            color: Colors.blue, size: 22),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: <Widget>[
+                    CircleAvatar(
+                      radius: 70,
+                      backgroundImage: NetworkImage(imageUrl),
+                    ),
+                    Positioned(
+                      right: -10,
+                      top: 95,
+                      child: Container(
+                        height: 40,
+                        width: 40,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.camera_alt, color: Color.fromARGB(255, 255, 92, 00)),
+                          onPressed: _pickImage,
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ),
               SizedBox(height: 20),
               TextFormField(
                 controller: _nameController,
                 decoration: InputDecoration(labelText: 'Name'),
-                validator: (value) =>
-                    value!.isEmpty ? 'Name cannot be empty' : null,
+                validator: (value) => value!.isEmpty ? 'Name cannot be empty' : null,
               ),
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(labelText: 'Email'),
-                validator: (value) =>
-                    !value!.contains('@') ? 'Please enter a valid email' : null,
+                validator: (value) => !value!.contains('@') ? 'Please enter a valid email' : null,
               ),
               TextFormField(
                 controller: _interestsController,
                 decoration: const InputDecoration(labelText: 'Interests'),
-                validator: (value) =>
-                    value!.isEmpty ? 'Interests cannot be empty' : null,
+                validator: (value) => value!.isEmpty ? 'Interests cannot be empty' : null,
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20),
