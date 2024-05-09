@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/activity_create.dart';
+import 'package:flutter_application/models/group.dart';
 
 class GroupPage extends StatefulWidget {
-  final String groupName;
-  final bool isPrivate;
+  final Group group;
 
-  const GroupPage({super.key, required this.groupName, required this.isPrivate});
+  const GroupPage({super.key, required this.group});
 
   @override
   _GroupPageState createState() => _GroupPageState();
@@ -46,7 +47,8 @@ class _GroupPageState extends State<GroupPage> {
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(250, 60, 71, 133),
         title: Text(
-          widget.groupName,
+          // widget.groupName,
+          widget.group.name,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
           ), 
@@ -59,7 +61,12 @@ class _GroupPageState extends State<GroupPage> {
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton.icon(
               onPressed: () {
-                //Will handle create activity button later
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ActivityCreatePage(groupId: widget.group.id,),
+                  ),
+                );
               },
               label: const Text('Create an activity'),
               icon: const Icon(Icons.run_circle_sharp),

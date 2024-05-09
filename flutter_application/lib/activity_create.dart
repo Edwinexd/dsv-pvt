@@ -9,7 +9,7 @@ class ActivityCreatePage extends StatefulWidget {
   // Take groupId as a parameter
   ActivityCreatePage({Key? key, required this.groupId}) : super(key: key);
 
-  final String groupId;
+  final int groupId;
   // TODO Get from backend
   final List<dynamic> challenges = [{"id": 0, "name": 'Spring 0 km'}, {"id": 1, "name": 'Gå 1 km'}, {"id": 2, "name": 'Hoppa 200 ggr'}];
 
@@ -41,7 +41,7 @@ class _ActivityCreatePageState extends State<ActivityCreatePage> {
 
   void _createActivity() {
     if (_formKey.currentState!.validate()) {
-      String groupId = widget.groupId;
+      int groupId = widget.groupId;
       // TODO: Http to backend with groupId
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Activity created for $groupId!')));

@@ -131,7 +131,7 @@ class _MyGroupsState extends State<MyGroups> {
                             context,
                             MaterialPageRoute(
                               builder: ((context) =>
-                                  GroupPage(groupName: group.name, isPrivate: true)),
+                                  GroupPage(group: group)),
                             ),
                           );
                         },

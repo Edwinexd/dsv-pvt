@@ -98,7 +98,7 @@ class MainPageState extends State<MainPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ActivityCreatePage(groupId: "1234"),
+            builder: (context) => ActivityCreatePage(groupId: 1234),
           ),
         );
       }
