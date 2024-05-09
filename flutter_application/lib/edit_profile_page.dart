@@ -38,15 +38,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   Widget build(BuildContext context) {
     return DefaultBackground(
-      // Apply the DefaultBackground here
       child: Scaffold(
         backgroundColor:
-            Colors.transparent, // Make sure scaffold background is transparent
+            Colors.transparent, 
         appBar: AppBar(
           title: Text('Edit Profile'),
           backgroundColor: Colors
-              .transparent, // Ensure AppBar background is also transparent
-          elevation: 0, // Remove shadow
+              .transparent, 
+          elevation: 0,
         ),
         body: Form(
           key: _formKey,
