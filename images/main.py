@@ -5,6 +5,7 @@ from fastapi.responses import FileResponse
 from tempfile import NamedTemporaryFile
 import boto3
 from botocore.config import Config
+from botocore.exceptions import ClientError
 
 load_dotenv()
 
@@ -29,11 +30,10 @@ ALLOWED_FILE_TYPES = ["image/png", "image/jpeg"]
 
 MAX_FILE_SIZE = 2_097_152
 
-# s3.Bucket("dsv-pvt-images-service").upload_file("/home/alfred/Pictures/Screenshots/testimage.png", "test.png")
-# s3.Bucket("dsv-pvt-images-service").download_file("test.png","/home/alfred/testB2.png")
-
 # TODO: better error handling for both of these
-
+# TODO: caching with functools (?)
+# TODO: API KEY to reach this service!
+# TODO: 
 
 @app.post("/upload")
 async def upload_image(image: UploadFile, dir: str):
@@ -72,3 +72,18 @@ async def download_image(file_name: str):
             )
     except Exception as e:
         return {"message": f"error downloading image: {e}"}
+
+@app.delete("/delete")
+async def delete_image(file_name: str):
+    objects = [
+        {
+            'Key': file_name
+        }
+    ]
+    try:
+        s3.Bucket(bucket_name).delete_objects(Delete={'Objects': objects})
+    except ClientError as e:
+        if e.response['Error']['Code'] == "404":
+            raise HTTPException(status_code=404, detail="Object not found")
+        else:
+            raise
