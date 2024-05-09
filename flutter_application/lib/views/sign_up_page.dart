@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/components/gradient_button.dart';
 import 'package:flutter_application/components/my_textfield.dart';
 import 'package:flutter_application/components/square_tile.dart';
+import 'package:flutter_application/create_profile_page.dart';
+
+import '../controllers/backend_service.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -15,8 +18,19 @@ class _SignUpPageState extends State<SignUpPage> {
   final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final BackendService _backendService = BackendService();
 
-  void registerUser() {
+  Future<void> registerUser() async {
+    final String name = nameController.text.trim();
+    final String username = usernameController.text.trim();
+    final String email = emailController.text.trim();
+    final String password = passwordController.text.trim();
+
+    if (name.isEmpty || username.isEmpty || email.isEmpty || password.isEmpty) {
+      // TODO: Handle bad input
+      return;
+    }
+
     showDialog(
       context: context,
       builder: (context) {
@@ -26,9 +40,15 @@ class _SignUpPageState extends State<SignUpPage> {
       },
     );
 
-    Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pop(context);
-    });
+    await _backendService.createUser(username, email, name, password);
+
+    // Intentionally want to disallow swipe back to login page
+    Navigator.pop(context);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CreateProfilePage(forced: true)),
+    );
   }
 
   @override

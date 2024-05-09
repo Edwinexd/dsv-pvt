@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_application/home_page.dart';
+
+import 'controllers/backend_service.dart';
 
 //test Mac
 
 class CreateProfilePage extends StatefulWidget {
+  final bool forced;
+
+  CreateProfilePage({this.forced = false});
+
   @override
   _CreateProfilePageState createState() => _CreateProfilePageState();
 }
@@ -15,6 +22,7 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
   final _interestsController = TextEditingController();
   int _skillLevel = 0;  // Manage skill level as an integer
   ImageProvider _imageProvider = AssetImage('');
+  final BackendService _backendService = BackendService();
 
   // Updated skill levels with pace descriptions
   List<String> skillLevels = [
@@ -25,11 +33,22 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
     'Elite: < 4 min/km'
   ];
 
-  void _saveProfile() {
+  Future<void> _saveProfile() async {
     if (_formKey.currentState!.validate()) {
+      // TODO Use backendService.getCurrentUser() to get the current user
+      final user = await _backendService.fetchMe();
+      // TODO: Frontend pending change of fields
+      await _backendService.createProfile(user.id, "description", 18, _interestsController.text, _skillLevel, false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Profile Saved!'))
+        SnackBar(content: Text('Profile Created!'))
       );
+      if (widget.forced) {
+        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      }
     }
   }
 
@@ -42,7 +61,7 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Create Profile')),
+      appBar: AppBar(title: Text('Create Profile'), automaticallyImplyLeading: !widget.forced),
       body: Form(
         key: _formKey,
         child: ListView(
