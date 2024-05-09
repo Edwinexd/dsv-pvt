@@ -1,6 +1,7 @@
 import 'package:flutter_application/achievement.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application/background_for_pages.dart';
 
 // should this be stateful?
 class MyAchievements extends StatefulWidget {
@@ -11,43 +12,44 @@ class MyAchievements extends StatefulWidget {
 }
 
 class _MyAchievementsState extends State<MyAchievements> {
-    // Placeholder, create a widget that takes an achivement and creates a card (returns a widget)
-    final List<Achievement> trophies = [
+  // Placeholder, create a widget that takes an achivement and creates a card (returns a widget)
+  final List<Achievement> trophies = [
     Achievement(
       icon: Icons.star,
-      header: 'Promenerat 10 km',
-      description: 'Du har promenerat 10 km!',
+      header: 'Walked 10 km',
+      description: 'You walked 10 km!',
     ),
     Achievement(
       icon: Icons.star_border,
-      header: 'Sprungit 5 km',
-      description: 'Du har sprungit 5 km!',
+      header: 'Run 5 km',
+      description: 'You ran 5 km!',
     ),
     Achievement(
       icon: Icons.star_half,
-      header: 'Lagt till en vän',
-      description: 'Du har lagt till en vän!',
+      header: 'Added a friend',
+      description: 'You added a friend',
     ),
   ];
 
   @override
-  Widget build(BuildContext context) {    
-
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Achievements'),
         centerTitle: true,
       ),
       // add header here, trophys
-      body: ListView.builder(
-        itemCount: trophies.length,
-        itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-            title: AchievementCard(
-              achievement: trophies[index],
-            ),
-          );
-        },
+      body: DefaultBackground(
+        child: ListView.builder(
+          itemCount: trophies.length,
+          itemBuilder: (BuildContext context, int index) {
+            return ListTile(
+              title: AchievementCard(
+                achievement: trophies[index],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -74,21 +76,20 @@ class AchievementCard extends StatelessWidget {
               Text(
                 achievement.header,
                 style: const TextStyle(
-                  fontSize: 16.0,
+                  fontSize: 14.0,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               Text(
                 achievement.description,
                 style: const TextStyle(
-                  fontSize: 14.0,
+                  fontSize: 12.0,
                 ),
               ),
             ],
           ),
         ],
       ),
-    );    
+    );
   }
 }
-
