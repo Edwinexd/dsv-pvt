@@ -60,7 +60,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 20),
+                  SizedBox(height: 10),
                   Stack(
                     clipBehavior: Clip.none,
                     children: <Widget>[
@@ -94,10 +94,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 20),
+                  SizedBox(height: 30),
                   Row(
                     children: [
                       Expanded(
+                        flex: 1,
                         child: TextField(
                           decoration: InputDecoration(
                             labelText: 'Age',
@@ -114,6 +115,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ),
                       SizedBox(width: 10), 
                       Expanded(
+                        flex: 3,
                         child: DropdownButtonFormField<String>(
                           decoration: InputDecoration(
                             labelText: 'Location',
