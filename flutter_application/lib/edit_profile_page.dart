@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/components/my_button.dart';
+import 'package:flutter_application/components/my_textfield.dart';
 import 'package:flutter_application/components/skill_level_slider.dart';
 import 'package:flutter_application/background_for_pages.dart';
 
@@ -12,6 +13,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final _formKey = GlobalKey<FormState>();
   int _skillLevel = 0;
   String imageUrl = 'https://example.com/profile_placeholder.png';
+  String? selectedLocation;
+  List<String> locations = ['Stockholm', 'Malmö', 'Göteborg'];
   bool signedUpToMidnattsloppet = false;
   Map<String, bool> interests = {
     'Running': false,
@@ -39,30 +42,32 @@ class _EditProfilePageState extends State<EditProfilePage> {
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
-        body: Form(
-          key: _formKey,
-          child: Center(
-            child: SingleChildScrollView(
+        body: SingleChildScrollView(
+          // Ensures the whole page content is scrollable
+          child: Form(
+            key: _formKey,
+            child: Padding(
+              padding:
+                  EdgeInsets.all(16.0), // Consistent padding around the content
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text('Username',
-                            style: TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.bold)),
-                        IconButton(
-                          icon: Icon(Icons.edit, color: Theme.of(context).primaryColor),
-                          onPressed: () {
-                            // Implement the functionality to edit the username
-                          },
-                        ),
-                      ],
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Username',
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold)),
+                      IconButton(
+                        icon: Icon(Icons.edit,
+                            color: Theme.of(context).primaryColor),
+                        onPressed: () {
+                          // Add functionality to edit username
+                        },
+                      ),
+                    ],
                   ),
+                  SizedBox(height: 20),
                   Stack(
                     clipBehavior: Clip.none,
                     children: <Widget>[
@@ -89,21 +94,51 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             ],
                           ),
                           child: IconButton(
-                              icon: const Icon(Icons.edit,
+                              icon: const Icon(Icons.camera_alt,
                                   color: Color.fromARGB(255, 255, 92, 00)),
                               onPressed: () {
-                                // Implement functionality to edit profile image
+                                // Add functionality to edit profile image
                               }),
                         ),
                       ),
                     ],
                   ),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: 'Name'),
+                  SizedBox(height: 20),
+                  const MyTextField(hintText: 'Name', obscureText: false),
+                  SizedBox(height: 20),
+                  DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                      labelText: 'Location',
+                      enabledBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Colors.grey.shade400, width: 1.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey.shade400,),
+                      ),
+                      fillColor: Colors.white,
+                      filled: true,
+                      hintText: 'Select location',
+                      hintStyle: TextStyle(color: Colors.grey[500]),
+                    ),
+                    value: selectedLocation,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedLocation = newValue;
+                      });
+                    },
+                    items:
+                        locations.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
                   ),
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Bio'),
                   ),
+                  SizedBox(height: 20),
                   SkillLevelSlider(
                     initialSkillLevel: _skillLevel,
                     onSkillLevelChanged: (newLevel) {
@@ -112,6 +147,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       });
                     },
                   ),
+                  SizedBox(height: 20),
                   MyButton(
                     buttonText: 'Save Profile',
                     onTap: _saveProfile,
