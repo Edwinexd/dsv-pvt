@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, Header
+from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, Header, Response
 from typing import Annotated
 from fastapi.responses import FileResponse
 from tempfile import NamedTemporaryFile
@@ -38,8 +38,6 @@ def validate_api_key(key: str = Header(alias = "IMAGES-API-Key")):
 
 # TODO: better error handling for both of these
 # TODO: caching with functools (?)
-# TODO: ID-gen
-# TODO: default pic (404)
 
 @app.post("/upload")
 async def upload_image(image: UploadFile, dir: str, _: Annotated[None, Depends(validate_api_key)]):
@@ -58,10 +56,10 @@ async def upload_image(image: UploadFile, dir: str, _: Annotated[None, Depends(v
     image.file.close()
 
     try:
-        s3.Bucket(bucket_name).upload_file(temp.name, f"{dir}{image.filename}")
-        return {"message": f"image uploaded successfully, file name={image.filename}"}
-    except Exception as e:
-        return {"message": f"error uploading image: {e}"}
+        s3.Bucket(bucket_name).upload_file(temp.name, dir)
+        return {"message": f"image uploaded successfully"}
+    except ClientError as e:
+        raise HTTPException(status_code=500, detail=f"Something went wrong while uploading image: {e}")
     finally:
         os.remove(temp.name)
 
@@ -81,14 +79,14 @@ async def download_image(file_name: str, _: Annotated[None, Depends(validate_api
         s3.Bucket(bucket_name).download_file(file_name, f.name)
         return FileResponse(
             path=f.name,
-            filename=file_name,
+            filename=f.name,
             media_type=f"image/{file_name.split('.')[1]}",
         )
     except ClientError as e:
         if e.response['Error']['Code'] == "404":
             return get_default_image()
-    finally:
-        os.remove(f.name)
+    #finally:
+    #    os.remove(f.name)
 
 @app.delete("/delete")
 async def delete_image(file_name: str, _: Annotated[None, Depends(validate_api_key)]):
