@@ -6,7 +6,8 @@ import 'package:flutter_application/views/my_groups.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'profile_page.dart';
-import 'drawer.dart'
+import 'drawer.dart';
+import 'package:flutter_application/views/login_page.dart';
 import 'package:flutter_application/home_page.dart';
 
 void main() async {
