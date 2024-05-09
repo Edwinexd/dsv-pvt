@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/activity_create.dart';
+import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
+import 'package:flutter_application/models/user.dart';
 
 class GroupPage extends StatefulWidget {
   final Group group;
@@ -12,18 +14,24 @@ class GroupPage extends StatefulWidget {
 }
 
 class _GroupPageState extends State<GroupPage> {
-  late List<String> allMembers;
-  late List<String> displayedMembers;
+  List<User> allMembers = [];
+  List<User> displayedMembers = [];
   TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    //List of members(just an example)
-    allMembers = List.generate(20, (index) => 'Member $index');
-    displayedMembers = List.from(allMembers);
+    fetchMembers().then((_) {
+      setState(() {
+      displayedMembers = allMembers;
+      }
+    );});
     //added listener to search text field
     searchController.addListener(_searchMembers);
+  }
+
+  Future<void> fetchMembers() async {
+    allMembers = await BackendService().getGroupMembers(widget.group.id);
   }
 
   @override
@@ -37,7 +45,7 @@ class _GroupPageState extends State<GroupPage> {
     String query = searchController.text.toLowerCase();
     setState(() {
       // TODO: Replace with fuzzy search
-      displayedMembers = allMembers.where((member) => member.toLowerCase().contains(query)).toList();
+      displayedMembers = allMembers.where((member) => member.userName.toLowerCase().contains(query)).toList();
     });
   }
 
@@ -106,12 +114,13 @@ class _GroupPageState extends State<GroupPage> {
             child: ListView.builder(
               itemCount: displayedMembers.length,
               itemBuilder: (context, index) {
+                User member = displayedMembers[index];
                 return ListTile(
                   leading: const CircleAvatar(
                     //will add user profile picture here
                     child: Icon(Icons.photo), //Placeholder for profile picture
                   ),
-                  title: Text(displayedMembers[index]),
+                  title: Text(member.userName),
                 );
               },
             ),
