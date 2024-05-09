@@ -45,7 +45,7 @@ class BackendService {
     final response = await _dio.post(
       '/users/login',
       data: {
-        "username": userName,
+        "email": userName,
         "password": password,
       },
     );
