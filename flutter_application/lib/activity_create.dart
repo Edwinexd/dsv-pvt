@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_application/controllers/backend_service.dart';
+import 'package:flutter_application/models/activity.dart';
 import 'package:intl/intl.dart';
 import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
 
@@ -39,10 +41,16 @@ class _ActivityCreatePageState extends State<ActivityCreatePage> {
     'Elite: < 4 min/km'
   ];
 
-  void _createActivity() {
+  void _createActivity() async {
     if (_formKey.currentState!.validate()) {
       int groupId = widget.groupId;
+      String name = _titleController.text.trim();
+      DateTime dt = _pickedDateTime;
+      int difficulty = _difficultyCode;
+
       // TODO: Http to backend with groupId
+      Activity activity = await BackendService().createActivity(groupId, name, dt, difficulty);
+
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Activity created for $groupId!')));
     }
