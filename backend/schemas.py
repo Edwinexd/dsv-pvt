@@ -65,6 +65,9 @@ class ProfileUpdate(BaseModel):
     skill_level: Optional[int] = None
     is_private: Optional[bool] = None
 
+class ProfileImageUpdate(ProfileUpdate):
+    image_id: Optional[str] = None
+
 # GROUP
 class GroupBase(BaseModel):
     group_name: str

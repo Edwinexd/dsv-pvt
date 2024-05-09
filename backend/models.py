@@ -99,6 +99,7 @@ class Profile(base):
     interests = Column(String, nullable=True)
     skill_level = Column(Integer) # will be mapped to a running pace in client
     is_private = Column(Integer) # 1-true, 0-false
+    image_id = Column(String, nullable=True, unique=True)
 
     owner_id = Column(String, ForeignKey("users.id"), primary_key=True)
     owner = relationship("User", back_populates="profile")
@@ -111,6 +112,7 @@ class Group(base):
     description = Column(String, nullable=True)
     is_private = Column(Integer) # 1-true, 0-false
     points = Column(Integer, default=0)
+    image_id = Column(String, nullable=True, unique=True)
 
     owner_id = Column(String, ForeignKey("users.id"))
     owner = relationship("User", back_populates="owned_groups")

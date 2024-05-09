@@ -1,7 +1,9 @@
+import os
+import sys
 import logging
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, UploadFile
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
@@ -10,14 +12,22 @@ import models
 import schemas
 import auth
 import validations
+import images
 from user_roles import Roles
 from database import engine, session_local
 from sessions import create_session, get_session, revoke_session
 from validations import validate_api_key
 
+# relative import
+DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(f"{os.path.dirname(DIR)}/authentication")
+import id_generator
+
 models.base.metadata.create_all(bind = engine)
 
 app = FastAPI()
+
+id_generator = id_generator.IdGenerator()
 
 def get_db_session():
     db_session = session_local()
@@ -90,6 +100,16 @@ def get_challenge(challenge_id: int, db_session: DbSession):
 
 RequestedChallenge = Annotated[models.Challenge, Depends(get_challenge)]
 
+#IMAGES
+# profile pic
+@app.put("/users/{user_id}/profile/picture")
+def upload_pfp(current_user: DbUser, db_session: DbSession, requested_user: RequestedUser, image: UploadFile):
+    validations.validate_id(current_user, requested_user.id)
+    id = id_generator.generate_id()
+    images.upload(dir=f"pfp/{id}.{image.filename.split(".")[1]}", image=image)
+    db_profile = crud.get_profile(db_session, requested_user.id)
+    crud.update_profile(db_session, db_profile, schemas.ProfileImageUpdate(image_id=str(id)))
+
 #USER
 #login
 # TODO: Properly annotate in OPENAPI that it requires credentials
@@ -105,7 +125,6 @@ def login(credentials: schemas.UserCreds, db_session: DbSession):
     session = create_session(user_id)
     return {"bearer": f"Bearer {session}"}
 
-#should maybe be delete?
 @app.post("/users/logout", status_code=204)
 def logout(token: Annotated[HTTPAuthorizationCredentials, Depends(header_scheme)]):
     revoke_session(token.credentials)
