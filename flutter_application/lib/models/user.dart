@@ -5,8 +5,7 @@ class User {
   final String userName;
   final String fullName;
   final DateTime dateCreated;
-  final String role;
-  // final Role role;
+  final Role role;
 
   const User({
     required this.id,
@@ -22,8 +21,7 @@ class User {
       userName: json["username"] as String,
       fullName: json["full_name"] as String,
       dateCreated: DateTime.parse(json["date_created"] as String),
-      role: json["role"] as String,
-      // role: Role.parse(json["role"] as int),
+      role: Role.parse(json["role"] as int),
     );
   }
 }
