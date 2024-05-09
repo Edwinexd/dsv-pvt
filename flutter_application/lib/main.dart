@@ -1,4 +1,5 @@
 import 'package:flutter_application/activity_create.dart';
+import 'package:flutter_application/bars.dart';
 import 'package:flutter_application/my_achievements.dart';
 import 'package:flutter_application/settings.dart';
 import 'package:flutter_application/views/my_groups.dart';
@@ -33,13 +34,19 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Midnattsloppet Now',
-      home: LoginPage(
+      title: 'Lace up & lead the way',
+      home: MainPage(
         darkModeEnabled: _darkModeEnabled,
         onToggleDarkMode: _toggleDarkMode,
       ),
       debugShowCheckedModeBanner: false,
-      theme: _darkModeEnabled ? ThemeData.dark() : ThemeData.light(),
+      theme: _darkModeEnabled
+          ? ThemeData.dark().copyWith(
+              canvasColor: const Color.fromARGB(230, 60, 71, 133),
+            )
+          : ThemeData.light().copyWith(
+              canvasColor: const Color.fromARGB(230, 60, 71, 133),
+            ),
     );
   }
 }
@@ -82,37 +89,27 @@ class MainPageState extends State<MainPage> {
       }
 
       if (index == 1) {
-        goToProfilePage(context); 
-      }
-      
-      if (index == 2) {
         goToGroupPage(context);
       }
 
-      if (index == 3) {
-        goToMyAchievementsPage(context);
+      if (index == 2) {
+        // Go to Friends page
       }
 
-      if (index == 4) {
-        // Prob broken after merge conflict but needs to be redone anyways
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ActivityCreatePage(groupId: "1234"),
-          ),
-        );
-      }
-      if (index == 5) {
-        //will be added here
+      if (index == 3) {
+        // Go to My Activity page
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Midnattsloppet Now'),
+     return Scaffold(
+      appBar: buildAppBar( 
+        onPressed: () {
+          goToProfilePage(context);
+        },
+        title: 'Lace up & lead the way',
       ),
       drawer: MyDrawer(
         onSignoutTap: () {},
@@ -129,39 +126,9 @@ class MainPageState extends State<MainPage> {
         },
       ),
       body: HomePage(),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          
-          
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: 'Groups',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.star),
-            label: 'Achievements',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add),
-            label: 'Create Activity',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.question_mark),
-            label: 'Placeholder',
-          ),
-        ],
-        currentIndex: selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        unselectedItemColor: Colors.deepPurple[900],
-        onTap: onItemtapped,
+      bottomNavigationBar: buildBottomNavigationBar( 
+        selectedIndex: selectedIndex,
+        onItemTapped: onItemtapped,
       ),
     );
   }
@@ -180,12 +147,7 @@ class MainPageState extends State<MainPage> {
           joinedDate: joinedDate,
         ),
       ),
-    ).then((_) {
-      //Updating the active index when navigating back
-      setState(() {
-        selectedIndex = 0;
-      });
-    });
+    );
   }
 
   void goToGroupPage(BuildContext context) {
@@ -196,32 +158,26 @@ class MainPageState extends State<MainPage> {
       ),
     ).then((_) {
       setState(() {
-        selectedIndex = 0;
+        selectedIndex = 1;
       });
     });
   }
 
   void goToMyAchievementsPage(BuildContext context) {
     Navigator.push(
-      context, 
-      MaterialPageRoute(
-        builder: (context) => MyAchievements()),
-      ).then((_) {
-        setState(() {
-          selectedIndex = 0;
-        });
-      });
+      context,
+      MaterialPageRoute(builder: (context) => MyAchievements()),
+    );
   }
 
   void goToHomePage(BuildContext context) {
     Navigator.push(
-      context, 
-      MaterialPageRoute(
-        builder: (context) => MyAchievements()),
-      ).then((_) {
-        setState(() {
-          selectedIndex = 0;
-        });
+      context,
+      MaterialPageRoute(builder: (context) => HomePage()),
+    ).then((_) {
+      setState(() {
+        selectedIndex = 0;
       });
+    });
   }
 }
