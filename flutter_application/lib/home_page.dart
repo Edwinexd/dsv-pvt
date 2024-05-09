@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/background_for_pages.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          CountdownWidget(),
-          SignupButton(),
-          SizedBox(height: 20),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFFCFBAEA), 
+    return DefaultBackground( 
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            CountdownWidget(),
+            SignupButton(),
+            SizedBox(height: 20),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFCFBAEA), 
+              ),
+              onPressed: () {},
+              child: Text('Challenges'),
             ),
-            onPressed: () {},
-            child: Text('Challenges'),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

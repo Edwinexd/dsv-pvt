@@ -18,6 +18,12 @@ class _SettingsPageState extends State<SettingsPage> {
   bool darkModeEnabled = false;
 
   @override
+  void initState() {
+    super.initState();
+    darkModeEnabled = widget.initialDarkMode;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -34,7 +40,6 @@ class _SettingsPageState extends State<SettingsPage> {
                   darkModeEnabled = value;
                   widget.onToggleDarkMode(value);
                 });
-                widget.onToggleDarkMode(value);
               },
             ),
           ),
