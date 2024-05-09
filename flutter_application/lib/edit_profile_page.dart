@@ -43,27 +43,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
           elevation: 0,
         ),
         body: SingleChildScrollView(
-          // Ensures the whole page content is scrollable
           child: Form(
             key: _formKey,
             child: Padding(
-              padding:
-                  EdgeInsets.all(16.0), // Consistent padding around the content
+              padding: EdgeInsets.all(16.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Username',
-                          style: TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.bold)),
+                      Text('Username', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                       IconButton(
-                        icon: Icon(Icons.edit,
-                            color: Theme.of(context).primaryColor),
-                        onPressed: () {
-                          // Add functionality to edit username
-                        },
+                        icon: Icon(Icons.edit, color: Theme.of(context).primaryColor),
+                        onPressed: () {},
                       ),
                     ],
                   ),
@@ -94,47 +87,62 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             ],
                           ),
                           child: IconButton(
-                              icon: const Icon(Icons.camera_alt,
-                                  color: Color.fromARGB(255, 255, 92, 00)),
-                              onPressed: () {
-                                // Add functionality to edit profile image
-                              }),
+                              icon: const Icon(Icons.camera_alt, color: Color.fromARGB(255, 255, 92, 00)),
+                              onPressed: () {},
+                          ),
                         ),
                       ),
                     ],
                   ),
                   SizedBox(height: 20),
-                  const MyTextField(hintText: 'Name', obscureText: false),
-                  SizedBox(height: 20),
-                  DropdownButtonFormField<String>(
-                    decoration: InputDecoration(
-                      labelText: 'Location',
-                      enabledBorder: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: Colors.grey.shade400, width: 1.0),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          decoration: InputDecoration(
+                            labelText: 'Age',
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey.shade400, width: 1.0),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey.shade400),
+                            ),
+                            fillColor: Colors.white,
+                            filled: true,
+                          ),
+                        ),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey.shade400,),
+                      SizedBox(width: 10), 
+                      Expanded(
+                        child: DropdownButtonFormField<String>(
+                          decoration: InputDecoration(
+                            labelText: 'Location',
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey.shade400, width: 1.0),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey.shade400),
+                            ),
+                            fillColor: Colors.white,
+                            filled: true,
+                          ),
+                          value: selectedLocation,
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              selectedLocation = newValue;
+                            });
+                          },
+                          items: locations.map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
                       ),
-                      fillColor: Colors.white,
-                      filled: true,
-                      hintText: 'Select location',
-                      hintStyle: TextStyle(color: Colors.grey[500]),
-                    ),
-                    value: selectedLocation,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedLocation = newValue;
-                      });
-                    },
-                    items:
-                        locations.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
+                    ],
                   ),
+                  SizedBox(height: 20),
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Bio'),
                   ),
