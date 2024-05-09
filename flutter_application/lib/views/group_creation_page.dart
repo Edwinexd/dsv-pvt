@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
+import 'package:flutter_application/models/user.dart';
 //member invites?
 
 
@@ -103,7 +104,8 @@ Widget build(BuildContext context) {
       return;
     }
 
-    await BackendService().createGroup(name, description, _isPublic, BackendService().getMyId());
+    User me = await BackendService().getMe();
+    await BackendService().createGroup(name, description, _isPublic, me.id);
 
     widget.onGroupCreatedCallBacks.forEach((callback) {
       callback();
