@@ -38,7 +38,8 @@ def validate_api_key(key: str = Header(alias = "IMAGES-API-Key")):
 
 # TODO: better error handling for both of these
 # TODO: caching with functools (?)
-# TODO: API KEY to reach this service!
+# TODO: ID-gen
+# TODO: default pic (404)
 
 @app.post("/upload")
 async def upload_image(image: UploadFile, dir: str, _: Annotated[None, Depends(validate_api_key)]):
@@ -64,19 +65,30 @@ async def upload_image(image: UploadFile, dir: str, _: Annotated[None, Depends(v
     finally:
         os.remove(temp.name)
 
+def get_default_image() -> FileResponse:
+    f = NamedTemporaryFile(delete=False)
+    s3.Bucket(bucket_name).download_file("default404.jpg", f.name)
+    return FileResponse(
+        path=f.name,
+        filename=f.name,
+        media_type="image/jpeg",
+    )
 
 @app.post("/download")
 async def download_image(file_name: str, _: Annotated[None, Depends(validate_api_key)]):
     try:
-        with NamedTemporaryFile(delete=False, mode="w+b") as f:
-            s3.Bucket(bucket_name).download_file(file_name, f.name)
-            return FileResponse(
-                path=f.name,
-                filename=file_name,
-                media_type=f"image/{file_name.split('.')[1]}",
-            )
-    except Exception as e:
-        return {"message": f"error downloading image: {e}"}
+        f = NamedTemporaryFile(delete=False)
+        s3.Bucket(bucket_name).download_file(file_name, f.name)
+        return FileResponse(
+            path=f.name,
+            filename=file_name,
+            media_type=f"image/{file_name.split('.')[1]}",
+        )
+    except ClientError as e:
+        if e.response['Error']['Code'] == "404":
+            return get_default_image()
+    finally:
+        os.remove(f.name)
 
 @app.delete("/delete")
 async def delete_image(file_name: str, _: Annotated[None, Depends(validate_api_key)]):
