@@ -1,0 +1,4 @@
+[tool.pyright]
+reportOperatorIssue=false
+reportArgumentType=false
+reportGeneralTypeIssues=false
