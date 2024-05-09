@@ -10,7 +10,7 @@ class BackendService {
   static final BackendService _singleton = BackendService._internal();
   late Dio _dio;
   String? token;
-  late String userId;
+  User? _me;
 
   factory BackendService() {
     return _singleton;
@@ -42,8 +42,9 @@ class BackendService {
 
   // --------- USERS ---------
 
-  String getMyId() {
-    return userId;
+  Future<User> getMe() async {
+    _me ??= await getMyUser();
+    return _me!;
   }
 
   Future<void> login(String userName, String password) async {
@@ -81,9 +82,7 @@ class BackendService {
 
   Future<User> getMyUser() async {
     final response = await _dio.get('/users/me');
-    User user = User.fromJson(response.data as Map<String, dynamic>);
-    userId = user.id;
-    return user;
+    return User.fromJson(response.data as Map<String, dynamic>);
   }
 
   Future<User> getUser(String userId) async {
