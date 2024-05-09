@@ -1,23 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
+import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/group_creation_page.dart';
 
 
 class AllGroupsPage extends StatefulWidget {
-  const AllGroupsPage({super.key});
+  final Function refreshMyGroups;
+  const AllGroupsPage({
+    super.key,
+    required this.refreshMyGroups,
+  });
 
   @override
-  _AllGroupsPageState createState() => _AllGroupsPageState();
+  AllGroupsPageState createState() => AllGroupsPageState();
 }
 
-class _AllGroupsPageState extends State<AllGroupsPage> {
+class AllGroupsPageState extends State<AllGroupsPage>  {
+  List<Group> _groups = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchGroups();
+  }
+
+  void refreshAllGroups() async {
+    fetchGroups();
+  }
+
+  void fetchGroups() async {
+    var fetchedGroups = await BackendService().getGroups(0, 100);
+    setState(() {
+      _groups = fetchedGroups;
+    });
+  }
+
   //List of instance groups
-  final List<Group> _groups = [
-    const Group(id: 3, name: 'Lace up!', description: 'Lace up and lead the way', isPrivate: true, ownerId: '1'),
-    const Group(id: 2, name: 'DVK Runners', description: 'Join us!', isPrivate: false, ownerId: '1'),
-    const Group(id: 4, name: 'Kista Runners', description: 'Best runners!', isPrivate: true, ownerId: '1'),
-  ];
+  // final List<Group> _groups = [
+  //   const Group(id: 3, name: 'Lace up!', description: 'Lace up and lead the way', isPrivate: true, ownerId: '1'),
+  //   const Group(id: 2, name: 'DVK Runners', description: 'Join us!', isPrivate: false, ownerId: '1'),
+  //   const Group(id: 4, name: 'Kista Runners', description: 'Best runners!', isPrivate: true, ownerId: '1'),
+  // ];
 
   String _searchQuery = '';
   String _selectedFilter = 'All';
@@ -120,7 +144,7 @@ class _AllGroupsPageState extends State<AllGroupsPage> {
         onPressed: () {
           Navigator.push(
             context, 
-            MaterialPageRoute(builder: (context) => GroupCreation()), 
+            MaterialPageRoute(builder: (context) => GroupCreation(onGroupCreatedCallBacks: [refreshAllGroups, widget.refreshMyGroups],)), 
           );
         },
         style: TextButton.styleFrom(

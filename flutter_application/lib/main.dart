@@ -99,6 +99,20 @@ class MainPageState extends State<MainPage> {
       if (index == 3) {
         // Go to My Activity page
       }
+
+      if (index == 4) {
+        // Prob broken after merge conflict but needs to be redone anyways
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ActivityCreatePage(groupId: 1234),
+          ),
+        );
+      }
+      
+      if (index == 5) {
+        //will be added here
+      }
     });
   }
 

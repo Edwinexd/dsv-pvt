@@ -10,6 +10,7 @@ class BackendService {
   static final BackendService _singleton = BackendService._internal();
   late Dio _dio;
   String? token;
+  User? _me;
 
   factory BackendService() {
     return _singleton;
@@ -41,6 +42,11 @@ class BackendService {
 
   // --------- USERS ---------
 
+  Future<User> getMe() async {
+    _me ??= await getMyUser();
+    return _me!;
+  }
+
   Future<void> login(String userName, String password) async {
     final response = await _dio.post(
       '/users/login',
@@ -65,7 +71,7 @@ class BackendService {
     return User.fromJson((response.data) as Map<String, dynamic>);
   }
 
-  Future<List<User>> fetchUsers(int skip, int limit) async {
+  Future<List<User>> getUsers(int skip, int limit) async {
     final response = await _dio.get('/users', queryParameters: {
       'skip': skip,
       'limit': limit,
@@ -74,12 +80,12 @@ class BackendService {
     return userList.map((e) => User.fromJson(e)).toList();
   }
 
-  Future<User> fetchMe() async {
+  Future<User> getMyUser() async {
     final response = await _dio.get('/users/me');
     return User.fromJson(response.data as Map<String, dynamic>);
   }
 
-  Future<User> fetchUser(String userId) async {
+  Future<User> getUser(String userId) async {
     final response = await _dio.get('/users/$userId');
     return User.fromJson((response.data) as Map<String, dynamic>);
   }
@@ -123,7 +129,7 @@ class BackendService {
     return Profile.fromJson((response.data) as Map<String, dynamic>);
   }
 
-  Future<Profile> fetchProfile(String userId) async {
+  Future<Profile> getProfile(String userId) async {
     final response = await _dio.get('/users/$userId');
     return Profile.fromJson((response.data) as Map<String, dynamic>);
   }
@@ -182,7 +188,7 @@ class BackendService {
     return Group.fromJson((response.data) as Map<String, dynamic>);
   }
 
-  Future<List<Group>> fetchGroups(int skip, int limit) async {
+  Future<List<Group>> getGroups(int skip, int limit) async {
     final response = await _dio.get('/groups', queryParameters: {
       'skip': skip,
       'limit': limit,
@@ -191,7 +197,7 @@ class BackendService {
     return groupList.map((e) => Group.fromJson(e)).toList();
   }
 
-  Future<Group> fetchGroup(int groupId) async {
+  Future<Group> getGroup(int groupId) async {
     final response = await _dio.get('/groups/$groupId');
     return Group.fromJson((response.data) as Map<String, dynamic>);
   }
@@ -235,19 +241,19 @@ class BackendService {
     return Group.fromJson((response.data) as Map<String, dynamic>);
   }
 
-  Future<List<User>> fetchGroupMembers(int groupId) async {
+  Future<List<User>> getGroupMembers(int groupId) async {
     final response = await _dio.get('/groups/$groupId/members');
     var memberList = response.data['data'] as List;
     return memberList.map((e) => User.fromJson(e)).toList();
   }
 
-  Future<List<Group>> fetchMyGroups() async {
+  Future<List<Group>> getMyGroups() async {
     final response = await _dio.get('/users/me/groups');
     var groupList = response.data['data'] as List;
     return groupList.map((e) => Group.fromJson(e)).toList();
   }
 
-  Future<List<Group>> fetchUserGroups(String userId) async {
+  Future<List<Group>> getUserGroups(String userId) async {
     final response = await _dio.get('/users/$userId/groups');
     var groupList = response.data['data'] as List;
     return groupList.map((e) => Group.fromJson(e)).toList();
@@ -264,13 +270,13 @@ class BackendService {
     await _dio.delete('/groups/$groupId/invites/$userId');
   }
 
-  Future<List<User>> fetchInvitedUsersInGroup(int groupId) async {
+  Future<List<User>> getInvitedUsersInGroup(int groupId) async {
     final response = await _dio.get('/groups/$groupId/invites');
     var userList = response.data['data'] as List;
     return userList.map((e) => User.fromJson(e)).toList();
   }
 
-  Future<List<Group>> fetchGroupsInvitedTo() async {
+  Future<List<Group>> getGroupsInvitedTo() async {
     final response = await _dio.get('users/me/invites');
     var groupList = response.data['data'] as List;
     return groupList.map((e) => Group.fromJson(e)).toList();
@@ -291,7 +297,7 @@ class BackendService {
     return Activity.fromJson((response.data) as Map<String, dynamic>);
   }
 
-  Future<List<Activity>> fetchActivities(
+  Future<List<Activity>> getActivities(
       int groupId, int skip, int limit) async {
     final response =
         await _dio.get('/groups/$groupId/activities', queryParameters: {
@@ -302,7 +308,7 @@ class BackendService {
     return activityList.map((e) => Activity.fromJson(e)).toList();
   }
 
-  Future<Activity> fetchActivity(int groupId, int activityId) async {
+  Future<Activity> getActivity(int groupId, int activityId) async {
     final response = await _dio.get('/groups/$groupId/activities/$activityId');
     return Activity.fromJson((response.data) as Map<String, dynamic>);
   }
@@ -345,7 +351,7 @@ class BackendService {
         '/group/$groupId/activities/$activityId/participants/$participantId');
   }
 
-  Future<List<User>> fetchActivityParticipants(
+  Future<List<User>> getActivityParticipants(
       int groupId, int activityId, int skip, int limit) async {
     final response = await _dio.get(
         '/group/$groupId/activities/$activityId/participants',
@@ -358,7 +364,7 @@ class BackendService {
     return participantList.map((e) => User.fromJson(e)).toList();
   }
 
-  Future<List<Activity>> fetchUserActivities(
+  Future<List<Activity>> getUserActivities(
       String userId, int skip, int limit) async {
     final response =
         await _dio.get('/users/$userId/activities', queryParameters: {

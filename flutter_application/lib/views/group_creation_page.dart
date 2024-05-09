@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
+import 'package:flutter_application/controllers/backend_service.dart';
+import 'package:flutter_application/models/user.dart';
 //member invites?
 
 
 class GroupCreation extends StatefulWidget {
-  const GroupCreation({super.key});
+  final List<Function> onGroupCreatedCallBacks;
+  
+  const GroupCreation({
+    super.key, 
+    required this.onGroupCreatedCallBacks
+  });
   
   @override
   GroupCreationState createState() => GroupCreationState();
@@ -86,15 +93,23 @@ Widget build(BuildContext context) {
 }
 
 
-  void createGroup() {
-    String name = _nameController.text;
+  void createGroup() async {
+    String name = _nameController.text.trim();
+    String description = _descriptionController.text.trim();
 
-    if (name.isEmpty) {
+    if (name.isEmpty || description.isEmpty) {
       setState(() {
         _errorMessage = 'Group name can not be empty!';
       });
       return;
     }
+
+    User me = await BackendService().getMe();
+    await BackendService().createGroup(name, description, _isPublic, me.id);
+
+    widget.onGroupCreatedCallBacks.forEach((callback) {
+      callback();
+    }); // Calls refreshGroups in parent MyGroupsPage
 
     setState(() {
       _errorMessage = '';
@@ -103,5 +118,6 @@ Widget build(BuildContext context) {
     setState(() {
       _isGroupCreated = true;
     });
+
   }
 }
