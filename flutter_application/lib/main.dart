@@ -6,11 +6,7 @@ import 'package:flutter_application/views/my_groups.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'profile_page.dart';
-import 'drawer.dart';
-import 'package:flutter_application/views/login_page.dart';
-import 'create_profile_page.dart';
-import 'package:flutter_application/controllers/backend_service.dart';
-import 'package:flutter_application/models/group.dart';
+import 'drawer.dart'
 import 'package:flutter_application/home_page.dart';
 
 void main() async {
@@ -137,13 +133,17 @@ class MainPageState extends State<MainPage> {
   }
 
   void goToProfilePage(BuildContext context) {
+    DateTime joinedDate = DateTime(2021, 4, 12);
+
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const ProfilePage(
-          name: 'Jeb Jebson',
+        builder: (context) => ProfilePage(
+          name: 'Axel Andersson',
           biography: "Let's go running!",
           imageUrl: 'https://via.placeholder.com/150',
+          username: 'Oltan53',
+          joinedDate: joinedDate,
         ),
       ),
     );

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application/components/MyButton.dart';
+import 'package:flutter_application/components/my_button.dart';
 import 'package:flutter_application/components/my_textfield.dart';
 import 'package:flutter_application/components/square_tile.dart';
 import 'package:flutter_application/forgot_password.dart';
 import 'package:flutter_application/views/sign_up_page.dart';
 
 class LoginPage extends StatefulWidget {
-  LoginPage({super.key});
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
