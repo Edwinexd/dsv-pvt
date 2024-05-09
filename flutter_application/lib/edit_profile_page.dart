@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-
-//test Mac
+import 'package:flutter_application/components/skill_level_slider.dart';
 
 class EditProfilePage extends StatefulWidget {
   @override
@@ -13,10 +11,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _interestsController = TextEditingController();
-  int _skillLevel = 0;  // Manage skill level as an integer
-  ImageProvider _imageProvider = AssetImage('');
+  int _skillLevel = 0;
 
-  // Updated skill levels with pace descriptions
   List<String> skillLevels = [
     'Beginner: 10 - 8 min/km',
     'Intermediate: 8 - 6 min/km',
@@ -35,14 +31,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   void _pickImage() {
     setState(() {
-      _imageProvider = NetworkImage('https://example.com/new_profile.jpg'); // Simulate image change
+      // Placeholder image change functionality
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Create Profile')),
+      appBar: AppBar(
+        title: Text('Edit Profile'),
+      ),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -51,10 +49,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
             Center(
               child: GestureDetector(
                 onTap: _pickImage,
-                child: CircleAvatar(
+                child: const CircleAvatar(
                   radius: 60,
-                  backgroundImage: _imageProvider,
-                  child: const Align(
+                  // Use a placeholder image if no image is selected
+                  backgroundImage: AssetImage('assets/images/profile_placeholder.png'),
+                  child: Align(
                     alignment: Alignment.bottomRight,
                     child: CircleAvatar(
                       backgroundColor: Colors.white,
@@ -74,42 +73,27 @@ class _EditProfilePageState extends State<EditProfilePage> {
             TextFormField(
               controller: _emailController,
               decoration: InputDecoration(labelText: 'Email'),
-              // TODO: Use proper email validation
               validator: (value) => !value!.contains('@') ? 'Please enter a valid email' : null,
             ),
             TextFormField(
               controller: _interestsController,
-              decoration: InputDecoration(labelText: 'Interests'),
+              decoration: const InputDecoration(labelText: 'Interests'),
               validator: (value) => value!.isEmpty ? 'Interests cannot be empty' : null,
             ),
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text('Skill Level:' /*${skillLevels[_skillLevel]}*/, style: TextStyle(fontSize: 16)),
-                  Slider(
-                    value: _skillLevel.toDouble(),  // Convert to double for the Slider
-                    min: 0,
-                    max: 4,
-                    divisions: 4,
-                    //label:skillLevels[_skillLevel],
-                    onChanged: (double value) {
-                      setState(() {
-                        _skillLevel = value.round();  // Convert back to int after change
-                      });
-                    },
-                  ),
-                  Container(
-                        alignment: Alignment.center,
-                        child: Text('${skillLevels[_skillLevel]}', style: TextStyle(fontSize: 12)),
-                  )
-                ],
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: SkillLevelSlider(
+                initialSkillLevel: _skillLevel,
+                onSkillLevelChanged: (int newLevel) {
+                  setState(() {
+                    _skillLevel = newLevel;
+                  });
+                },
               ),
             ),
             ElevatedButton(
               onPressed: _saveProfile,
-              child: Text('Save Profile'),
+              child: const Text('Save Profile'),
             ),
           ],
         ),
