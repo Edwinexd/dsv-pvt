@@ -25,7 +25,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   };
   String? age;
   bool ageEntered = false;
-  bool bioWritten = false;
+  bool bioEntered = false;
+  bool idEntered = false;
 
   void _saveProfile() {
     if (_formKey.currentState!.validate()) {
@@ -186,13 +187,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   TextFormField(
                     onChanged: (text) {
                       setState(() {
-                        bioWritten = text.isNotEmpty;
+                        bioEntered = text.isNotEmpty;
                       });
                     },
                     maxLines: null,
                     minLines: 3,
                     decoration: InputDecoration(
-                      labelText: bioWritten ? null : 'About Me',
+                      labelText: bioEntered ? null : 'About Me',
                       alignLabelWithHint: true,
                       enabledBorder: const OutlineInputBorder(
                         borderSide:
@@ -207,7 +208,30 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
                   
                   SizedBox(height: 20),
+
+                  TextFormField(
+                    onChanged: (text) {
+                      setState(() {
+                        idEntered = text.isNotEmpty;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      labelText: idEntered ? null : 'Runner ID(Optional)',
+                      alignLabelWithHint: true,
+                      enabledBorder: const OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Colors.transparent, width: 1.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey.shade400),
+                      ),
+                      fillColor: Colors.white,
+                      filled: true,
+                    ),
+                  ),
                   
+                  SizedBox(height: 20),
+
                   const Row(
                     children: [
                       Expanded(
@@ -245,8 +269,30 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       return buildInterestCheckbox(key);
                     }).toList(),
                   ),
-
+                  
                   SizedBox(height: 20),
+
+                  const Row(
+                    children: [
+                      Expanded(
+                            child: Divider(
+                              thickness: 0.5,
+                              color: Color.fromARGB(255, 16, 14, 99),
+                            ),
+                          ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Text('Skill Level',
+                            style: TextStyle(color: Color.fromARGB(255, 16, 14, 99),fontSize: 16)),
+                      ),
+                      Expanded(
+                        child: Divider(
+                          thickness: 0.5,
+                          color: Color.fromARGB(255, 16, 14, 99),
+                        ),
+                      ),
+                    ],
+                  ),
                   
                   SkillLevelSlider(
                     initialSkillLevel: _skillLevel,
