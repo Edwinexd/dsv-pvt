@@ -50,6 +50,9 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
+    await _backendService.getMyUser();
+
+
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => MainPage(
