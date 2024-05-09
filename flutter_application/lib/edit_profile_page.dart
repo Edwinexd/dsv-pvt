@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/components/skill_level_slider.dart';
+import 'package:flutter_application/background_for_pages.dart'; // Ensure this import is here
 
 class EditProfilePage extends StatefulWidget {
   @override
@@ -23,9 +24,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   void _saveProfile() {
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Profile Saved!'))
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Profile Saved!')));
     }
   }
 
@@ -37,65 +37,77 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Edit Profile'),
-      ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: EdgeInsets.all(16.0),
-          children: <Widget>[
-            Center(
-              child: GestureDetector(
-                onTap: _pickImage,
-                child: const CircleAvatar(
-                  radius: 60,
-                  // Use a placeholder image if no image is selected
-                  backgroundImage: AssetImage('assets/images/profile_placeholder.png'),
-                  child: Align(
-                    alignment: Alignment.bottomRight,
-                    child: CircleAvatar(
-                      backgroundColor: Colors.white,
-                      radius: 15,
-                      child: Icon(Icons.camera_alt, color: Colors.blue, size: 22),
+    return DefaultBackground(
+      // Apply the DefaultBackground here
+      child: Scaffold(
+        backgroundColor:
+            Colors.transparent, // Make sure scaffold background is transparent
+        appBar: AppBar(
+          title: Text('Edit Profile'),
+          backgroundColor: Colors
+              .transparent, // Ensure AppBar background is also transparent
+          elevation: 0, // Remove shadow
+        ),
+        body: Form(
+          key: _formKey,
+          child: ListView(
+            padding: EdgeInsets.all(16.0),
+            children: <Widget>[
+              Center(
+                child: GestureDetector(
+                  onTap: _pickImage,
+                  child: const CircleAvatar(
+                    radius: 60,
+                    backgroundImage:
+                        AssetImage('assets/images/profile_placeholder.png'),
+                    child: Align(
+                      alignment: Alignment.bottomRight,
+                      child: CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: 15,
+                        child: Icon(Icons.camera_alt,
+                            color: Colors.blue, size: 22),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            SizedBox(height: 20),
-            TextFormField(
-              controller: _nameController,
-              decoration: InputDecoration(labelText: 'Name'),
-              validator: (value) => value!.isEmpty ? 'Name cannot be empty' : null,
-            ),
-            TextFormField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
-              validator: (value) => !value!.contains('@') ? 'Please enter a valid email' : null,
-            ),
-            TextFormField(
-              controller: _interestsController,
-              decoration: const InputDecoration(labelText: 'Interests'),
-              validator: (value) => value!.isEmpty ? 'Interests cannot be empty' : null,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              child: SkillLevelSlider(
-                initialSkillLevel: _skillLevel,
-                onSkillLevelChanged: (int newLevel) {
-                  setState(() {
-                    _skillLevel = newLevel;
-                  });
-                },
+              SizedBox(height: 20),
+              TextFormField(
+                controller: _nameController,
+                decoration: InputDecoration(labelText: 'Name'),
+                validator: (value) =>
+                    value!.isEmpty ? 'Name cannot be empty' : null,
               ),
-            ),
-            ElevatedButton(
-              onPressed: _saveProfile,
-              child: const Text('Save Profile'),
-            ),
-          ],
+              TextFormField(
+                controller: _emailController,
+                decoration: InputDecoration(labelText: 'Email'),
+                validator: (value) =>
+                    !value!.contains('@') ? 'Please enter a valid email' : null,
+              ),
+              TextFormField(
+                controller: _interestsController,
+                decoration: const InputDecoration(labelText: 'Interests'),
+                validator: (value) =>
+                    value!.isEmpty ? 'Interests cannot be empty' : null,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: SkillLevelSlider(
+                  initialSkillLevel: _skillLevel,
+                  onSkillLevelChanged: (int newLevel) {
+                    setState(() {
+                      _skillLevel = newLevel;
+                    });
+                  },
+                ),
+              ),
+              ElevatedButton(
+                onPressed: _saveProfile,
+                child: const Text('Save Profile'),
+              ),
+            ],
+          ),
         ),
       ),
     );
