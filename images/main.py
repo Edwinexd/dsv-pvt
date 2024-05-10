@@ -72,15 +72,15 @@ def get_default_image() -> FileResponse:
         media_type="image/jpeg",
     )
 
-@app.post("/download")
-async def download_image(file_name: str, _: Annotated[None, Depends(validate_api_key)]):
+@app.get("/download")
+async def download_image(dir: str, _: Annotated[None, Depends(validate_api_key)]):
     try:
         f = NamedTemporaryFile(delete=False)
-        s3.Bucket(bucket_name).download_file(file_name, f.name)
+        s3.Bucket(bucket_name).download_file(dir, f.name)
         return FileResponse(
             path=f.name,
             filename=f.name,
-            media_type=f"image/{file_name.split('.')[1]}",
+            media_type=f"image/{dir.split('.')[1]}",
         )
     except ClientError as e:
         if e.response['Error']['Code'] == "404":

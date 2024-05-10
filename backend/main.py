@@ -110,6 +110,10 @@ def upload_pfp(current_user: DbUser, db_session: DbSession, requested_user: Requ
     db_profile = crud.get_profile(db_session, requested_user.id)
     crud.update_profile(db_session, db_profile, schemas.ProfileImageUpdate(image_id=str(id)))
 
+@app.get("/users/{user_id}/profile/picture")
+def download_pfp(current_user: DbUser, db_session: DbSession, requested_profile: RequestedProfile):
+    return requested_profile.image_id
+
 #USER
 #login
 # TODO: Properly annotate in OPENAPI that it requires credentials
