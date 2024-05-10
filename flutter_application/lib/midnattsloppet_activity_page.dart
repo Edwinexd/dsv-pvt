@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
-import 'bars.dart'; // Import the file where AppBar and BottomNavigationBar are defined
+import 'bars.dart'; 
 
 class MidnatsloppetActivity extends StatefulWidget {
   @override

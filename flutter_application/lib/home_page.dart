@@ -7,7 +7,7 @@ import 'package:flutter_application/midnattsloppet_activity_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatelessWidget {
-  // Temporary sample data for leaderboard entries
+  // Temporary sample data for leaderboard entries can be changed to real data
   final List<LeaderboardEntry> _leaderboardEntries = [
     LeaderboardEntry('Player 1', 30, 2),
     LeaderboardEntry('Player 2', 90, 3),
@@ -173,7 +173,7 @@ class ChallengesButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          minimumSize: Size(327, 180), // Double the height
+          minimumSize: Size(327, 180), 
         ),
         onPressed: () {
           Navigator.push(
@@ -237,7 +237,6 @@ class LeaderboardStat extends StatelessWidget {
   Widget build(BuildContext context) {
     leaderboardEntries.sort((a, b) => b.points.compareTo(a.points));
 
-    // Rearrange the entries
     if (leaderboardEntries.length >= 3) {
       var temp = leaderboardEntries[1];
       leaderboardEntries[1] = leaderboardEntries[0];
@@ -252,24 +251,24 @@ class LeaderboardStat extends StatelessWidget {
       child: Stack(
         children: [
           Positioned(
-            bottom: -20, // Moved down to the bottom
+            bottom: -20, 
             left: 0,
             right: 0,
             child: Center(
               child: Container(
                 margin: EdgeInsets.all(
-                    20), // Added more white space around the button
+                    20), 
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: Color(0xFFF344F7), // text color
+                    backgroundColor: Color(0xFFF344F7), 
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 90, vertical: 15), // increased size
+                        horizontal: 90, vertical: 15), 
                     shape: RoundedRectangleBorder(
-                      // added border
-                      borderRadius: BorderRadius.circular(5), // added radius
+                    
+                      borderRadius: BorderRadius.circular(5), 
                       side: const BorderSide(
-                          color: Colors.white, width: 30), // white border
+                          color: Colors.white, width: 30), 
                     ),
                   ),
                   onPressed: () {
@@ -308,15 +307,15 @@ class LeaderboardStat extends StatelessWidget {
           ),
           ...leaderboardEntries.asMap().entries.map((entry) {
             return Positioned(
-              bottom: 50, // Adjust this value as needed
-              left: (entry.key * 100).toDouble(), // Adjust this value as needed
+              bottom: 50, 
+              left: (entry.key * 100).toDouble(), 
               child: Column(
                 children: [
                   Container(
                     margin: EdgeInsets.only(bottom: 5),
                     decoration: BoxDecoration(
-                      color: Color(0xFF9087E5), // Changed background color
-                      borderRadius: BorderRadius.circular(9), // Added radius
+                      color: Color(0xFF9087E5), 
+                      borderRadius: BorderRadius.circular(9), 
                     ),
                     child: Padding(
                       padding: EdgeInsets.all(5),
@@ -332,24 +331,24 @@ class LeaderboardStat extends StatelessWidget {
                   Container(
                     width: 100,
                     height: entry.value.points *
-                        2, // Adjust this multiplier as needed
+                        2, 
                     decoration: const BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          Color(0xFF9087E5), // starting color
-                          Color(0xFFCDC9F3), // ending color
+                          Color(0xFF9087E5), 
+                          Color(0xFFCDC9F3), 
                         ],
                       ),
                     ),
                   ),
                   Container(
                     margin: const EdgeInsets.only(
-                        top: 5), // Added space between points and column
+                        top: 5), 
                     decoration: BoxDecoration(
-                      color: Color(0xFF9087E5), // Changed background color
-                      borderRadius: BorderRadius.circular(9), // Added radius
+                      color: Color(0xFF9087E5), 
+                      borderRadius: BorderRadius.circular(9), 
                     ),
                     child: Padding(
                       padding: EdgeInsets.all(5),
