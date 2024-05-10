@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application/components/MyButton.dart';
+import 'package:flutter_application/components/my_button.dart';
 import 'package:flutter_application/components/my_textfield.dart';
 import 'package:flutter_application/components/square_tile.dart';
+import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/forgot_password.dart';
+import 'package:flutter_application/main.dart';
 import 'package:flutter_application/views/sign_up_page.dart';
 
 class LoginPage extends StatefulWidget {
-  LoginPage({super.key});
+  final bool darkModeEnabled;
+  final ValueChanged<bool> onToggleDarkMode;
+
+  LoginPage({
+    Key? key,
+    required this.darkModeEnabled,
+    required this.onToggleDarkMode,
+  }) : super(key: key);
+
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -15,13 +25,40 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final BackendService _backendService = BackendService();
 
-  void signUserIn() {
+  void signUserIn() async {
+    final String email = usernameController.text.trim();
+    final String password = passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      // TODO: Handle email and password is empty
+      return;
+    }
+
     showDialog(
       context: context,
       builder: (context) => const Center(
         child: CircularProgressIndicator(),
       ),
+    );
+
+    await _backendService.login(email, password);
+
+    if (_backendService.token == null) {      
+      // TODO: Handle login failure
+      return;
+    }
+
+    await _backendService.getMyUser();
+
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MainPage(
+        darkModeEnabled: widget.darkModeEnabled, 
+        onToggleDarkMode: widget.onToggleDarkMode,
+      ))
     );
   }
 

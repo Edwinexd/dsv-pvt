@@ -31,9 +31,10 @@ class User(UserModel):
         from_attributes = True
 
     # Incase we want the api to present the Role as the name instead of the value
-    @field_serializer("role")
-    def serialize_role(self, role: Roles, _info):
-        return role.name
+    # @field_serializer("role")
+    # def serialize_role(self, role: Roles, _info):
+    #    return role.name
+
 
 
 class UserList(BaseModel):
@@ -98,7 +99,7 @@ class GroupCreate(GroupBase):
 
 class Group(GroupBase):
     id: int
-    points: int
+    points: int = 0
     image_id: str | None
 
     class Config:

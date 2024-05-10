@@ -40,13 +40,15 @@ def delete_user(db_session: Session, db_user: models.User):
     db_session.delete(db_user)
     db_session.commit()
 
-
 # PROFILES
-def get_profile(db_session: Session, user_id: int):
-    return get_user(db_session, user_id).profile
+def get_profile(db_session: Session, user_id: str):
+    user = get_user(db_session, user_id)
+    if user is None:
+        return None
+    return user.profile
 
 
-def create_profile(db_session: Session, profile: schemas.ProfileCreate, user_id: int):
+def create_profile(db_session: Session, profile: schemas.ProfileCreate, user_id: str):
     db_profile = models.Profile(
         description=profile.description,
         age=profile.age,
@@ -55,6 +57,8 @@ def create_profile(db_session: Session, profile: schemas.ProfileCreate, user_id:
         is_private=int(profile.is_private),
     )
     db_user = get_user(db_session, user_id)
+    if db_user is None:
+        return None
     if db_user.profile is not None:
         db_session.delete(db_user.profile)
     db_user.profile = db_profile
@@ -94,6 +98,8 @@ def create_group(db_session: Session, group: schemas.GroupCreate):
         is_private=int(group.is_private),
     )
     db_owner = get_user(db_session, group.owner_id)
+    if db_owner is None:
+        return None
     db_owner.owned_groups.append(db_group)
     db_owner.groups.append(db_group)
     db_session.add(db_owner)
@@ -105,6 +111,15 @@ def create_group(db_session: Session, group: schemas.GroupCreate):
 # get a group from group_id
 def get_group(db_session: Session, group_id: int):
     return db_session.query(models.Group).filter(models.Group.id == group_id).first()
+
+
+def get_group_points(db_group: models.Group):
+    points = 0
+    for a in db_group.activities:
+        if a.is_completed:
+            for c in a.challenges:
+                points += c.point_reward
+    return points
 
 
 # get a list of groups
@@ -209,8 +224,11 @@ def delete_achievement(db_session: Session, db_achievement: models.Achievement):
 
 
 # get all achievements a users completed
-def get_all_achievements(db_session: Session, user_id: int):
-    return get_user(db_session, user_id).completed_achievements
+def get_all_achievements(db_session: Session, user_id: str):
+    user = get_user(db_session, user_id)
+    if user is None:
+        return None
+    return user.completed_achievements
 
 
 # INVITATIONS
@@ -264,14 +282,17 @@ def create_activity(db_session: Session, activity_payload: schemas.ActivityPaylo
         group_id=activity_payload.group_id,
     )
     owner = get_user(db_session, activity_payload.owner_id)
-    owner.activities.append(db_activity)
+
+    if owner is not None:
+        owner.activities.append(db_activity)
     db_session.add(db_activity)
 
-    for c in activity_payload.challenges:
-        db_challenge = get_challenge(db_session, c.id)
-        if db_challenge is None:
-            continue
-        db_activity.challenges.append(db_challenge)
+    if activity_payload.challenges is not None:
+        for c in activity_payload.challenges:
+            db_challenge = get_challenge(db_session, c.id)
+            if db_challenge is None:
+                continue
+            db_activity.challenges.append(db_challenge)
 
     db_session.commit()
     db_session.refresh(db_activity)
@@ -308,7 +329,7 @@ def update_activity(
         update_data["is_completed"] = int(update_data["is_completed"])
 
     # special case, update includes challenge list
-    if "challenges" in update_data:
+    if activity_update.challenges is not None:
         for c in activity_update.challenges:
             db_challenge = get_challenge(db_session, c.id)
             if db_challenge is None:
@@ -331,13 +352,10 @@ def delete_activity(db_session: Session, db_activity: models.Activity):
 def complete_activity(
     db_session: Session, db_activity: models.Activity, db_group: models.Group
 ):
-    points = 0
     achievements = []
     for c in db_activity.challenges:
-        points += c.point_reward
         if c.achievement_match is not None:
             achievements.append(c.achievement_match)
-    db_group.points += points  # group gets the total points from the challenges
     for u in db_activity.participants:  # each participant gets their achievement(s)
         for a in achievements:
             u.completed_achievements.append(a)

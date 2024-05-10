@@ -1,5 +1,3 @@
-import os
-import sys
 import logging
 from typing import Annotated
 
@@ -417,7 +415,15 @@ def create_group(
 def read_group(
     current_user: DbUser, db_session: DbSession, requested_group: RequestedGroup
 ):
-    return requested_group
+    return schemas.Group(
+        group_name=requested_group.group_name,
+        description=requested_group.description,
+        is_private=requested_group.is_private,
+        owner_id=requested_group.owner_id,
+        id=requested_group.id,
+        points=crud.get_group_points(requested_group),
+    )
+
 
 
 @app.get("/groups", response_model=schemas.GroupList)
@@ -425,6 +431,8 @@ def read_groups(
     current_user: DbUser, db_session: DbSession, skip: int = 0, limit: int = 100
 ):
     groups = schemas.GroupList(data=crud.get_groups(db_session, skip=skip, limit=limit))
+    for g in groups.data:
+        g.points = crud.get_group_points(crud.get_group(db_session, g.id))
     return groups
 
 
@@ -686,6 +694,7 @@ def read_participants(
     limit: int = 100,
 ):
     validations.validate_user_in_group(current_user, current_user, requested_group)
+
     return schemas.UserList(
         data=crud.get_participants(db_session, requested_activity, skip, limit)
     )
@@ -737,8 +746,10 @@ def add_challenge_to_activity(
     requesteded_challenge: RequestedChallenge,
 ):
     validations.validate_user_in_group(current_user, current_user, requested_group)
-    validations.validate_user_owns_activity(current_user, requested_activity)
-    crud.add_challenge(db_session, requesteded_challenge, requested_activity)
+    validations.validate_owns_activity(current_user, requested_activity)
+    crud.add_challenge_to_activity(
+        db_session, requesteded_challenge, requested_activity
+    )
 
 
 # CHALLENGES
