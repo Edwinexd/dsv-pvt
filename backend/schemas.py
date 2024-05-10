@@ -83,6 +83,9 @@ class GroupBase(BaseModel):
     description: str
     is_private: bool
     owner_id: str
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    address: Optional[str] = None
 
 
 class GroupCreate(GroupBase):
@@ -106,6 +109,9 @@ class GroupUpdate(BaseModel):
     group_name: Optional[str] = None
     description: Optional[str] = None
     is_private: Optional[bool] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    address: Optional[str] = None
 
 
 # INVITES
@@ -160,6 +166,9 @@ class ActivityBase(BaseModel):
     scheduled_date: datetime
     difficulty_code: int
     challenges: Optional[List[Challenge]] = None
+    latitude: float
+    longitude: float
+    address: str
 
 
 class ActivityCreate(ActivityBase):
@@ -192,6 +201,9 @@ class ActivityUpdate(BaseModel):
     difficulty_code: Optional[int] = None
     is_completed: Optional[bool] = None
     challenges: Optional[List[Challenge]] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    address: Optional[str] = None
 
 
 # Sessions
