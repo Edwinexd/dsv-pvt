@@ -18,16 +18,9 @@ from database import engine, session_local
 from sessions import create_session, get_session, revoke_session
 from validations import validate_api_key
 
-# relative import
-DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(f"{os.path.dirname(DIR)}/authentication")
-import id_generator
-
 models.base.metadata.create_all(bind = engine)
 
 app = FastAPI()
-
-id_generator = id_generator.IdGenerator()
 
 def get_db_session():
     db_session = session_local()
@@ -105,14 +98,13 @@ RequestedChallenge = Annotated[models.Challenge, Depends(get_challenge)]
 @app.put("/users/{user_id}/profile/picture")
 def upload_pfp(current_user: DbUser, db_session: DbSession, requested_user: RequestedUser, image: UploadFile):
     validations.validate_id(current_user, requested_user.id)
-    id = id_generator.generate_id()
-    images.upload(dir=f"pfp/{id}.{image.filename.split(".")[1]}", image=image)
+    id = images.upload(image=image)
     db_profile = crud.get_profile(db_session, requested_user.id)
     crud.update_profile(db_session, db_profile, schemas.ProfileImageUpdate(image_id=str(id)))
 
-@app.get("/users/{user_id}/profile/picture")
-def download_pfp(current_user: DbUser, db_session: DbSession, requested_profile: RequestedProfile):
-    return requested_profile.image_id
+@app.delete("/users/{user_id}/profile/picture")
+def delete_pfp(current_user: DbUser, db_session: DbSession, requested_user: RequestedUser):
+    validations.validate_id(current_user, requested_user.id)
 
 #USER
 #login

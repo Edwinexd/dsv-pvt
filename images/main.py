@@ -55,10 +55,10 @@ async def upload_image(image: UploadFile, _: Annotated[None, Depends(validate_ap
     if image.size > MAX_FILE_SIZE:
         raise HTTPException(status_code=400, detail="Bad file size")    
 
-    id = id_generator.generate_id()
+    id = str(id_generator.generate_id())
 
     try:
-        s3_client.upload_fileobj(image.file, bucket_name, id, ExtraArgs={'ContentType': image.content_type})
+        s3_client.upload_fileobj(image.file, bucket_name, id, ExtraArgs={"ContentType": image.content_type})
         return {"image_id": id}
     except ClientError as e:
         raise HTTPException(status_code=500, detail=f"Something went wrong while uploading image: {e}")
@@ -75,14 +75,6 @@ def get_default_image() -> Response:
         status_code=404,
     )
 
-@app.get("/images/{image_id}")
-async def download_image(image_id: str):
-    try:
-        return get_image(image_id)
-    except ClientError as e:
-        if e.response['Error']['Code'] == "404":
-            return get_default_image()
-
 @lru_cache
 def get_image(image_id: str):
     b = BytesIO()
@@ -93,6 +85,14 @@ def get_image(image_id: str):
         content=b.read(),
         media_type=content_type,
     )
+
+@app.get("/images/{image_id}")
+async def download_image(image_id: str):
+    try:
+        return get_image(image_id)
+    except ClientError as e:
+        if e.response['Error']['Code'] == "404":
+            return get_default_image()
 
 @app.delete("/images/{image_id}")
 async def delete_image(image_id: str, _: Annotated[None, Depends(validate_api_key)]):
