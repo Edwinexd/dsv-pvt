@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/components/custom_divider.dart';
 import 'package:flutter_application/components/profile_avatar.dart';
-import 'package:flutter_application/list/age_data.dart';
+import 'package:flutter_application/age_data.dart';
 import 'package:flutter_application/cities.dart';
 import 'package:flutter_application/components/custom_dropdown.dart';
 import 'package:flutter_application/components/custom_text_field.dart';
