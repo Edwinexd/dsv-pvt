@@ -55,6 +55,7 @@ class ProfileCreate(ProfileBase):
     pass
 
 class Profile(ProfileBase):
+    image_id: str | None
     class Config:
         from_attributes = True
 

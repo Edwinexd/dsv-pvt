@@ -95,16 +95,21 @@ RequestedChallenge = Annotated[models.Challenge, Depends(get_challenge)]
 
 #IMAGES
 # profile pic
-@app.put("/users/{user_id}/profile/picture")
-def upload_pfp(current_user: DbUser, db_session: DbSession, requested_user: RequestedUser, image: UploadFile):
-    validations.validate_id(current_user, requested_user.id)
+@app.put("/users/{user_id}/profile/picture", status_code=204)
+def upload_pfp(current_user: DbUser, db_session: DbSession, requested_profile: RequestedProfile, image: UploadFile):
+    validations.validate_id(current_user, requested_profile.owner_id)
+    if requested_profile.image_id is not None:
+        images.delete(requested_profile.image_id)
     id = images.upload(image=image)
-    db_profile = crud.get_profile(db_session, requested_user.id)
-    crud.update_profile(db_session, db_profile, schemas.ProfileImageUpdate(image_id=str(id)))
+    crud.update_profile(db_session, requested_profile, schemas.ProfileImageUpdate(image_id=str(id)))
 
-@app.delete("/users/{user_id}/profile/picture")
-def delete_pfp(current_user: DbUser, db_session: DbSession, requested_user: RequestedUser):
-    validations.validate_id(current_user, requested_user.id)
+@app.delete("/users/{user_id}/profile/picture", status_code=204)
+def delete_pfp(current_user: DbUser, db_session: DbSession, requested_profile: RequestedProfile):
+    validations.validate_id(current_user, requested_profile.owner_id)
+    if requested_profile.image_id is None:
+        raise HTTPException(status_code=404, detail="Profile picture not found")
+    images.delete(requested_profile.image_id)
+    crud.update_profile(db_session, requested_profile, schemas.ProfileImageUpdate(image_id=None))
 
 #USER
 #login

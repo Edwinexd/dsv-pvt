@@ -15,13 +15,22 @@ def upload(image: UploadFile):
         },
         files={
             "image": (
-                image.file.name,
+                'foo.png',
                 image.file,
                 image.content_type
             )
         }
     )
-    image.file.close()
     if not response.ok:
         raise HTTPException(status_code=response.status_code, detail=response.json()["detail"])
     return response.json()["image_id"]
+
+def delete(image_id: str):
+    response = requests.delete(
+        url=f"{IMAGES_URL}/images/{image_id}",
+        headers={
+            "IMAGES-API-Key": IMAGES_API_KEY,
+        }
+    )
+    if not response.ok:
+        raise HTTPException(status_code=response.status_code, detail=response.json()["detail"])
