@@ -7,7 +7,6 @@ import 'package:flutter_application/views/group_creation_page.dart';
 import 'package:flutter_application/views/group_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
 class MyGroups extends StatefulWidget {
   MyGroups({super.key});
 
@@ -16,7 +15,6 @@ class MyGroups extends StatefulWidget {
 }
 
 class _MyGroupsState extends State<MyGroups> {
-  
   List<Group> myGroups = [];
 
   @override
@@ -58,6 +56,7 @@ class _MyGroupsState extends State<MyGroups> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 18),
                   Text(
                     'Groups',
                     style: GoogleFonts.poppins(
@@ -66,38 +65,62 @@ class _MyGroupsState extends State<MyGroups> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AllGroupsPage(refreshMyGroups: refreshMyGroups,),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.search),
-                    label: const Text('Search groups'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
+                  const SizedBox(height: 15),
+                  SizedBox(
+                    height: 30,
+                    width: 200,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AllGroupsPage(
+                              refreshMyGroups: refreshMyGroups,
+                            ),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.search),
+                      label: const Text('Search groups'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => GroupCreation(onGroupCreatedCallBacks: [refreshMyGroups]),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.add),
-                    label: const Text('Create a group'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
+                  const SizedBox(height: 15),
+                  SizedBox(
+                    height: 30,
+                    width: 200,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => GroupCreation(
+                                onGroupCreatedCallBacks: [refreshMyGroups]),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.add),
+                      label: const Text('Create a group'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                      ),
                     ),
                   ),
+                  const SizedBox(height: 15),
+                  SizedBox(
+                    height: 30,
+                    width: 200,
+                    child: ElevatedButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.insert_invitation),
+                      label: const Text('Invitations'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),
@@ -128,8 +151,7 @@ class _MyGroupsState extends State<MyGroups> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: ((context) => 
-                                GroupPage(group: group)),
+                              builder: ((context) => GroupPage(group: group)),
                             ),
                           );
                         },
