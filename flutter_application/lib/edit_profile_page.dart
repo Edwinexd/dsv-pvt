@@ -115,13 +115,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         flex: 1,
                         child: CustomDropdown<int>(
                           items: AgeData.ageList,
-                          selectedValue: age != null ? int.tryParse(age!) : null, 
+                          selectedValue:
+                              age != null ? int.tryParse(age!) : null,
                           onChanged: (newValue) {
                             setState(() {
-                              age = newValue
-                                  .toString();
-                              ageEntered =
-                                  true; 
+                              age = newValue.toString();
+                              ageEntered = true;
                             });
                           },
                           labelText: ageEntered ? null : 'Age',
@@ -145,7 +144,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ],
                   ),
                   SizedBox(height: 20),
-                  TextFormField(
+                  CustomTextField(
+                    labelText: bioEntered ? null : 'About Me',
                     onChanged: (text) {
                       setState(() {
                         bioEntered = text.isNotEmpty;
@@ -153,40 +153,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     },
                     maxLines: null,
                     minLines: 3,
-                    decoration: InputDecoration(
-                      labelText: bioEntered ? null : 'About Me',
-                      alignLabelWithHint: true,
-                      enabledBorder: const OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: Colors.transparent, width: 1.0),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey.shade400),
-                      ),
-                      fillColor: Colors.white,
-                      filled: true,
-                    ),
+                    filled: true,
                   ),
                   SizedBox(height: 20),
-                  TextFormField(
+                  CustomTextField(
+                    labelText: idEntered ? null : 'Runner ID(Optional)',
                     onChanged: (text) {
                       setState(() {
                         idEntered = text.isNotEmpty;
                       });
                     },
-                    decoration: InputDecoration(
-                      labelText: idEntered ? null : 'Runner ID(Optional)',
-                      alignLabelWithHint: true,
-                      enabledBorder: const OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: Colors.transparent, width: 1.0),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey.shade400),
-                      ),
-                      fillColor: Colors.white,
-                      filled: true,
-                    ),
                   ),
                   SizedBox(height: 20),
                   const Row(

@@ -30,6 +30,7 @@ class CustomTextField extends StatelessWidget {
       minLines: minLines,
       decoration: InputDecoration(
         labelText: labelText,
+        alignLabelWithHint: true,
         enabledBorder: const OutlineInputBorder(
           borderSide: BorderSide(color: Colors.transparent, width: 1.0),
         ),
