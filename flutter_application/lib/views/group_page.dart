@@ -1,28 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/activity_create.dart';
+import 'package:flutter_application/controllers/backend_service.dart';
+import 'package:flutter_application/models/group.dart';
+import 'package:flutter_application/models/user.dart';
 
 class GroupPage extends StatefulWidget {
-  final String groupName;
-  final bool isPrivate;
+  final Group group;
 
-  const GroupPage({super.key, required this.groupName, required this.isPrivate});
+  const GroupPage({super.key, required this.group});
 
   @override
   _GroupPageState createState() => _GroupPageState();
 }
 
 class _GroupPageState extends State<GroupPage> {
-  late List<String> allMembers;
-  late List<String> displayedMembers;
+  List<User> allMembers = [];
+  List<User> displayedMembers = [];
   TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    //List of members(just an example)
-    allMembers = List.generate(20, (index) => 'Member $index');
-    displayedMembers = List.from(allMembers);
+    fetchMembers().then((_) {
+      setState(() {
+      displayedMembers = allMembers;
+      }
+    );});
     //added listener to search text field
     searchController.addListener(_searchMembers);
+  }
+
+  Future<void> fetchMembers() async {
+    allMembers = await BackendService().getGroupMembers(widget.group.id);
   }
 
   @override
@@ -36,7 +45,7 @@ class _GroupPageState extends State<GroupPage> {
     String query = searchController.text.toLowerCase();
     setState(() {
       // TODO: Replace with fuzzy search
-      displayedMembers = allMembers.where((member) => member.toLowerCase().contains(query)).toList();
+      displayedMembers = allMembers.where((member) => member.userName.toLowerCase().contains(query)).toList();
     });
   }
 
@@ -46,7 +55,8 @@ class _GroupPageState extends State<GroupPage> {
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(250, 60, 71, 133),
         title: Text(
-          widget.groupName,
+          // widget.groupName,
+          widget.group.name,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
           ), 
@@ -59,7 +69,12 @@ class _GroupPageState extends State<GroupPage> {
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton.icon(
               onPressed: () {
-                //Will handle create activity button later
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ActivityCreatePage(groupId: widget.group.id,),
+                  ),
+                );
               },
               label: const Text('Create an activity'),
               icon: const Icon(Icons.run_circle_sharp),
@@ -99,12 +114,13 @@ class _GroupPageState extends State<GroupPage> {
             child: ListView.builder(
               itemCount: displayedMembers.length,
               itemBuilder: (context, index) {
+                User member = displayedMembers[index];
                 return ListTile(
                   leading: const CircleAvatar(
                     //will add user profile picture here
                     child: Icon(Icons.photo), //Placeholder for profile picture
                   ),
-                  title: Text(displayedMembers[index]),
+                  title: Text(member.userName),
                 );
               },
             ),
