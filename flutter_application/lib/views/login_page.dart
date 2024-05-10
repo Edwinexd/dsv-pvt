@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/components/custom_divider.dart';
 import 'package:flutter_application/components/my_button.dart';
 import 'package:flutter_application/components/my_textfield.dart';
 import 'package:flutter_application/components/square_tile.dart';
@@ -125,10 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: Divider(
-                          thickness: 0.5,
-                          color: Color.fromARGB(255, 16, 14, 99),
-                        ),
+                        child: CustomDivider(),
                       ),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10.0),
@@ -136,10 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                             style: TextStyle(color: Color.fromARGB(255, 16, 14, 99))),
                       ),
                       Expanded(
-                        child: Divider(
-                          thickness: 0.5,
-                          color: Color.fromARGB(255, 16, 14, 99),
-                        ),
+                        child: CustomDivider(),
                       ),
                     ],
                   ),
