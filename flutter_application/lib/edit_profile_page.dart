@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/list/age_data.dart';
 import 'package:flutter_application/list/cities.dart';
-import 'package:flutter_application/components/custom_dropDown.dart';
+import 'package:flutter_application/components/custom_dropdown.dart';
 import 'package:flutter_application/components/custom_text_field.dart';
 import 'package:flutter_application/components/interests_grid.dart';
 import 'package:flutter_application/components/my_button.dart';
