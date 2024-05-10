@@ -20,7 +20,7 @@ class CustomDropdown<T> extends StatelessWidget {
     return DropdownButtonFormField<T>(
       value: selectedValue,
       onChanged: onChanged,
-      style: TextStyle(color: Colors.black),  // Ensures the text in the dropdown field is black
+      style: TextStyle(color: Colors.black), 
       decoration: InputDecoration(
         labelText: labelText,
         enabledBorder: const OutlineInputBorder(
@@ -32,12 +32,12 @@ class CustomDropdown<T> extends StatelessWidget {
         fillColor: Colors.white,
         filled: true,
       ),
-      dropdownColor: Color.fromARGB(255, 255, 92, 0),  // Orange background for dropdown items
+      dropdownColor: Color.fromARGB(255, 255, 92, 0), 
       items: items.map((T value) {
         return DropdownMenuItem<T>(
           value: value,
           child: Text(value.toString(),
-            //style: TextStyle(color: Colors.white),  // White text only for dropdown items
+            //style: TextStyle(color: Colors.white),  
           ),
         );
       }).toList(),
