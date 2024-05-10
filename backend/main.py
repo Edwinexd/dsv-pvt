@@ -463,6 +463,9 @@ def create_activity(
         group_id=requested_group.id,
         owner_id=current_user.id,
         challenges=activity.challenges,
+        latitude=activity.latitude,
+        longitude=activity.longitude,
+        address=activity.address,
     )
     return crud.create_activity(db_session, activity_payload)
 
