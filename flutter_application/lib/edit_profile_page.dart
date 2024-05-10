@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application/List/cities.dart';
+import 'package:flutter_application/list/age_data.dart';
+import 'package:flutter_application/list/cities.dart';
+import 'package:flutter_application/components/custom_dropDown.dart';
+import 'package:flutter_application/components/custom_text_field.dart';
 import 'package:flutter_application/components/interests_grid.dart';
 import 'package:flutter_application/components/my_button.dart';
 import 'package:flutter_application/components/skill_level_slider.dart';
@@ -63,7 +66,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       Text('Username',
                           style: TextStyle(
                               fontSize: 24, fontWeight: FontWeight.bold)),
-                      
                       IconButton(
                         icon: Icon(Icons.edit,
                             color: Theme.of(context).primaryColor),
@@ -71,9 +73,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ),
                     ],
                   ),
-                  
                   SizedBox(height: 10),
-                  
                   Stack(
                     clipBehavior: Clip.none,
                     children: <Widget>[
@@ -108,75 +108,43 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ),
                     ],
                   ),
-                  
                   SizedBox(height: 30),
-                  
                   Row(
                     children: [
                       Expanded(
                         flex: 1,
-                        child: TextField(
-                          onChanged: (text) {
+                        child: CustomDropdown<int>(
+                          items: AgeData.ageList,
+                          selectedValue: age != null ? int.tryParse(age!) : null, 
+                          onChanged: (newValue) {
                             setState(() {
-                              ageEntered = text
-                                  .isNotEmpty; // Update state based on input
+                              age = newValue
+                                  .toString();
+                              ageEntered =
+                                  true; 
                             });
                           },
-                          decoration: InputDecoration(
-                            labelText: ageEntered ? null : 'Age',
-                            enabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Colors.transparent, width: 1.0),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.grey.shade400),
-                            ),
-                            fillColor: Colors.white,
-                            filled: true,
-                          ),
+                          labelText: ageEntered ? null : 'Age',
                         ),
                       ),
-                      
                       SizedBox(width: 10),
-                      
                       Expanded(
                         flex: 3,
-                        child: DropdownButtonFormField<String>(
-                          decoration: InputDecoration(
-                            labelText:
-                                selectedLocation == null ? 'Location' : null,
-                            enabledBorder: const OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Colors.transparent, width: 1.0),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.grey.shade400),
-                            ),
-                            fillColor: Colors.white,
-                            filled: true,
-                          ),
-                          value: selectedLocation,
-                          onChanged: (String? newValue) {
+                        child: CustomDropdown<String>(
+                          items: locations,
+                          selectedValue: selectedLocation,
+                          onChanged: (newValue) {
                             setState(() {
                               selectedLocation = newValue;
                             });
                           },
-                          items: locations
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
+                          labelText:
+                              selectedLocation == null ? 'Location' : null,
                         ),
                       ),
                     ],
                   ),
-                  
                   SizedBox(height: 20),
-                  
                   TextFormField(
                     onChanged: (text) {
                       setState(() {
@@ -199,9 +167,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       filled: true,
                     ),
                   ),
-                  
                   SizedBox(height: 20),
-                  
                   TextFormField(
                     onChanged: (text) {
                       setState(() {
@@ -222,9 +188,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       filled: true,
                     ),
                   ),
-                  
                   SizedBox(height: 20),
-                  
                   const Row(
                     children: [
                       Expanded(
