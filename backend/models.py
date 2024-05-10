@@ -116,7 +116,6 @@ class Group(base):
     group_name = Column(String)
     description = Column(String, nullable=True)
     is_private = Column(Integer)  # 1-true, 0-false
-    points = Column(Integer, default=0)
     image_id = Column(String, nullable=True, unique=True)
 
     owner_id = Column(String, ForeignKey("users.id"))
