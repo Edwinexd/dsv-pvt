@@ -6,6 +6,7 @@ import 'package:flutter_application/components/skill_level_slider.dart';
 import 'package:flutter_application/edit_profile_page.dart';
 import 'package:flutter_application/my_achievements.dart';
 import 'package:flutter_application/settings.dart';
+import 'package:intl/intl.dart';
 
 class ProfilePage extends StatelessWidget {
   final String username;
@@ -77,7 +78,7 @@ class ProfilePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(name, style: const TextStyle(fontSize: 20)),
-                Text('Joined: $joinedDate',
+                Text('Joined: ${DateFormat('EEEE dd MMMM y').format(joinedDate)}',
                     style: const TextStyle(fontSize: 16)),
                 const SizedBox(height: 10),
                 Container(
