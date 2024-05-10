@@ -18,7 +18,6 @@ class LoginPage extends StatefulWidget {
     required this.onToggleDarkMode,
   }) : super(key: key);
 
-
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
@@ -46,17 +45,17 @@ class _LoginPageState extends State<LoginPage> {
 
     await _backendService.login(email, password);
 
-    if (_backendService.token == null) {      
+    if (_backendService.token == null) {
       // TODO: Handle login failure
     }
 
     Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => MainPage(
-        darkModeEnabled: widget.darkModeEnabled, 
-        onToggleDarkMode: widget.onToggleDarkMode,
-      ))
-    );
+        context,
+        MaterialPageRoute(
+            builder: (context) => MainPage(
+                  darkModeEnabled: widget.darkModeEnabled,
+                  onToggleDarkMode: widget.onToggleDarkMode,
+                )));
   }
 
   @override
@@ -82,9 +81,12 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 50),
-                const Icon(Icons.person, size: 100, color: Color.fromARGB(255, 16, 14, 99)),
+                const Icon(Icons.person,
+                    size: 100, color: Color.fromARGB(255, 16, 14, 99)),
                 const SizedBox(height: 40),
-                const Text('Welcome!', style: TextStyle(color: Color.fromARGB(255, 16, 14, 99), fontSize: 16)),
+                const Text('Welcome!',
+                    style: TextStyle(
+                        color: Color.fromARGB(255, 16, 14, 99), fontSize: 16)),
                 const SizedBox(height: 25),
                 MyTextField(
                   controller: usernameController,
@@ -107,10 +109,13 @@ class _LoginPageState extends State<LoginPage> {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const ForgotPassword()), 
+                            MaterialPageRoute(
+                                builder: (context) => const ForgotPassword()),
                           );
                         },
-                        child: const Text('Forgot Password?', style: TextStyle(color: Color.fromARGB(255, 16, 14, 99))),
+                        child: const Text('Forgot Password?',
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 16, 14, 99))),
                       ),
                     ],
                   ),
@@ -131,7 +136,8 @@ class _LoginPageState extends State<LoginPage> {
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10.0),
                         child: Text('Or continue with',
-                            style: TextStyle(color: Color.fromARGB(255, 16, 14, 99))),
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 16, 14, 99))),
                       ),
                       Expanded(
                         child: CustomDivider(),
@@ -150,7 +156,9 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('Not a member?', style: TextStyle(color: Color.fromARGB(255, 16, 14, 99))),
+                    const Text('Not a member?',
+                        style:
+                            TextStyle(color: Color.fromARGB(255, 16, 14, 99))),
                     const SizedBox(width: 4),
                     GestureDetector(
                       onTap: () {
@@ -161,7 +169,8 @@ class _LoginPageState extends State<LoginPage> {
                       },
                       child: const Text(
                         'Register Now',
-                        style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: Colors.blue, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],

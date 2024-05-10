@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/components/custom_divider.dart';
+import 'package:flutter_application/components/profile_avatar.dart';
 import 'package:flutter_application/list/age_data.dart';
 import 'package:flutter_application/list/cities.dart';
 import 'package:flutter_application/components/custom_dropdown.dart';
@@ -78,35 +79,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   Stack(
                     clipBehavior: Clip.none,
                     children: <Widget>[
-                      CircleAvatar(
-                        radius: 70.0,
-                        backgroundImage: NetworkImage(imageUrl),
-                      ),
-                      Positioned(
-                        right: -10,
-                        top: 95,
-                        child: Container(
-                          height: 40,
-                          width: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.3),
-                                spreadRadius: 1,
-                                blurRadius: 3,
-                                offset: const Offset(0, 1),
-                              ),
-                            ],
-                          ),
-                          child: IconButton(
-                            icon: const Icon(Icons.camera_alt,
-                                color: Color.fromARGB(255, 255, 92, 00)),
-                            onPressed: () {},
-                          ),
-                        ),
-                      ),
+                      ProfileAvatar(
+                        imageUrl: imageUrl,
+                        icon: Icons.camera_alt,
+                        onPressed: () {
+                          // Implement camera functionality or another action
+                        },
+                      )
                     ],
                   ),
                   SizedBox(height: 30),
@@ -180,7 +159,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ),
                       Expanded(
                         child: CustomDivider(),
-                        ),
+                      ),
                     ],
                   ),
                   SizedBox(height: 5),

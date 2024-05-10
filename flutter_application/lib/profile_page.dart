@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/components/my_button.dart';
+import 'package:flutter_application/components/profile_avatar.dart';
 import 'package:flutter_application/components/skill_level_slider.dart';
 import 'package:flutter_application/edit_profile_page.dart';
 import 'package:flutter_application/my_achievements.dart';
@@ -64,36 +65,13 @@ class ProfilePage extends StatelessWidget {
                 Stack(
                   clipBehavior: Clip.none,
                   children: <Widget>[
-                    CircleAvatar(
-                      radius: 70.0,
-                      backgroundImage: NetworkImage(imageUrl),
-                    ),
-                    Positioned(
-                      right: -10,
-                      top: 95,
-                      child: Container(
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
-                              spreadRadius: 1,
-                              blurRadius: 3,
-                              offset: const Offset(0, 1),
-                            ),
-                          ],
-                        ),
-                        child: IconButton(
-                            icon: const Icon(Icons.edit,
-                                color: Color.fromARGB(255, 255, 92, 00)),
-                            onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => EditProfilePage()));
-                            }),
-                      ),
+                    ProfileAvatar(
+                      imageUrl: imageUrl,
+                      icon: Icons.edit,
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => EditProfilePage()));
+                      },
                     ),
                   ],
                 ),
