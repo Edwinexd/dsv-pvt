@@ -26,9 +26,9 @@ class _GroupPageState extends State<GroupPage> {
     super.initState();
     fetchMembers().then((_) {
       setState(() {
-      displayedMembers = allMembers;
+        displayedMembers = allMembers;
       }
-    );});
+      );});
     //added listener to search text field
     searchController.addListener(_searchMembers);
   }
@@ -51,6 +51,7 @@ class _GroupPageState extends State<GroupPage> {
       displayedMembers = allMembers.where((member) => member.userName.toLowerCase().contains(query)).toList();
     });
   }
+
   late List<String> activities = [
     'April 7th Kista at 17:00',
     'May 3rd Kungsträdgården at 13:00',
@@ -138,11 +139,12 @@ class _GroupPageState extends State<GroupPage> {
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: () {
-              /*Navigator.push(
+              Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => ActivityCreatePage(groupId: '1234')),
-              );*/
+                    builder: (context) => ActivityCreatePage(
+                        groupId: 1)), //Create an activity navigation
+              );
             },
             icon: const Icon(Icons.create),
             label: const Text('Create an activity'),
@@ -161,12 +163,20 @@ class _GroupPageState extends State<GroupPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => const GroupMembersPage(),                    
+                  builder: (context) => const GroupMembersPage(),
                 ),
               );
             },
             icon: const Icon(Icons.group),
             label: const Text('Members'),
+          ),
+          SizedBox(height: 16),
+          ElevatedButton.icon(
+            onPressed: () {
+              //Will handle leaving the group
+            },
+            icon: const Icon(Icons.exit_to_app),
+            label: const Text('Leave the group'),
           ),
         ],
       ),

@@ -67,9 +67,9 @@ class _MyGroupsState extends State<MyGroups> {
                   ),
                   const SizedBox(height: 15),
                   SizedBox(
-                    height: 30,
-                    width: 200,
-                    child: ElevatedButton.icon(
+                    height: 40,
+                    width: 250,
+                    child: ElevatedButton(
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -80,44 +80,60 @@ class _MyGroupsState extends State<MyGroups> {
                           ),
                         );
                       },
-                      icon: const Icon(Icons.search),
-                      label: const Text('Search groups'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Search groups'),
+                          Icon(Icons.search),
+                        ],
                       ),
                     ),
                   ),
                   const SizedBox(height: 15),
                   SizedBox(
-                    height: 30,
-                    width: 200,
-                    child: ElevatedButton.icon(
+                    height: 40,
+                    width: 250,
+                    child: ElevatedButton(
                       onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => GroupCreation(
-                                onGroupCreatedCallBacks: [refreshMyGroups]),
+                              onGroupCreatedCallBacks: [refreshMyGroups],
+                            ),
                           ),
                         );
                       },
-                      icon: const Icon(Icons.add),
-                      label: const Text('Create a group'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Create a group'),
+                          Icon(Icons.add),
+                        ],
                       ),
                     ),
                   ),
                   const SizedBox(height: 15),
                   SizedBox(
-                    height: 30,
-                    width: 200,
-                    child: ElevatedButton.icon(
+                    height: 40,
+                    width: 250,
+                    child: ElevatedButton(
                       onPressed: () {},
-                      icon: const Icon(Icons.insert_invitation),
-                      label: const Text('Invitations'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Invitations'),
+                          Icon(Icons.insert_invitation),
+                        ],
                       ),
                     ),
                   )
@@ -127,26 +143,34 @@ class _MyGroupsState extends State<MyGroups> {
             const Padding(
               padding: EdgeInsets.only(left: 16.0, top: 12.0),
               child: Text(
-                "My Groups",
+                'My Groups',
                 style: TextStyle(
-                  fontSize: 20.0,
-                ),
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                )
               ),
             ),
+            const SizedBox(height: 18),
             Expanded(
               child: ListView.builder(
                 itemCount: myGroups.length,
                 itemBuilder: (context, index) {
                   final group = myGroups[index];
                   return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    padding: const EdgeInsets.symmetric(vertical: 6.0),
                     child: Container(
                       decoration: BoxDecoration(
                         color: const Color.fromARGB(255, 254, 192, 173),
-                        borderRadius: BorderRadius.circular(12.0),
+                        borderRadius: BorderRadius.circular(18.0),
                       ),
                       child: ListTile(
                         title: Text(group.name),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.group),
+                          ],
+                        ),
                         onTap: () {
                           Navigator.push(
                             context,
