@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/components/custom_divider.dart';
 import 'package:flutter_application/list/age_data.dart';
 import 'package:flutter_application/list/cities.dart';
 import 'package:flutter_application/components/custom_dropdown.dart';
@@ -168,10 +169,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   const Row(
                     children: [
                       Expanded(
-                        child: Divider(
-                          thickness: 0.5,
-                          color: Color.fromARGB(255, 16, 14, 99),
-                        ),
+                        child: CustomDivider(),
                       ),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10.0),
@@ -181,11 +179,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 fontSize: 16)),
                       ),
                       Expanded(
-                        child: Divider(
-                          thickness: 0.5,
-                          color: Color.fromARGB(255, 16, 14, 99),
+                        child: CustomDivider(),
                         ),
-                      ),
                     ],
                   ),
                   SizedBox(height: 5),
@@ -201,10 +196,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   const Row(
                     children: [
                       Expanded(
-                        child: Divider(
-                          thickness: 0.5,
-                          color: Color.fromARGB(255, 16, 14, 99),
-                        ),
+                        child: CustomDivider(),
                       ),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10.0),
@@ -214,10 +206,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 fontSize: 16)),
                       ),
                       Expanded(
-                        child: Divider(
-                          thickness: 0.5,
-                          color: Color.fromARGB(255, 16, 14, 99),
-                        ),
+                        child: CustomDivider(),
                       ),
                     ],
                   ),
