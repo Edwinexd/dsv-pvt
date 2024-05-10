@@ -16,11 +16,7 @@ class MyGroups extends StatefulWidget {
 }
 
 class _MyGroupsState extends State<MyGroups> {
-  // final List<String> myGroups = [
-  //   "Group 1",
-  //   "Group 2",
-  //   "Group 3",
-  // ];
+  
   List<Group> myGroups = [];
 
   @override
