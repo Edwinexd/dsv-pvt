@@ -8,6 +8,8 @@ import boto3
 from botocore.config import Config
 from botocore.exceptions import ClientError
 from id_generator import IdGenerator
+from io import BytesIO
+from functools import lru_cache
 
 load_dotenv()
 
@@ -45,9 +47,6 @@ def validate_api_key(key: str = Header(alias = "IMAGES-API-Key")):
     if key != api_key_self:
         raise HTTPException(status_code=403, detail="Invalid API-KEY")
 
-# TODO: better error handling for both of these
-# TODO: caching with functools (?)
-
 @app.post("/images")
 async def upload_image(image: UploadFile, _: Annotated[None, Depends(validate_api_key)]):
     if image.content_type not in ALLOWED_FILE_TYPES:
@@ -56,7 +55,6 @@ async def upload_image(image: UploadFile, _: Annotated[None, Depends(validate_ap
     if image.size > MAX_FILE_SIZE:
         raise HTTPException(status_code=400, detail="Bad file size")    
 
-    #TODO: id gen
     id = id_generator.generate_id()
 
     try:
@@ -65,36 +63,42 @@ async def upload_image(image: UploadFile, _: Annotated[None, Depends(validate_ap
     except ClientError as e:
         raise HTTPException(status_code=500, detail=f"Something went wrong while uploading image: {e}")
 
-def get_default_image() -> FileResponse:
-    f = NamedTemporaryFile(delete=False)
-    s3_resource.Bucket(bucket_name).download_file("default404.jpg", f.name)
-    return FileResponse(
-        path=f.name,
-        filename=f.name,
-        media_type="image/jpeg",
+@lru_cache
+def get_default_image() -> Response:
+    b = BytesIO()
+    s3_client.download_fileobj(bucket_name, "default404.jpg", b)
+    content_type = s3_client.head_object(Bucket=bucket_name, Key="default404.jpg")["ContentType"]
+    b.seek(0)
+    return Response(
+        content=b.read(),
+        media_type=content_type,
+        status_code=404,
     )
 
-@app.get("/download")
-async def download_image(dir: str):
+@app.get("/images/{image_id}")
+async def download_image(image_id: str):
     try:
-        f = NamedTemporaryFile(delete=False)
-        s3_resource.Bucket(bucket_name).download_file(dir, f.name)
-        return FileResponse(
-            path=f.name,
-            filename=f.name,
-            media_type=f"image/{dir.split('.')[1]}",
-        )
+        return get_image(image_id)
     except ClientError as e:
         if e.response['Error']['Code'] == "404":
             return get_default_image()
-    #finally:
-    #    os.remove(f.name)
 
-@app.delete("/delete")
-async def delete_image(file_name: str, _: Annotated[None, Depends(validate_api_key)]):
+@lru_cache
+def get_image(image_id: str):
+    b = BytesIO()
+    s3_client.download_fileobj(bucket_name, image_id, b)
+    content_type = s3_client.head_object(Bucket=bucket_name, Key=image_id)["ContentType"]
+    b.seek(0)
+    return Response(
+        content=b.read(),
+        media_type=content_type,
+    )
+
+@app.delete("/images/{image_id}")
+async def delete_image(image_id: str, _: Annotated[None, Depends(validate_api_key)]):
     objects = [
         {
-            'Key': file_name
+            'Key': image_id
         }
     ]
     try:
