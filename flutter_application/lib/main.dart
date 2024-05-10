@@ -1,5 +1,7 @@
 import 'package:flutter_application/activity_create.dart';
 import 'package:flutter_application/bars.dart';
+import 'package:flutter_application/controllers/backend_service.dart';
+import 'package:flutter_application/launch_injector.dart';
 import 'package:flutter_application/my_achievements.dart';
 import 'package:flutter_application/settings.dart';
 import 'package:flutter_application/views/my_groups.dart';
@@ -35,10 +37,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Lace up & lead the way',
-      home: MainPage(
-        darkModeEnabled: _darkModeEnabled,
-        onToggleDarkMode: _toggleDarkMode,
-      ),
+      home: LaunchInjector(),
       debugShowCheckedModeBanner: false,
       theme: _darkModeEnabled
           ? ThemeData.dark().copyWith(
