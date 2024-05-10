@@ -35,8 +35,7 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
 
   Future<void> _saveProfile() async {
     if (_formKey.currentState!.validate()) {
-      // TODO Use backendService.getCurrentUser() to get the current user
-      final user = await _backendService.fetchMe();
+      final user = await _backendService.getMe();
       // TODO: Frontend pending change of fields
       await _backendService.createProfile(user.id, "description", 18, _interestsController.text, _skillLevel, false);
       ScaffoldMessenger.of(context).showSnackBar(
