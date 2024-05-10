@@ -97,12 +97,13 @@ class MyDrawer extends StatelessWidget {
   }
 
   void goToGroupPage(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: ((context) => const AllGroupsPage()),
-      ),
-    );
+    // OBS! Removed this because refactored AllGroupsPage()
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: ((context) => const AllGroupsPage()),
+    //   ),
+    // );
   }
   //Setting and signout will also be here
 }
