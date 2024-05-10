@@ -23,14 +23,16 @@ class _MidnatsloppetActivityState extends State<MidnatsloppetActivity> {
         child: ListView.builder(
           itemCount: selectedActivities.length,
           itemBuilder: (context, index) {
-            return CheckboxListTile(
+            return ListTile(
               title: Text('Activity ${index + 1}'),
-              value: selectedActivities[index],
-              onChanged: (bool? value) {
-                setState(() {
-                  selectedActivities[index] = value!;
-                });
-              },
+              trailing: ElevatedButton(
+                child: Text(selectedActivities[index] ? 'Leave' : 'Join'),
+                onPressed: () {
+                  setState(() {
+                    selectedActivities[index] = !selectedActivities[index];
+                  });
+                },
+              ),
             );
           },
         ),

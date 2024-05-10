@@ -1,15 +1,13 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter_application/LeaderboardPage.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/challenges_page.dart';
 import 'package:flutter_application/midnattsloppet_activity_page.dart';
-import 'package:flutter_application/views/leaderboard.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
 class HomePage extends StatelessWidget {
-
-   // Temporary sample data for leaderboard entries
+  // Temporary sample data for leaderboard entries
   final List<LeaderboardEntry> _leaderboardEntries = [
     LeaderboardEntry('Player 1', 30, 2),
     LeaderboardEntry('Player 2', 90, 3),
@@ -29,13 +27,15 @@ class HomePage extends StatelessWidget {
                 child: Column(
                   children: [
                     CountdownWidget(),
-                    SignupButton(),                
+                    SignupButton(),
                   ],
                 ),
               ),
               ActivityButton(),
               ChallengesButton(),
-              LeaderboardStat(),
+              LeaderboardStat(
+                leaderboardEntries: _leaderboardEntries,
+              ),
             ],
           ),
         ),
@@ -130,7 +130,8 @@ class ActivityButton extends StatelessWidget {
       padding: const EdgeInsets.only(top: 40.0),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          foregroundColor: Color(0xFF8134CE), backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+          foregroundColor: Color(0xFF8134CE),
+          backgroundColor: const Color.fromARGB(255, 255, 255, 255),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -160,7 +161,6 @@ class ActivityButton extends StatelessWidget {
   }
 }
 
-
 class ChallengesButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -168,7 +168,8 @@ class ChallengesButton extends StatelessWidget {
       padding: const EdgeInsets.only(top: 30.0, bottom: 50),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          foregroundColor: Color(0xFF8134CE), backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+          foregroundColor: Color(0xFF8134CE),
+          backgroundColor: const Color.fromARGB(255, 255, 255, 255),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -219,491 +220,154 @@ class ChallengesButton extends StatelessWidget {
   }
 }
 
+class LeaderboardEntry {
+  final String name;
+  final int points;
+  final int position;
+
+  LeaderboardEntry(this.name, this.points, this.position);
+}
+
 class LeaderboardStat extends StatelessWidget {
+  final List<LeaderboardEntry> leaderboardEntries;
+
+  LeaderboardStat({required this.leaderboardEntries});
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          width: 379,
-          height: 356,
-          child: Stack(
-            children: [
-              Positioned(
-                left: 0,
-                top: 0,
-                child: Container(
-                  width: 379,
-                  height: 356,
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        left: 0,
-                        top: 0,
-                        child: Container(
-                          width: 379,
-                          height: 356,
-                          child: Stack(
-                            children: [
-                              Positioned(
-                                left: 63.65,
-                                top: 17,
-                                child: SizedBox(
-                                  width: 315.35,
-                                  child: Text(
-                                    'Leaderboard',
-                                    style: TextStyle(
-                                      color: Color(0xFF8134CE),
-                                      fontSize: 32,
-                                      fontFamily: 'Inter',
-                                      fontWeight: FontWeight.w700,
-                                      height: 0.04,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                left: 217.58,
-                                top: 181.71,
-                                child: Container(
-                                  width: 97.77,
-                                  height: 147.29,
-                                  child: Stack(
-                                    children: [
-                                      Positioned(
-                                        left: 0,
-                                        top: 0,
-                                        child: Container(
-                                          width: 97.77,
-                                          height: 147.29,
-                                          child: Stack(
-                                            children: [
-                                              Positioned(
-                                                left: 0,
-                                                top: 13.09,
-                                                child: Container(
-                                                  width: 97.77,
-                                                  height: 134.20,
-                                                  decoration: BoxDecoration(color: Color(0xFF9087E5)),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        left: 30.08,
-                                        top: 13.09,
-                                        child: SizedBox(
-                                          width: 36.66,
-                                          height: 68.74,
-                                          child: Text(
-                                            '3',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 60,
-                                              fontFamily: 'Graphik',
-                                              fontWeight: FontWeight.w600,
-                                              height: 0.02,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                left: 222.28,
-                                top: 118.13,
-                                child: Container(
-                                  width: 87.43,
-                                  height: 59.43,
-                                  child: Stack(
-                                    children: [
-                                      Positioned(
-                                        left: 7.52,
-                                        top: 25.43,
-                                        child: Container(
-                                          width: 55,
-                                          height: 34,
-                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                          decoration: ShapeDecoration(
-                                            color: Color(0xFF9087E5),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                '500p',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 12,
-                                                  fontFamily: 'Rubik',
-                                                  fontWeight: FontWeight.w500,
-                                                  height: 0.12,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        left: 0,
-                                        top: 0,
-                                        child: SizedBox(
-                                          width: 87.43,
-                                          height: 21.80,
-                                          child: Text(
-                                            'Täby',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16,
-                                              fontFamily: 'Rubik',
-                                              fontWeight: FontWeight.w500,
-                                              height: 0.09,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        left: 8.68,
-                        top: 87.76,
-                        child: Container(
-                          width: 112.83,
-                          height: 228.37,
-                          child: Stack(
-                            children: [
-                              Positioned(
-                                left: 7.72,
-                                top: 64.88,
-                                child: Container(
-                                  width: 97.77,
-                                  height: 163.49,
-                                  child: Stack(
-                                    children: [
-                                      Positioned(
-                                        left: 0,
-                                        top: 0,
-                                        child: Container(
-                                          width: 97.77,
-                                          height: 163.49,
-                                          child: Stack(
-                                            children: [
-                                              Positioned(
-                                                left: -0,
-                                                top: 14.53,
-                                                child: Container(
-                                                  width: 97.77,
-                                                  height: 148.96,
-                                                  decoration: BoxDecoration(color: Color(0xFF9087E5)),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        left: 26.32,
-                                        top: 14.53,
-                                        child: SizedBox(
-                                          width: 45.13,
-                                          height: 101.73,
-                                          child: Text(
-                                            '2',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 80,
-                                              fontFamily: 'Graphik',
-                                              fontWeight: FontWeight.w600,
-                                              height: 0.02,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                left: 0,
-                                top: 0,
-                                child: Container(
-                                  width: 112.83,
-                                  height: 60.74,
-                                  child: Stack(
-                                    children: [
-                                      Positioned(
-                                        left: 0,
-                                        top: 0,
-                                        child: SizedBox(
-                                          width: 112.83,
-                                          height: 27.76,
-                                          child: Text(
-                                            'Midnattsloppet',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 14,
-                                              fontFamily: 'Rubik',
-                                              fontWeight: FontWeight.w500,
-                                              height: 0.11,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        left: 21.82,
-                                        top: 26.74,
-                                        child: Container(
-                                          width: 55,
-                                          height: 34,
-                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                          decoration: ShapeDecoration(
-                                            color: Color(0xFF9087E5),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                '890p',
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 12,
-                                                  fontFamily: 'Rubik',
-                                                  fontWeight: FontWeight.w500,
-                                                  height: 0.12,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        left: 106.08,
-                        top: 60,
-                        child: Container(
-                          width: 119.58,
-                          height: 262.30,
-                          child: Stack(
-                            children: [
-                              Positioned(
-                                left: 8.08,
-                                top: 63.58,
-                                child: Container(
-                                  width: 103.41,
-                                  height: 198.72,
-                                  child: Stack(
-                                    children: [
-                                      Positioned(
-                                        left: 0,
-                                        top: 0,
-                                        child: Container(
-                                          width: 103.41,
-                                          height: 198.72,
-                                          child: Stack(
-                                            children: [
-                                              Positioned(
-                                                left: -0,
-                                                top: 12.14,
-                                                child: Container(
-                                                  width: 103.41,
-                                                  height: 186.58,
-                                                  decoration: BoxDecoration(
-                                                    gradient: LinearGradient(
-                                                      begin: Alignment(0.00, -1.00),
-                                                      end: Alignment(0, 1),
-                                                      colors: [Color(0xFF9087E5), Color(0xFFCDC9F3)],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        left: 31.02,
-                                        top: 12.14,
-                                        child: SizedBox(
-                                          width: 41.37,
-                                          height: 106.19,
-                                          child: Text(
-                                            '1',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 100,
-                                              fontFamily: 'Graphik',
-                                              fontWeight: FontWeight.w600,
-                                              height: 0.01,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                left: 0,
-                                top: 0,
-                                child: Container(
-                                  width: 119.58,
-                                  height: 59.43,
-                                  child: Stack(
-                                    children: [
-                                      Positioned(
-                                        left: 0,
-                                        top: 0,
-                                        child: SizedBox(
-                                          width: 119.58,
-                                          height: 19.15,
-                                          child: Text(
-                                            ' Kista runners',
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16,
-                                              fontFamily: 'Rubik',
-                                              fontWeight: FontWeight.w500,
-                                              height: 0.09,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        left: 23.13,
-                                        top: 25.43,
-                                        child: Container(
-                                          width: 61,
-                                          height: 34,
-                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                          decoration: ShapeDecoration(
-                                            color: Color(0xFF9087E5),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                '1000p',
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 12,
-                                                  fontFamily: 'Rubik',
-                                                  fontWeight: FontWeight.w500,
-                                                  height: 0.12,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 11.57,
-                top: 274,
-                child: Container(
-                  width: 303.78,
-                  height: 72,
-                  decoration: ShapeDecoration(
-                    color: Colors.white,
+    leaderboardEntries.sort((a, b) => b.points.compareTo(a.points));
+
+    // Rearrange the entries
+    if (leaderboardEntries.length >= 3) {
+      var temp = leaderboardEntries[1];
+      leaderboardEntries[1] = leaderboardEntries[0];
+      leaderboardEntries[0] = leaderboardEntries[2];
+      leaderboardEntries[2] = temp;
+    }
+
+    return Container(
+      width: 327,
+      height: 370,
+      padding: const EdgeInsets.all(10),
+      child: Stack(
+        children: [
+          Positioned(
+            bottom: -20, // Moved down to the bottom
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Container(
+                margin: EdgeInsets.all(
+                    20), // Added more white space around the button
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Color(0xFFF344F7), // text color
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 90, vertical: 15), // increased size
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                      // added border
+                      borderRadius: BorderRadius.circular(5), // added radius
+                      side: const BorderSide(
+                          color: Colors.white, width: 30), // white border
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => LeaderboardPage(
+                                leaderboardEntries: leaderboardEntries,
+                              )),
+                    );
+                  },
+                  child: const Text(
+                    'More',
+                    style: TextStyle(
+                      color: Colors.white,
                     ),
                   ),
                 ),
               ),
-              Positioned(
-                left: 42.43,
-                top: 289,
-                child: Container(
-                  width: 254.60,
-                  height: 43,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-                  clipBehavior: Clip.antiAlias,
-                  decoration: ShapeDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment(0.70, 0.71),
-                      end: Alignment(-0.7, -0.71),
-                      colors: [Color(0xFF9B3FBF), Color(0xFFF243F6)],
+            ),
+          ),
+          const Positioned(
+            top: -10,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Text(
+                'Leaderboard',
+                style: TextStyle(
+                  color: Color(0xFF8134CE),
+                  fontSize: 30, 
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          ...leaderboardEntries.asMap().entries.map((entry) {
+            return Positioned(
+              bottom: 50, // Adjust this value as needed
+              left: (entry.key * 100).toDouble(), // Adjust this value as needed
+              child: Column(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(bottom: 5),
+                    decoration: BoxDecoration(
+                      color: Color(0xFF9087E5), // Changed background color
+                      borderRadius: BorderRadius.circular(9), // Added radius
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        'More',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
+                    child: Padding(
+                      padding: EdgeInsets.all(5),
+                      child: Text(
+                        entry.value.name,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,
-                          fontFamily: 'Gothic A1',
-                          fontWeight: FontWeight.w500,
-                          height: 0.09,
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                  Container(
+                    width: 100,
+                    height: entry.value.points *
+                        2, // Adjust this multiplier as needed
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Color(0xFF9087E5), // starting color
+                          Color(0xFFCDC9F3), // ending color
+                        ],
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(
+                        top: 5), // Added space between points and column
+                    decoration: BoxDecoration(
+                      color: Color(0xFF9087E5), // Changed background color
+                      borderRadius: BorderRadius.circular(9), // Added radius
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(5),
+                      child: Text(
+                        '${entry.value.points} points',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-      ],
+            );
+          }).toList(),
+        ],
+      ),
     );
   }
 }
-
