@@ -1,21 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/activity_create.dart';
+import 'package:flutter_application/controllers/backend_service.dart';
+import 'package:flutter_application/models/group.dart';
+import 'package:flutter_application/models/user.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/views/group_members.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class GroupPage extends StatefulWidget {
-  final String groupName;
-  final bool isPrivate;
+  final Group group;
 
-  const GroupPage(
-      {super.key, required this.groupName, required this.isPrivate});
+  const GroupPage({super.key, required this.group});
 
   @override
   _GroupPageState createState() => _GroupPageState();
 }
 
 class _GroupPageState extends State<GroupPage> {
+  List<User> allMembers = [];
+  List<User> displayedMembers = [];
+  TextEditingController searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMembers().then((_) {
+      setState(() {
+      displayedMembers = allMembers;
+      }
+    );});
+    //added listener to search text field
+    searchController.addListener(_searchMembers);
+  }
+
+  Future<void> fetchMembers() async {
+    allMembers = await BackendService().getGroupMembers(widget.group.id);
+  }
+
+  @override
+  void dispose() {
+    //cleans up the controller when the widget is disposed
+    searchController.dispose();
+    super.dispose();
+  }
+
+  void _searchMembers() {
+    String query = searchController.text.toLowerCase();
+    setState(() {
+      // TODO: Replace with fuzzy search
+      displayedMembers = allMembers.where((member) => member.userName.toLowerCase().contains(query)).toList();
+    });
+  }
   late List<String> activities = [
     'April 7th Kista at 17:00',
     'May 3rd Kungsträdgården at 13:00',
@@ -49,7 +84,7 @@ class _GroupPageState extends State<GroupPage> {
             ),
             child: Center(
               child: Text(
-                widget.groupName,
+                widget.group.name,
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -103,11 +138,11 @@ class _GroupPageState extends State<GroupPage> {
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: () {
-              Navigator.push(
+              /*Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => ActivityCreatePage(groupId: '1234')),
-              );
+              );*/
             },
             icon: const Icon(Icons.create),
             label: const Text('Create an activity'),

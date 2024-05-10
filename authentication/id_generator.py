@@ -1,5 +1,6 @@
 import datetime
 
+
 class IdGenerator:
     last_issued = 0
 
