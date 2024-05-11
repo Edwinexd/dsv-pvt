@@ -147,7 +147,7 @@ class ChallengeCreate(ChallengeBase):
 
 class Challenge(ChallengeBase):
     id: int
-    image_id: str | None
+    image_id: Optional[str]
 
     class Config:
         from_attributes = True
