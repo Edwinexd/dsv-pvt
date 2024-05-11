@@ -232,7 +232,7 @@ class AchievementCreate(AchievementBase):
 
 class Achievement(AchievementBase):
     id: int
-    image_id: str | None
+    image_id: Optional[str]
 
     class Config:
         from_attributes = True
