@@ -2,17 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/user.dart';
-//member invites?
-
+import 'map_screen.dart';
 
 class GroupCreation extends StatefulWidget {
   final List<Function> onGroupCreatedCallBacks;
-  
-  const GroupCreation({
-    super.key, 
-    required this.onGroupCreatedCallBacks
+
+  const GroupCreation({super.key, 
+  required this.onGroupCreatedCallBacks
   });
-  
+
   @override
   GroupCreationState createState() => GroupCreationState();
 }
@@ -23,7 +21,7 @@ class GroupCreationState extends State<GroupCreation> {
   final _descriptionController = TextEditingController();
   bool _isPublic = false;
   int _memberLimit = 10; //Default member limit
-  int _skillLevel = 0; 
+  int _skillLevel = 0;
   bool _isGroupCreated = false;
   String _errorMessage = '';
 
@@ -53,21 +51,33 @@ class GroupCreationState extends State<GroupCreation> {
                 decoration: const InputDecoration(labelText: 'Group Name'),
               ),
               const SizedBox(height: 16.0),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _locationController,
-                      decoration: InputDecoration(
-                        labelText: 'Location',
-                        suffixIcon: Icon(Icons.location_on),
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MapScreen(
+                        onLocationSelected: (location) {
+                          setState(() {
+                            _locationController.text = location;
+                          });
+                        },
                       ),
                     ),
+                  );
+                },
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    controller: _locationController,
+                    decoration: const InputDecoration(
+                      labelText: 'Location',
+                      suffixIcon: Icon(Icons.location_on),
+                    ),
                   ),
-                ],
+                ),
               ),
               const SizedBox(height: 16.0),
-              Text(
+              const Text(
                 'Skill Level:',
                 style: TextStyle(fontSize: 16),
               ),
@@ -85,13 +95,13 @@ class GroupCreationState extends State<GroupCreation> {
               Center(
                 child: Text(
                   skillLevels[_skillLevel],
-                  style: TextStyle(fontSize: 12),
+                  style: const TextStyle(fontSize: 12),
                 ),
               ),
               const SizedBox(height: 16.0),
               Row(
                 children: <Widget>[
-                  Text(
+                  const Text(
                     'Public',
                     style: TextStyle(fontSize: 12.0),
                   ),
@@ -103,12 +113,12 @@ class GroupCreationState extends State<GroupCreation> {
                       });
                     },
                   ),
-                  Text(
+                  const Text(
                     'Private',
                     style: TextStyle(fontSize: 12.0),
                   ),
                   const SizedBox(width: 16.0),
-                  Text(
+                  const Text(
                     'Member Limit:',
                     style: TextStyle(fontSize: 12.0),
                   ),
@@ -157,8 +167,6 @@ class GroupCreationState extends State<GroupCreation> {
     );
   }
 
-
-
   void createGroup() async {
     String name = _nameController.text.trim();
     String description = _descriptionController.text.trim();
@@ -184,6 +192,5 @@ class GroupCreationState extends State<GroupCreation> {
     setState(() {
       _isGroupCreated = true;
     });
-
   }
 }
