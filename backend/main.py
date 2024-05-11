@@ -446,7 +446,7 @@ def read_group(
         owner_id=requested_group.owner_id,
         id=requested_group.id,
         points=crud.get_group_points(requested_group),
-        image_id = reqested_group.image_id,
+        image_id=reqested_group.image_id,
     )
 
 
