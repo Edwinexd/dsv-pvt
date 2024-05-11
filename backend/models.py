@@ -112,6 +112,7 @@ class Profile(base):
     interests = Column(String, nullable=True)
     skill_level = Column(Integer)  # will be mapped to a running pace in client
     is_private = Column(Integer)  # 1-true, 0-false
+    image_id = Column(String, nullable=True)
 
     owner_id = Column(String, ForeignKey("users.id"), primary_key=True)
     owner = relationship("User", back_populates="profile")
@@ -124,6 +125,7 @@ class Group(base):
     group_name = Column(String)
     description = Column(String, nullable=True)
     is_private = Column(Integer)  # 1-true, 0-false
+    image_id = Column(String, nullable=True)
     latitude = Column(Double, nullable=True)
     longitude = Column(Double, nullable=True)
     address = Column(String, nullable=True)
@@ -152,6 +154,7 @@ class Activity(base):
     scheduled_date = Column(DateTime(timezone=True))
     difficulty_code = Column(Integer)
     is_completed = Column(Integer, default=0)
+    image_id = Column(String, nullable=True)
     latitude = Column(Double)
     longitude = Column(Double)
     address = Column(String)
@@ -186,6 +189,7 @@ class Challenge(base):
     difficulty_code = Column(Integer)
     expiration_date = Column(DateTime(timezone=True), nullable=True)
     point_reward = Column(Integer)
+    image_id = Column(String, nullable=True)
 
     completed_by = relationship(
         "User", secondary=challenge_completions, back_populates="completed_challenges"
@@ -211,6 +215,7 @@ class Achievement(base):
     achievement_name = Column(String)
     description = Column(String)
     requirement = Column(Integer)
+    image_id = Column(String, nullable=True)
 
     # Go to a challenge
     challenges = relationship("Challenge", back_populates="achievement_match")

@@ -65,6 +65,8 @@ class ProfileCreate(ProfileBase):
 
 
 class Profile(ProfileBase):
+    image_id: Optional[str]
+
     class Config:
         from_attributes = True
 
@@ -75,6 +77,10 @@ class ProfileUpdate(BaseModel):
     interests: Optional[str] = None
     skill_level: Optional[int] = None
     is_private: Optional[bool] = None
+
+
+class ProfileImageUpdate(ProfileUpdate):
+    image_id: Optional[str] = None
 
 
 # GROUP
@@ -96,6 +102,7 @@ class GroupCreate(GroupBase):
 class Group(GroupBase):
     id: int
     points: int = 0
+    image_id: Optional[str]
 
     class Config:
         from_attributes = True
@@ -112,6 +119,10 @@ class GroupUpdate(BaseModel):
     latitude: Optional[float] = None
     longitude: Optional[float] = None
     address: Optional[str] = None
+
+
+class GroupImageUpdate(GroupUpdate):
+    image_id: Optional[str] = None
 
 
 # INVITES
@@ -142,6 +153,7 @@ class ChallengeCreate(ChallengeBase):
 
 class Challenge(ChallengeBase):
     id: int
+    image_id: Optional[str]
 
     class Config:
         from_attributes = True
@@ -154,6 +166,10 @@ class ChallengeUpdate(BaseModel):
     expiration_date: Optional[datetime] = None
     point_reward: Optional[int] = None
     achievement_id: Optional[int] = None
+
+
+class ChallengeImageUpdate(ChallengeUpdate):
+    image_id: Optional[str] = None
 
 
 class ChallengeList(BaseModel):
@@ -186,6 +202,7 @@ class Activity(ActivityBase):
     is_completed: bool
     group_id: int
     owner_id: str
+    image_id: Optional[str]
 
     class Config:
         from_attributes = True
@@ -206,6 +223,10 @@ class ActivityUpdate(BaseModel):
     address: Optional[str] = None
 
 
+class ActivityImageUpdate(ActivityUpdate):
+    image_id: Optional[str] = None
+
+
 # Sessions
 class SessionUser(BaseModel):
     id: str
@@ -223,6 +244,7 @@ class AchievementCreate(AchievementBase):
 
 class Achievement(AchievementBase):
     id: int
+    image_id: Optional[str]
 
     class Config:
         from_attributes = True
@@ -232,6 +254,10 @@ class AchievementUpdate(BaseModel):
     achievement_name: Optional[str] = None
     description: Optional[str] = None
     requirement: Optional[int] = None
+
+
+class AchievementImageUpdate(AchievementUpdate):
+    image_id: Optional[str] = None
 
 
 class AchievementList(BaseModel):

@@ -289,6 +289,7 @@ def create_activity(db_session: Session, activity_payload: schemas.ActivityPaylo
         address=activity_payload.address,
     )
     owner = get_user(db_session, activity_payload.owner_id)
+
     if owner is not None:
         owner.activities.append(db_activity)
     db_session.add(db_activity)
