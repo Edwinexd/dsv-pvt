@@ -65,7 +65,7 @@ class ProfileCreate(ProfileBase):
 
 
 class Profile(ProfileBase):
-    image_id: str | None
+    image_id: Optional[str]
 
     class Config:
         from_attributes = True
