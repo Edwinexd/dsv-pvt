@@ -240,7 +240,7 @@ def delete_challenge_pic(
     requested_challenge: RequestedChallenge,
 ):
     validations.validate_is_admin(current_user)
-    if requested_activity.image_id is None:
+    if requested_challenge.image_id is None:
         raise HTTPException(status_code=404, detail="Challenge picture not found")
     images.delete(requested_challenge.image_id)
     crud.update_challenge(
@@ -446,6 +446,7 @@ def read_group(
         owner_id=requested_group.owner_id,
         id=requested_group.id,
         points=crud.get_group_points(requested_group),
+        image_id = reqested_group.image_id,
     )
 
 
