@@ -249,7 +249,7 @@ def delete_challenge_pic(
 
 
 # achievement pic
-@app.put("/achievements/{achievement_id}", status_code=204)
+@app.put("/achievements/{achievement_id}/picture", status_code=204)
 def upload_achievement_pic(
     current_user: DbUser,
     db_session: DbSession,
@@ -267,7 +267,7 @@ def upload_achievement_pic(
     )
 
 
-@app.delete("/achivements/{achievement_id}", status_code=204)
+@app.delete("/achivements/{achievement_id}/picture", status_code=204)
 def delete_achievement_pic(
     current_user: DbUser,
     db_session: DbSession,
