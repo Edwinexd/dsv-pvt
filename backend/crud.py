@@ -40,6 +40,7 @@ def delete_user(db_session: Session, db_user: models.User):
     db_session.delete(db_user)
     db_session.commit()
 
+
 # PROFILES
 def get_profile(db_session: Session, user_id: str):
     user = get_user(db_session, user_id)

@@ -29,7 +29,6 @@ class LoginPayload(BaseModel):
     password: str
 
 
-
 class RegisterPayload(LoginPayload):
     email: str = Field(pattern=EMAIL_REGEX)
 

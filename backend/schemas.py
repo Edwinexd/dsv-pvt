@@ -36,7 +36,6 @@ class User(UserModel):
     #    return role.name
 
 
-
 class UserList(BaseModel):
     data: List[User]
 
@@ -115,8 +114,10 @@ class GroupUpdate(BaseModel):
     description: Optional[str] = None
     is_private: Optional[bool] = None
 
+
 class GroupImageUpdate(GroupUpdate):
     image_id: Optional[str] = None
+
 
 # INVITES
 class InviteBase(BaseModel):
@@ -164,6 +165,7 @@ class ChallengeUpdate(BaseModel):
 class ChallengeImageUpdate(ChallengeUpdate):
     image_id: Optional[str] = None
 
+
 class ChallengeList(BaseModel):
     data: List[Challenge]
 
@@ -208,8 +210,10 @@ class ActivityUpdate(BaseModel):
     is_completed: Optional[bool] = None
     challenges: Optional[List[Challenge]] = None
 
+
 class ActivityImageUpdate(ActivityUpdate):
     image_id: Optional[str] = None
+
 
 # Sessions
 class SessionUser(BaseModel):
@@ -239,8 +243,10 @@ class AchievementUpdate(BaseModel):
     description: Optional[str] = None
     requirement: Optional[int] = None
 
+
 class AchievementImageUpdate(AchievementUpdate):
     image_id: Optional[str] = None
+
 
 class AchievementList(BaseModel):
     data: List[Achievement]

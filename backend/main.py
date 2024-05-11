@@ -161,7 +161,10 @@ def upload_group_pic(
     if requested_group.image_id is not None:
         images.delete(requested_group.image_id)
     id = images.upload(image=image)
-    crud.update_group(db_session, requested_group, schemas.GroupImageUpdate(image_id=str(id)))
+    crud.update_group(
+        db_session, requested_group, schemas.GroupImageUpdate(image_id=str(id))
+    )
+
 
 @app.delete("/groups/{group_id}/picture", status_code=204)
 def delete_group_pic(
@@ -173,7 +176,10 @@ def delete_group_pic(
     if requested_group.image_id is None:
         raise HTTPException(status_code=404, detail="Group picture not found")
     images.delete(requested_group.image_id)
-    crud.update_group(db_session, requested_group, schemas.GroupImageUpdate(image_id=None))
+    crud.update_group(
+        db_session, requested_group, schemas.GroupImageUpdate(image_id=None)
+    )
+
 
 # activity pic
 @app.put("/groups/{group_id}/activites/{activity_id}/picture", status_code=204)
@@ -188,7 +194,10 @@ def upload_activity_pic(
     if requested_activity.image_id is not None:
         images.delete(requested_activity.image_id)
     id = images.upload(image=image)
-    crud.update_activity(db_session, requested_activity, schemas.ActivityImageUpdate(image_id=str(id)))
+    crud.update_activity(
+        db_session, requested_activity, schemas.ActivityImageUpdate(image_id=str(id))
+    )
+
 
 @app.delete("/groups/{group_id}/activites/{activity_id}/picture", status_code=204)
 def delete_activity_pic(
@@ -201,7 +210,10 @@ def delete_activity_pic(
     if requested_activity.image_id is None:
         raise HTTPException(status_code=404, detail="Activity picture not found")
     images.delete(requested_activity.image_id)
-    crud.update_activity(db_session, requested_activity, schemas.ActivityImageUpdate(image_id=None))
+    crud.update_activity(
+        db_session, requested_activity, schemas.ActivityImageUpdate(image_id=None)
+    )
+
 
 # challenge pic
 @app.put("/challenges/{challenge_id}/picture", status_code=204)
@@ -215,7 +227,10 @@ def upload_challenge_pic(
     if requested_challenge.image_id is not None:
         images.delete(requested_challenge.image_id)
     id = images.upload(image=image)
-    crud.update_challenge(db_session, requested_challenge, schemas.ChallengeImageUpdate(image_id=str(id)))
+    crud.update_challenge(
+        db_session, requested_challenge, schemas.ChallengeImageUpdate(image_id=str(id))
+    )
+
 
 # dunno if this is even needed but keeping it anyway
 @app.delete("/challenges/{challenge_id}/picture", status_code=204)
@@ -228,7 +243,9 @@ def delete_challenge_pic(
     if requested_activity.image_id is None:
         raise HTTPException(status_code=404, detail="Challenge picture not found")
     images.delete(requested_challenge.image_id)
-    crud.update_challenge(db_session, requested_challenge, schemas.ChallengeImageUpdate(image_id=None))
+    crud.update_challenge(
+        db_session, requested_challenge, schemas.ChallengeImageUpdate(image_id=None)
+    )
 
 
 # achievement pic
@@ -243,7 +260,12 @@ def upload_achievement_pic(
     if requested_achievement.image_id is not None:
         images.delete(requested_achievement.image_id)
     id = images.upload(image=image)
-    crud.update_achievement(db_session, requested_achievement, schemas.AchievementImageUpdate(image_id=str(id)))
+    crud.update_achievement(
+        db_session,
+        requested_achievement,
+        schemas.AchievementImageUpdate(image_id=str(id)),
+    )
+
 
 @app.delete("/achivements/{achievement_id}", status_code=204)
 def delete_achievement_pic(
@@ -255,7 +277,9 @@ def delete_achievement_pic(
     if requested_achievement.image_id is None:
         raise HTTPException(status_code=404, detail="Achievement picture not found")
     images.delete(requested_achievement.image_id)
-    crud.update_achievement(db_session, requested_achievement, schemas.AchievementImageUpdate(image_id=None))
+    crud.update_achievement(
+        db_session, requested_achievement, schemas.AchievementImageUpdate(image_id=None)
+    )
 
 
 # USER
@@ -423,7 +447,6 @@ def read_group(
         id=requested_group.id,
         points=crud.get_group_points(requested_group),
     )
-
 
 
 @app.get("/groups", response_model=schemas.GroupList)
