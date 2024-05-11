@@ -447,6 +447,9 @@ def read_group(
         id=requested_group.id,
         points=crud.get_group_points(requested_group),
         image_id=requested_group.image_id,
+        latitude=requested_group.latitude,
+        longitude=requested_group.longitude,
+        address=requested_group.address,
     )
 
 
@@ -628,6 +631,9 @@ def create_activity(
         group_id=requested_group.id,
         owner_id=current_user.id,
         challenges=activity.challenges,
+        latitude=activity.latitude,
+        longitude=activity.longitude,
+        address=activity.address,
     )
     return crud.create_activity(db_session, activity_payload)
 

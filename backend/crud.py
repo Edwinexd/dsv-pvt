@@ -97,6 +97,9 @@ def create_group(db_session: Session, group: schemas.GroupCreate):
         group_name=group.group_name,
         description=group.description,
         is_private=int(group.is_private),
+        latitude=group.latitude,
+        longitude=group.longitude,
+        address=group.address,
     )
     db_owner = get_user(db_session, group.owner_id)
     if db_owner is None:
@@ -281,6 +284,9 @@ def create_activity(db_session: Session, activity_payload: schemas.ActivityPaylo
         difficulty_code=activity_payload.difficulty_code,
         owner_id=activity_payload.owner_id,
         group_id=activity_payload.group_id,
+        latitude=activity_payload.latitude,
+        longitude=activity_payload.longitude,
+        address=activity_payload.address,
     )
     owner = get_user(db_session, activity_payload.owner_id)
 

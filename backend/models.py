@@ -1,4 +1,13 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, Table, DateTime, Enum
+from sqlalchemy import (
+    Column,
+    Double,
+    ForeignKey,
+    Integer,
+    String,
+    Table,
+    DateTime,
+    Enum,
+)
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -117,6 +126,9 @@ class Group(base):
     description = Column(String, nullable=True)
     is_private = Column(Integer)  # 1-true, 0-false
     image_id = Column(String, nullable=True)
+    latitude = Column(Double, nullable=True)
+    longitude = Column(Double, nullable=True)
+    address = Column(String, nullable=True)
 
     owner_id = Column(String, ForeignKey("users.id"))
     owner = relationship("User", back_populates="owned_groups")
@@ -143,6 +155,9 @@ class Activity(base):
     difficulty_code = Column(Integer)
     is_completed = Column(Integer, default=0)
     image_id = Column(String, nullable=True)
+    latitude = Column(Double)
+    longitude = Column(Double)
+    address = Column(String)
 
     # user who created activity
     owner_id = Column(String, ForeignKey("users.id"))
