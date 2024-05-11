@@ -9,9 +9,9 @@ import 'package:url_launcher/url_launcher.dart';
 class HomePage extends StatelessWidget {
   // Temporary sample data for leaderboard entries can be changed to real data
   final List<LeaderboardEntry> _leaderboardEntries = [
-    LeaderboardEntry('Player 1', 30, 2),
-    LeaderboardEntry('Player 2', 90, 3),
-    LeaderboardEntry('Player 3', 40, 1),
+    LeaderboardEntry('Player 1', 5, 1),
+    LeaderboardEntry('Player 2', 20, 3),
+    LeaderboardEntry('Player 3', 60, 1),
   ];
   @override
   Widget build(BuildContext context) {
@@ -33,7 +33,7 @@ class HomePage extends StatelessWidget {
               ),
               ActivityButton(),
               ChallengesButton(),
-              LeaderboardStat(
+              Leaderboard(
                 leaderboardEntries: _leaderboardEntries,
               ),
             ],
@@ -173,7 +173,7 @@ class ChallengesButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          minimumSize: Size(327, 180), 
+          minimumSize: Size(327, 180),
         ),
         onPressed: () {
           Navigator.push(
@@ -228,10 +228,15 @@ class LeaderboardEntry {
   LeaderboardEntry(this.name, this.points, this.position);
 }
 
-class LeaderboardStat extends StatelessWidget {
+class Leaderboard extends StatelessWidget {
   final List<LeaderboardEntry> leaderboardEntries;
+  final bool showMoreButton;
+  final bool showCrown;
 
-  LeaderboardStat({required this.leaderboardEntries});
+  Leaderboard(
+      {required this.leaderboardEntries,
+      this.showMoreButton = true,
+      this.showCrown = false});
 
   @override
   Widget build(BuildContext context) {
@@ -244,52 +249,58 @@ class LeaderboardStat extends StatelessWidget {
       leaderboardEntries[2] = temp;
     }
 
+    int highestScoreIndex = 0;
+    for (int i = 1; i < leaderboardEntries.length; i++) {
+      if (leaderboardEntries[i].points >
+          leaderboardEntries[highestScoreIndex].points) {
+        highestScoreIndex = i;
+      }
+    }
+
     return Container(
       width: 327,
       height: 370,
       padding: const EdgeInsets.all(10),
       child: Stack(
         children: [
-          Positioned(
-            bottom: -20, 
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Container(
-                margin: EdgeInsets.all(
-                    20), 
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Color(0xFFF344F7), 
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 90, vertical: 15), 
-                    shape: RoundedRectangleBorder(
-                    
-                      borderRadius: BorderRadius.circular(5), 
-                      side: const BorderSide(
-                          color: Colors.white, width: 30), 
+          if (showMoreButton)
+            Positioned(
+              bottom: -20,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Container(
+                  margin: EdgeInsets.all(20),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Color(0xFFF344F7),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 90, vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                        side: const BorderSide(color: Colors.white, width: 30),
+                      ),
                     ),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => LeaderboardPage(
-                                leaderboardEntries: leaderboardEntries,
-                              )),
-                    );
-                  },
-                  child: const Text(
-                    'More',
-                    style: TextStyle(
-                      color: Colors.white,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LeaderboardPage(
+                                  leaderboardEntries: leaderboardEntries,
+                                )),
+                      );
+                    },
+                    child: const Text(
+                      'More',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
           const Positioned(
             top: -10,
             left: 0,
@@ -299,7 +310,7 @@ class LeaderboardStat extends StatelessWidget {
                 'Leaderboard',
                 style: TextStyle(
                   color: Color(0xFF8134CE),
-                  fontSize: 30, 
+                  fontSize: 30,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -307,15 +318,15 @@ class LeaderboardStat extends StatelessWidget {
           ),
           ...leaderboardEntries.asMap().entries.map((entry) {
             return Positioned(
-              bottom: 50, 
-              left: (entry.key * 100).toDouble(), 
+              bottom: 50,
+              left: (entry.key * 100).toDouble(),
               child: Column(
                 children: [
                   Container(
                     margin: EdgeInsets.only(bottom: 5),
                     decoration: BoxDecoration(
-                      color: Color(0xFF9087E5), 
-                      borderRadius: BorderRadius.circular(9), 
+                      color: Color(0xFF9087E5),
+                      borderRadius: BorderRadius.circular(9),
                     ),
                     child: Padding(
                       padding: EdgeInsets.all(5),
@@ -328,27 +339,27 @@ class LeaderboardStat extends StatelessWidget {
                       ),
                     ),
                   ),
+                  if (showCrown && entry.key == highestScoreIndex)
+                    Icon(Icons.rocket_launch, color: Colors.yellow, size: 24.0),
                   Container(
                     width: 100,
-                    height: entry.value.points *
-                        2, 
+                    height: entry.value.points * 2,
                     decoration: const BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          Color(0xFF9087E5), 
-                          Color(0xFFCDC9F3), 
+                          Color(0xFF9087E5),
+                          Color(0xFFCDC9F3),
                         ],
                       ),
                     ),
                   ),
                   Container(
-                    margin: const EdgeInsets.only(
-                        top: 5), 
+                    margin: const EdgeInsets.only(top: 5),
                     decoration: BoxDecoration(
-                      color: Color(0xFF9087E5), 
-                      borderRadius: BorderRadius.circular(9), 
+                      color: Color(0xFF9087E5),
+                      borderRadius: BorderRadius.circular(9),
                     ),
                     child: Padding(
                       padding: EdgeInsets.all(5),

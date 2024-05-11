@@ -14,28 +14,32 @@ class LeaderboardPage extends StatelessWidget {
 
     return Scaffold(
       appBar: buildAppBar(
-        onPressed: () {
-
-
-        },
+        onPressed: () {},
         title: 'Leaderboard',
       ),
       body: DefaultBackground(
-        child: ListView.builder(
-          itemCount: leaderboardEntries.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              leading: Text('${index + 1}'),
-              title: Text(leaderboardEntries[index].name),
-              trailing: Text('${leaderboardEntries[index].points} points'),
-            );
-          },
+        child: Column(
+          children: [
+            Leaderboard(leaderboardEntries: leaderboardEntries, showMoreButton: false, showCrown: true),
+            Expanded(
+              child: ListView.builder(
+                itemCount: leaderboardEntries.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    leading: Text('${index + 1}'),
+                    title: Text(leaderboardEntries[index].name),
+                    trailing:
+                        Text('${leaderboardEntries[index].points} points'),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
       bottomNavigationBar: buildBottomNavigationBar(
-        selectedIndex: 0, // 
-        onItemTapped: (index) {
-        },
+        selectedIndex: 0, //
+        onItemTapped: (index) {},
       ),
     );
   }
