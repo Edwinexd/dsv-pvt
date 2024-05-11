@@ -65,7 +65,7 @@ class ProfileCreate(ProfileBase):
 
 
 class Profile(ProfileBase):
-    image_id: str | None
+    image_id: Optional[str]
 
     class Config:
         from_attributes = True
@@ -99,7 +99,7 @@ class GroupCreate(GroupBase):
 class Group(GroupBase):
     id: int
     points: int = 0
-    image_id: str | None
+    image_id: Optional[str]
 
     class Config:
         from_attributes = True
@@ -147,7 +147,7 @@ class ChallengeCreate(ChallengeBase):
 
 class Challenge(ChallengeBase):
     id: int
-    image_id: str | None
+    image_id: Optional[str]
 
     class Config:
         from_attributes = True
@@ -193,7 +193,7 @@ class Activity(ActivityBase):
     is_completed: bool
     group_id: int
     owner_id: str
-    image_id: str | None
+    image_id: Optional[str]
 
     class Config:
         from_attributes = True
@@ -232,7 +232,7 @@ class AchievementCreate(AchievementBase):
 
 class Achievement(AchievementBase):
     id: int
-    image_id: str | None
+    image_id: Optional[str]
 
     class Config:
         from_attributes = True
