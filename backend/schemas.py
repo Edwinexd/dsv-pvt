@@ -193,7 +193,7 @@ class Activity(ActivityBase):
     is_completed: bool
     group_id: int
     owner_id: str
-    image_id: str | None
+    image_id: Optional[str]
 
     class Config:
         from_attributes = True
