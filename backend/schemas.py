@@ -99,7 +99,7 @@ class GroupCreate(GroupBase):
 class Group(GroupBase):
     id: int
     points: int = 0
-    image_id: str | None
+    image_id: Optional[str]
 
     class Config:
         from_attributes = True
