@@ -282,6 +282,9 @@ def read_group(
         owner_id=requested_group.owner_id,
         id=requested_group.id,
         points=crud.get_group_points(requested_group),
+        latitude=requested_group.latitude,
+        longitude=requested_group.longitude,
+        address=requested_group.address,
     )
 
 
