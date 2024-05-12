@@ -165,7 +165,7 @@ class _MyGroupsState extends State<MyGroups> {
                       ),
                       child: ListTile(
                         title: Text(group.name),
-                        trailing: Row(
+                        trailing: const Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(Icons.group),
