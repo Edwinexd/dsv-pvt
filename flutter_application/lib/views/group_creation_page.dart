@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/user.dart';
-import 'map_screen.dart';
+import 'package:flutter_application/views/map_screen.dart';
+import 'package:flutter_application/background_for_pages.dart';
 
 class GroupCreation extends StatefulWidget {
   final List<Function> onGroupCreatedCallBacks;
@@ -154,6 +154,7 @@ class GroupCreationState extends State<GroupCreation> {
                 const Text(
                   'Your group has been created!',
                   style: TextStyle(color: Colors.green),
+                  
                 ),
               if (_errorMessage.isNotEmpty)
                 Text(

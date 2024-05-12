@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'group_creation_page.dart';
+import 'package:flutter_application/views/group_creation_page.dart';
+import 'package:flutter_application/background_for_pages.dart';
 
 class AllGroupsPage extends StatefulWidget {
   final Function refreshMyGroups;
