@@ -61,12 +61,21 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
               itemCount: _filteredMembersList.length,
               itemBuilder: (context, index) {
                 final member = _filteredMembersList[index];
-                return ListTile(
-                  leading: const CircleAvatar(
-                    //placeholder for users profile picture
-                    child: Icon(Icons.person),
+
+                return Container(
+                  margin: const EdgeInsets.symmetric(vertical: 2.0),
+                  padding: const EdgeInsets.all(2.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20.0),
                   ),
-                  title: Text(member),
+                  child: ListTile(
+                    leading: const CircleAvatar(
+                      //placeholder for users profile picture
+                      child: Icon(Icons.person),
+                    ),
+                    title: Text(member),
+                  ),
                 );
               },
             ),
@@ -79,8 +88,8 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
   void _onSearchTextChanged(String value) {
     setState(() {
       _filteredMembersList = _membersList
-          .where((member) =>
-              member.toLowerCase().contains(value.toLowerCase()))
+          .where((member) => 
+          member.toLowerCase().contains(value.toLowerCase()))
           .toList();
     });
   }
