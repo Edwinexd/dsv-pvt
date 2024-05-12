@@ -2,16 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
-class GroupMembersPage extends StatelessWidget {
+class GroupMembersPage extends StatefulWidget {
   const GroupMembersPage({super.key});
+
+  @override
+  _GroupMembersPageState createState() => _GroupMembersPageState();
+}
+
+class _GroupMembersPageState extends State<GroupMembersPage> {
+  TextEditingController _searchController = TextEditingController();
+  List<String> _filteredMembersList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _filteredMembersList.addAll(_membersList);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Groups',
+          'Members',
           style: GoogleFonts.poppins(
             textStyle: const TextStyle(
               fontSize: 20.0,
@@ -21,21 +34,33 @@ class GroupMembersPage extends StatelessWidget {
       ),
       body: DefaultBackground(
         children: [
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: TextField(
-              decoration: InputDecoration(
-                labelText: 'Search members...',
-                suffixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
-              ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text(
+                  'Group Members 4/20', /*Will be displayed total number of members and max members*/
+                  style: TextStyle(fontSize: 20),
+                ),
+                SizedBox(height: 20),
+                TextField(
+                  controller: _searchController,
+                  onChanged: _onSearchTextChanged,
+                  decoration: const InputDecoration(
+                    labelText: 'Search members...',
+                    suffixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ],
             ),
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: _membersList.length,
+              itemCount: _filteredMembersList.length,
               itemBuilder: (context, index) {
-                final member = _membersList[index];
+                final member = _filteredMembersList[index];
                 return ListTile(
                   leading: const CircleAvatar(
                     //placeholder for users profile picture
@@ -49,6 +74,15 @@ class GroupMembersPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _onSearchTextChanged(String value) {
+    setState(() {
+      _filteredMembersList = _membersList
+          .where((member) =>
+              member.toLowerCase().contains(value.toLowerCase()))
+          .toList();
+    });
   }
 }
 
