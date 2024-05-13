@@ -30,6 +30,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 def get_db_session():
     db_session = session_local()
     try:
