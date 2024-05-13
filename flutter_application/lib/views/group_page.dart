@@ -3,6 +3,9 @@ import 'package:flutter_application/activity_create.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/models/user.dart';
+import 'package:flutter_application/background_for_pages.dart';
+import 'package:flutter_application/views/group_members.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class GroupPage extends StatefulWidget {
   final Group group;
@@ -23,9 +26,9 @@ class _GroupPageState extends State<GroupPage> {
     super.initState();
     fetchMembers().then((_) {
       setState(() {
-      displayedMembers = allMembers;
-      }
-    );});
+        displayedMembers = allMembers;
+      });
+    });
     //added listener to search text field
     searchController.addListener(_searchMembers);
   }
@@ -45,9 +48,19 @@ class _GroupPageState extends State<GroupPage> {
     String query = searchController.text.toLowerCase();
     setState(() {
       // TODO: Replace with fuzzy search
-      displayedMembers = allMembers.where((member) => member.userName.toLowerCase().contains(query)).toList();
+      displayedMembers = allMembers
+          .where((member) => member.userName.toLowerCase().contains(query))
+          .toList();
     });
   }
+
+  late List<String> activities = [
+    'April 7th Kista at 17:00',
+    'May 3rd Kungsträdgården at 13:00',
+    'June 15th Skansen at 10:00',
+    //Instances of activities
+    //Will be removed later
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -55,74 +68,176 @@ class _GroupPageState extends State<GroupPage> {
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(250, 60, 71, 133),
         title: Text(
-          // widget.groupName,
-          widget.group.name,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-          ), 
+          'Groups',
+          style: GoogleFonts.poppins(
+            textStyle: const TextStyle(
+              fontSize: 20.0,
+            ),
+          ),
         ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      body: DefaultBackground(
         children: [
-          Padding(
+          Container(
             padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton.icon(
+            margin: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [
+                Colors.orange[200]!,
+                Colors.orange[200]!,
+                Colors.orange[400]!,
+                Colors.orange[400]!,
+              ], stops: [
+                0.25,
+                0.25,
+                0.75,
+                0.75
+              ], begin: Alignment.topLeft, end: Alignment.bottomRight),
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            child: Center(
+              child: Text(
+                widget.group.name,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(8.0),
+            margin: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10.0),
+              border: Border.all(
+                color: Colors.grey.shade300,
+                width: 1.0,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(
+                    'Group Activities',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: activities.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(activities[index]),
+                      trailing: Checkbox(
+                        value: false,
+                        onChanged: (value) {
+                          //Will handle checkbox change, it has no function rn
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 40,
+            width: 150,
+            child: ElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ActivityCreatePage(groupId: widget.group.id,),
+                    builder: (context) => ActivityCreatePage(
+                      groupId: 1,
+                    ),
                   ),
                 );
               },
-              label: const Text('Create an activity'),
-              icon: const Icon(Icons.run_circle_sharp),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white, // Button color
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Create an activity'),
+                  const Icon(Icons.create),
+                ],
+              ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton.icon(
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 40,
+            width: 250,
+            child: ElevatedButton(
               onPressed: () {
-                //Will handle invite friend button later
+                // Will handle invite new members button later
               },
-              icon: const Icon(Icons.add),
-              label: const Text('Invite a friend'),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text(
-              'Members',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white, // Button color
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Invite new members'),
+                  const Icon(Icons.person_add),
+                ],
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: searchController,
-              decoration: const InputDecoration(
-                labelText: 'Search members...',
-                border: OutlineInputBorder(),
-              ),
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: displayedMembers.length,
-              itemBuilder: (context, index) {
-                User member = displayedMembers[index];
-                return ListTile(
-                  leading: const CircleAvatar(
-                    //will add user profile picture here
-                    child: Icon(Icons.photo), //Placeholder for profile picture
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 40,
+            width: 250,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const GroupMembersPage(),
                   ),
-                  title: Text(member.userName),
                 );
               },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white, // Button color
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Members'),
+                  const Icon(Icons.group),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 40,
+            width: 250,
+            child: ElevatedButton(
+              onPressed: () {
+                // Will handle leaving the group
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white, // Button color
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Leave the group'),
+                  const Icon(Icons.exit_to_app),
+                ],
+              ),
             ),
           ),
         ],
