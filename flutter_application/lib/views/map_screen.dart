@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
 
 class MapScreen extends StatelessWidget {
-  final ValueChanged<String> onLocationSelected;
+  final ValueChanged<PickedData> onLocationSelected;
 
   const MapScreen({super.key, required this.onLocationSelected});
 
@@ -28,7 +28,7 @@ class MapScreen extends StatelessWidget {
           mapLanguage: 'sv',
           onError: (e) => print(e),
           onPicked: (pickedData) {
-            onLocationSelected(pickedData.address);
+            onLocationSelected(pickedData);
             //Navigate back to the previous screen
             Navigator.pop(context);
           },

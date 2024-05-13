@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
+import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/models/user.dart';
 import 'package:flutter_application/views/map_screen.dart';
 import 'package:flutter_application/background_for_pages.dart';
+import 'package:flutter_application/views/group_page.dart';
 
 class GroupCreation extends StatefulWidget {
   final List<Function> onGroupCreatedCallBacks;
@@ -59,7 +61,7 @@ class GroupCreationState extends State<GroupCreation> {
                       builder: (context) => MapScreen(
                         onLocationSelected: (location) {
                           setState(() {
-                            _locationController.text = location;
+                            _locationController.text = location.address;
                           });
                         },
                       ),
@@ -151,10 +153,18 @@ class GroupCreationState extends State<GroupCreation> {
                 child: const Text('Create Group'),
               ),
               if (_isGroupCreated)
-                const Text(
-                  'Your group has been created!',
-                  style: TextStyle(color: Colors.green),
-                  
+                ElevatedButton(
+                  onPressed: () {
+                    //Redirecting to the group page
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => GroupPage(group:  Group(id: 15, name: _nameController.text, description: _descriptionController.text, isPrivate: _isPublic, ownerId: '3')),
+                      ),
+                    );
+                  },
+                  child: const Text('Go to Group Page'),
+                  //
                 ),
               if (_errorMessage.isNotEmpty)
                 Text(
