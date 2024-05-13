@@ -37,6 +37,6 @@ def delete(image_id: str):
 
 def download(image_id: str):
     response = requests.get(
-        url=f"{IMAGES_URL}/{image_id}"
+        url=f"https://images-pvt.edt.cx/images/{image_id}"
     )
     return {"content" : response.content, "content-type": response.headers["Content-Type"]}

@@ -1,14 +1,24 @@
 import PIL.Image
 import schemas
-from pydantic import BaseModel
 from PIL import ImageDraw, Image, ImageFont
 from pilmoji import Pilmoji
 from images import download
+from pydantic import BaseModel
 import io
 
 def generate_image(data: BaseModel):
     base = Image.new(mode="RGB", size=(1024,1024))
-    draw_gradient(base, (int("AB", 16),int("AB", 16),int("FC", 16)), (int("FD", 16),int("FD", 16),int("FF", 16)))
+#    draw_gradient(base, (int("AB", 16),int("AB", 16),int("FC", 16)), (int("FD", 16),int("FD", 16),int("FF", 16)))
+    draw_gradient2(
+        base,
+        {
+            23: "ABABFC",
+            43: "AA6CFC",
+            63: "D278FC",
+            75: "EEACFF",
+            100: "FDFDFF",
+        },
+    )
     s3_im = get_s3_image(data.image_id)
     base.paste(s3_im, (int(base.width/2),int(base.height/2)))
     font = ImageFont.load_default(size=42)
@@ -22,21 +32,37 @@ def get_s3_image(image_id: str) -> Image:
     stream = io.BytesIO(img_response["content"])
     return Image.open(stream).resize((512,512))
 
+def draw_gradient2(im: Image, stops: dict[int, str]):
+    fill = rgb_tuple(stops[min(stops)])
+    start = 0
+
+    for key in stops.keys():
+        end = int((key/100) * im.height)
+        fill = draw_subgradient(im=im, c1=fill, c2=rgb_tuple(stops[key]), start=start, end=end)
+        start = end
+        print(stops[key])
+
+def rgb_tuple(hex_string: str) -> tuple[int, int, int]:
+    r = int(hex_string[0:2], 16)
+    g = int(hex_string[2:4], 16)
+    b = int(hex_string[4:6], 16)
+    return (r,g,b)
+
 # Draws background gradient from color 1 -> color 2
-def draw_gradient(im: Image, c1: tuple[int, int, int], c2: tuple[int, int, int]):
+def draw_subgradient(im: Image, c1: tuple[int, int, int], c2: tuple[int, int, int], start : int, end: int):
     draw = ImageDraw.Draw(im)
     fill = c1
 
-    c_freqR = change_freq(c1[0], c2[0], im.height)
-    c_freqG = change_freq(c1[1], c2[1], im.height)
-    c_freqB = change_freq(c1[2], c2[2], im.height)
+    c_freqR = change_freq(c1[0], c2[0], end-start)
+    c_freqG = change_freq(c1[1], c2[1], end-start)
+    c_freqB = change_freq(c1[2], c2[2], end-start)
 
     upR = c1[0] < c2[0]
     upG = c1[1] < c2[1]
     upB = c1[2] < c2[2]
 
     # Draw a horizontal line on each x from 0 -> image height. Line incrementally approaches destination color.
-    for x in range(1, 1024):
+    for x in range(start, end):
         stopR = has_reached_end(fill[0], c2[0], upR)
         stopG = has_reached_end(fill[0], c2[0], upG)
         stopB = has_reached_end(fill[0], c2[0], upB)
@@ -45,20 +71,28 @@ def draw_gradient(im: Image, c1: tuple[int, int, int], c2: tuple[int, int, int])
         g = fill[1]
         b = fill[2]
 
-        if (x % c_freqR == 0) and not stopR:
+        if divides(x, c_freqR) and not stopR:
             r = new_color(r, upR, 0)
-        if (x % c_freqG == 0) and not stopG:
+        if divides(x, c_freqG) and not stopG:
             g = new_color(g, upG, 0)
-        if (x % c_freqB == 0) and not stopB:
+        if divides(x, c_freqB) and not stopB:
             b = new_color(b, upB, 0)
 
         fill = (r,g,b)
         
         draw.line([(0,x), (im.width, x)], fill=fill, width=0)
+    return fill
+
+def divides(a: int, b: int):
+    if a == 0:
+        return False
+    return a % b == 0
 
 # Change frequency determines how many iterations between 0 and the images height it will take before an intensity of a color is changed
 # It returns an int which means the value is going to be rounded, but it works well enough.
-def change_freq(a: int, b: int, height: int) -> int:#
+def change_freq(a: int, b: int, height: int) -> int:
+    if a == b:
+        return 11
     return int(height/abs(a-b))
 
 def new_color(color: int, up: bool, index: int) -> int:
@@ -74,4 +108,4 @@ def has_reached_end(color1: int, color2, up: bool):
     else:
         return color1 <= color2
 
-#generate_image(schemas.Achievement(achievement_name="Testtitel", id = 1234, image_id="171576751164"))
+generate_image(schemas.Achievement(achievement_name="Testtitel", id = 1234, image_id="171576751164"))
