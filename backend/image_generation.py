@@ -6,25 +6,45 @@ from images import download
 from pydantic import BaseModel
 import io
 
+# TODO: better name
+class GradientStop():
+    def __init__(self, p, h, o):
+        self.percentage = p
+        self.hex_clr = h
+        self.opacity = o
+
+    percentage: int
+    hex_clr: str
+    opacity: float
+
 def generate_image(data: BaseModel):
+    s = Image.new(mode="RGB", size=(1024,1024))
     base = Image.new(mode="RGB", size=(1024,1024))
 #    draw_gradient(base, (int("AB", 16),int("AB", 16),int("FC", 16)), (int("FD", 16),int("FD", 16),int("FF", 16)))
     draw_gradient2(
         base,
-        {
-            23: "ABABFC",
-            43: "AA6CFC",
-            63: "D278FC",
-            75: "EEACFF",
-            100: "FDFDFF",
-        },
+        #{
+        #    23: "ABABFC",
+        #    43: "AA6CFC",
+        #    63: "D278FC",
+        #    75: "EEACFF",
+        #    100: "FDFDFF",
+        #},
+        [
+            GradientStop(23, "ABABFC", 0.9),
+            GradientStop(43, "AA6CFC", 0.6),
+            GradientStop(63, "D278FC", 0.3), 
+            GradientStop(75, "EEACFF", 0.3),
+            GradientStop(100, "FDFDFF", 1.0),
+        ],
     )
     s3_im = get_s3_image(data.image_id)
     base.paste(s3_im, (int(base.width/2),int(base.height/2)))
     font = ImageFont.load_default(size=42)
     pilmoji = Pilmoji(base)
     pilmoji.text((512,512), f"I completed {data.achievement_name}! 😎", fill=(255,0,0), font=font)
-    base.show()
+    s.paste(base, (0,0), base)
+    s.show()
     #im.show()
 
 def get_s3_image(image_id: str) -> Image:
@@ -32,15 +52,14 @@ def get_s3_image(image_id: str) -> Image:
     stream = io.BytesIO(img_response["content"])
     return Image.open(stream).resize((512,512))
 
-def draw_gradient2(im: Image, stops: dict[int, str]):
-    fill = rgb_tuple(stops[min(stops)])
+def draw_gradient2(im: Image, stops: list[GradientStop]):
+    fill = rgb_tuple(stops[0].hex_clr)
     start = 0
 
-    for key in stops.keys():
-        end = int((key/100) * im.height)
-        fill = draw_subgradient(im=im, c1=fill, c2=rgb_tuple(stops[key]), start=start, end=end)
+    for g in stops:
+        end = int((g.percentage/100) * im.height)
+        fill = draw_subgradient(im=im, c1=fill, c2=rgb_tuple(g.hex_clr), start=start, end=end, opacity=g.opacity)
         start = end
-        print(stops[key])
 
 def rgb_tuple(hex_string: str) -> tuple[int, int, int]:
     r = int(hex_string[0:2], 16)
@@ -49,7 +68,8 @@ def rgb_tuple(hex_string: str) -> tuple[int, int, int]:
     return (r,g,b)
 
 # Draws background gradient from color 1 -> color 2
-def draw_subgradient(im: Image, c1: tuple[int, int, int], c2: tuple[int, int, int], start : int, end: int):
+# TODO: create new image for each subgradient to apply opacity
+def draw_subgradient(im: Image, c1: tuple[int, int, int], c2: tuple[int, int, int], start : int, end: int, opacity: float):
     draw = ImageDraw.Draw(im)
     fill = c1
 
