@@ -34,3 +34,9 @@ def delete(image_id: str):
         raise HTTPException(
             status_code=response.status_code, detail=response.json()["detail"]
         )
+
+def download(image_id: str):
+    response = requests.get(
+        url=f"{IMAGES_URL}/{image_id}"
+    )
+    return {"content" : response.content, "content-type": response.headers["Content-Type"]}

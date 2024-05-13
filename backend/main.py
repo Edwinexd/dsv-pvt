@@ -15,6 +15,7 @@ from user_roles import Roles
 from database import engine, session_local
 from sessions import create_session, get_session, revoke_session
 from validations import validate_api_key
+from image_generation import generate_image
 
 models.base.metadata.create_all(bind=engine)
 
@@ -151,7 +152,8 @@ def delete_pfp(
 # IMAGE GEN (for share to ...)
 @app.get("/users/{user_id}/achievements/{achievement_id}/share")
 def generate_achievement_image(current_user: DbUser, db_session: DbSession, requested_user: RequestedUser, requested_achievement: RequestedAchievement):
-    pass
+    img = generate_image(requested_achievement)
+    return img
 
 
 # group pic
