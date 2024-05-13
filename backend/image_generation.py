@@ -35,6 +35,7 @@ def draw_gradient(im: Image, c1: tuple[int, int, int], c2: tuple[int, int, int])
     upG = c1[1] < c2[1]
     upB = c1[2] < c2[2]
 
+    # Draw a horizontal line on each x from 0 -> image height. Line incrementally approaches destination color.
     for x in range(1, 1024):
         stopR = has_reached_end(fill[0], c2[0], upR)
         stopG = has_reached_end(fill[0], c2[0], upG)
@@ -55,7 +56,9 @@ def draw_gradient(im: Image, c1: tuple[int, int, int], c2: tuple[int, int, int])
         
         draw.line([(0,x), (im.width, x)], fill=fill, width=0)
 
-def change_freq(a: int, b: int, height: int) -> int:
+# Change frequency determines how many iterations between 0 and the images height it will take before an intensity of a color is changed
+# It returns an int which means the value is going to be rounded, but it works well enough.
+def change_freq(a: int, b: int, height: int) -> int:#
     return int(height/abs(a-b))
 
 def new_color(color: int, up: bool, index: int) -> int:
