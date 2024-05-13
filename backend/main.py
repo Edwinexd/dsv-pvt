@@ -148,6 +148,11 @@ def delete_pfp(
         db_session, requested_profile, schemas.ProfileImageUpdate(image_id=None)
     )
 
+# IMAGE GEN (for share to ...)
+@app.get("/users/{user_id}/achievements/{achievement_id}/share")
+def generate_achievement_image(current_user: DbUser, db_session: DbSession, requested_user: RequestedUser, requested_achievement: RequestedAchievement):
+    pass
+
 
 # group pic
 @app.put("/groups/{group_id}/picture", status_code=204)

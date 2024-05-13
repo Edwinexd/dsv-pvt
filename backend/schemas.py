@@ -262,3 +262,8 @@ class AchievementImageUpdate(AchievementUpdate):
 
 class AchievementList(BaseModel):
     data: List[Achievement]
+
+#SHARING
+# TODO: what should users be able to share as a pic?
+class ShareData(Achievement, Challenge, Activity):
+    pass
