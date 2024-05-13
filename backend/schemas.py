@@ -31,9 +31,9 @@ class User(UserModel):
         from_attributes = True
 
     # Incase we want the api to present the Role as the name instead of the value
-    @field_serializer("role")
-    def serialize_role(self, role: Roles, _info):
-        return role.name
+    # @field_serializer("role")
+    # def serialize_role(self, role: Roles, _info):
+    #    return role.name
 
 
 class UserList(BaseModel):
@@ -65,6 +65,8 @@ class ProfileCreate(ProfileBase):
 
 
 class Profile(ProfileBase):
+    image_id: Optional[str]
+
     class Config:
         from_attributes = True
 
@@ -77,12 +79,19 @@ class ProfileUpdate(BaseModel):
     is_private: Optional[bool] = None
 
 
+class ProfileImageUpdate(ProfileUpdate):
+    image_id: Optional[str] = None
+
+
 # GROUP
 class GroupBase(BaseModel):
     group_name: str
     description: str
     is_private: bool
     owner_id: str
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    address: Optional[str] = None
 
 
 class GroupCreate(GroupBase):
@@ -93,6 +102,7 @@ class GroupCreate(GroupBase):
 class Group(GroupBase):
     id: int
     points: int = 0
+    image_id: Optional[str]
 
     class Config:
         from_attributes = True
@@ -106,6 +116,13 @@ class GroupUpdate(BaseModel):
     group_name: Optional[str] = None
     description: Optional[str] = None
     is_private: Optional[bool] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    address: Optional[str] = None
+
+
+class GroupImageUpdate(GroupUpdate):
+    image_id: Optional[str] = None
 
 
 # INVITES
@@ -136,6 +153,7 @@ class ChallengeCreate(ChallengeBase):
 
 class Challenge(ChallengeBase):
     id: int
+    image_id: Optional[str]
 
     class Config:
         from_attributes = True
@@ -150,6 +168,10 @@ class ChallengeUpdate(BaseModel):
     achievement_id: Optional[int] = None
 
 
+class ChallengeImageUpdate(ChallengeUpdate):
+    image_id: Optional[str] = None
+
+
 class ChallengeList(BaseModel):
     data: List[Challenge]
 
@@ -160,6 +182,9 @@ class ActivityBase(BaseModel):
     scheduled_date: datetime
     difficulty_code: int
     challenges: Optional[List[Challenge]] = None
+    latitude: float
+    longitude: float
+    address: str
 
 
 class ActivityCreate(ActivityBase):
@@ -177,6 +202,7 @@ class Activity(ActivityBase):
     is_completed: bool
     group_id: int
     owner_id: str
+    image_id: Optional[str]
 
     class Config:
         from_attributes = True
@@ -192,6 +218,13 @@ class ActivityUpdate(BaseModel):
     difficulty_code: Optional[int] = None
     is_completed: Optional[bool] = None
     challenges: Optional[List[Challenge]] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    address: Optional[str] = None
+
+
+class ActivityImageUpdate(ActivityUpdate):
+    image_id: Optional[str] = None
 
 
 # Sessions
@@ -211,6 +244,7 @@ class AchievementCreate(AchievementBase):
 
 class Achievement(AchievementBase):
     id: int
+    image_id: Optional[str]
 
     class Config:
         from_attributes = True
@@ -220,6 +254,10 @@ class AchievementUpdate(BaseModel):
     achievement_name: Optional[str] = None
     description: Optional[str] = None
     requirement: Optional[int] = None
+
+
+class AchievementImageUpdate(AchievementUpdate):
+    image_id: Optional[str] = None
 
 
 class AchievementList(BaseModel):

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:flutter_application/controllers/backend_service.dart';
+import 'package:flutter_application/models/activity.dart';
 import 'package:intl/intl.dart';
 import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
 
@@ -9,7 +10,7 @@ class ActivityCreatePage extends StatefulWidget {
   // Take groupId as a parameter
   ActivityCreatePage({Key? key, required this.groupId}) : super(key: key);
 
-  final String groupId;
+  final int groupId;
   // TODO Get from backend
   final List<dynamic> challenges = [{"id": 0, "name": 'Spring 0 km'}, {"id": 1, "name": 'Gå 1 km'}, {"id": 2, "name": 'Hoppa 200 ggr'}];
 
@@ -39,12 +40,17 @@ class _ActivityCreatePageState extends State<ActivityCreatePage> {
     'Elite: < 4 min/km'
   ];
 
-  void _createActivity() {
+  void _createActivity() async {
     if (_formKey.currentState!.validate()) {
-      String groupId = widget.groupId;
-      // TODO: Http to backend with groupId
+      // int groupId = widget.groupId;
+      String name = _titleController.text.trim();
+      DateTime dateTime = _pickedDateTime;
+      int difficulty = _difficultyCode;
+
+      Activity activity = await BackendService().createActivity(widget.groupId, name, dateTime, difficulty);
+
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Activity created for $groupId!')));
+          .showSnackBar(SnackBar(content: Text('Activity created for $widget.groupId!')));
     }
     // TODO: Navigate to newly created activity
   }
