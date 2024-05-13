@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_application/views/group_creation_page.dart';
 import 'package:flutter_application/background_for_pages.dart';
 
 class AllGroupsPage extends StatefulWidget {
@@ -69,7 +68,7 @@ class AllGroupsPageState extends State<AllGroupsPage>  {
       body: DefaultBackground(
         children: [
           Container(
-            color: const Color(0xFFAA6CFC),
+            color: const Color(0xFFABABFC),
             padding: const EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -107,9 +106,10 @@ class AllGroupsPageState extends State<AllGroupsPage>  {
                         _selectedFilter = value.toString();
                       });
                     },
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.teal),
+                        borderSide: BorderSide(color: Colors.black),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                     ),
                     items: const [
@@ -154,20 +154,6 @@ class AllGroupsPageState extends State<AllGroupsPage>  {
             ),
           ),
         ],
-      ),
-      
-      floatingActionButton: TextButton.icon(
-        onPressed: () {
-          Navigator.push(
-            context, 
-            MaterialPageRoute(builder: (context) => GroupCreation(onGroupCreatedCallBacks: [refreshAllGroups, widget.refreshMyGroups],)), 
-          );
-        },
-        style: TextButton.styleFrom(
-        backgroundColor: const Color.fromARGB(255, 233, 159, 73),
-        ),
-        icon: const Icon(Icons.add),
-        label: const Text('Create a group'),
       ),
     );
   }

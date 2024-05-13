@@ -13,7 +13,6 @@ class MapScreen extends StatelessWidget {
           title: const Text('Pick a location'),
         ),
         body: FlutterLocationPicker(
-          initPosition: LatLong(103, 105),
           selectLocationButtonStyle: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Colors.white),
           ),
@@ -26,11 +25,9 @@ class MapScreen extends StatelessWidget {
           minZoomLevel: 5,
           maxZoomLevel: 16,
           trackMyPosition: true,
+          mapLanguage: 'sv',
           onError: (e) => print(e),
           onPicked: (pickedData) {
-            print(pickedData.latLong.latitude);
-            print(pickedData.latLong.longitude);
-            print(pickedData.address);
             onLocationSelected(pickedData.address);
             //Navigate back to the previous screen
             Navigator.pop(context);

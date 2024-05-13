@@ -27,8 +27,8 @@ class _GroupPageState extends State<GroupPage> {
     fetchMembers().then((_) {
       setState(() {
         displayedMembers = allMembers;
-      }
-      );});
+      });
+    });
     //added listener to search text field
     searchController.addListener(_searchMembers);
   }
@@ -48,7 +48,9 @@ class _GroupPageState extends State<GroupPage> {
     String query = searchController.text.toLowerCase();
     setState(() {
       // TODO: Replace with fuzzy search
-      displayedMembers = allMembers.where((member) => member.userName.toLowerCase().contains(query)).toList();
+      displayedMembers = allMembers
+          .where((member) => member.userName.toLowerCase().contains(query))
+          .toList();
     });
   }
 
@@ -80,8 +82,18 @@ class _GroupPageState extends State<GroupPage> {
             padding: const EdgeInsets.all(8.0),
             margin: const EdgeInsets.all(8.0),
             decoration: BoxDecoration(
-              color: Colors.orangeAccent,
-              borderRadius: BorderRadius.circular(10.0),
+              gradient: LinearGradient(colors: [
+                Colors.orange[200]!,
+                Colors.orange[200]!,
+                Colors.orange[400]!,
+                Colors.orange[400]!,
+              ], stops: [
+                0.25,
+                0.25,
+                0.75,
+                0.75
+              ], begin: Alignment.topLeft, end: Alignment.bottomRight),
+              borderRadius: BorderRadius.circular(15.0),
             ),
             child: Center(
               child: Text(
@@ -106,7 +118,7 @@ class _GroupPageState extends State<GroupPage> {
               ),
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0),
@@ -136,47 +148,97 @@ class _GroupPageState extends State<GroupPage> {
               ],
             ),
           ),
-          const SizedBox(height: 16),
-          ElevatedButton.icon(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 40,
+            width: 150,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
                     builder: (context) => ActivityCreatePage(
-                        groupId: 1)), //Create an activity navigation
-              );
-            },
-            icon: const Icon(Icons.create),
-            label: const Text('Create an activity'),
+                      groupId: 1,
+                    ),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white, // Button color
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Create an activity'),
+                  const Icon(Icons.create),
+                ],
+              ),
+            ),
           ),
-          const SizedBox(height: 16),
-          ElevatedButton.icon(
-            onPressed: () {
-              //Will handle invite new members button later
-            },
-            icon: const Icon(Icons.person_add),
-            label: const Text('Invite new members'),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 40,
+            width: 250,
+            child: ElevatedButton(
+              onPressed: () {
+                // Will handle invite new members button later
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white, // Button color
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Invite new members'),
+                  const Icon(Icons.person_add),
+                ],
+              ),
+            ),
           ),
-          const SizedBox(height: 16),
-          ElevatedButton.icon(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const GroupMembersPage(),
-                ),
-              );
-            },
-            icon: const Icon(Icons.group),
-            label: const Text('Members'),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 40,
+            width: 250,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const GroupMembersPage(),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white, // Button color
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Members'),
+                  const Icon(Icons.group),
+                ],
+              ),
+            ),
           ),
-          SizedBox(height: 16),
-          ElevatedButton.icon(
-            onPressed: () {
-              //Will handle leaving the group
-            },
-            icon: const Icon(Icons.exit_to_app),
-            label: const Text('Leave the group'),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 40,
+            width: 250,
+            child: ElevatedButton(
+              onPressed: () {
+                // Will handle leaving the group
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white, // Button color
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Leave the group'),
+                  const Icon(Icons.exit_to_app),
+                ],
+              ),
+            ),
           ),
         ],
       ),
