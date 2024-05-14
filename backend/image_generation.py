@@ -8,28 +8,27 @@ import io
 
 # TODO: better name
 class GradientStop():
-    def __init__(self, p, h, o):
+    def __init__(self, p: int, r: int, g: int, b: int, o: float):
         self.percentage = p
-        self.hex_clr = h
+        self.r = r
+        self.g = g
+        self.b = b
         self.opacity = o
 
     percentage: int
-    hex_clr: str
+    r: int = 0xFF
+    g: int = 0xFF
+    b: int = 0xFF
     opacity: float
 
-def generate_image(data: BaseModel):
+def generate_image(**data):
+    # TODO: assert some sort of standard for kwargs e.g.
+    # {title: "foo", user: "bar", image_id: "sna"...}
+
     s = Image.new(mode="RGB", size=(1024,1024))
     base = Image.new(mode="RGB", size=(1024,1024))
-#    draw_gradient(base, (int("AB", 16),int("AB", 16),int("FC", 16)), (int("FD", 16),int("FD", 16),int("FF", 16)))
-    draw_gradient2(
+    draw_gradient(
         base,
-        #{
-        #    23: "ABABFC",
-        #    43: "AA6CFC",
-        #    63: "D278FC",
-        #    75: "EEACFF",
-        #    100: "FDFDFF",
-        #},
         [
             GradientStop(23, "ABABFC", 0.9),
             GradientStop(43, "AA6CFC", 0.6),
@@ -42,7 +41,7 @@ def generate_image(data: BaseModel):
     base.paste(s3_im, (int(base.width/2),int(base.height/2)))
     font = ImageFont.load_default(size=42)
     pilmoji = Pilmoji(base)
-    pilmoji.text((512,512), f"I completed {data.achievement_name}! 😎", fill=(255,0,0), font=font)
+    pilmoji.text((512,512), f"I completed {data["achievement_name"]}! 😎", fill=(255,0,0), font=font)
     s.paste(base, (0,0), base)
     s.show()
     #im.show()
@@ -52,7 +51,7 @@ def get_s3_image(image_id: str) -> Image:
     stream = io.BytesIO(img_response["content"])
     return Image.open(stream).resize((512,512))
 
-def draw_gradient2(im: Image, stops: list[GradientStop]):
+def draw_gradient(im: Image, stops: list[GradientStop]):
     fill = rgb_tuple(stops[0].hex_clr)
     start = 0
 
@@ -73,30 +72,30 @@ def draw_subgradient(im: Image, c1: tuple[int, int, int], c2: tuple[int, int, in
     draw = ImageDraw.Draw(im)
     fill = c1
 
-    c_freqR = change_freq(c1[0], c2[0], end-start)
-    c_freqG = change_freq(c1[1], c2[1], end-start)
-    c_freqB = change_freq(c1[2], c2[2], end-start)
+    c_freq_r = change_freq(c1[0], c2[0], end-start)
+    c_freq_g = change_freq(c1[1], c2[1], end-start)
+    c_freq_b = change_freq(c1[2], c2[2], end-start)
 
-    upR = c1[0] < c2[0]
-    upG = c1[1] < c2[1]
-    upB = c1[2] < c2[2]
+    increment_r = c1[0] < c2[0]
+    increment_g = c1[1] < c2[1]
+    increment_b = c1[2] < c2[2]
 
     # Draw a horizontal line on each x from 0 -> image height. Line incrementally approaches destination color.
     for x in range(start, end):
-        stopR = has_reached_end(fill[0], c2[0], upR)
-        stopG = has_reached_end(fill[0], c2[0], upG)
-        stopB = has_reached_end(fill[0], c2[0], upB)
+        stop_r = has_reached_end(fill[0], c2[0], increment_r)
+        stop_g = has_reached_end(fill[0], c2[0], increment_g)
+        stop_b = has_reached_end(fill[0], c2[0], increment_b)
 
         r = fill[0]
         g = fill[1]
         b = fill[2]
 
-        if divides(x, c_freqR) and not stopR:
-            r = new_color(r, upR, 0)
-        if divides(x, c_freqG) and not stopG:
-            g = new_color(g, upG, 0)
-        if divides(x, c_freqB) and not stopB:
-            b = new_color(b, upB, 0)
+        if divides(x, c_freq_r) and not stop_r:
+            r = new_color(r, increment_r, 0)
+        if divides(x, c_freq_g) and not stop_g:
+            g = new_color(g, increment_g, 0)
+        if divides(x, c_freq_b) and not stop_b:
+            b = new_color(b, increment_b, 0)
 
         fill = (r,g,b)
         
