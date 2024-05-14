@@ -105,7 +105,7 @@ class _GroupPageState extends State<GroupPage> {
                 Colors.orange[200]!,
                 Colors.orange[400]!,
                 Colors.orange[400]!,
-              ], stops: [
+              ], stops: const [
                 0.25,
                 0.25,
                 0.75,
@@ -113,6 +113,8 @@ class _GroupPageState extends State<GroupPage> {
               ], begin: Alignment.topLeft, end: Alignment.bottomRight),
               borderRadius: BorderRadius.circular(15.0),
             ),
+            height: 120,
+            width: 250,
             child: Center(
               child: Text(
                 widget.group.name,
@@ -125,7 +127,7 @@ class _GroupPageState extends State<GroupPage> {
             ),
           ),
           if (widget.isMember) ...[
-            //Display activities list for members
+            //Display group for members
             Container(
               padding: const EdgeInsets.all(8.0),
               margin: const EdgeInsets.all(8.0),
@@ -194,13 +196,13 @@ class _GroupPageState extends State<GroupPage> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white, // Button color
+                  backgroundColor: Colors.white,
                 ),
-                child: Row(
+                child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('Create an activity'),
-                    const Icon(Icons.create),
+                    Text('Create an activity'),
+                    Icon(Icons.create),
                   ],
                 ),
               ),
@@ -214,7 +216,7 @@ class _GroupPageState extends State<GroupPage> {
                   //Will handle invite new members button later
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white, //Button color
+                  backgroundColor: Colors.white,
                 ),
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -239,7 +241,7 @@ class _GroupPageState extends State<GroupPage> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white, // Button color
+                  backgroundColor: Colors.white,
                 ),
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -259,7 +261,7 @@ class _GroupPageState extends State<GroupPage> {
                   //Will handle leaving the group
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white, // Button color
+                  backgroundColor: Colors.white,
                 ),
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -291,11 +293,19 @@ class _GroupPageState extends State<GroupPage> {
                     child: Text(
                       'About Us',
                       style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          color: Color(0xFF8134CE),
+                          shadows: [
+                            Shadow(
+                              color: Colors.black,
+                              offset: Offset(2, 2),
+                              blurRadius: 1,
+                            )
+                          ]),
                     ),
                   ),
+                  SizedBox(height: 6),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Text(
@@ -303,6 +313,7 @@ class _GroupPageState extends State<GroupPage> {
                       style: const TextStyle(fontSize: 14),
                     ),
                   ),
+                  SizedBox(height: 6),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 2.0),
                     child: Row(
@@ -312,6 +323,9 @@ class _GroupPageState extends State<GroupPage> {
                           onPressed: () {
                             // Handle displaying group privacy
                           },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFFFDEBB4),
+                          ),
                           child: Text(
                               widget.group.isPrivate ? 'Private' : 'Public'),
                         ),
@@ -319,6 +333,9 @@ class _GroupPageState extends State<GroupPage> {
                           onPressed: () {
                             //Handle displaying group skill level
                           },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFFFF9F2D),
+                          ),
                           child:
                               Text('Beginner' /*${widget.group.skillLevel}*/),
                         ),
@@ -326,12 +343,15 @@ class _GroupPageState extends State<GroupPage> {
                           onPressed: () {
                             //Handle displaying group location
                           },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFFFEC0AD),
+                          ),
                           child: Text('Kista' /*${widget.group.location}*/),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: 30),
+                  SizedBox(height: 12),
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(
@@ -342,7 +362,7 @@ class _GroupPageState extends State<GroupPage> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white, // Button color
+                      backgroundColor: Colors.white,
                     ),
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -355,26 +375,27 @@ class _GroupPageState extends State<GroupPage> {
                 ],
               ),
             ),
-          ],
-          const SizedBox(height: 8.0),
-          SizedBox(
-            height: 40,
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                //Will handle joining the group
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.purple,
-              ),
-              child: const Text(
-                'Join Group',
-                style: TextStyle(
-                  color: Colors.white,
+
+            SizedBox(height: 12),
+            SizedBox(
+              height: 40,
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  //Will handle joining the group
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.purple,
+                ),
+                child: const Text(
+                  'Join Group',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
-          ),
+          ],
         ],
       ),
     );
