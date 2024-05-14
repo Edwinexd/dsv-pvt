@@ -18,7 +18,7 @@ class AllGroupsPage extends StatefulWidget {
 
 class AllGroupsPageState extends State<AllGroupsPage> {
   List<Group> _groups = [];
-  List<Group> allMyGroups = [];
+  List<Group> _myGroups = [];
 
   @override
   void initState() {
@@ -39,7 +39,7 @@ class AllGroupsPageState extends State<AllGroupsPage> {
   }
 
   Future<void> fetchMyGroups() async {
-    allMyGroups = await BackendService().getMyGroups();
+    _myGroups = await BackendService().getMyGroups();
   }
 
   String _searchQuery = '';
@@ -139,7 +139,7 @@ class AllGroupsPageState extends State<AllGroupsPage> {
                 final group = filteredGroups[index];
                 return GestureDetector(
                     onTap: () {
-                      bool isMember = allMyGroups
+                      bool isMember = _myGroups
                           .any((myGroup) => myGroup.id == group.id);
                       Navigator.push(
                           context,

@@ -12,9 +12,8 @@ class GroupPage extends StatefulWidget {
   final Group group;
   bool isMember;
 
-  GroupPage({Key? key, required this.group, required this.isMember})
-      : super(key: key);
-
+  GroupPage({super.key, required this.group, required this.isMember});
+    
   @override
   _GroupPageState createState() => _GroupPageState();
 }
@@ -188,7 +187,7 @@ class _GroupPageState extends State<GroupPage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => ActivityCreatePage(
-                        groupId: 1,
+                        groupId: widget.group.id,
                       ),
                     ),
                   );
@@ -317,9 +316,9 @@ class _GroupPageState extends State<GroupPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        //Non-functional buttons, no need to add any functionalities
                         ElevatedButton(
                           onPressed: () {
-                            // Handle displaying group privacy
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFFFDEBB4),
@@ -329,7 +328,6 @@ class _GroupPageState extends State<GroupPage> {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            //Handle displaying group skill level
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFFFF9F2D),
@@ -339,7 +337,7 @@ class _GroupPageState extends State<GroupPage> {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            //Handle displaying group location
+                            
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFFFEC0AD),
