@@ -103,7 +103,7 @@ class User(base):
     completed_achievements = relationship(
         "Achievement",
         secondary=achievement_completions,
-        back_populates="achievement_completed_by"
+        back_populates="achievement_completed_by",
     )
     profile = relationship("Profile", uselist=False, back_populates="owner")
     owned_groups = relationship("Group", back_populates="owner")

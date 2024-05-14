@@ -107,6 +107,7 @@ def get_activity(group_id: int, activity_id: int, db_session: DbSession):
 
 RequestedActivity = Annotated[models.Activity, Depends(get_activity)]
 
+
 def get_achievement(achievement_id: int, db_session: DbSession):
     db_achievement = crud.get_achievement(db_session, achievement_id)
     if db_achievement is None:
@@ -305,6 +306,7 @@ def login(credentials: schemas.UserCreds, db_session: DbSession):
 
     session = create_session(user_id)
     return {"bearer": f"Bearer {session}"}
+
 
 # app.post("userrs/login/callbacks/google")
 

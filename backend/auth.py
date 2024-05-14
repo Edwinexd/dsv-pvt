@@ -27,26 +27,30 @@ def create_user(user_payload: UserCreate):
         )
     return str(response.json()["id"])
 
+
 CLIENT_ID = os.getenv("CLIENT_ID")
+
 
 # (Receive token by HTTPS POST)
 def authenticate(access_token):
     try:
-    # Specify the CLIENT_ID of the app that accesses the backend:
-        idinfo = id_token.verify_oauth2_token(access_token, requests.Request(), CLIENT_ID)
+        # Specify the CLIENT_ID of the app that accesses the backend:
+        idinfo = id_token.verify_oauth2_token(
+            access_token, requests.Request(), CLIENT_ID
+        )
 
-    # Or, if multiple clients access the backend server:
-    # idinfo = id_token.verify_oauth2_token(token, requests.Request())
-        if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
-            raise ValueError('Invalid issuer')
-        return idinfo 
+        # Or, if multiple clients access the backend server:
+        # idinfo = id_token.verify_oauth2_token(token, requests.Request())
+        if idinfo["iss"] not in ["accounts.google.com", "https://accounts.google.com"]:
+            raise ValueError("Invalid issuer")
+        return idinfo
 
-    # If the request specified a Google Workspace domain
-    # if idinfo['hd'] != DOMAIN_NAME:
-    #     raise ValueError('Wrong domain name.')
+        # If the request specified a Google Workspace domain
+        # if idinfo['hd'] != DOMAIN_NAME:
+        #     raise ValueError('Wrong domain name.')
 
-    # ID token is valid. Get the user's Google Account ID from the decoded token.
-        userid = idinfo['sub']
+        # ID token is valid. Get the user's Google Account ID from the decoded token.
+        userid = idinfo["sub"]
     except ValueError:
-    # Invalid token
+        # Invalid token
         pass
