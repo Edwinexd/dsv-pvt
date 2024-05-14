@@ -36,16 +36,36 @@ async def login_with_google(token_data: AccessToken):
     email = token_info.get("email")
     if not email:
         raise HTTPException(status_code=400, detail="Email not found in token")
-
     return {"email": email}
 
 
-# @app.post("/verify_token")
-# async def verify_token(token: Token):
-#    if authenticate(token.id_token):
-#        return {"message": "Token verified successfully"}
+# AUTH_SERVER_URL = os.getenv("AUTH_URL")
+
+# @app.post('/verify-token')
+# async def verify_token(request: Request):
+#    data = await request.json()
+#    access_token = data.get('access_token')
+
+# Send token verification request to the authorization server
+#    response = requests.post(f'{AUTH_SERVER_URL}/verify-token', json={'access_token': access_token})
+
+#    if response.status_code == 200:
+# Token is valid, extract user information from the response
+#        token_info = response.json()
+#        user_id = token_info.get('user_id')
+#        email = token_info.get('email')
+
+# Perform additional logic (e.g., user authentication, authorization)
+# ...
+
+#        return {'user_id': user_id, 'email': email}
 #    else:
-#        raise HTTPException(status_code=401, detail="Token verification failed")
+# Token is invalid or verification failed
+#        raise HTTPException(status_code=401, detail='Invalid token')
+
+# if __name__ == '__main__':
+#    import uvicorn
+#    uvicorn.run(app, host='0.0.0.0', port=8000)
 
 
 # REDIRECT_URI = "https://pvt.edt.cx/login/callbacks/google"
