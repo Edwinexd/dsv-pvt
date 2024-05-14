@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/components/custom_divider.dart';
-import 'package:flutter_application/components/profile_avatar.dart';
 import 'package:flutter_application/age_data.dart';
 import 'package:flutter_application/cities.dart';
 import 'package:flutter_application/components/custom_dropdown.dart';
@@ -9,14 +8,23 @@ import 'package:flutter_application/components/interests_grid.dart';
 import 'package:flutter_application/components/my_button.dart';
 import 'package:flutter_application/components/skill_level_slider.dart';
 import 'package:flutter_application/background_for_pages.dart';
+import 'package:flutter_application/controllers/backend_service.dart';
+import 'package:flutter_application/home_page.dart';
 
 class CreateProfilePage extends StatefulWidget {
+  final bool forced;
+
+  CreateProfilePage({this.forced = false});
+
   @override
   _CreateProfilePageState createState() => _CreateProfilePageState();
 }
 
 class _CreateProfilePageState extends State<CreateProfilePage> {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _interestsController = TextEditingController();
   int _skillLevel = 0;
   String imageUrl = 'https://example.com/profile_placeholder.png';
   String? selectedLocation;
@@ -34,12 +42,29 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
   bool ageEntered = false;
   bool bioEntered = false;
   bool idEntered = false;
+  final BackendService _backendService = BackendService();
 
-  void _saveProfile() {
+  Future<void> _saveProfile() async {
     if (_formKey.currentState!.validate()) {
+      final user = await _backendService.getMe();
+      await _backendService.createProfile(user.id, "description", 18,
+          _interestsController.text, _skillLevel, false);
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Profile Saved!')));
+          .showSnackBar(SnackBar(content: Text('Profile Created!')));
+      if (widget.forced) {
+        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      }
     }
+  }
+
+  void _pickImage() {
+    setState(() {
+      imageUrl = 'https://example.com/new_profile.jpg';
+    });
   }
 
   @override
@@ -48,16 +73,13 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: const Text(
-            'Create Profile', 
-            style: TextStyle(
-              color: Colors.white, 
-              ),
-            ),
-            centerTitle: true,
+          title: const Text('Create Profile',
+              style: TextStyle(color: Colors.white)),
+          centerTitle: true,
           backgroundColor: Colors.transparent,
           elevation: 0,
           iconTheme: const IconThemeData(color: Colors.white),
+          automaticallyImplyLeading: !widget.forced,
         ),
         body: SingleChildScrollView(
           child: Form(
@@ -67,40 +89,33 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Username',
-                          style: TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.bold)),
-                      IconButton(
-                        icon: Icon(Icons.edit,
-                            color: Theme.of(context).primaryColor),
-                        onPressed: () {},
+                  Center(
+                    child: GestureDetector(
+                      onTap: _pickImage,
+                      child: CircleAvatar(
+                        radius: 60,
+                        backgroundImage: NetworkImage(imageUrl),
+                        child: const Align(
+                          alignment: Alignment.bottomRight,
+                          child: CircleAvatar(
+                            backgroundColor: Colors.white,
+                            radius: 15,
+                            child: Icon(Icons.camera_alt,
+                                color: Colors.blue, size: 22),
+                          ),
+                        ),
                       ),
-                    ],
+                    ),
                   ),
-                  SizedBox(height: 10),
-                  Stack(
-                    clipBehavior: Clip.none,
-                    children: <Widget>[
-                      ProfileAvatar(
-                        imageUrl: imageUrl,
-                        icon: Icons.camera_alt,
-                        onPressed: () {
-                          // Implement camera functionality or another action
-                        },
-                      )
-                    ],
-                  ),
-                  SizedBox(height: 30),
+                  SizedBox(height: 20),
                   Row(
                     children: [
                       Expanded(
                         flex: 1,
                         child: CustomDropdown<int>(
                           items: AgeData.ageList,
-                          selectedValue: age != null ? int.tryParse(age!) : null,
+                          selectedValue:
+                              age != null ? int.tryParse(age!) : null,
                           onChanged: (newValue) {
                             setState(() {
                               age = newValue.toString();
@@ -121,7 +136,8 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
                               selectedLocation = newValue;
                             });
                           },
-                          labelText: selectedLocation == null ? 'Location' : null,
+                          labelText:
+                              selectedLocation == null ? 'Location' : null,
                         ),
                       ),
                     ],
@@ -200,9 +216,7 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
                       });
                     },
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
+                  SizedBox(height: 20),
                   MyButton(
                     buttonText: 'Save Profile',
                     onTap: _saveProfile,
