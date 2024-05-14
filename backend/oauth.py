@@ -33,7 +33,6 @@ src="https://apis.google.com/js/platform.js"
 
     #SIGN OUT
 
-from auth import exchange_code_for_token, authenticate
 
 class AuthHandler(BaseHTTPRequestHandler):
     def do_GET(self):
