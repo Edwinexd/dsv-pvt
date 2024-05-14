@@ -50,6 +50,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         appBar: AppBar(
           title:
               const Text('Edit Profile', style: TextStyle(color: Colors.white)),
+          centerTitle: true,
           backgroundColor: Colors.transparent,
           elevation: 0,
           iconTheme: const IconThemeData(color: Colors.white),
