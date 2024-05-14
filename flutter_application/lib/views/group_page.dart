@@ -145,7 +145,8 @@ class _GroupPageState extends State<GroupPage> {
                       'Group Activities',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                        fontSize: 20,
+                        color: Color(0xFF8134CE),
                       ),
                     ),
                   ),

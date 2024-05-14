@@ -65,7 +65,7 @@ class _MyGroupsState extends State<MyGroups> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 8),
                   SizedBox(
                     height: 40,
                     width: 250,
@@ -92,7 +92,7 @@ class _MyGroupsState extends State<MyGroups> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 8),
                   SizedBox(
                     height: 40,
                     width: 250,
@@ -119,7 +119,7 @@ class _MyGroupsState extends State<MyGroups> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 8),
                   SizedBox(
                     height: 40,
                     width: 250,
@@ -140,8 +140,9 @@ class _MyGroupsState extends State<MyGroups> {
                 ],
               ),
             ),
+            SizedBox(height: 2),
             const Padding(
-              padding: EdgeInsets.only(left: 16.0, top: 12.0),
+              padding: EdgeInsets.only(left: 16.0, top: 8.0),
               child: Text(
                 'My Groups',
                 style: TextStyle(
