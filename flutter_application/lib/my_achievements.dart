@@ -87,9 +87,15 @@ class AchievementCard extends StatelessWidget {
                   child: const Text('Close'),
                 ),
                 TextButton(
-                  onPressed: () {
+                  onPressed: () async {
                     // Share achievement - How?
-                    // Share.share('${achievement.header}: ${achievement.description}');
+                    Share.share('${achievement.header}: ${achievement.description}');
+                    // final result = await Share.shareXFiles([XFile('images/apple.png')], text: 'Great picture');
+                    // print('Thank you for sharing the picture!');
+/*                     
+                     if (result.status == ShareResultStatus.success) {
+                      print('Thank you for sharing the picture!');
+                    }  */
                   },
                   child: const Text('Share'),
                 ),
@@ -129,34 +135,5 @@ class AchievementCard extends StatelessWidget {
   }
 
 
-/* 
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Row(
-        children: <Widget>[
-          Icon(achievement.icon),
-          const SizedBox(width: 10.0),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                achievement.header,
-                style: const TextStyle(
-                  fontSize: 14.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                achievement.description,
-                style: const TextStyle(
-                  fontSize: 12.0,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  } */
+
 }
