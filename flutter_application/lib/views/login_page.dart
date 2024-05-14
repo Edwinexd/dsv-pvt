@@ -5,6 +5,7 @@ import 'package:flutter_application/components/my_textfield.dart';
 import 'package:flutter_application/components/square_tile.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/forgot_password.dart';
+import 'package:flutter_application/home_page.dart';
 import 'package:flutter_application/main.dart';
 import 'package:flutter_application/views/sign_up_page.dart';
 import 'package:oauth2/oauth2.dart';
@@ -71,20 +72,21 @@ class _LoginPageState extends State<LoginPage> {
       final GoogleSignInAccount? googleAccount = await _googleSignIn.signIn();
       final GoogleSignInAuthentication googleAuthentication = await googleAccount!.authentication;
       final String accessToken = googleAuthentication.accessToken!;
-      /*
-      if (googleSignIn.currentUser != null) {
-        String idToken = (await googleSignIn.currentUser.authentication).idToken;
-        sendTokenToBackend(idToken);
-      }
-    } catch (error) {
-      print('Error signing in with Google: $error');
-    }
-    */
+  
      await _backendService.sendTokenToBackend(accessToken);
+
+     Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => MainPage(
+                  darkModeEnabled: widget.darkModeEnabled,
+                  onToggleDarkMode: widget.onToggleDarkMode,
+                )));
 
     }catch(error) {
       print(error);
     }
+
 
   }
   
