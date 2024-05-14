@@ -1,6 +1,7 @@
 import 'package:flutter_application/activity_create.dart';
 import 'package:flutter_application/bars.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
+import 'package:flutter_application/friends_page.dart';
 import 'package:flutter_application/launch_injector.dart';
 import 'package:flutter_application/my_achievements.dart';
 import 'package:flutter_application/settings.dart';
@@ -37,7 +38,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Lace up & lead the way',
-      home: LaunchInjector(
+      home: MainPage(
         darkModeEnabled: _darkModeEnabled,
         onToggleDarkMode: _toggleDarkMode,
       ),
@@ -95,7 +96,7 @@ class MainPageState extends State<MainPage> {
       }
 
       if (index == 2) {
-        // Go to Friends page
+        goToFriendsPage(context);
       }
 
       if (index == 3) {
@@ -111,7 +112,7 @@ class MainPageState extends State<MainPage> {
           ),
         );
       }
-      
+
       if (index == 5) {
         //will be added here
       }
@@ -120,8 +121,8 @@ class MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-     return Scaffold(
-      appBar: buildAppBar( 
+    return Scaffold(
+      appBar: buildAppBar(
         onPressed: () {
           goToProfilePage(context);
         },
@@ -142,7 +143,7 @@ class MainPageState extends State<MainPage> {
         },
       ),
       body: HomePage(),
-      bottomNavigationBar: buildBottomNavigationBar( 
+      bottomNavigationBar: buildBottomNavigationBar(
         selectedIndex: selectedIndex,
         onItemTapped: onItemtapped,
       ),
@@ -185,6 +186,17 @@ class MainPageState extends State<MainPage> {
       MaterialPageRoute(builder: (context) => MyAchievements()),
     );
   }
+
+  void goToFriendsPage(BuildContext context) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => FriendsPage()),
+  ).then((_) {
+    setState(() {
+      selectedIndex = 2;
+    });
+  });
+}
 
   void goToHomePage(BuildContext context) {
     Navigator.push(
