@@ -5,16 +5,10 @@ from pilmoji import Pilmoji
 from images import download
 from pydantic import BaseModel
 import io
+from dataclasses import dataclass
 
-# TODO: better name
-class GradientStop():
-    def __init__(self, p: int, r: int, g: int, b: int, o: float):
-        self.percentage = p
-        self.r = r
-        self.g = g
-        self.b = b
-        self.opacity = o
-
+@dataclass
+class SubGradient():
     percentage: int
     r: int = 0xFF
     g: int = 0xFF
@@ -30,11 +24,11 @@ def generate_image(**data):
     draw_gradient(
         base,
         [
-            GradientStop(23, r=0xAB, g=0xAB, b=0xFC, o=0.9),
-            GradientStop(43, r=0xAA, g=0x6C, b=0xFC, o=0.6),
-            GradientStop(63, r=0xD2, g=0x78, b=0xFC, o=0.3), 
-            GradientStop(75, r=0xEE, g=0xAC, b=0xFF, o=0.3),
-            GradientStop(100, r=0xFD, g=0xFD, b=0xFF,o=1.0),
+            SubGradient(percentage=23, r=0xAB, g=0xAB, b=0xFC, opacity=0.9),
+            SubGradient(percentage=43, r=0xAA, g=0x6C, b=0xFC, opacity=0.6),
+            SubGradient(percentage=63, r=0xD2, g=0x78, b=0xFC, opacity=0.3), 
+            SubGradient(percentage=75, r=0xEE, g=0xAC, b=0xFF, opacity=0.3),
+            SubGradient(percentage=100, r=0xFD, g=0xFD, b=0xFF,opacity=1.0),
         ],
     )
     s3_im = get_s3_image(data["image_id"])
@@ -49,10 +43,10 @@ def generate_image(**data):
 
 def get_s3_image(image_id: str) -> Image:
     img_response = download(image_id)
-    stream = io.BytesIO(img_response["content"])
+    stream = io.BytesIO(img_response.content)
     return Image.open(stream).resize((512,512))
 
-def draw_gradient(im: Image, stops: list[GradientStop]):
+def draw_gradient(im: Image, stops: list[SubGradient]):
     fill = (stops[0].r, stops[0].g, stops[0].b)
     start = 0
 
