@@ -4,6 +4,7 @@ import 'package:flutter_application/components/my_button.dart';
 import 'package:flutter_application/components/my_textfield.dart';
 import 'package:flutter_application/components/square_tile.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
+import 'package:flutter_application/controllers/health.dart';
 import 'package:flutter_application/forgot_password.dart';
 import 'package:flutter_application/main.dart';
 import 'package:flutter_application/views/sign_up_page.dart';
@@ -51,6 +52,8 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     await _backendService.getMyUser();
+
+    print(await getSteps());
 
 
     Navigator.push(
