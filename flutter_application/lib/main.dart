@@ -69,19 +69,6 @@ class MainPage extends StatefulWidget {
 
 class MainPageState extends State<MainPage> {
   int selectedIndex = 0;
-  static const List<Widget> widgetOptions = <Widget>[
-    Text('Group Page',
-        style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
-    Text(
-      '',
-    ),
-    Text('Start Activity Page',
-        style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
-    Text('Create Activity Page',
-        style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
-    Text('Placeholder Page',
-        style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
-  ];
 
   void onItemtapped(int index) {
     setState(() {
@@ -99,22 +86,9 @@ class MainPageState extends State<MainPage> {
       }
 
       if (index == 3) {
-        // Go to My Activity page
+        // Go to My Schedule page 
       }
 
-      if (index == 4) {
-        // Prob broken after merge conflict but needs to be redone anyways
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ActivityCreatePage(groupId: 1234),
-          ),
-        );
-      }
-      
-      if (index == 5) {
-        //will be added here
-      }
     });
   }
 
@@ -126,20 +100,6 @@ class MainPageState extends State<MainPage> {
           goToProfilePage(context);
         },
         title: 'Lace up & lead the way',
-      ),
-      drawer: MyDrawer(
-        onSignoutTap: () {},
-        onAchievementsTap: () => goToMyAchievementsPage(context),
-        onSettingsTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => SettingsPage(
-                      onToggleDarkMode: widget.onToggleDarkMode,
-                      initialDarkMode: widget.darkModeEnabled,
-                    )),
-          );
-        },
       ),
       body: HomePage(),
       bottomNavigationBar: buildBottomNavigationBar( 
@@ -177,13 +137,6 @@ class MainPageState extends State<MainPage> {
         selectedIndex = 1;
       });
     });
-  }
-
-  void goToMyAchievementsPage(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => MyAchievements()),
-    );
   }
 
   void goToHomePage(BuildContext context) {
