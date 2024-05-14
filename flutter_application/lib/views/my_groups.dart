@@ -175,7 +175,7 @@ class _MyGroupsState extends State<MyGroups> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: ((context) => GroupPage(group: group)),
+                              builder: ((context) => GroupPage(group: group, isMember: true)),
                             ),
                           );
                         },

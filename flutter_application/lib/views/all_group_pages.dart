@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/group_page.dart';
@@ -19,11 +18,13 @@ class AllGroupsPage extends StatefulWidget {
 
 class AllGroupsPageState extends State<AllGroupsPage> {
   List<Group> _groups = [];
+  List<Group> allMyGroups = [];
 
   @override
   void initState() {
     super.initState();
     fetchGroups();
+    fetchMyGroups();
   }
 
   void refreshAllGroups() async {
@@ -35,6 +36,10 @@ class AllGroupsPageState extends State<AllGroupsPage> {
     setState(() {
       _groups = fetchedGroups;
     });
+  }
+
+  Future<void> fetchMyGroups() async {
+    allMyGroups = await BackendService().getMyGroups();
   }
 
   String _searchQuery = '';
@@ -134,12 +139,13 @@ class AllGroupsPageState extends State<AllGroupsPage> {
                 final group = filteredGroups[index];
                 return GestureDetector(
                     onTap: () {
+                      bool isMember = allMyGroups
+                          .any((myGroup) => myGroup.id == group.id);
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  GroupPage(group: group, isMember: false)));
-                      // isMember will be handled later on
+                                  GroupPage(group: group, isMember: isMember)));
                     },
                     child: Container(
                       margin: const EdgeInsets.symmetric(vertical: 4.0),
