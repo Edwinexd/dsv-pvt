@@ -14,9 +14,8 @@ class _MidnatsloppetActivityState extends State<MidnatsloppetActivity> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(
-        onPressed: () {
-          //Here we define what happens when the AppBar button is pressed
-        },
+        context: context,
+        showBackButton: true,
         title: 'Midnatsloppet Activity',
       ),
       body: DefaultBackground(
@@ -38,10 +37,10 @@ class _MidnatsloppetActivityState extends State<MidnatsloppetActivity> {
         ),
       ),
       bottomNavigationBar: buildBottomNavigationBar(
-        selectedIndex: 3, 
-        onItemTapped: (index) {
-        },
+        context: context,
       ),
     );
   }
 }
+
+

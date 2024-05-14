@@ -69,83 +69,10 @@ class MainPage extends StatefulWidget {
 class MainPageState extends State<MainPage> {
   int selectedIndex = 0;
 
-  void onItemtapped(int index) {
-    setState(() {
-      selectedIndex = index;
-      if (index == 0) {
-        goToHomePage(context);
-      }
-
-      if (index == 1) {
-        goToGroupPage(context);
-      }
-
-      if (index == 2) {
-        // Go to Friends page
-      }
-
-      if (index == 3) {
-        // Go to My Schedule page 
-      }
-
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-     return Scaffold(
-      appBar: buildAppBar( 
-        onPressed: () {
-          goToProfilePage(context);
-        },
-        title: 'Lace up & lead the way',
-      ),
+    return Scaffold(
       body: HomePage(),
-      bottomNavigationBar: buildBottomNavigationBar( 
-        selectedIndex: selectedIndex,
-        onItemTapped: onItemtapped,
-      ),
     );
-  }
-
-  void goToProfilePage(BuildContext context) {
-    DateTime joinedDate = DateTime(2021, 4, 12);
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ProfilePage(
-          name: 'Axel Andersson',
-          biography: "Let's go running!",
-          imageUrl: 'https://via.placeholder.com/150',
-          username: 'Oltan53',
-          joinedDate: joinedDate,
-        ),
-      ),
-    );
-  }
-
-  void goToGroupPage(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: ((context) => MyGroups()),
-      ),
-    ).then((_) {
-      setState(() {
-        selectedIndex = 1;
-      });
-    });
-  }
-
-  void goToHomePage(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => HomePage()),
-    ).then((_) {
-      setState(() {
-        selectedIndex = 0;
-      });
-    });
   }
 }

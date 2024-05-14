@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/bars.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,7 +16,7 @@ class AllGroupsPage extends StatefulWidget {
   AllGroupsPageState createState() => AllGroupsPageState();
 }
 
-class AllGroupsPageState extends State<AllGroupsPage>  {
+class AllGroupsPageState extends State<AllGroupsPage> {
   List<Group> _groups = [];
 
   @override
@@ -35,7 +36,6 @@ class AllGroupsPageState extends State<AllGroupsPage>  {
     });
   }
 
-
   String _searchQuery = '';
   String _selectedFilter = 'All';
 
@@ -54,16 +54,11 @@ class AllGroupsPageState extends State<AllGroupsPage>  {
     }).toList();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'All Groups',
-          style: GoogleFonts.poppins(
-            textStyle: const TextStyle(
-              fontSize: 20,
-            )
-          ),
-        ),
-        backgroundColor: const Color.fromARGB(230, 60, 71, 133),
+ appBar: buildAppBar(
+        context: context,
+        showBackButton: true,
+        title: 'All Groups',
+        
       ),
       body: DefaultBackground(
         children: [
@@ -154,6 +149,9 @@ class AllGroupsPageState extends State<AllGroupsPage>  {
             ),
           ),
         ],
+      ),
+      bottomNavigationBar: buildBottomNavigationBar(
+        context: context,
       ),
     );
   }

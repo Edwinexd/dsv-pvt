@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
+import 'package:flutter_application/bars.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class GroupMembersPage extends StatefulWidget {
@@ -22,15 +23,10 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Members',
-          style: GoogleFonts.poppins(
-            textStyle: const TextStyle(
-              fontSize: 20.0,
-            ),
-          ),
-        ),
+      appBar: buildAppBar(
+        context: context,
+        showBackButton: true,
+        title: 'Members',
       ),
       body: DefaultBackground(
         children: [
@@ -40,7 +36,8 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const Text(
-                  'Group Members 4/20', /*Will be displayed total number of members and max members*/
+                  'Group Members 4/20',
+                  /*Will be displayed total number of members and max members*/
                   style: TextStyle(fontSize: 20),
                 ),
                 SizedBox(height: 20),
@@ -82,14 +79,16 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
           ),
         ],
       ),
+      bottomNavigationBar: buildBottomNavigationBar(
+        context: context,
+      ),
     );
   }
 
   void _onSearchTextChanged(String value) {
     setState(() {
       _filteredMembersList = _membersList
-          .where((member) => 
-          member.toLowerCase().contains(value.toLowerCase()))
+          .where((member) => member.toLowerCase().contains(value.toLowerCase()))
           .toList();
     });
   }
