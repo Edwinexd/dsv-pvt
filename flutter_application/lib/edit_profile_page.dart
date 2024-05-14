@@ -88,7 +88,30 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       )
                     ],
                   ),
-                  SizedBox(height: 30),
+                  SizedBox(height: 20),
+                  
+                  CustomTextField(
+                    labelText: idEntered ? null : 'Name',
+                    onChanged: (text) {
+                      setState(() {
+                        idEntered = text.isNotEmpty;
+                      });
+                    },
+                  ),
+
+                  SizedBox(height: 20),
+                  
+                  CustomTextField(
+                    labelText: idEntered ? null : 'Email',
+                    onChanged: (text) {
+                      setState(() {
+                        idEntered = text.isNotEmpty;
+                      });
+                    },
+                  ),
+
+                  SizedBox(height: 20),
+
                   Row(
                     children: [
                       Expanded(
