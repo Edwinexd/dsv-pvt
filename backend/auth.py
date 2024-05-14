@@ -2,8 +2,9 @@ import os
 import requests
 from schemas import UserCreate, UserCreds
 from fastapi import HTTPException
-from google.oauth2 import id_token
-from google.auth.transport import requests
+#from google.oauth2 import id_token
+#from google.auth.transport import requests
+import jwt
 
 
 AUTH_URL = os.getenv("AUTH_URL")
@@ -29,28 +30,54 @@ def create_user(user_payload: UserCreate):
 
 
 CLIENT_ID = os.getenv("CLIENT_ID")
-
-
 # (Receive token by HTTPS POST)
-def authenticate(access_token):
-    try:
+#def authenticate(access_token):
+#    try:
         # Specify the CLIENT_ID of the app that accesses the backend:
-        idinfo = id_token.verify_oauth2_token(
-            access_token, requests.Request(), CLIENT_ID
-        )
+#        idinfo = id_token.verify_oauth2_token(
+#            access_token, requests.Request(), CLIENT_ID
+#        )
 
         # Or, if multiple clients access the backend server:
         # idinfo = id_token.verify_oauth2_token(token, requests.Request())
-        if idinfo["iss"] not in ["accounts.google.com", "https://accounts.google.com"]:
-            raise ValueError("Invalid issuer")
-        return idinfo
+#        if idinfo["iss"] not in ["accounts.google.com", "https://accounts.google.com"]:
+#            raise ValueError("Invalid issuer")
+#        return idinfo
 
         # If the request specified a Google Workspace domain
         # if idinfo['hd'] != DOMAIN_NAME:
         #     raise ValueError('Wrong domain name.')
 
         # ID token is valid. Get the user's Google Account ID from the decoded token.
-        userid = idinfo["sub"]
-    except ValueError:
+#        userid = idinfo["sub"]
+#    except ValueError:
         # Invalid token
+#        pass
+
+
+def authenticate(access_token, client_id):
+    try:
+        # Decode the JWT token
+        idinfo = jwt.decode(access_token, options={"verify_signature": False})
+
+        # Verify the issuer
+        if idinfo["iss"] not in ["accounts.google.com", "https://accounts.google.com"]:
+            raise ValueError("Invalid issuer")
+        
+        # Verify the audience (client ID)
+        if idinfo.get("aud") != client_id:
+            raise ValueError("Invalid audience")
+
+        # If the request specified a Google Workspace domain
+        # if idinfo.get('hd') != DOMAIN_NAME:
+        #     raise ValueError('Wrong domain name.')
+
+        # ID token is valid. Get the user's Google Account ID from the decoded token.
+        userid = idinfo["sub"]
+        return idinfo
+    except jwt.DecodeError as e:
+        # Invalid token
+        pass
+    except ValueError as e:
+        # Invalid issuer or audience
         pass
