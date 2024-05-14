@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/activity_create.dart';
+import 'package:flutter_application/components/checkered_background.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/models/user.dart';
@@ -96,34 +97,30 @@ class _GroupPageState extends State<GroupPage> {
       ),
       body: DefaultBackground(
         children: [
-          Container(
-            padding: const EdgeInsets.all(8.0),
-            margin: const EdgeInsets.all(8.0),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [
-                Colors.orange[200]!,
-                Colors.orange[200]!,
-                Colors.orange[400]!,
-                Colors.orange[400]!,
-              ], stops: const [
-                0.25,
-                0.25,
-                0.75,
-                0.75
-              ], begin: Alignment.topLeft, end: Alignment.bottomRight),
-              borderRadius: BorderRadius.circular(15.0),
-            ),
-            height: 120,
-            width: 250,
-            child: Center(
-              child: Text(
-                widget.group.name,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                CheckeredPatternBackground(
+                    color1: Colors.orange[200]!,
+                    color2: Colors.orange[400]!,
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      margin: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Center(
+                        child: Text(
+                          widget.group.name,
+                          style: const TextStyle(
+                            color: Color(0xFF8134CE),
+                            //fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                    ))
+              ],
             ),
           ),
           if (widget.isMember) ...[

@@ -151,7 +151,7 @@ class AllGroupsPageState extends State<AllGroupsPage> {
                       margin: const EdgeInsets.symmetric(vertical: 4.0),
                       padding: const EdgeInsets.all(4.0),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Color(0xFFFFD5A3),
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                       child: ListTile(
