@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, Header, Response
 from typing import Annotated, BinaryIO
 from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 from tempfile import NamedTemporaryFile
 import boto3
 from botocore.config import Config
@@ -14,6 +15,15 @@ from functools import lru_cache
 load_dotenv()
 
 app = FastAPI()
+
+# CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 id_generator = IdGenerator()
 
