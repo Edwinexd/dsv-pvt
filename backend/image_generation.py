@@ -30,20 +30,21 @@ def generate_image(**data):
     draw_gradient(
         base,
         [
-            GradientStop(23, "ABABFC", 0.9),
-            GradientStop(43, "AA6CFC", 0.6),
-            GradientStop(63, "D278FC", 0.3), 
-            GradientStop(75, "EEACFF", 0.3),
-            GradientStop(100, "FDFDFF", 1.0),
+            GradientStop(23, r=0xAB, g=0xAB, b=0xFC, o=0.9),
+            GradientStop(43, r=0xAA, g=0x6C, b=0xFC, o=0.6),
+            GradientStop(63, r=0xD2, g=0x78, b=0xFC, o=0.3), 
+            GradientStop(75, r=0xEE, g=0xAC, b=0xFF, o=0.3),
+            GradientStop(100, r=0xFD, g=0xFD, b=0xFF,o=1.0),
         ],
     )
-    s3_im = get_s3_image(data.image_id)
+    s3_im = get_s3_image(data["image_id"])
     base.paste(s3_im, (int(base.width/2),int(base.height/2)))
     font = ImageFont.load_default(size=42)
     pilmoji = Pilmoji(base)
     pilmoji.text((512,512), f"I completed {data["achievement_name"]}! 😎", fill=(255,0,0), font=font)
-    s.paste(base, (0,0), base)
-    s.show()
+    base.show()
+    #s.paste(base, (0,0), base)
+    #s.show()
     #im.show()
 
 def get_s3_image(image_id: str) -> Image:
@@ -52,12 +53,12 @@ def get_s3_image(image_id: str) -> Image:
     return Image.open(stream).resize((512,512))
 
 def draw_gradient(im: Image, stops: list[GradientStop]):
-    fill = rgb_tuple(stops[0].hex_clr)
+    fill = (stops[0].r, stops[0].g, stops[0].b)
     start = 0
 
     for g in stops:
         end = int((g.percentage/100) * im.height)
-        fill = draw_subgradient(im=im, c1=fill, c2=rgb_tuple(g.hex_clr), start=start, end=end, opacity=g.opacity)
+        fill = draw_subgradient(im=im, c1=fill, c2=(g.r, g.g, g.b), start=start, end=end, opacity=g.opacity)
         start = end
 
 def rgb_tuple(hex_string: str) -> tuple[int, int, int]:
@@ -127,4 +128,4 @@ def has_reached_end(color1: int, color2, up: bool):
     else:
         return color1 <= color2
 
-generate_image(schemas.Achievement(achievement_name="Testtitel", id = 1234, image_id="171576751164"))
+generate_image(achievement_name="Testtitel", id = 1234, image_id="171576751164")
