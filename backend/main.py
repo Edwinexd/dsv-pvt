@@ -306,6 +306,8 @@ def login(credentials: schemas.UserCreds, db_session: DbSession):
     session = create_session(user_id)
     return {"bearer": f"Bearer {session}"}
 
+# app.post("userrs/login/callbacks/google")
+
 
 @app.post("/users/logout", status_code=204)
 def logout(token: Annotated[HTTPAuthorizationCredentials, Depends(header_scheme)]):

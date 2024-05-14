@@ -7,6 +7,9 @@ import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/forgot_password.dart';
 import 'package:flutter_application/main.dart';
 import 'package:flutter_application/views/sign_up_page.dart';
+import 'package:oauth2/oauth2.dart';
+import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginPage extends StatefulWidget {
   final bool darkModeEnabled;
@@ -52,8 +55,7 @@ class _LoginPageState extends State<LoginPage> {
 
     await _backendService.getMyUser();
 
-
-    Navigator.push(
+     Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) => MainPage(
@@ -61,6 +63,32 @@ class _LoginPageState extends State<LoginPage> {
                   onToggleDarkMode: widget.onToggleDarkMode,
                 )));
   }
+
+  GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email',]);
+
+  Future<void> _handleSignIn() async {
+    try {
+      final GoogleSignInAccount? googleAccount = await _googleSignIn.signIn();
+      final GoogleSignInAuthentication googleAuthentication = await googleAccount!.authentication;
+      final String accessToken = googleAuthentication.accessToken!;
+      /*
+      if (googleSignIn.currentUser != null) {
+        String idToken = (await googleSignIn.currentUser.authentication).idToken;
+        sendTokenToBackend(idToken);
+      }
+    } catch (error) {
+      print('Error signing in with Google: $error');
+    }
+    */
+     await _backendService.sendTokenToBackend(accessToken);
+
+    }catch(error) {
+      print(error);
+    }
+
+  }
+  
+  Future<void> _handleSignOut() => _googleSignIn.disconnect();
 
   @override
   Widget build(BuildContext context) {
@@ -150,10 +178,15 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 50),
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SquareTile(imagePath: 'lib/images/google.png'),
+                    GestureDetector(
+                      onTap: () async {
+                        await _handleSignIn();
+                      },
+                      child: const SquareTile(imagePath: 'lib/images/google.png')
+                    )
                   ],
                 ),
                 const SizedBox(height: 50),

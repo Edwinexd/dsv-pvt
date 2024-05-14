@@ -27,23 +27,7 @@ def create_user(user_payload: UserCreate):
         )
     return str(response.json()["id"])
 
-
-REDIRECT_URI = 'http://localhost:5000/callback'
 CLIENT_ID = os.getenv("CLIENT_ID")
-CLIENT_SECRET = os.getenv("CLIENT_SECRET")
-
-def exchange_code_for_token(code):
-    token_url = 'https://oauth2.googleapis.com/token'
-    data = {
-        'code' : code,
-        'client_id' : CLIENT_ID,
-        'client_secret' : CLIENT_SECRET,
-        'redirect_uri' : REDIRECT_URI,
-        'grant_type' : 'authorization_code'
-    }
-    response = requests.post(token_url, data=data)
-    return response.json().get('access_token')
-
 
 # (Receive token by HTTPS POST)
 def authenticate(access_token):

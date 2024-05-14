@@ -67,6 +67,15 @@ class BackendService {
     token = response.data['bearer'];
   }
 
+   Future<void> sendTokenToBackend(String accessToken) async {
+      final response = await _dio.post (
+        'https://pvt.edt.cx/login/callbacks/google',
+        data: {"access_token": accessToken}
+      );
+      token = response.data['bearer'];
+    }
+  
+
   Future<User> createUser(
       String userName, String fullName, String password) async {
     final response = await _dio.post(
