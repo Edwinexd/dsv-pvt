@@ -35,7 +35,7 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
 
   void _pickImage() {
     setState(() {
-      _imageProvider = NetworkImage('https://example.com/new_profile.jpg'); // Simulate image change
+      _imageProvider = NetworkImage('https://example.com/new_profile.jpg');
     });
   }
 

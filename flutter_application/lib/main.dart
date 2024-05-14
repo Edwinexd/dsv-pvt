@@ -1,3 +1,7 @@
+import 'package:flutter_application/activity_create.dart';
+import 'package:flutter_application/bars.dart';
+import 'package:flutter_application/controllers/backend_service.dart';
+import 'package:flutter_application/launch_injector.dart';
 import 'package:flutter_application/my_achievements.dart';
 import 'package:flutter_application/settings.dart';
 import 'package:flutter_application/views/my_groups.dart';
@@ -5,12 +9,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'profile_page.dart';
 import 'drawer.dart';
-import 'create-profile-page.dart';
-import 'package:flutter_application/controllers/backend_service.dart';
-import 'package:flutter_application/models/group.dart';
+import 'package:flutter_application/views/login_page.dart';
 import 'package:flutter_application/home_page.dart';
 
-//Uppdaterad från PC.
 void main() async {
   await dotenv.load(fileName: '.env');
   runApp(const MyApp());
@@ -35,13 +36,19 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Midnattsloppet Now',
-      home: MainPage(
+      title: 'Lace up & lead the way',
+      home: LaunchInjector(
         darkModeEnabled: _darkModeEnabled,
         onToggleDarkMode: _toggleDarkMode,
       ),
       debugShowCheckedModeBanner: false,
-      theme: _darkModeEnabled ? ThemeData.dark() : ThemeData.light(),
+      theme: _darkModeEnabled
+          ? ThemeData.dark().copyWith(
+              canvasColor: const Color.fromARGB(230, 60, 71, 133),
+            )
+          : ThemeData.light().copyWith(
+              canvasColor: const Color.fromARGB(230, 60, 71, 133),
+            ),
     );
   }
 }
@@ -70,6 +77,8 @@ class MainPageState extends State<MainPage> {
     ),
     Text('Start Activity Page',
         style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+    Text('Create Activity Page',
+        style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
     Text('Placeholder Page',
         style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
   ];
@@ -82,28 +91,41 @@ class MainPageState extends State<MainPage> {
       }
 
       if (index == 1) {
-        goToProfilePage(context); 
-      }
-      
-      if (index == 2) {
         goToGroupPage(context);
       }
 
+      if (index == 2) {
+        // Go to Friends page
+      }
+
       if (index == 3) {
-        goToMyAchievementsPage(context);
+        // Go to My Activity page
       }
 
       if (index == 4) {
+        // Prob broken after merge conflict but needs to be redone anyways
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ActivityCreatePage(groupId: 1234),
+          ),
+        );
+      }
+      
+      if (index == 5) {
         //will be added here
-      }      
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Midnattsloppet Now'),
+     return Scaffold(
+      appBar: buildAppBar( 
+        onPressed: () {
+          goToProfilePage(context);
+        },
+        title: 'Lace up & lead the way',
       ),
       drawer: MyDrawer(
         onSignoutTap: () {},
@@ -120,91 +142,58 @@ class MainPageState extends State<MainPage> {
         },
       ),
       body: HomePage(),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          
-          
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: 'Groups',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.star),
-            label: 'Achievements',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.question_mark),
-            label: 'Placeholder',
-          ),
-        ],
-        currentIndex: selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        unselectedItemColor: Colors.deepPurple[900],
-        onTap: onItemtapped,
+      bottomNavigationBar: buildBottomNavigationBar( 
+        selectedIndex: selectedIndex,
+        onItemTapped: onItemtapped,
       ),
     );
   }
 
   void goToProfilePage(BuildContext context) {
+    DateTime joinedDate = DateTime(2021, 4, 12);
+
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const ProfilePage(
-          name: 'Jeb Jebson',
+        builder: (context) => ProfilePage(
+          name: 'Axel Andersson',
           biography: "Let's go running!",
           imageUrl: 'https://via.placeholder.com/150',
+          username: 'Oltan53',
+          joinedDate: joinedDate,
         ),
       ),
-    ).then((_) {
-      //Updating the active index when navigating back
-      setState(() {
-        selectedIndex = 0;
-      });
-    });
+    );
   }
 
   void goToGroupPage(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: ((context) => const MyGroups()),
+        builder: ((context) => MyGroups()),
       ),
     ).then((_) {
       setState(() {
-        selectedIndex = 0;
+        selectedIndex = 1;
       });
     });
   }
 
   void goToMyAchievementsPage(BuildContext context) {
     Navigator.push(
-      context, 
-      MaterialPageRoute(
-        builder: (context) => MyAchievements()),
-      ).then((_) {
-        setState(() {
-          selectedIndex = 0;
-        });
-      });
+      context,
+      MaterialPageRoute(builder: (context) => MyAchievements()),
+    );
   }
 
   void goToHomePage(BuildContext context) {
     Navigator.push(
-      context, 
-      MaterialPageRoute(
-        builder: (context) => MyAchievements()),
-      ).then((_) {
-        setState(() {
-          selectedIndex = 0;
-        });
+      context,
+      MaterialPageRoute(builder: (context) => HomePage()),
+    ).then((_) {
+      setState(() {
+        selectedIndex = 0;
       });
+    });
   }
 }
