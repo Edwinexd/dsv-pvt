@@ -1,6 +1,6 @@
 import PIL.Image
 import schemas
-from PIL import ImageDraw, Image, ImageFont
+from PIL import ImageDraw, Image, ImageFont, ImageFilter
 from pilmoji import Pilmoji
 from images import download
 from pydantic import BaseModel
@@ -16,14 +16,14 @@ class SubGradient:
     b: int = 0xFF
     opacity: float = 1
 
-# TODO: add drop shadow
+# TODO: refactor and remove commented code...
 def generate_image(**data):
     # TODO: assert some sort of standard for kwargs e.g.
     # {title: "foo", user: "bar", image_id: "sna"...}
 
     #s = Image.new(mode="RGBA", size=(1024, 1024))
-    base = Image.new(mode="RGBA", size=(1024, 1024))
-    base.paste((255, 255, 255), (0, 0, base.width, base.height))
+    base = Image.new(mode="RGB", size=(1024, 1024))
+    base.paste(0xc7ecee, (0, 0, base.width, base.height))
     draw_gradient(
         base,
         [
@@ -35,20 +35,69 @@ def generate_image(**data):
         ],
     )
     s3_im = get_s3_image(data["image_id"])
-    add_corners(s3_im, 100)
-    base.paste(s3_im, (int(base.width / 2 - base.width/4), int(base.height / 2 - base.height /4)), s3_im)
-    font = ImageFont.load_default(size=42)
-    pilmoji = Pilmoji(base)
-    pilmoji.text(
-        (256, 210),
-        f"I completed {data["achievement_name"]}! 😎",
-        fill=(0xEE, 0xAC, 0xFF),
-        font=font,
-    )
+    #testbg = Image.new(mode="RGB", size=(512,512))
+    #testbg.paste(0xcc98db, (0,0,testbg.width,testbg.height))
+    radius = 25
+    #test = Image.open("test.jpeg").resize((512,512))
+    add_corners(s3_im, radius)
+    #testbg.paste(test, (0,0), test)
+    #add_corners(s3_im, 100)
+    sh = drop_shadow(s3_im, iterations=60, border=68, background=0x000000, shadow=(0,0,0,150), offset=(0,0))
+    nimgw, nimgh = sh.size
+    offset = (-62,-62)
+    #base.paste(sh, (int(base.width / 2 - base.width/4), int(base.height / 2 - base.height /4)), sh)
+    #base.paste(sh, offset, mask=sh)
+    image_pos = (int(base.width / 2 - base.width/4), int(base.height / 2 - base.height /4))
+    base.paste(sh, (image_pos[0]+offset[0],image_pos[1]+offset[1]), sh)
+    base.paste(s3_im, image_pos, s3_im)
+    #font = ImageFont.load_default(size=42)
+    #pilmoji = Pilmoji(base)
+    #pilmoji.text(
+    #    (256, 210),
+    #    f"I completed {data["achievement_name"]}! 😎",
+    #    fill=(0xEE, 0xAC, 0xFF),
+    #    font=font,
+    #)
     base.show()
     #s.paste((255, 255, 255), (0, 0, s.width, s.height))
     #s.paste(base, (0, 0), base)
     #s.show()
+
+# Credit: https://enzircle.hashnode.dev/image-beautifier-in-python
+# Modified to make shadows work for rounded images
+def drop_shadow(image, offset=(5,5), background=0xffffff, shadow=0x444444, 
+                border=8, iterations=3):
+    """
+    Add a gaussian blur drop shadow to an image.  
+    image       - The image to overlay on top of the shadow.
+    offset      - Offset of the shadow from the image as an (x,y) tuple. 
+                  Can be positive or negative.
+    background  - Background colour behind the image.
+    shadow      - Shadow colour (darkness).
+    border      - Width of the border around the image.  This must be wide
+                enough to account for the blurring of the shadow.
+    iterations  - Number of times to apply the filter.  More iterations 
+                produce a more blurred shadow, but increase processing time.
+    """
+    # Create the backdrop image -- a box in the background colour with a 
+    # shadow on it.
+    totalWidth = image.size[0] + abs(offset[0]) + 2*border
+    totalHeight = image.size[1] + abs(offset[1]) + 2*border
+    back = Image.new("RGBA", (totalWidth, totalHeight), background)
+    # Place the shadow, taking into account the offset from the image
+    shadowLeft = border + max(offset[0], 0)
+    shadowTop = border + max(offset[1], 0)
+    back.paste(shadow, [shadowLeft, shadowTop, shadowLeft + image.size[0], 
+               shadowTop + image.size[1]] )
+    # Apply the filter to blur the edges of the shadow.  Since a small kernel
+    # is used, the filter must be applied repeatedly to get a decent blur.
+    n = 0
+    while n < iterations:
+        back = back.filter(ImageFilter.BLUR)
+        n += 1
+
+    # modified to just return the shadow so we can have image and shadow as separate images
+    return back
 
 
 # https://stackoverflow.com/a/11291419
