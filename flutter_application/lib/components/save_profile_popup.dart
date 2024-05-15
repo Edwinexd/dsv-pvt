@@ -4,11 +4,11 @@ void saveProfile(BuildContext context, GlobalKey<FormState> formKey) {
   if (formKey.currentState!.validate()) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Row(
+        content: Row(
           children: [
-            Icon(Icons.check_circle, color: Colors.green),
-            SizedBox(width: 10),
-            Expanded(
+            AnimatedCheckIcon(),
+            const SizedBox(width: 10),
+            const Expanded(
               child: Text(
                 'Profile Saved!',
                 style: TextStyle(color: Colors.white),
@@ -21,9 +21,45 @@ void saveProfile(BuildContext context, GlobalKey<FormState> formKey) {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
-        margin: const EdgeInsets.all(10),
         duration: const Duration(seconds: 3),
+        elevation: 0,
       ),
+    );
+  }
+}
+
+class AnimatedCheckIcon extends StatefulWidget {
+  @override
+  _AnimatedCheckIconState createState() => _AnimatedCheckIconState();
+}
+
+class _AnimatedCheckIconState extends State<AnimatedCheckIcon> with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    duration: const Duration(seconds: 1),
+    vsync: this,
+  )..forward();
+
+  late final Animation<double> _animation = CurvedAnimation(
+    parent: _controller,
+    curve: Curves.elasticInOut,
+  );
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _animation.value,
+          child: Icon(Icons.check_circle, color: Colors.green, size: 30),
+        );
+      },
     );
   }
 }
