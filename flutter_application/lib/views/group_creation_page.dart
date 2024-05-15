@@ -159,16 +159,9 @@ class GroupCreationState extends State<GroupCreation> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
+                        builder: (context) => GroupPage(group:  Group(id: 15, name: _nameController.text, description: _descriptionController.text, isPrivate: _isPublic, ownerId: '3'), isMember: true),
 
-                        builder: (context) => GroupPage(
-                            group: Group(
-                                id: 15,
-                                name: _nameController.text,
-                                description: _descriptionController.text,
-                                isPrivate: _isPublic,
-                                ownerId: '3')),
-
-                      ),
+                    ),
                     );
                   },
                   child: const Text('Go to Group Page'),
