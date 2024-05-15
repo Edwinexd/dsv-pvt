@@ -5,6 +5,7 @@ from pilmoji import Pilmoji
 from images import download
 from pydantic import BaseModel
 import io
+from datetime import datetime
 from dataclasses import dataclass
 
 
@@ -18,10 +19,6 @@ class SubGradient:
 
 # TODO: refactor and remove commented code...
 def generate_image(**data):
-    # TODO: assert some sort of standard for kwargs e.g.
-    # {title: "foo", user: "bar", image_id: "sna"...}
-
-    #s = Image.new(mode="RGBA", size=(1024, 1024))
     base = Image.new(mode="RGB", size=(1024, 1024))
     base.paste(0xc7ecee, (0, 0, base.width, base.height))
     draw_gradient(
@@ -34,34 +31,50 @@ def generate_image(**data):
             SubGradient(percentage=100, r=0xFD, g=0xFD, b=0xFF, opacity=1.0),
         ],
     )
-    s3_im = get_s3_image(data["image_id"])
-    #testbg = Image.new(mode="RGB", size=(512,512))
-    #testbg.paste(0xcc98db, (0,0,testbg.width,testbg.height))
+
+    s3_im = get_s3_image(data["image_id"]).resize((512,512))
+    #s3_im = Image.open("testAc.jpeg").resize((512,512))
     radius = 25
-    #test = Image.open("test.jpeg").resize((512,512))
     add_corners(s3_im, radius)
-    #testbg.paste(test, (0,0), test)
-    #add_corners(s3_im, 100)
     sh = drop_shadow(s3_im, iterations=60, border=68, background=0x000000, shadow=(0,0,0,150), offset=(0,0))
-    nimgw, nimgh = sh.size
     offset = (-62,-62)
-    #base.paste(sh, (int(base.width / 2 - base.width/4), int(base.height / 2 - base.height /4)), sh)
-    #base.paste(sh, offset, mask=sh)
     image_pos = (int(base.width / 2 - base.width/4), int(base.height / 2 - base.height /4))
     base.paste(sh, (image_pos[0]+offset[0],image_pos[1]+offset[1]), sh)
     base.paste(s3_im, image_pos, s3_im)
-    #font = ImageFont.load_default(size=42)
-    #pilmoji = Pilmoji(base)
-    #pilmoji.text(
-    #    (256, 210),
-    #    f"I completed {data["achievement_name"]}! 😎",
-    #    fill=(0xEE, 0xAC, 0xFF),
-    #    font=font,
-    #)
+
+    font = ImageFont.load_default(size=42)
+    pilmoji = Pilmoji(base)
+    pilmoji.text(
+        (512, 65),
+        f"I completed\n{data["achievement_name"]}\nat\n{datetime.fromisoformat(data["date"]).strftime("%d %B")}!",
+        fill=0x8134CE,
+        font=font,
+        anchor="ms",
+        stroke_width=2,
+        stroke_fill="black",
+    )
+
+    profile_pic = get_s3_image(data["user_image_id"]).resize((86,86))
+    profile_pic = Image.open("testAc.jpeg").resize((86,86))
+    add_corners(profile_pic, 15)
+    sh = drop_shadow(profile_pic, iterations=20, border=68, background=0x000000, shadow=(0,0,0,155), offset=(0,0))
+    offset = (-64,-64)
+    image_pos = (330, 835)
+    base.paste(sh, (image_pos[0]+offset[0], image_pos[1]+offset[1]), sh)
+    base.paste(profile_pic, image_pos, profile_pic)
+
+    pilmoji.text(
+        (330+profile_pic.width+20, 850),
+        f"{data["username"]}",
+        fill=0xABABFC,
+        font=font,
+        stroke_width=1,
+        stroke_fill="black",
+    )
+    #d = ImageDraw.Draw(base)
+    #d.text((512,100), "aaaaaaaaaaaaaaa", fill="black", anchor="ms", font=font)
+
     base.show()
-    #s.paste((255, 255, 255), (0, 0, s.width, s.height))
-    #s.paste(base, (0, 0), base)
-    #s.show()
 
 # Credit: https://enzircle.hashnode.dev/image-beautifier-in-python
 # Modified to make shadows work for rounded images
@@ -117,8 +130,7 @@ def add_corners(im, rad):
 def get_s3_image(image_id: str) -> Image:
     img_response = download(image_id)
     stream = io.BytesIO(img_response.content)
-    return Image.open(stream).resize((512, 512))
-
+    return Image.open(stream)
 
 def draw_gradient(im: Image, stops: list[SubGradient]):
     old = (stops[0].r, stops[0].g, stops[0].b)
@@ -221,4 +233,4 @@ def has_reached_end(color1: int, color2, up: bool):
         return color1 <= color2
 
 
-generate_image(achievement_name="Testtitel", id=1234, image_id="171576751164")
+generate_image(achievement_name="Testtitel", id=1234, image_id="171576751164", date="2024-05-15", username="testuser", user_image_id="1715376751164")
