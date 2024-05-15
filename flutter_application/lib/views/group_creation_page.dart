@@ -159,6 +159,7 @@ class GroupCreationState extends State<GroupCreation> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
+
                         builder: (context) => GroupPage(
                             group: Group(
                                 id: 15,
@@ -166,6 +167,7 @@ class GroupCreationState extends State<GroupCreation> {
                                 description: _descriptionController.text,
                                 isPrivate: _isPublic,
                                 ownerId: '3')),
+
                       ),
                     );
                   },
@@ -203,7 +205,7 @@ class GroupCreationState extends State<GroupCreation> {
 
     widget.onGroupCreatedCallBacks.forEach((callback) {
       callback();
-    }); // Calls refreshGroups in parent MyGroupsPage
+    }); //Calls refreshGroups in parent MyGroupsPage
 
     setState(() {
       _errorMessage = '';

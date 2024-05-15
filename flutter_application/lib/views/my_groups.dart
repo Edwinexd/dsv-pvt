@@ -60,7 +60,7 @@ class _MyGroupsState extends State<MyGroups> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 8),
                   SizedBox(
                     height: 40,
                     width: 250,
@@ -87,7 +87,7 @@ class _MyGroupsState extends State<MyGroups> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 8),
                   SizedBox(
                     height: 40,
                     width: 250,
@@ -114,7 +114,7 @@ class _MyGroupsState extends State<MyGroups> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 8),
                   SizedBox(
                     height: 40,
                     width: 250,
@@ -135,6 +135,7 @@ class _MyGroupsState extends State<MyGroups> {
                 ],
               ),
             ),
+            SizedBox(height: 2),
             const Padding(
               padding: EdgeInsets.only(left: 16.0, top: 12.0),
               child: Text('My Groups',
@@ -168,7 +169,7 @@ class _MyGroupsState extends State<MyGroups> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: ((context) => GroupPage(group: group)),
+                              builder: ((context) => GroupPage(group: group, isMember: true)),
                             ),
                           );
                         },

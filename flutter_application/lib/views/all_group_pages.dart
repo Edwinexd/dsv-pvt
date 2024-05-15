@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/bars.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
+import 'package:flutter_application/views/group_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_application/background_for_pages.dart';
 
@@ -18,11 +19,13 @@ class AllGroupsPage extends StatefulWidget {
 
 class AllGroupsPageState extends State<AllGroupsPage> {
   List<Group> _groups = [];
+  List<Group> _myGroups = [];
 
   @override
   void initState() {
     super.initState();
     fetchGroups();
+    fetchMyGroups();
   }
 
   void refreshAllGroups() async {
@@ -34,6 +37,11 @@ class AllGroupsPageState extends State<AllGroupsPage> {
     setState(() {
       _groups = fetchedGroups;
     });
+  }
+
+
+  Future<void> fetchMyGroups() async {
+    _myGroups = await BackendService().getMyGroups();
   }
 
   String _searchQuery = '';
@@ -54,11 +62,13 @@ class AllGroupsPageState extends State<AllGroupsPage> {
     }).toList();
 
     return Scaffold(
+
  appBar: buildAppBar(
         context: context,
         showBackButton: true,
         title: 'All Groups',
         
+
       ),
       body: DefaultBackground(
         children: [
@@ -127,24 +137,42 @@ class AllGroupsPageState extends State<AllGroupsPage> {
               itemCount: filteredGroups.length,
               itemBuilder: (context, index) {
                 final group = filteredGroups[index];
-                return ListTile(
-                  leading: const CircleAvatar(
-                    child: Icon(Icons.group), // Placeholder icon
-                  ),
-                  title: Text(
-                    group.name,
-                    style: const TextStyle(
-                      fontStyle: FontStyle.normal,
-                    ),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(group.description),
-                      Text(group.isPrivate ? 'Private' : 'Public'),
-                    ],
-                  ),
-                );
+                return GestureDetector(
+                    onTap: () {
+                      bool isMember = _myGroups
+                          .any((myGroup) => myGroup.id == group.id);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  GroupPage(group: group, isMember: isMember)));
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(vertical: 4.0),
+                      padding: const EdgeInsets.all(4.0),
+                      decoration: BoxDecoration(
+                        color: Color(0xFFFFD5A3),
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      child: ListTile(
+                        leading: const CircleAvatar(
+                          child: Icon(Icons.group), //Placeholder icon
+                        ),
+                        title: Text(
+                          group.name,
+                          style: const TextStyle(
+                            fontStyle: FontStyle.normal,
+                          ),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(group.description),
+                            Text(group.isPrivate ? 'Private' : 'Public'),
+                          ],
+                        ),
+                      ),
+                    ));
               },
             ),
           ),
