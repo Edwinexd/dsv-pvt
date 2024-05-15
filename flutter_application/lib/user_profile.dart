@@ -70,7 +70,9 @@ class UserProfilePage extends StatelessWidget {
                     style: const TextStyle(fontSize: 18),
                   ),
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 10,),
+                const Text('Interests: Skiing, Running', style: TextStyle(fontSize: 16)), //Don´t know how to solve
+                const SizedBox(height: 30),
                 const SkillLevelSlider(
                   initialSkillLevel: 2,
                   isSliderLocked: true,
