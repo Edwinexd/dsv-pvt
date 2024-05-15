@@ -936,6 +936,3 @@ async def login_with_google(token_data: schemas.AccessToken(str)):
     if not email:
         raise HTTPException(status_code=400, detail="Email not found in token")
     return {"email": email}
-
-
-
