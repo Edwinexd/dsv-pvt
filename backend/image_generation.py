@@ -96,7 +96,7 @@ def drop_shadow(image, offset=(5,5), background=0xffffff, shadow=0x444444,
         back = back.filter(ImageFilter.BLUR)
         n += 1
 
-    # modified to just return the shadow so we can have image and shadow as separate images
+    # just return the shadow so we can have image and shadow as separate images
     return back
 
 
@@ -125,7 +125,7 @@ def draw_gradient(im: Image, stops: list[SubGradient]):
     start = 0
 
     for g in stops:
-        end = int((g.percentage / 100) * im.height)
+        end = round((g.percentage / 100) * im.height)
         draw_subgradient(
             im=im, c1=old, c2=(g.r, g.g, g.b), start=start, end=end, opacity=g.opacity
         )
@@ -141,7 +141,6 @@ def rgb_tuple(hex_string: str) -> tuple[int, int, int]:
 
 
 # Draws background gradient from color 1 -> color 2
-# TODO: create new image for each subgradient to apply opacity
 def draw_subgradient(
     im: Image,
     c1: tuple[int, int, int],
@@ -157,6 +156,10 @@ def draw_subgradient(
     c_freq_g = change_freq(c1[1], c2[1], end - start)
     c_freq_b = change_freq(c1[2], c2[2], end - start)
 
+    cfr_counter = start + c_freq_r
+    cfg_counter = start + c_freq_g
+    cfb_counter = start + c_freq_b
+
     increment_r = c1[0] < c2[0]
     increment_g = c1[1] < c2[1]
     increment_b = c1[2] < c2[2]
@@ -164,21 +167,27 @@ def draw_subgradient(
     # Draw a horizontal line on each x from 0 -> image height. Line incrementally approaches destination color.
     for x in range(start, end):
         stop_r = has_reached_end(fill[0], c2[0], increment_r)
-        stop_g = has_reached_end(fill[0], c2[0], increment_g)
-        stop_b = has_reached_end(fill[0], c2[0], increment_b)
+        stop_g = has_reached_end(fill[1], c2[1], increment_g)
+        stop_b = has_reached_end(fill[2], c2[2], increment_b)
 
         r = fill[0]
         g = fill[1]
         b = fill[2]
 
-        if divides(x, c_freq_r) and not stop_r:
+        if x > cfr_counter and not stop_r:
             r = new_color(r, increment_r, 0)
-        if divides(x, c_freq_g) and not stop_g:
+            cfr_counter += c_freq_r
+        if x > cfg_counter and not stop_g:
             g = new_color(g, increment_g, 0)
-        if divides(x, c_freq_b) and not stop_b:
+            cfg_counter += c_freq_g
+        if x > cfb_counter and not stop_b:
             b = new_color(b, increment_b, 0)
+            cfb_counter += c_freq_b
 
+        old = fill
         fill = (r, g, b)
+        if old[0] < fill[0] - 1 or old[0] > fill[0] + 1:
+            print(x)
 
         draw.line([(0, x), (im.width, x)], fill=fill, width=0)
 
@@ -191,10 +200,10 @@ def divides(a: int, b: int):
 
 # Change frequency determines how many iterations between 0 and the images height it will take before an intensity of a color is changed
 # It returns an int which means the value is going to be rounded, but it works well enough.
-def change_freq(a: int, b: int, height: int) -> int:
+def change_freq(a: int, b: int, height: int) -> float:
     if a == b:
         return 11
-    return int(height / abs(a - b))
+    return height / abs(a - b)
 
 
 def new_color(color: int, up: bool, index: int) -> int:
