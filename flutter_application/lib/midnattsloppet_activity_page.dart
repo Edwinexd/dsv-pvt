@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
-import 'bars.dart'; 
+import 'bars.dart';
 
 class MidnatsloppetActivity extends StatefulWidget {
   @override
@@ -42,5 +42,3 @@ class _MidnatsloppetActivityState extends State<MidnatsloppetActivity> {
     );
   }
 }
-
-
