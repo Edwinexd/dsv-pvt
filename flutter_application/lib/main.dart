@@ -1,15 +1,6 @@
-import 'package:flutter_application/activity_create.dart';
-import 'package:flutter_application/bars.dart';
-import 'package:flutter_application/controllers/backend_service.dart';
-import 'package:flutter_application/friends_page.dart';
 import 'package:flutter_application/launch_injector.dart';
-import 'package:flutter_application/my_achievements.dart';
-import 'package:flutter_application/settings.dart';
-import 'package:flutter_application/views/my_groups.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
-import 'profile_page.dart';
-import 'package:flutter_application/views/login_page.dart';
 import 'package:flutter_application/home_page.dart';
 
 void main() async {
@@ -37,7 +28,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Lace up & lead the way',
-      home: MainPage(
+      home: LaunchInjector(
         darkModeEnabled: _darkModeEnabled,
         onToggleDarkMode: _toggleDarkMode,
       ),

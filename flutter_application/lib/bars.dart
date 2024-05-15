@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/friends_page.dart';
 import 'package:flutter_application/home_page.dart';
 import 'package:flutter_application/profile_page.dart';
 import 'package:flutter_application/views/my_groups.dart';
@@ -74,7 +75,7 @@ BottomNavigationBar buildBottomNavigationBar({
       } else if (index == 1) {
         goToGroupPage(context);
       } else if (index == 2) {
-        // Go to Friends page
+        goToFriendsPage(context);
       } else if (index == 3) {
         // Go to My Schedule page 
       }
@@ -95,3 +96,11 @@ void goToGroupPage(BuildContext context) {
     MaterialPageRoute(builder: (context) => MyGroups()),
   );
 }
+
+
+  void goToFriendsPage(BuildContext context) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => FriendsPage()),
+   );
+  }

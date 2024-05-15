@@ -12,7 +12,6 @@ class FriendsPage extends StatefulWidget {
 class _FriendsPageState extends State<FriendsPage> {
   TextEditingController _searchController = TextEditingController();
   List<String> _filteredFriendsList = [];
-  int _selectedIndex = 2; // Set selected index for BottomNavigationBar
 
   @override
   void initState() {
@@ -23,9 +22,10 @@ class _FriendsPageState extends State<FriendsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar( // Use buildAppBar from bars.dart
-        onPressed: () {}, // Define your function here
+      appBar: buildAppBar(
         title: 'Friends',
+        context: context,
+        showBackButton: false,
       ),
       body: DefaultBackground(
         children: [
@@ -35,7 +35,8 @@ class _FriendsPageState extends State<FriendsPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const Text(
-                  'Friends', /*Will be displayed total number of friends*/
+                  'Friends',
+                  /*Will be displayed total number of friends*/
                   style: TextStyle(fontSize: 20),
                 ),
                 SizedBox(height: 20),
@@ -77,14 +78,8 @@ class _FriendsPageState extends State<FriendsPage> {
           ),
         ],
       ),
-      bottomNavigationBar: buildBottomNavigationBar( // Use buildBottomNavigationBar from bars.dart
-        selectedIndex: _selectedIndex,
-        onItemTapped: (index) {
-          setState(() {
-            _selectedIndex = index;
-            // Define your navigation logic here
-          });
-        },
+      bottomNavigationBar: buildBottomNavigationBar(
+        context: context,
       ),
     );
   }
@@ -92,8 +87,7 @@ class _FriendsPageState extends State<FriendsPage> {
   void _onSearchTextChanged(String value) {
     setState(() {
       _filteredFriendsList = _friendsList
-          .where((friend) => 
-          friend.toLowerCase().contains(value.toLowerCase()))
+          .where((friend) => friend.toLowerCase().contains(value.toLowerCase()))
           .toList();
     });
   }
