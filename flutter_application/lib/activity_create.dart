@@ -8,7 +8,7 @@ import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
 
 class ActivityCreatePage extends StatefulWidget {
   // Take groupId as a parameter
-  ActivityCreatePage({Key? key, required this.groupId}) : super(key: key);
+  ActivityCreatePage({super.key, required this.groupId});
 
   final int groupId;
   // TODO Get from backend
@@ -42,12 +42,12 @@ class _ActivityCreatePageState extends State<ActivityCreatePage> {
 
   void _createActivity() async {
     if (_formKey.currentState!.validate()) {
-      // int groupId = widget.groupId;
+      int groupId = widget.groupId;
       String name = _titleController.text.trim();
       DateTime dateTime = _pickedDateTime;
       int difficulty = _difficultyCode;
 
-      Activity activity = await BackendService().createActivity(widget.groupId, name, dateTime, difficulty);
+      Activity activity = await BackendService().createActivity(groupId, name, dateTime, difficulty);
 
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Activity created for $widget.groupId!')));
@@ -159,7 +159,11 @@ class _ActivityCreatePageState extends State<ActivityCreatePage> {
                                   onPressed: _pickDate,
                                   child: Text('Select Date'),
                                 ),
+                                SizedBox(height: 12),
                                 ElevatedButton(
+                                  /*style: ButtonStyle(
+                                    backgroundColor: 
+                                  ),*/
                                   onPressed: _pickTime,
                                   child: Text('Select Time'),
                                 ),
