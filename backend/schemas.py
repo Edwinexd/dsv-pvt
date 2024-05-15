@@ -264,6 +264,6 @@ class AchievementList(BaseModel):
     data: List[Achievement]
 
 
-#oauth
+# oauth
 class AccessToken(BaseModel):
     access_token: str

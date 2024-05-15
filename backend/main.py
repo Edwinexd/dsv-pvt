@@ -899,7 +899,7 @@ def read_achivements_user_has(current_user: DbUser, requested_user: RequestedUse
     return achievements
 
 
-#oauth
+# oauth
 @app.post("login/callbacks/google")
 async def login_with_google(token_data: schemas.AccessToken(str)):
     access_token = token_data.access_token
@@ -925,5 +925,3 @@ async def login_with_google(token_data: schemas.AccessToken(str)):
     if not email:
         raise HTTPException(status_code=400, detail="Email not found in token")
     return {"email": email}
-
-
