@@ -309,20 +309,6 @@ def login(credentials: schemas.UserCreds, db_session: DbSession):
     return {"bearer": f"Bearer {session}"}
 
 
-@app.post("users/login/callbacks/google")
-def google_login_callback(code: str, db_session: Session):
-    access_token = auth.exchange_code_for_token(code)
-    user_info = auth.authenticate(access_token)
-
-    user = database.get_user(db_session, user_info["email"])
-    if user is None:
-        logging.error("User (email: %s) not found in database!", user_info["email"])
-        raise HTTPException(status_code=500, detail="State mismatch")
-
-    session = create_session(user.id)
-    return {"bearer": f"Bearer {session}"}
-
-
 @app.post("/users/logout", status_code=204)
 def logout(token: Annotated[HTTPAuthorizationCredentials, Depends(header_scheme)]):
     revoke_session(token.credentials)
@@ -910,9 +896,9 @@ def read_achivements_user_has(current_user: DbUser, requested_user: RequestedUse
     return achievements
 
 
-# oauth
-@app.post("login/callbacks/google")
-async def login_with_google(token_data: schemas.AccessToken(str)):
+# Oauth login with google
+@app.post("/login/callbacks/google")
+async def login_with_google(token_data: schemas.AccessToken):
     access_token = token_data.access_token
 
     try:

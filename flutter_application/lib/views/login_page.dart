@@ -9,7 +9,7 @@ import 'package:flutter_application/home_page.dart';
 import 'package:flutter_application/main.dart';
 import 'package:flutter_application/views/sign_up_page.dart';
 import 'package:oauth2/oauth2.dart';
-import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
+//import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginPage extends StatefulWidget {
@@ -65,10 +65,11 @@ class _LoginPageState extends State<LoginPage> {
                 )));
   }
 
-  GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email',]);
 
+
+  GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email',]);
+  
   Future<void> _handleSignIn() async {
-    try {
       final GoogleSignInAccount? googleAccount = await _googleSignIn.signIn();
       final GoogleSignInAuthentication googleAuthentication = await googleAccount!.authentication;
       final String accessToken = googleAuthentication.accessToken!;
@@ -82,12 +83,6 @@ class _LoginPageState extends State<LoginPage> {
                   darkModeEnabled: widget.darkModeEnabled,
                   onToggleDarkMode: widget.onToggleDarkMode,
                 )));
-
-    }catch(error) {
-      print(error);
-    }
-
-
   }
   
   Future<void> _handleSignOut() => _googleSignIn.disconnect();
