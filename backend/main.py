@@ -16,6 +16,7 @@ from user_roles import Roles
 from database import engine, session_local
 from sessions import create_session, get_session, revoke_session
 from validations import validate_api_key
+import requests
 
 models.base.metadata.create_all(bind=engine)
 
@@ -896,3 +897,33 @@ def delete_achievement(
 def read_achivements_user_has(current_user: DbUser, requested_user: RequestedUser):
     achievements = schemas.AchievementList(data=requested_user.completed_achievements)
     return achievements
+
+
+#oauth
+@app.post("login/callbacks/google")
+async def login_with_google(token_data: schemas.AccessToken(str)):
+    access_token = token_data.access_token
+
+    try:
+        response = requests.get(
+            f"https://www.googleapis.com/oauth2/v3/tokeninfo?access_token={access_token}"
+        )
+        response.raise_for_status()
+        token_info = response.json()
+    except requests.RequestException as e:
+        raise HTTPException(
+            status_code=400, detail=f"Failed to validate access token: {str(e)}"
+        )
+
+    if "error" in token_info:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid access token: {token_info['error_description']}",
+        )
+
+    email = token_info.get("email")
+    if not email:
+        raise HTTPException(status_code=400, detail="Email not found in token")
+    return {"email": email}
+
+
