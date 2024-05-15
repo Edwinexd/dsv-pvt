@@ -3,14 +3,12 @@ import 'package:flutter/material.dart';
 class SkillLevelSlider extends StatefulWidget {
   final int initialSkillLevel;
   final Function(int)? onSkillLevelChanged;
-  final bool readOnly;
   final bool isSliderLocked;
 
   const SkillLevelSlider({
     super.key,
     this.initialSkillLevel = 0,
     this.onSkillLevelChanged,
-    this.readOnly = false,
     this.isSliderLocked = false,
   });
 
@@ -48,9 +46,7 @@ class SkillLevelSliderState extends State<SkillLevelSlider> {
               max: 4,
               divisions: 4,
               label: skillLevels[_skillLevel],
-              onChanged: widget.readOnly
-                  ? null
-                  : (double value) {
+              onChanged: (double value) {
                     setState(() {
                       _skillLevel = value.round();
                       if (widget.onSkillLevelChanged != null) {

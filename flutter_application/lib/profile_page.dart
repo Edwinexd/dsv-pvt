@@ -100,6 +100,7 @@ class ProfilePage extends StatelessWidget {
                   onSkillLevelChanged: (newLevel) {
                     print("Skill level updated to: $newLevel");
                   },
+                  isSliderLocked: true,
                 ),
                 const SizedBox(height: 20),
                 MyButton(

@@ -7,6 +7,7 @@ import 'package:flutter_application/components/custom_dropdown.dart';
 import 'package:flutter_application/components/custom_text_field.dart';
 import 'package:flutter_application/components/interests_grid.dart';
 import 'package:flutter_application/components/my_button.dart';
+import 'package:flutter_application/components/save_profile_popup.dart';
 import 'package:flutter_application/components/skill_level_slider.dart';
 import 'package:flutter_application/background_for_pages.dart';
 
@@ -34,13 +35,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
   bool ageEntered = false;
   bool bioEntered = false;
   bool idEntered = false;
-
-  void _saveProfile() {
-    if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Profile Saved!')));
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +84,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ],
                   ),
                   SizedBox(height: 20),
-                  
                   CustomTextField(
                     labelText: idEntered ? null : 'Name',
                     onChanged: (text) {
@@ -99,9 +92,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       });
                     },
                   ),
-
                   SizedBox(height: 20),
-                  
                   CustomTextField(
                     labelText: idEntered ? null : 'Email',
                     onChanged: (text) {
@@ -110,9 +101,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       });
                     },
                   ),
-
                   SizedBox(height: 20),
-
                   Row(
                     children: [
                       Expanded(
@@ -226,7 +215,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
                   MyButton(
                     buttonText: 'Save Profile',
-                    onTap: _saveProfile,
+                    onTap: () {
+                      saveProfile(context, _formKey);
+                    },
                   ),
                 ],
               ),

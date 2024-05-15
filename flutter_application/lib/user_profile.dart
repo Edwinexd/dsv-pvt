@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/components/my_button.dart';
 import 'package:flutter_application/components/profile_avatar.dart';
@@ -29,27 +30,10 @@ class UserProfilePage extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: const Text('Profile Page', style: TextStyle(color: Colors.white)),
-          centerTitle: true,
+          //title: Text(username, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          //centerTitle: true,
           backgroundColor: Colors.transparent,
           elevation: 0,
-          actions: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.settings, color: Colors.white),
-              onPressed: () {
-                bool initialDarkMode = false;
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (context) => SettingsPage(
-                            onToggleDarkMode: (bool isDarkMode) {
-                              print("Dark mode toggled: $isDarkMode");
-                            },
-                            initialDarkMode: initialDarkMode,
-                          )),
-                );
-              },
-            ),
-          ],
           iconTheme: const IconThemeData(color: Colors.white),
         ),
         body: Center(
@@ -60,10 +44,13 @@ class UserProfilePage extends StatelessWidget {
                 Text(username,
                     style: const TextStyle(
                         fontSize: 24, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 10),
+                const SizedBox(height: 30),
+                
                 ProfileAvatar(
                   imageUrl: imageUrl,
-                  icon: Icons.abc, onPressed: () {  }, // No edit icon
+                  icon: Icons.abc, 
+                  onPressed: () {  },
+                  showIcon: false,
                 ),
                 const SizedBox(height: 10),
                 Text(name, style: const TextStyle(fontSize: 20)),
@@ -83,13 +70,12 @@ class UserProfilePage extends StatelessWidget {
                     style: const TextStyle(fontSize: 18),
                   ),
                 ),
-                const SizedBox(height: 20),
-                SkillLevelSlider(
+                const SizedBox(height: 40),
+                const SkillLevelSlider(
                   initialSkillLevel: 2,
-                  //readOnly: true, 
-                  isSliderLocked: true, // Slider is locked
+                  isSliderLocked: true,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 40),
                 MyButton(
                   buttonText: '$username´s Trophies',
                   onTap: () {
@@ -97,7 +83,6 @@ class UserProfilePage extends StatelessWidget {
                         builder: (context) => MyAchievements()));
                   },
                 ),
-                const SizedBox(height: 10),
               ],
             ),
           ),
