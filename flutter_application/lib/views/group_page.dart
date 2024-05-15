@@ -3,11 +3,11 @@ import 'package:flutter_application/activity_create.dart';
 import 'package:flutter_application/bars.dart';
 import 'package:flutter_application/components/checkered_background.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
+import 'package:flutter_application/models/activity.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/models/user.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/views/group_members.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class GroupPage extends StatefulWidget {
   final Group group;
@@ -23,7 +23,8 @@ class _GroupPageState extends State<GroupPage> {
   List<User> allMembers = [];
   List<User> displayedMembers = [];
   TextEditingController searchController = TextEditingController();
-  List<bool> joinedActivities = List.generate(5, (index) => false);
+  List<Activity> allActivities = [];
+  Set<int> joinedActivityIds = {};
   bool isPublic = false;
   String skillLevel = '';
   String location = '';
@@ -31,6 +32,8 @@ class _GroupPageState extends State<GroupPage> {
   @override
   void initState() {
     super.initState();
+    fetchAllActivities();
+    fetchJoinedActivities();
     fetchMyGroups();
     fetchMembers().then((_) {
       setState(() {
@@ -39,6 +42,16 @@ class _GroupPageState extends State<GroupPage> {
     });
     //added listener to search text field
     searchController.addListener(_searchMembers);
+  }
+
+  Future<void> fetchAllActivities() async {
+    allActivities = await BackendService().getActivities(widget.group.id, skip, limit);
+    if (mounted) setState(() {});
+  }
+
+  Future<void> fetchJoinedActivities() async {
+    var joinedActivities = await BackendService().getUserActivities(userId, skip, limit);
+    joinedActivityIds = joinedActivities.map((a) => a.id).toSet();
   }
 
   Future<void> fetchMyGroups() async {
@@ -72,14 +85,6 @@ class _GroupPageState extends State<GroupPage> {
           .toList();
     });
   }
-
-  late List<String> activities = [
-    'April 7th Kista at 17:00',
-    'May 3rd Kungsträdgården at 13:00',
-    'June 15th Skansen at 10:00',
-    //Instances of activities
-    //Will be removed later
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -146,23 +151,32 @@ class _GroupPageState extends State<GroupPage> {
                   ),
                   ListView.builder(
                     shrinkWrap: true,
-                    itemCount: activities.length,
+                    itemCount: allActivities.length,
                     itemBuilder: (context, index) {
+                      var activity = allActivities[index];
+                      bool isJoined = joinedActivityIds.contains(activity.id);
                       return ListTile(
-                        title: Text(activities[index]),
+                        title: Text(activity.name),
                         trailing: TextButton(
                           onPressed: () {
-                            setState(() {
-                              joinedActivities[index] =
-                                  !joinedActivities[index];
-                            });
+                            // Handle join/leave action
+                            if (isJoined) {
+                              // Handle leave TODO: Replace with backend request
+                              joinedActivityIds.remove(activity.id);
+                            } else {
+                              // Handle join // TODO: Replace with backen request
+                              joinedActivityIds.add(activity.id);
+                            }
+                            // Optional, update the backend on this status change
+                            setState(() {});
+                            
                           },
                           style: TextButton.styleFrom(
                             backgroundColor: Colors.white,
                             side: BorderSide(color: Colors.black),
                           ),
                           child: Text(
-                            joinedActivities[index] ? 'Leave' : 'Join',
+                            isJoined ? 'Leave' : 'Join',
                           ),
                         ),
                       );
