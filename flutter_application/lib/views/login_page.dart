@@ -8,8 +8,6 @@ import 'package:flutter_application/forgot_password.dart';
 import 'package:flutter_application/home_page.dart';
 import 'package:flutter_application/main.dart';
 import 'package:flutter_application/views/sign_up_page.dart';
-import 'package:oauth2/oauth2.dart';
-//import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginPage extends StatefulWidget {
