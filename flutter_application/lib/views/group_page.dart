@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/activity_create.dart';
+import 'package:flutter_application/bars.dart';
 import 'package:flutter_application/components/checkered_background.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/models/user.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/views/group_members.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class GroupPage extends StatefulWidget {
   final Group group;
@@ -83,16 +83,10 @@ class _GroupPageState extends State<GroupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(250, 60, 71, 133),
-        title: Text(
-          'Groups',
-          style: GoogleFonts.poppins(
-            textStyle: const TextStyle(
-              fontSize: 20.0,
-            ),
-          ),
-        ),
+      appBar: buildAppBar(
+        context: context,
+        showBackButton: true,
+        title: 'Groups',
       ),
       body: DefaultBackground(
         children: [
@@ -393,6 +387,9 @@ class _GroupPageState extends State<GroupPage> {
             ),
           ],
         ],
+      ),
+      bottomNavigationBar: buildBottomNavigationBar(
+        context: context,
       ),
     );
   }

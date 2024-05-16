@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/bars.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/group_page.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_application/background_for_pages.dart';
 
 class AllGroupsPage extends StatefulWidget {
@@ -38,6 +38,7 @@ class AllGroupsPageState extends State<AllGroupsPage> {
     });
   }
 
+
   Future<void> fetchMyGroups() async {
     _myGroups = await BackendService().getMyGroups();
   }
@@ -60,15 +61,13 @@ class AllGroupsPageState extends State<AllGroupsPage> {
     }).toList();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'All Groups',
-          style: GoogleFonts.poppins(
-              textStyle: const TextStyle(
-            fontSize: 20,
-          )),
-        ),
-        backgroundColor: const Color.fromARGB(230, 60, 71, 133),
+
+ appBar: buildAppBar(
+        context: context,
+        showBackButton: true,
+        title: 'All Groups',
+        
+
       ),
       body: DefaultBackground(
         children: [
@@ -177,6 +176,9 @@ class AllGroupsPageState extends State<AllGroupsPage> {
             ),
           ),
         ],
+      ),
+      bottomNavigationBar: buildBottomNavigationBar(
+        context: context,
       ),
     );
   }

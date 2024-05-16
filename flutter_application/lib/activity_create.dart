@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/background_for_pages.dart';
+import 'package:flutter_application/bars.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/activity.dart';
+import 'package:flutter_application/views/map_screen.dart';
 import 'package:intl/intl.dart';
-import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
 
 //test Mac
 
@@ -12,8 +14,11 @@ class ActivityCreatePage extends StatefulWidget {
 
   final int groupId;
   // TODO Get from backend
-  final List<dynamic> challenges = [{"id": 0, "name": 'Spring 0 km'}, {"id": 1, "name": 'Gå 1 km'}, {"id": 2, "name": 'Hoppa 200 ggr'}];
-
+  final List<dynamic> challenges = [
+    {"id": 0, "name": 'Spring 0 km'},
+    {"id": 1, "name": 'Gå 1 km'},
+    {"id": 2, "name": 'Hoppa 200 ggr'}
+  ];
 
   @override
   _ActivityCreatePageState createState() => _ActivityCreatePageState();
@@ -22,16 +27,15 @@ class ActivityCreatePage extends StatefulWidget {
 class _ActivityCreatePageState extends State<ActivityCreatePage> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _locationController = TextEditingController();
   DateTime _pickedDate = DateTime.now();
   TimeOfDay _pickedTime = TimeOfDay.now();
   DateTime _pickedDateTime = DateTime.now();
-  int _difficultyCode = 0; // Manage skill level as an integer
-  PickedData? _pickedData;
-  // Chosen challenges (ids)
+  int _skillLevel = 0; // Manage skill level as an integer
   List<String> _chosenChallenges = [];
 
-
-  // Same skillLevels as in profiles
+  //Same skillLevels as in profiles
   List<String> skillLevels = [
     'Beginner: 10 - 8 min/km',
     'Intermediate: 8 - 6 min/km',
@@ -45,12 +49,13 @@ class _ActivityCreatePageState extends State<ActivityCreatePage> {
       int groupId = widget.groupId;
       String name = _titleController.text.trim();
       DateTime dateTime = _pickedDateTime;
-      int difficulty = _difficultyCode;
+      int difficulty = _skillLevel;
 
-      Activity activity = await BackendService().createActivity(groupId, name, dateTime, difficulty);
+      Activity activity = await BackendService()
+          .createActivity(groupId, name, dateTime, difficulty);
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Activity created for $widget.groupId!')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Activity created for $widget.groupId!')));
     }
     // TODO: Navigate to newly created activity
   }
@@ -95,139 +100,170 @@ class _ActivityCreatePageState extends State<ActivityCreatePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Create Activity')),
-      body: /*ListView(padding: EdgeInsets.all(16.0), children: <Widget>[*/
-          _pickedData == null
-              ? FlutterLocationPicker(
-                  selectLocationButtonText: 'Select Location',
-                  initZoom: 11,
-                  minZoomLevel: 5,
-                  maxZoomLevel: 16,
-                  trackMyPosition: true,
-                  searchBarBackgroundColor: Colors.white,
-                  selectedLocationButtonTextstyle:
-                      const TextStyle(fontSize: 18),
-                  mapLanguage: 'sv',
-                  onError: (e) => print(e),
-                  selectLocationButtonLeadingIcon: const Icon(Icons.check),
-                  onPicked: (pickedData) {
-                    setState(() {
-                      _pickedData = pickedData;
-                    });
+      appBar: buildAppBar(
+        title: 'Create Activity',
+        context: context,
+        showBackButton: true,
+      ),
+      body: DefaultBackground(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                TextFormField(
+                  controller: _titleController,
+                  decoration: InputDecoration(labelText: 'Activity Title'),
+                  validator: (value) =>
+                      value!.isEmpty ? 'Title cannot be empty' : null,
+                ),
+                const SizedBox(height: 12),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MapScreen(
+                          onLocationSelected: (location) {
+                            setState(() {
+                              _locationController.text = location.address;
+                            });
+                          },
+                        ),
+                      ),
+                    );
                   },
-                  showContributorBadgeForOSM: true,
-                )
-              : Form(
-                  key: _formKey,
-                  child: ListView(
-                    padding: EdgeInsets.all(16.0),
+                  child: AbsorbPointer(
+                    child: TextFormField(
+                      controller: _locationController,
+                      decoration: const InputDecoration(
+                        labelText: 'Location',
+                        suffixIcon: Icon(Icons.location_on),
+                      ),
+                    ),
+                  ),
+                ),
+
+                SizedBox(height: 12),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text('Location: ${_pickedData!.address}',
-                              style: TextStyle(fontSize: 16)),
+                      Text(
+                          'Date & Time: ${DateFormat('EEEE dd MMMM hh:mm').format(_pickedDateTime.toLocal())}', // Use DateFormat to format the date
+                          style: TextStyle(fontSize: 16)),
+                      SizedBox(height: 12.0),
+                      Row(
+                        children: [
                           ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                _pickedData = null;
-                              });
-                            },
-                            child: Text('Change Location'),
+                            onPressed: _pickDate,
+                            child: Text('Select Date'),
+                          ),
+                          SizedBox(width: 12.0),
+                          ElevatedButton(
+                            onPressed: _pickTime,
+                            child: Text('Select Time'),
                           ),
                         ],
-                      ),
-                      TextFormField(
-                        controller: _titleController,
-                        decoration:
-                            InputDecoration(labelText: 'Activity Title'),
-                        validator: (value) =>
-                            value!.isEmpty ? 'Title cannot be empty' : null,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                                'Date & Time: ${DateFormat('EEEE dd MMMM hh:mm').format(_pickedDateTime.toLocal())}', // Use DateFormat to format the date
-                                style: TextStyle(fontSize: 16)),
-                            Column(
-                              // TODO: Frontend people help me place these buttons nicely! / Edwin
-                              children: [
-                                ElevatedButton(
-                                  onPressed: _pickDate,
-                                  child: Text('Select Date'),
-                                ),
-                                SizedBox(height: 12),
-                                ElevatedButton(
-                                  /*style: ButtonStyle(
-                                    backgroundColor: 
-                                  ),*/
-                                  onPressed: _pickTime,
-                                  child: Text('Select Time'),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text('Skill Level:',
-                                style: TextStyle(fontSize: 16)),
-                            Slider(
-                              value: _difficultyCode.toDouble(),
-                              min: 0,
-                              max: 4,
-                              divisions: 4,
-                              onChanged: (double value) {
-                                setState(() {
-                                  _difficultyCode = value.toInt();
-                                });
-                              },
-                            ),
-                            Container(
-                              alignment: Alignment.center,
-                              child: Text('${skillLevels[_difficultyCode]}',
-                                  style: TextStyle(fontSize: 12)),
-                            )
-                          ],
-                        ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text('Challenges:', style: TextStyle(fontSize: 16)),
-                          for (dynamic challenge in widget.challenges)
-                            CheckboxListTile(
-                              title: Text(challenge["name"]),
-                              value: _chosenChallenges.contains(challenge["id"].toString()),
-                              onChanged: (bool? value) {
-                                setState(() {
-                                  if (value!) {
-                                    _chosenChallenges.add(challenge["id"].toString());
-                                  } else {
-                                    _chosenChallenges.remove(challenge["id"].toString());
-                                  }
-                                });
-                              },
-                            ),
-                        ]
-                      ),
-                      
-                      ElevatedButton(
-                        onPressed: _createActivity,
-                        child: Text('Create Activity'),
                       ),
                     ],
                   ),
                 ),
-      //],
-      //),
+                const SizedBox(height: 12.0),
+                TextFormField(
+                  controller: _descriptionController,
+                  decoration:
+                      InputDecoration(labelText: 'Activity Description'),
+                  maxLines: 2,
+                ),
+                
+                SizedBox(height: 12),
+                Container(
+                  padding: EdgeInsets.all(8.0),
+                  margin: EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFFDEBB4), // May change later
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Colors.grey.shade300,
+                      width: 1.0,
+                    ),   
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text('Challenges:', style: TextStyle(fontSize: 16)),
+                      for (dynamic challenge in widget.challenges)
+                        CheckboxListTile(
+                          title: Text(challenge["name"]),
+                          value: _chosenChallenges
+                              .contains(challenge["id"].toString()),
+                          onChanged: (bool? value) {
+                            setState(() {
+                              if (value!) {
+                                _chosenChallenges
+                                    .add(challenge["id"].toString());
+                              } else {
+                                _chosenChallenges
+                                    .remove(challenge["id"].toString());
+                              }
+                            });
+                          },
+                        ),
+                    ]),
+                ),
+                
+                const SizedBox(height: 16.0),
+                const Text(
+                  'Skill Level:',
+                  style: TextStyle(fontSize: 16),
+                ),
+                Slider(
+                  value: _skillLevel.toDouble(),
+                  min: 0,
+                  max: 4,
+                  divisions: 4,
+                  onChanged: (double value) {
+                    setState(() {
+                      _skillLevel = value.round();
+                    });
+                  },
+                ),
+                Center(
+                  child: Text(
+                    skillLevels[_skillLevel],
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ),
+                const SizedBox(height: 20.0),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF9B40BF),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 16, horizontal: 26),
+                    ), // Has no functionality right now because we do not have any Activity-page right now.
+                    child: const Text(
+                      'Create activity',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+      
+      bottomNavigationBar: buildBottomNavigationBar(
+        context: context,
+      ),
     );
   }
 }

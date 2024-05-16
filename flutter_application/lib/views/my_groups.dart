@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
+import 'package:flutter_application/bars.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/all_group_pages.dart';
@@ -37,16 +38,10 @@ class _MyGroupsState extends State<MyGroups> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Groups',
-          style: GoogleFonts.poppins(
-            textStyle: const TextStyle(
-              fontSize: 20.0,
-            ),
-          ),
-        ),
-        backgroundColor: const Color.fromARGB(230, 60, 71, 133),
+      appBar: buildAppBar(
+        context: context,
+        showBackButton: false,
+        title: 'Groups',
       ),
       body: DefaultBackground(
         child: Column(
@@ -142,14 +137,12 @@ class _MyGroupsState extends State<MyGroups> {
             ),
             SizedBox(height: 2),
             const Padding(
-              padding: EdgeInsets.only(left: 16.0, top: 8.0),
-              child: Text(
-                'My Groups',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                )
-              ),
+              padding: EdgeInsets.only(left: 16.0, top: 12.0),
+              child: Text('My Groups',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  )),
             ),
             const SizedBox(height: 18),
             Expanded(
@@ -188,6 +181,9 @@ class _MyGroupsState extends State<MyGroups> {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: buildBottomNavigationBar(
+        context: context,
       ),
     );
   }

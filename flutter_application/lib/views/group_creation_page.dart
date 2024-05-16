@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/bars.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/models/user.dart';
@@ -9,9 +10,7 @@ import 'package:flutter_application/views/group_page.dart';
 class GroupCreation extends StatefulWidget {
   final List<Function> onGroupCreatedCallBacks;
 
-  const GroupCreation({super.key, 
-  required this.onGroupCreatedCallBacks
-  });
+  const GroupCreation({super.key, required this.onGroupCreatedCallBacks});
 
   @override
   GroupCreationState createState() => GroupCreationState();
@@ -38,9 +37,10 @@ class GroupCreationState extends State<GroupCreation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create a group'),
-        backgroundColor: const Color.fromARGB(230, 60, 71, 133),
+      appBar: buildAppBar(
+        context: context,
+        showBackButton: true,
+        title: 'Create Group',
       ),
       body: DefaultBackground(
         child: Padding(
@@ -160,7 +160,8 @@ class GroupCreationState extends State<GroupCreation> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => GroupPage(group:  Group(id: 15, name: _nameController.text, description: _descriptionController.text, isPrivate: _isPublic, ownerId: '3'), isMember: true),
-                      ),
+
+                    ),
                     );
                   },
                   child: const Text('Go to Group Page'),
@@ -174,6 +175,9 @@ class GroupCreationState extends State<GroupCreation> {
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: buildBottomNavigationBar(
+        context: context,
       ),
     );
   }
