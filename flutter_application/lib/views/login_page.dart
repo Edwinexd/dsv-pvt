@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/components/custom_divider.dart';
 import 'package:flutter_application/components/my_button.dart';
@@ -7,6 +10,7 @@ import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/forgot_password.dart';
 import 'package:flutter_application/main.dart';
 import 'package:flutter_application/views/sign_up_page.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginPage extends StatefulWidget {
@@ -27,8 +31,29 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final BackendService _backendService = BackendService();
+  late final GoogleSignIn _googleSignIn = _getGoogleSignIn();
 
-  void signUserIn() async {
+  GoogleSignIn _getGoogleSignIn() {
+    if (kIsWeb || Platform.isAndroid) {
+      return GoogleSignIn(
+        scopes: [
+          'email',
+        ],
+      );
+    }
+    if (Platform.isIOS || Platform.isMacOS) {
+      return GoogleSignIn(
+        clientId:
+            dotenv.env['GOOGLE_CLIENT_ID']!,
+        scopes: [
+          'email',
+        ],
+      );
+    }
+    throw Exception('Unsupported platform');
+  }
+
+  Future<void> signUserIn() async {
     final String email = usernameController.text.trim();
     final String password = passwordController.text.trim();
 
@@ -62,17 +87,15 @@ class _LoginPageState extends State<LoginPage> {
                 )));
   }
 
-  GoogleSignIn _googleSignIn = GoogleSignIn(scopes: [
-    'email',
-  ]);
-
-  Future<void> _handleSignIn() async {
+  Future<void> googleSignUserIn() async {
     final GoogleSignInAccount? googleAccount = await _googleSignIn.signIn();
     final GoogleSignInAuthentication googleAuthentication =
         await googleAccount!.authentication;
     final String accessToken = googleAuthentication.accessToken!;
 
-    await _backendService.sendTokenToBackend(accessToken);
+    await _backendService.loginOauthGoogle(accessToken);
+
+    // TODO Handle user not having account with that email and send them to sign up / display error
 
     Navigator.pushReplacement(
         context,
@@ -82,8 +105,6 @@ class _LoginPageState extends State<LoginPage> {
                   onToggleDarkMode: widget.onToggleDarkMode,
                 )));
   }
-
-  Future<void> _handleSignOut() => _googleSignIn.disconnect();
 
   @override
   Widget build(BuildContext context) {
@@ -178,7 +199,7 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     GestureDetector(
                         onTap: () async {
-                          await _handleSignIn();
+                          await googleSignUserIn();
                         },
                         child: const SquareTile(
                             imagePath: 'lib/images/google.png'))

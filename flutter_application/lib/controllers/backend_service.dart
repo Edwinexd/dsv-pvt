@@ -67,9 +67,9 @@ class BackendService {
     token = response.data['bearer'];
   }
 
-   Future<void> sendTokenToBackend(String accessToken) async {
+   Future<void> loginOauthGoogle(String accessToken) async {
       final response = await _dio.post (
-        '/login/callbacks/google',
+        '/users/login/oauth/google',
         data: {"access_token": accessToken}
       );
       token = response.data['bearer'];
