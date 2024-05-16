@@ -5,7 +5,6 @@ import 'package:flutter_application/components/my_textfield.dart';
 import 'package:flutter_application/components/square_tile.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/forgot_password.dart';
-import 'package:flutter_application/home_page.dart';
 import 'package:flutter_application/main.dart';
 import 'package:flutter_application/views/sign_up_page.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -54,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
 
     await _backendService.getMyUser();
 
-     Navigator.push(
+    Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) => MainPage(
@@ -63,18 +62,19 @@ class _LoginPageState extends State<LoginPage> {
                 )));
   }
 
+  GoogleSignIn _googleSignIn = GoogleSignIn(scopes: [
+    'email',
+  ]);
 
-
-  GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email',]);
-  
   Future<void> _handleSignIn() async {
-      final GoogleSignInAccount? googleAccount = await _googleSignIn.signIn();
-      final GoogleSignInAuthentication googleAuthentication = await googleAccount!.authentication;
-      final String accessToken = googleAuthentication.accessToken!;
-  
-     await _backendService.sendTokenToBackend(accessToken);
+    final GoogleSignInAccount? googleAccount = await _googleSignIn.signIn();
+    final GoogleSignInAuthentication googleAuthentication =
+        await googleAccount!.authentication;
+    final String accessToken = googleAuthentication.accessToken!;
 
-     Navigator.pushReplacement(
+    await _backendService.sendTokenToBackend(accessToken);
+
+    Navigator.pushReplacement(
         context,
         MaterialPageRoute(
             builder: (context) => MainPage(
@@ -82,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
                   onToggleDarkMode: widget.onToggleDarkMode,
                 )));
   }
-  
+
   Future<void> _handleSignOut() => _googleSignIn.disconnect();
 
   @override
@@ -177,11 +177,11 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     GestureDetector(
-                      onTap: () async {
-                        await _handleSignIn();
-                      },
-                      child: const SquareTile(imagePath: 'lib/images/google.png')
-                    )
+                        onTap: () async {
+                          await _handleSignIn();
+                        },
+                        child: const SquareTile(
+                            imagePath: 'lib/images/google.png'))
                   ],
                 ),
                 const SizedBox(height: 50),
