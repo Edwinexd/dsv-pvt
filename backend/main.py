@@ -308,6 +308,17 @@ def login(credentials: schemas.UserCreds, db_session: DbSession):
     session = create_session(user_id)
     return {"bearer": f"Bearer {session}"}
 
+@app.post("/users/login/oauth/google")
+async def login_with_google(token_data: schemas.AccessToken, db_session: DbSession):
+    user_id = auth.login_ouath(token_data.access_token, "google")
+
+    db_user = crud.get_user(db_session, user_id)
+    if db_user is None:
+        logging.error("User (id: %s) not found in database!", user_id)
+        raise HTTPException(status_code=500, detail="State mismatch")
+    
+    session = create_session(user_id)
+    return {"bearer": f"Bearer {session}"}
 
 @app.post("/users/logout", status_code=204)
 def logout(token: Annotated[HTTPAuthorizationCredentials, Depends(header_scheme)]):
@@ -894,31 +905,3 @@ def delete_achievement(
 def read_achivements_user_has(current_user: DbUser, requested_user: RequestedUser):
     achievements = schemas.AchievementList(data=requested_user.completed_achievements)
     return achievements
-
-
-# Oauth login with google
-@app.post("/login/callbacks/google")
-async def login_with_google(token_data: schemas.AccessToken):
-    access_token = token_data.access_token
-
-    try:
-        response = requests.get(
-            f"https://www.googleapis.com/oauth2/v3/tokeninfo?access_token={access_token}"
-        )
-        response.raise_for_status()
-        token_info = response.json()
-    except requests.RequestException as e:
-        raise HTTPException(
-            status_code=400, detail=f"Failed to validate access token: {str(e)}"
-        )
-
-    if "error" in token_info:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Invalid access token: {token_info['error_description']}",
-        )
-
-    email = token_info.get("email")
-    if not email:
-        raise HTTPException(status_code=400, detail="Email not found in token")
-    return {"email": email}
