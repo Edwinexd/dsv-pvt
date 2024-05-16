@@ -42,11 +42,11 @@ def generate_image(**data):
     base.paste(sh, (image_pos[0]+offset[0],image_pos[1]+offset[1]), sh)
     base.paste(s3_im, image_pos, s3_im)
 
-    font = ImageFont.load_default(size=42)
+    font = ImageFont.load_default(size=36)
     pilmoji = Pilmoji(base)
     pilmoji.text(
         (512, 65),
-        f"I completed\n{data["achievement_name"]}\nat\n{datetime.fromisoformat(data["date"]).strftime("%d %B")}!",
+        f"I completed",
         fill=0x8134CE,
         font=font,
         anchor="ms",
@@ -54,8 +54,22 @@ def generate_image(**data):
         stroke_fill="black",
     )
 
+    font2 = ImageFont.truetype("NotoSans-Bold.ttf", size=42)
+    pilmoji = Pilmoji(base)
+    pilmoji.text(
+        (512, 100),
+        f"{data["achievement_name"]} 🏆",
+        fill=0x8134CE,
+        font=font2,
+        anchor="ms",
+        stroke_width=2,
+        stroke_fill="black",
+    )
+
+    # \n{data["achievement_name"]}\nat\n{datetime.fromisoformat(data["date"]).strftime("%d %B")}!",
+
     profile_pic = get_s3_image(data["user_image_id"]).resize((86,86))
-    profile_pic = Image.open("testAc.jpeg").resize((86,86))
+    # profile_pic = Image.open("testAc.jpeg").resize((86,86))
     add_corners(profile_pic, 15)
     sh = drop_shadow(profile_pic, iterations=20, border=68, background=0x000000, shadow=(0,0,0,155), offset=(0,0))
     offset = (-64,-64)
