@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_application/LeaderboardPage.dart';
 import 'package:flutter_application/background_for_pages.dart';
+import 'package:flutter_application/bars.dart';
 import 'package:flutter_application/challenges_page.dart';
 import 'package:flutter_application/midnattsloppet_activity_page.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,7 +16,13 @@ class HomePage extends StatelessWidget {
   ];
   @override
   Widget build(BuildContext context) {
-    return DefaultBackground(
+    return Scaffold(
+        appBar: buildAppBar(
+        title: 'Lace up & lead the way',
+        context: context,
+        showBackButton: false,
+      ),
+      body: DefaultBackground(
       child: Align(
         alignment: Alignment.topCenter,
         child: SingleChildScrollView(
@@ -39,6 +46,10 @@ class HomePage extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    ),
+     bottomNavigationBar: buildBottomNavigationBar(
+        context: context,
       ),
     );
   }
