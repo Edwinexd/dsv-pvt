@@ -6,6 +6,7 @@ import requests
 def google_email_lookup(access_token: Optional[str], id_token: Optional[str]) -> str:
     if not access_token and not id_token:
         raise ValueError("Either access_token or id_token must be provided")
+    print(access_token, id_token)
     if access_token:
         try:
             response = requests.get(
