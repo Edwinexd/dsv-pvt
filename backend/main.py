@@ -1,9 +1,10 @@
 import logging
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, HTTPException, UploadFile, Response
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
+from datetime import datetime
 
 import crud
 import models
@@ -119,6 +120,53 @@ def get_challenge(challenge_id: int, db_session: DbSession):
 RequestedChallenge = Annotated[models.Challenge, Depends(get_challenge)]
 
 
+# GENERATED IMAGES
+@app.get("/users/{user_id}/achievements/{achievement_id}/share")
+def generate_completed_achievement_image(
+    current_user: DbUser,
+    requested_user: RequestedUser,
+    requested_achievement: RequestedAchievement,
+):
+    validations.validate_id(current_user, requested_user.id)
+    if requested_achievement not in requested_user.completed_achievements:
+        return HTTPException(status_code=400, detail="Achievement not completed")
+    return Response(
+        content=generate_image(
+            image_id=requested_achievement.image_id,
+            completed_thing_name=requested_achievement.achievement_name,
+            user_image_id=requested_user.profile.image_id,
+            username=requested_user.username,
+            date=datetime.now().isoformat(),
+        ).read(),
+        media_type="image/png",
+    )
+
+
+@app.get("/users/{user_id}/activities/{activity_id}/share")
+def generate_completed_activity_image(
+    current_user: DbUser,
+    requested_user: RequestedUser,
+    requested_activity: RequestedActivity,
+):
+    validations.validate_id(current_user, requested_user.id)
+    if requested_activity.is_completed == 0:
+        return HTTPException(status_code=400, detail="Achievement not completed")
+    if requested_activity not in requested_user.activities:
+        return HTTPException(
+            status_code=400, detail="Achievement not completed by user"
+        )
+    return Response(
+        content=generate_image(
+            image_id=requested_activity.image_id,
+            completed_thing_name=requested_activity.activity_name,
+            user_image_id=requested_user.profile.image_id,
+            username=requested_user.username,
+            date=datetime.now().isoformat(),
+        ).read(),
+        media_type="image/png",
+    )
+
+
 # IMAGES
 # profile pic
 @app.put("/users/{user_id}/profile/picture", status_code=204)
@@ -149,11 +197,17 @@ def delete_pfp(
         db_session, requested_profile, schemas.ProfileImageUpdate(image_id=None)
     )
 
+
 # IMAGE GEN (for share to ...)
 @app.get("/users/{user_id}/achievements/{achievement_id}/share")
-def generate_achievement_image(current_user: DbUser, db_session: DbSession, requested_user: RequestedUser, requested_achievement: RequestedAchievement):
-    #img = generate_image(requested_achievement)
-    #return img
+def generate_achievement_image(
+    current_user: DbUser,
+    db_session: DbSession,
+    requested_user: RequestedUser,
+    requested_achievement: RequestedAchievement,
+):
+    # img = generate_image(requested_achievement)
+    # return img
     pass
 
 

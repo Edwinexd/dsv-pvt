@@ -8,6 +8,7 @@ import io
 from datetime import datetime
 from dataclasses import dataclass
 
+
 # r,g,b separated to make incrementing/decrementing individal color intensities easier
 @dataclass
 class SubGradient:
@@ -15,7 +16,7 @@ class SubGradient:
     r: int = 0xFF
     g: int = 0xFF
     b: int = 0xFF
-    opacity: float = 1 # not functional atm
+    opacity: float = 1  # not functional atm
 
 
 def generate_image(
@@ -32,9 +33,9 @@ def generate_image(
         base,
         [
             SubGradient(percentage=23, r=0xAB, g=0xAB, b=0xFC, opacity=0.9),
-            SubGradient(percentage=43, r=0xc9, g=0xa7, b=0xfd, opacity=0.6),
-            SubGradient(percentage=63, r=0xf1, g=0xd6, b=0xfe, opacity=0.3),
-            SubGradient(percentage=75, r=0xfa, g=0xe6, b=0xFF, opacity=0.3),
+            SubGradient(percentage=43, r=0xC9, g=0xA7, b=0xFD, opacity=0.6),
+            SubGradient(percentage=63, r=0xF1, g=0xD6, b=0xFE, opacity=0.3),
+            SubGradient(percentage=75, r=0xFA, g=0xE6, b=0xFF, opacity=0.3),
             SubGradient(percentage=100, r=0xFD, g=0xFD, b=0xFF, opacity=1.0),
         ],
     )
@@ -63,75 +64,50 @@ def generate_image(
         bg=base,
         text=completed_thing_name,
         font=font,
-        text_color='purple',
-        xy=(512,95),
-        anchor='mm',
+        text_color="purple",
+        xy=(512, 95),
+        anchor="mm",
     )
 
-    font = ImageFont.truetype("fonts/Inter-Bold.ttf", size = 40)
+    font = ImageFont.truetype("fonts/Inter-Bold.ttf", size=40)
     text_shadow(
         bg=base,
         text=datetime.fromisoformat(date).strftime("%d %B"),
         font=font,
         text_color=0x8134CE,
         xy=(512, 165),
-        anchor='mm',
+        anchor="mm",
     )
 
-    profile_pic = get_s3_image(user_image_id).resize((64, 64))
-    image_pos = (360, 835)
-    profile_pic = add_corners(profile_pic, 33)
-    ellipse_shadow(base, (image_pos[0], image_pos[1], image_pos[0]+68, image_pos[1]+68))
-    base.paste(profile_pic, image_pos, profile_pic)
-    add_outline(base, profile_pic, image_pos, width=4)
-
-    text_shadow(
+    tbox = text_shadow(
         bg=base,
         text=username,
         font=font,
-        text_color=(0x61, 0x61, 0xfc),
-        xy=(image_pos[0] + profile_pic.width + 20, image_pos[1] + 5),
-        anchor=None,
+        text_color=(0x61, 0x61, 0xFC),
+        xy=(512, 790 + 100),
+        anchor="mm",
     )
-    # sh = drop_shadow(
-    #     profile_pic,
-    #     iterations=20,
-    #     border=68,
-    #     background=0x000000,
-    #     shadow=(0, 0, 0, 155),
-    #     offset=(0, 0),
-    # )
-    # offset = (-64, -64)
-    # base.paste(sh, (image_pos[0] + offset[0], image_pos[1] + offset[1]), sh)
 
-    # pilmoji.text(
-    #     (330 + profile_pic.width + 20, 850),
-    #     f"{username}",
-    #     fill=0xABABFC,
-    #     font=font,
-    #     stroke_width=1,
-    #     stroke_fill="black",
-    # )
-    #
-    # ## Circular trophy icon in corner of achievement image; looks like shit so commented out but might improve in future.
-    # draw = ImageDraw.Draw(base)
-    # draw.ellipse((660,655, 760,755), fill=0xfdfdfd, outline=0x8134CE, width=4)
-    #
-    # font = ImageFont.load_default(size=64)
-    # pilmoji = Pilmoji(base)
-    # pilmoji.text(
-    #     (678, 676),
-    #     f"🏆",
-    #     font=font,
-    # )
+    profile_pic = get_s3_image(user_image_id).resize((64, 64))
+    image_pos = (tbox[0] - 70, tbox[1] - 16)
+    profile_pic = add_corners(profile_pic, 33)
+    ellipse_shadow(
+        base, (image_pos[0], image_pos[1], image_pos[0] + 68, image_pos[1] + 68)
+    )
+    base.paste(profile_pic, image_pos, profile_pic)
+    add_outline(base, profile_pic, image_pos, width=4)
 
-    base.show()
+    output = io.BytesIO()
+    base.save(output, format="png")
+    output.seek(0)
+    return output
+
 
 def ellipse_shadow(bg: Image, bounds):
-    shadow_color = (0,0,0,150)
+    shadow_color = (0, 0, 0, 150)
     iterations = 5
-    offset = (6,6)
-    blurred = Image.new('RGBA', bg.size)
+    offset = (6, 6)
+    blurred = Image.new("RGBA", bg.size)
     draw = ImageDraw.Draw(blurred)
     draw.ellipse(bounds, fill=shadow_color)
     for n in range(0, iterations):
@@ -139,52 +115,62 @@ def ellipse_shadow(bg: Image, bounds):
 
     bg.paste(blurred, blurred)
 
+
 # https://stackoverflow.com/a/34926008
-def draw_ellipse(image, bounds, width=1, outline='white', antialias=4):
+def draw_ellipse(image, bounds, width=1, outline="white", antialias=4):
     """Improved ellipse drawing function, based on PIL.ImageDraw."""
 
     # Use a single channel image (mode='L') as mask.
     # The size of the mask can be increased relative to the imput image
-    # to get smoother looking results. 
+    # to get smoother looking results.
     mask = Image.new(
-        size=[int(dim * antialias) for dim in image.size],
-        mode='L', color='black')
+        size=[int(dim * antialias) for dim in image.size], mode="L", color="black"
+    )
     draw = ImageDraw.Draw(mask)
 
     # draw outer shape in white (color) and inner shape in black (transparent)
-    for offset, fill in (width/-2.0, 'white'), (width/2.0, 'black'):
+    for offset, fill in (width / -2.0, "white"), (width / 2.0, "black"):
         left, top = [(value + offset) * antialias for value in bounds[:2]]
         right, bottom = [(value - offset) * antialias for value in bounds[2:]]
         draw.ellipse([left, top, right, bottom], fill=fill)
 
-    # downsample the mask using PIL.Image.LANCZOS 
+    # downsample the mask using PIL.Image.LANCZOS
     # (a high-quality downsampling filter).
     mask = mask.resize(image.size, Image.LANCZOS)
     # paste outline color to input image through the mask
     image.paste(outline, mask=mask)
 
-def add_outline(bg: Image, im: Image, pos: tuple[int,int], width=6):
+
+def add_outline(bg: Image, im: Image, pos: tuple[int, int], width=6):
     circle_x0 = pos[0]
     circle_y0 = pos[1]
     circle_x1 = pos[0] + im.width
     circle_y1 = pos[1] + im.height
-    draw_ellipse(bg, [circle_x0, circle_y0, circle_x1, circle_y1], width=width, outline='navy')
+    draw_ellipse(
+        bg, [circle_x0, circle_y0, circle_x1, circle_y1], width=width, outline="navy"
+    )
 
 
-def text_shadow(bg: Image, text: str, font, text_color, xy: tuple[int,int], anchor):
-    shadow_color = (0,0,0,155)
+def text_shadow(bg: Image, text: str, font, text_color, xy: tuple[int, int], anchor):
+    shadow_color = (0, 0, 0, 155)
     iterations = 5
-    offset = (0,6)
-    blurred = Image.new('RGBA', bg.size)
+    offset = (0, 6)
+    blurred = Image.new("RGBA", bg.size)
     draw = ImageDraw.Draw(blurred)
-    draw.text((xy[0]+offset[0], xy[1]+offset[1]), text=text, fill=shadow_color, font=font, anchor=anchor)
+    draw.text(
+        (xy[0] + offset[0], xy[1] + offset[1]),
+        text=text,
+        fill=shadow_color,
+        font=font,
+        anchor=anchor,
+    )
     for n in range(0, iterations):
         blurred = blurred.filter(ImageFilter.BLUR)
 
-    bg.paste(blurred,blurred)
+    bg.paste(blurred, blurred)
     draw = ImageDraw.Draw(bg)
     draw.text(xy, text=text, fill=text_color, font=font, anchor=anchor)
-
+    return blurred.getbbox()
 
 
 # Credit: https://enzircle.hashnode.dev/image-beautifier-in-python
@@ -230,7 +216,7 @@ def drop_shadow(
 # https://stackoverflow.com/a/11291419
 def add_corners(im, rad):
     circle = Image.new("L", (rad * 2, rad * 2), 0)
-    #draw_ellipse(circle, (0, 0, rad * 2 - 1, rad * 2 - 1), fill=255)
+    # draw_ellipse(circle, (0, 0, rad * 2 - 1, rad * 2 - 1), fill=255)
     draw = ImageDraw.Draw(circle)
     draw.ellipse((0, 0, rad * 2 - 1, rad * 2 - 1), fill=255)
     alpha = Image.new("L", im.size, 255)
@@ -348,12 +334,3 @@ def has_reached_end(color1: int, color2, up: bool):
         return color1 >= color2
     else:
         return color1 <= color2
-
-
-generate_image(
-    completed_thing_name="Testtitel",
-    image_id="171576751164",
-    date="2024-05-15",
-    username="testuser",
-    user_image_id="1715376751164",
-)

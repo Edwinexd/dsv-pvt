@@ -35,14 +35,16 @@ def delete(image_id: str):
         raise HTTPException(
             status_code=response.status_code, detail=response.json()["detail"]
         )
-    
+
+
 @dataclass
-class ImageResponse():
+class ImageResponse:
     content: bytes
     media_type: str
 
+
 def download(image_id: str):
-    response = requests.get(
-        url=f"https://images-pvt.edt.cx/images/{image_id}"
+    response = requests.get(url=f"https://images-pvt.edt.cx/images/{image_id}")
+    return ImageResponse(
+        content=response.content, media_type=response.headers["Content-Type"]
     )
-    return ImageResponse(content=response.content, media_type=response.headers["Content-Type"])
