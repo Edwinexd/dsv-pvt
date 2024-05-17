@@ -11,6 +11,7 @@ from typing import Optional
 
 # pylint: disable=no-member
 
+
 # r,g,b separated to make incrementing/decrementing individal color intensities easier
 @dataclass
 class SubGradient:
