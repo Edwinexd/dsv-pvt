@@ -195,12 +195,23 @@ def create_achievement(db_session: Session, achievement: schemas.AchievementCrea
 
 
 # get achievement from id
-def get_achievement(db_session: Session, *, achievement_id: Optional[int] = None, achievement_requirement: Optional[schemas.AchievementRequirement] = None):
+def get_achievement(
+    db_session: Session,
+    *,
+    achievement_id: Optional[int] = None,
+    achievement_requirement: Optional[schemas.AchievementRequirement] = None
+):
     if achievement_id is None and achievement_requirement is None:
-        raise ValueError("Either achievement_id or achievement_requirement must be provided")
+        raise ValueError(
+            "Either achievement_id or achievement_requirement must be provided"
+        )
     return (
         db_session.query(models.Achievement)
-        .filter(models.Achievement.id == achievement_id if achievement_id is not None else models.Achievement.requirement == achievement_requirement)
+        .filter(
+            models.Achievement.id == achievement_id
+            if achievement_id is not None
+            else models.Achievement.requirement == achievement_requirement
+        )
         .first()
     )
 
@@ -237,12 +248,16 @@ def get_all_achievements(db_session: Session, user_id: str):
         return None
     return user.completed_achievements
 
-def grant_achievement(db_session: Session, db_user: models.User, db_achievement: models.Achievement):
+
+def grant_achievement(
+    db_session: Session, db_user: models.User, db_achievement: models.Achievement
+):
     db_user.completed_achievements.append(db_achievement)
     db_session.add(db_user)
     db_session.commit()
     db_session.refresh(db_user)
     return db_user
+
 
 # INVITATIONS
 def invite_user(

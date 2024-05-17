@@ -959,6 +959,7 @@ def read_achivements_user_has(current_user: DbUser, requested_user: RequestedUse
     achievements = schemas.AchievementList(data=requested_user.completed_achievements)
     return achievements
 
+
 # TOOD: This implementation is bad
 @app.post("/users/{user_id}/health")
 def upload_health_data(
@@ -968,7 +969,7 @@ def upload_health_data(
     health_data: schemas.HealthData,
 ) -> schemas.AchievementList:
     validations.validate_id(current_user, requested_user.id)
-    
+
     grantable_achievements: Set[AchievementRequirement] = set()
 
     # variables for counting streaks
@@ -995,7 +996,7 @@ def upload_health_data(
         # water
         if data.water_liters >= 4:
             grantable_achievements.add(AchievementRequirement.WATER_4L)
-        
+
         if data.water_liters >= 3:
             water_streak += 1
             if water_streak >= 7:
@@ -1030,11 +1031,13 @@ def upload_health_data(
         if achievement.requirement in grantable_achievements:
             grantable_achievements.remove(achievement.requirement)
 
-
     new_achievements = []
     for requirement in grantable_achievements:
-        new_user = crud.grant_achievement(db_session, requested_user, crud.get_achievement(db_session, achievement_requirement=requirement))
+        new_user = crud.grant_achievement(
+            db_session,
+            requested_user,
+            crud.get_achievement(db_session, achievement_requirement=requirement),
+        )
         new_achievements = new_user.completed_achievements
-    
-    return schemas.AchievementList(data=new_achievements)
 
+    return schemas.AchievementList(data=new_achievements)

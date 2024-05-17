@@ -218,7 +218,9 @@ class Achievement(base):
     id = Column(Integer, primary_key=True)
     achievement_name = Column(String)
     description = Column(String)
-    requirement = Column(Enum(AchievementRequirement), default=AchievementRequirement.CHALLENGE)
+    requirement = Column(
+        Enum(AchievementRequirement), default=AchievementRequirement.CHALLENGE
+    )
     image_id = Column(String, nullable=True)
 
     # Go to a challenge

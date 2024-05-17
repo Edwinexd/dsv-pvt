@@ -264,6 +264,7 @@ class AchievementImageUpdate(AchievementUpdate):
 class AchievementList(BaseModel):
     data: List[Achievement]
 
+
 # HEALTH
 class HealthPayload(BaseModel):
     date: datetime
@@ -273,8 +274,10 @@ class HealthPayload(BaseModel):
     headache_total: int
     sleep: int
 
+
 class HealthData(BaseModel):
     data: List[HealthPayload]
+
 
 class AchievementRequirement(Enum):
     CHALLENGE = 0
@@ -287,6 +290,7 @@ class AchievementRequirement(Enum):
     HEADACHE_0_7DAYS = 7
     SLEEP_10H = 8
     SLEEP_8H_7DAYS = 9
+
 
 # oauth
 class OauthLoginPayload(BaseModel):
