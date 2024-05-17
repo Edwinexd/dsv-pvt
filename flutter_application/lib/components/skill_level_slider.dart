@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class SkillLevelSlider extends StatefulWidget {
   final int initialSkillLevel;
   final Function(int)? onSkillLevelChanged;
-  final bool readOnly;
+  final bool isSliderLocked;
 
   const SkillLevelSlider({
     super.key,
     this.initialSkillLevel = 0,
     this.onSkillLevelChanged,
-    this.readOnly = false,
+    this.isSliderLocked = false,
   });
 
   @override
@@ -38,24 +38,25 @@ class SkillLevelSliderState extends State<SkillLevelSlider> {
       children: <Widget>[
         SizedBox(
           width: 400,
-          child: Slider(
-            value: _skillLevel.toDouble(),
-            min: 0,
-            max: 4,
-            divisions: 4,
-            label: skillLevels[_skillLevel],
-            onChanged: widget.readOnly
-                ? null
-                : (double value) {
-                    setState(() {
-                      _skillLevel = value.round();
-                      if (widget.onSkillLevelChanged != null) {
-                        widget.onSkillLevelChanged!(_skillLevel);
-                      }
-                    });
-                  },
-            activeColor: const Color.fromARGB(255, 255, 92, 00),
-            inactiveColor: const Color.fromARGB(255, 206, 150, 118),
+          child: AbsorbPointer(
+            absorbing: widget.isSliderLocked,
+            child: Slider(
+              value: _skillLevel.toDouble(),
+              min: 0,
+              max: 4,
+              divisions: 4,
+              label: skillLevels[_skillLevel],
+              onChanged: (double value) {
+                setState(() {
+                  _skillLevel = value.round();
+                  if (widget.onSkillLevelChanged != null) {
+                    widget.onSkillLevelChanged!(_skillLevel);
+                  }
+                });
+              },
+              activeColor: const Color.fromARGB(255, 255, 92, 00),
+              inactiveColor: const Color.fromARGB(255, 206, 150, 118),
+            ),
           ),
         ),
         Text(skillLevels[_skillLevel], style: const TextStyle(fontSize: 16)),
