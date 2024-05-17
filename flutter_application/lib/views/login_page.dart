@@ -31,11 +31,19 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final BackendService _backendService = BackendService();
-  late final GoogleSignIn _googleSignIn = _getGoogleSignIn();
 
   GoogleSignIn _getGoogleSignIn() {
-    if (kIsWeb || Platform.isAndroid) {
+    if (Platform.isAndroid) {
       return GoogleSignIn(
+        scopes: [
+          'email',
+        ],
+      );
+    }
+    if (kIsWeb) {
+      return GoogleSignIn(
+        clientId:
+            dotenv.env['GOOGLE_WEB_CLIENT_ID']!,
         scopes: [
           'email',
         ],
@@ -44,7 +52,7 @@ class _LoginPageState extends State<LoginPage> {
     if (Platform.isIOS || Platform.isMacOS) {
       return GoogleSignIn(
         clientId:
-            dotenv.env['GOOGLE_CLIENT_ID']!,
+            dotenv.env['GOOGLE_APPLE_CLIENT_ID']!,
         scopes: [
           'email',
         ],
@@ -88,7 +96,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> googleSignUserIn() async {
-    final GoogleSignInAccount? googleAccount = await _googleSignIn.signIn();
+    final GoogleSignIn googleSignIn = _getGoogleSignIn();
+    final GoogleSignInAccount? googleAccount = await googleSignIn.signIn();
     final GoogleSignInAuthentication googleAuthentication =
         await googleAccount!.authentication;
     final String accessToken = googleAuthentication.accessToken!;
