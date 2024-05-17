@@ -198,19 +198,6 @@ def delete_pfp(
     )
 
 
-# IMAGE GEN (for share to ...)
-@app.get("/users/{user_id}/achievements/{achievement_id}/share")
-def generate_achievement_image(
-    current_user: DbUser,
-    db_session: DbSession,
-    requested_user: RequestedUser,
-    requested_achievement: RequestedAchievement,
-):
-    # img = generate_image(requested_achievement)
-    # return img
-    pass
-
-
 # group pic
 @app.put("/groups/{group_id}/picture", status_code=204)
 def upload_group_pic(
