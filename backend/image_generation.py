@@ -81,6 +81,7 @@ def generate_image(
     profile_pic = get_s3_image(user_image_id).resize((64, 64))
     image_pos = (360, 835)
     profile_pic = add_corners(profile_pic, 33)
+    ellipse_shadow(base, (image_pos[0], image_pos[1], image_pos[0]+68, image_pos[1]+68))
     base.paste(profile_pic, image_pos, profile_pic)
     add_outline(base, profile_pic, image_pos, width=4)
 
@@ -125,6 +126,18 @@ def generate_image(
     # )
 
     base.show()
+
+def ellipse_shadow(bg: Image, bounds):
+    shadow_color = (0,0,0,150)
+    iterations = 5
+    offset = (6,6)
+    blurred = Image.new('RGBA', bg.size)
+    draw = ImageDraw.Draw(blurred)
+    draw.ellipse(bounds, fill=shadow_color)
+    for n in range(0, iterations):
+        blurred = blurred.filter(ImageFilter.BLUR)
+
+    bg.paste(blurred, blurred)
 
 # https://stackoverflow.com/a/34926008
 def draw_ellipse(image, bounds, width=1, outline='white', antialias=4):
