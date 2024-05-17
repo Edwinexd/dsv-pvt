@@ -265,5 +265,6 @@ class AchievementList(BaseModel):
 
 
 # oauth
-class AccessToken(BaseModel):
-    access_token: str
+class OauthLoginPayload(BaseModel):
+    access_token: Optional[str]
+    id_token: Optional[str]

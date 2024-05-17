@@ -16,7 +16,6 @@ from user_roles import Roles
 from database import engine, session_local
 from sessions import create_session, get_session, revoke_session
 from validations import validate_api_key
-import requests
 
 models.base.metadata.create_all(bind=engine)
 
@@ -310,8 +309,8 @@ def login(credentials: schemas.UserCreds, db_session: DbSession):
 
 
 @app.post("/users/login/oauth/google")
-async def login_with_google(token_data: schemas.AccessToken, db_session: DbSession):
-    user_id = auth.login_ouath(token_data.access_token, "google")
+async def login_with_google(token_data: schemas.OauthLoginPayload, db_session: DbSession):
+    user_id = auth.login_ouath(token_data.access_token, token_data.id_token, "google")
 
     db_user = crud.get_user(db_session, user_id)
     if db_user is None:

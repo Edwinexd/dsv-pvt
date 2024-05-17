@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/components/custom_divider.dart';
 import 'package:flutter_application/components/my_button.dart';
 import 'package:flutter_application/components/my_textfield.dart';
-import 'package:flutter_application/components/square_tile.dart';
+import 'package:flutter_application/components/sign_in_button.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/forgot_password.dart';
 import 'package:flutter_application/main.dart';
@@ -31,19 +31,28 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final BackendService _backendService = BackendService();
-
+  late GoogleSignIn _googleSignIn;
+  
+  @override
+  void initState() {
+    super.initState();
+    _googleSignIn = _getGoogleSignIn();
+    _googleSignIn.onCurrentUserChanged.listen(onGoogleCurrentUserChanged);
+    // _googleSignIn.signInSilently();
+  }
+  
   GoogleSignIn _getGoogleSignIn() {
-    if (Platform.isAndroid) {
+    if (kIsWeb) {
       return GoogleSignIn(
+        clientId:
+            dotenv.env['GOOGLE_WEB_CLIENT_ID']!,
         scopes: [
           'email',
         ],
       );
     }
-    if (kIsWeb) {
+    if (Platform.isAndroid) {
       return GoogleSignIn(
-        clientId:
-            dotenv.env['GOOGLE_WEB_CLIENT_ID']!,
         scopes: [
           'email',
         ],
@@ -95,15 +104,19 @@ class _LoginPageState extends State<LoginPage> {
                 )));
   }
 
-  Future<void> googleSignUserIn() async {
-    final GoogleSignIn googleSignIn = _getGoogleSignIn();
-    final GoogleSignInAccount? googleAccount = await googleSignIn.signIn();
-    final GoogleSignInAuthentication googleAuthentication =
-        await googleAccount!.authentication;
-    final String accessToken = googleAuthentication.accessToken!;
+  Future<void> onGoogleCurrentUserChanged(GoogleSignInAccount? account) async {
+    bool isAuthorized  = account != null;
+    if (kIsWeb && account != null) {
+      isAuthorized = await _googleSignIn.canAccessScopes(['email']);
+    }
+    if (!isAuthorized) {
+      return;
+    }
 
-    await _backendService.loginOauthGoogle(accessToken);
+    final GoogleSignInAuthentication googleAuthentication = await account!.authentication;
 
+    await _backendService.loginOauthGoogle(googleAuthentication.idToken, googleAuthentication.accessToken);
+    
     // TODO Handle user not having account with that email and send them to sign up / display error
 
     Navigator.pushReplacement(
@@ -206,12 +219,15 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    GestureDetector(
-                        onTap: () async {
-                          await googleSignUserIn();
-                        },
-                        child: const SquareTile(
-                            imagePath: 'lib/images/google.png'))
+                    buildSignInButton(
+                      onPressed: () async {
+                        try {
+                          await _googleSignIn.signIn();
+                        } catch (error) {
+                          print(error);
+                        }
+                      }
+                    )
                   ],
                 ),
                 const SizedBox(height: 50),

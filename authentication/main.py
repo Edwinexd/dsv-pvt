@@ -2,7 +2,7 @@
 # pylint: disable=missing-function-docstring
 # pylint: disable=missing-class-docstring
 import logging
-from typing import Literal, Never
+from typing import Literal, Never, Optional
 
 import fastapi
 from pydantic import BaseModel, Field
@@ -37,7 +37,8 @@ class BasicUserInfo(BaseModel):
 
 
 class OauthLoginPayload(BaseModel):
-    access_token: str
+    access_token: Optional[str]
+    id_token: Optional[str]
 
 
 @app.post("/users/login")
@@ -64,15 +65,17 @@ def create_user_(payload: RegisterPayload) -> BasicUserInfo:
 def login_oauth(
     provider: Literal["google"], payload: OauthLoginPayload
 ) -> BasicUserInfo:
+    if payload.access_token is None and payload.id_token is None:
+        raise fastapi.HTTPException(400, detail="Missing access token or id token")
     if provider == "google":
         try:
-            email = google_email_lookup(payload.access_token)
+            email = google_email_lookup(payload.access_token, payload.id_token)
         except ValueError as e:
             raise fastapi.HTTPException(400, detail="Invalid access token") from e
 
         user = get_user(email)
         if user is None:
-            raise fastapi.HTTPException(401, detail="User not found")
+            raise fastapi.HTTPException(404, detail="User not found")
 
         return BasicUserInfo(id=user.id)
 
