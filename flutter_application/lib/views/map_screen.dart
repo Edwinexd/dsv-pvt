@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/bars.dart';
 import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
 
 class MapScreen extends StatelessWidget {
@@ -9,9 +10,12 @@ class MapScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Pick a location'),
-        ),
+        appBar: buildAppBar(
+          title: 'Pick a Location', 
+          context: context,
+          showBackButton: true,
+          ),
+        
         body: FlutterLocationPicker(
           selectLocationButtonStyle: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Colors.white),
