@@ -7,6 +7,7 @@ from pydantic import BaseModel
 import io
 from datetime import datetime
 from dataclasses import dataclass
+from typing import Optional
 
 
 # r,g,b separated to make incrementing/decrementing individal color intensities easier
@@ -22,10 +23,10 @@ class SubGradient:
 def generate_image(
     *,
     image_id: str,
-    completed_thing_name: Optional[str] = None,
     user_image_id: str,
     username: str,
     date: str,
+    completed_thing_name: Optional[str] = None,
 ):
     base = Image.new(mode="RGB", size=(1024, 1024))
     base.paste(0xC7ECEE, (0, 0, base.width, base.height))
