@@ -262,3 +262,9 @@ class AchievementImageUpdate(AchievementUpdate):
 
 class AchievementList(BaseModel):
     data: List[Achievement]
+
+
+# oauth
+class OauthLoginPayload(BaseModel):
+    access_token: Optional[str]
+    id_token: Optional[str]

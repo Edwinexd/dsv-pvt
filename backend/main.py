@@ -308,6 +308,21 @@ def login(credentials: schemas.UserCreds, db_session: DbSession):
     return {"bearer": f"Bearer {session}"}
 
 
+@app.post("/users/login/oauth/google")
+async def login_with_google(
+    token_data: schemas.OauthLoginPayload, db_session: DbSession
+):
+    user_id = auth.login_ouath(token_data.access_token, token_data.id_token, "google")
+
+    db_user = crud.get_user(db_session, user_id)
+    if db_user is None:
+        logging.error("User (id: %s) not found in database!", user_id)
+        raise HTTPException(status_code=500, detail="State mismatch")
+
+    session = create_session(user_id)
+    return {"bearer": f"Bearer {session}"}
+
+
 @app.post("/users/logout", status_code=204)
 def logout(token: Annotated[HTTPAuthorizationCredentials, Depends(header_scheme)]):
     revoke_session(token.credentials)
