@@ -19,7 +19,7 @@ class CustomDropdown<T> extends StatelessWidget {
     return DropdownButtonFormField<T>(
       value: selectedValue,
       onChanged: onChanged,
-      style: TextStyle(color: Colors.black), 
+      style: TextStyle(color: Colors.black),
       decoration: InputDecoration(
         labelText: labelText,
         enabledBorder: const OutlineInputBorder(
@@ -31,12 +31,13 @@ class CustomDropdown<T> extends StatelessWidget {
         fillColor: Colors.white,
         filled: true,
       ),
-      dropdownColor: Color.fromARGB(255, 255, 92, 0), 
+      dropdownColor: Color.fromARGB(255, 255, 92, 0),
       items: items.map((T value) {
         return DropdownMenuItem<T>(
           value: value,
-          child: Text(value.toString(),
-            //style: TextStyle(color: Colors.white),  
+          child: Text(
+            value.toString(),
+            //style: TextStyle(color: Colors.white),
           ),
         );
       }).toList(),

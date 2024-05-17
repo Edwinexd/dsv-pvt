@@ -50,7 +50,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
         appBar: AppBar(
           title:
               const Text('Edit Profile', style: TextStyle(color: Colors.white)),
-          centerTitle: true,
           backgroundColor: Colors.transparent,
           elevation: 0,
           iconTheme: const IconThemeData(color: Colors.white),
@@ -77,42 +76,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ],
                   ),
                   SizedBox(height: 10),
-                  Stack(
-                    clipBehavior: Clip.none,
-                    children: <Widget>[
-                      ProfileAvatar(
-                        imageUrl: imageUrl,
-                        icon: Icons.camera_alt,
-                        onPressed: () {
-                          // Implement camera functionality or another action
-                        },
-                      )
-                    ],
+                  ProfileAvatar(
+                    imageUrl: imageUrl,
+                    iconButtonConfig: IconButtonConfig(
+                      icon: Icons.camera_alt,
+                      onPressed: () {
+                        // Implement camera functionality or another action
+                      },
+                    ),
                   ),
-                  SizedBox(height: 20),
-                  
-                  CustomTextField(
-                    labelText: idEntered ? null : 'Name',
-                    onChanged: (text) {
-                      setState(() {
-                        idEntered = text.isNotEmpty;
-                      });
-                    },
-                  ),
-
-                  SizedBox(height: 20),
-                  
-                  CustomTextField(
-                    labelText: idEntered ? null : 'Email',
-                    onChanged: (text) {
-                      setState(() {
-                        idEntered = text.isNotEmpty;
-                      });
-                    },
-                  ),
-
-                  SizedBox(height: 20),
-
+                  SizedBox(height: 30),
                   Row(
                     children: [
                       Expanded(
