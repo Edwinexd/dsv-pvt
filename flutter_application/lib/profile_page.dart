@@ -63,22 +63,20 @@ class ProfilePage extends StatelessWidget {
                     style: const TextStyle(
                         fontSize: 24, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 10),
-                Stack(
-                  clipBehavior: Clip.none,
-                  children: <Widget>[
-                    ProfileAvatar(
-                      imageUrl: imageUrl,
-                      icon: Icons.edit,
-                      onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => EditProfilePage()));
-                      },
-                    ),
-                  ],
+                ProfileAvatar(
+                  imageUrl: imageUrl,
+                  iconButtonConfig: IconButtonConfig(
+                    icon: Icons.edit,
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => EditProfilePage()));
+                    },
+                  ),
                 ),
                 const SizedBox(height: 10),
                 Text(name, style: const TextStyle(fontSize: 20)),
-                Text('Joined: ${DateFormat('EEEE dd MMMM y').format(joinedDate)}',
+                Text(
+                    'Joined: ${DateFormat('EEEE dd MMMM y').format(joinedDate)}',
                     style: const TextStyle(fontSize: 16)),
                 const SizedBox(height: 10),
                 Container(
@@ -100,7 +98,6 @@ class ProfilePage extends StatelessWidget {
                   onSkillLevelChanged: (newLevel) {
                     print("Skill level updated to: $newLevel");
                   },
-                  isSliderLocked: true,
                 ),
                 const SizedBox(height: 20),
                 MyButton(

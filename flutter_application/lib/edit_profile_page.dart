@@ -7,7 +7,6 @@ import 'package:flutter_application/components/custom_dropdown.dart';
 import 'package:flutter_application/components/custom_text_field.dart';
 import 'package:flutter_application/components/interests_grid.dart';
 import 'package:flutter_application/components/my_button.dart';
-import 'package:flutter_application/components/save_profile_popup.dart';
 import 'package:flutter_application/components/skill_level_slider.dart';
 import 'package:flutter_application/background_for_pages.dart';
 
@@ -36,6 +35,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
   bool bioEntered = false;
   bool idEntered = false;
 
+  void _saveProfile() {
+    if (_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Profile Saved!')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultBackground(
@@ -44,7 +50,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
         appBar: AppBar(
           title:
               const Text('Edit Profile', style: TextStyle(color: Colors.white)),
-          centerTitle: true,
           backgroundColor: Colors.transparent,
           elevation: 0,
           iconTheme: const IconThemeData(color: Colors.white),
@@ -71,37 +76,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ],
                   ),
                   SizedBox(height: 10),
-                  Stack(
-                    clipBehavior: Clip.none,
-                    children: <Widget>[
-                      ProfileAvatar(
-                        imageUrl: imageUrl,
-                        icon: Icons.camera_alt,
-                        onPressed: () {
-                          // Implement camera functionality or another action
-                        },
-                      )
-                    ],
+                  ProfileAvatar(
+                    imageUrl: imageUrl,
+                    iconButtonConfig: IconButtonConfig(
+                      icon: Icons.camera_alt,
+                      onPressed: () {
+                        // Implement camera functionality or another action
+                      },
+                    ),
                   ),
-                  SizedBox(height: 20),
-                  CustomTextField(
-                    labelText: idEntered ? null : 'Name',
-                    onChanged: (text) {
-                      setState(() {
-                        idEntered = text.isNotEmpty;
-                      });
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  CustomTextField(
-                    labelText: idEntered ? null : 'Email',
-                    onChanged: (text) {
-                      setState(() {
-                        idEntered = text.isNotEmpty;
-                      });
-                    },
-                  ),
-                  SizedBox(height: 20),
+                  SizedBox(height: 30),
                   Row(
                     children: [
                       Expanded(
@@ -215,9 +199,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
                   MyButton(
                     buttonText: 'Save Profile',
-                    onTap: () {
-                      saveProfile(context, _formKey);
-                    },
+                    onTap: _saveProfile,
                   ),
                 ],
               ),

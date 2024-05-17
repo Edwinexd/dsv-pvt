@@ -1,17 +1,25 @@
 import 'package:flutter/material.dart';
 
+class IconButtonConfig {
+  final IconData icon;
+  final VoidCallback onPressed;
+  final bool showIcon;
+
+  IconButtonConfig({
+    required this.icon,
+    required this.onPressed,
+    this.showIcon = true,
+  });
+}
+
 class ProfileAvatar extends StatelessWidget {
   final String imageUrl;
-  final IconData? icon;
-  final VoidCallback? onPressed;
-  final bool showIcon;
+  final IconButtonConfig? iconButtonConfig;
 
   const ProfileAvatar({
     Key? key,
     required this.imageUrl,
-    this.icon,
-    this.onPressed,
-    this.showIcon = true,
+    this.iconButtonConfig,
   }) : super(key: key);
 
   @override
@@ -23,7 +31,7 @@ class ProfileAvatar extends StatelessWidget {
           radius: 70.0,
           backgroundImage: NetworkImage(imageUrl),
         ),
-        if (showIcon && icon != null && onPressed != null)
+        if (iconButtonConfig != null && iconButtonConfig!.showIcon)
           Positioned(
             right: -10,
             top: 95,
@@ -43,8 +51,9 @@ class ProfileAvatar extends StatelessWidget {
                 ],
               ),
               child: IconButton(
-                icon: Icon(icon, color: Color.fromARGB(255, 255, 92, 0)),
-                onPressed: onPressed,
+                icon: Icon(iconButtonConfig!.icon,
+                    color: Color.fromARGB(255, 255, 92, 00)),
+                onPressed: iconButtonConfig!.onPressed,
               ),
             ),
           ),
