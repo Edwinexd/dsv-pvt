@@ -22,7 +22,7 @@ class SubGradient:
 def generate_image(
     *,
     image_id: str,
-    completed_thing_name: str = None,
+    completed_thing_name: Optional[str] = None,
     user_image_id: str,
     username: str,
     date: str,
