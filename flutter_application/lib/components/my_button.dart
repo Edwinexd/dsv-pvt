@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class MyButton extends StatefulWidget {
   final Function()? onTap;
-  final String buttonText; 
+  final String buttonText;
 
   const MyButton({Key? key, required this.onTap, required this.buttonText})
       : super(key: key);
@@ -39,12 +39,14 @@ class _MyButtonState extends State<MyButton> {
         padding: const EdgeInsets.all(10),
         margin: const EdgeInsets.symmetric(horizontal: 25.0),
         decoration: BoxDecoration(
-          color: _isPressed ? const Color.fromARGB(255, 245, 156, 104) : const Color.fromARGB(255,255,92,00),
+          color: _isPressed
+              ? const Color.fromARGB(255, 245, 156, 104)
+              : const Color.fromARGB(255, 255, 92, 00),
           borderRadius: BorderRadius.circular(25),
         ),
         child: Center(
           child: Text(
-            widget.buttonText, 
+            widget.buttonText,
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,

@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/components/custom_divider.dart';
+import 'package:flutter_application/components/profile_avatar.dart';
+import 'package:flutter_application/age_data.dart';
+import 'package:flutter_application/cities.dart';
+import 'package:flutter_application/components/custom_dropdown.dart';
+import 'package:flutter_application/components/custom_text_field.dart';
+import 'package:flutter_application/components/interests_grid.dart';
+import 'package:flutter_application/components/my_button.dart';
 import 'package:flutter_application/components/skill_level_slider.dart';
+import 'package:flutter_application/background_for_pages.dart';
 
 class EditProfilePage extends StatefulWidget {
   @override
@@ -8,94 +17,194 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _interestsController = TextEditingController();
   int _skillLevel = 0;
-
-  List<String> skillLevels = [
-    'Beginner: 10 - 8 min/km',
-    'Intermediate: 8 - 6 min/km',
-    'Advanced: 6 - 5 min/km',
-    'Professional: 5 - 4 min/km',
-    'Elite: < 4 min/km'
-  ];
+  String imageUrl = 'https://example.com/profile_placeholder.png';
+  String? selectedLocation;
+  List<String> locations = CityData.swedenCities;
+  bool signedUpToMidnattsloppet = false;
+  Map<String, bool> interests = {
+    'Running': false,
+    'Yoga': false,
+    'Walking': false,
+    'Swimming': false,
+    'Workout': false,
+    'Cycling': false,
+  };
+  String? age;
+  bool ageEntered = false;
+  bool bioEntered = false;
+  bool idEntered = false;
 
   void _saveProfile() {
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Profile Saved!'))
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Profile Saved!')));
     }
-  }
-
-  void _pickImage() {
-    setState(() {
-      // Placeholder image change functionality
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Edit Profile'),
-      ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: EdgeInsets.all(16.0),
-          children: <Widget>[
-            Center(
-              child: GestureDetector(
-                onTap: _pickImage,
-                child: const CircleAvatar(
-                  radius: 60,
-                  // Use a placeholder image if no image is selected
-                  backgroundImage: AssetImage('assets/images/profile_placeholder.png'),
-                  child: Align(
-                    alignment: Alignment.bottomRight,
-                    child: CircleAvatar(
-                      backgroundColor: Colors.white,
-                      radius: 15,
-                      child: Icon(Icons.camera_alt, color: Colors.blue, size: 22),
+    return DefaultBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title:
+              const Text('Edit Profile', style: TextStyle(color: Colors.white)),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: Colors.white),
+        ),
+        body: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Username',
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold)),
+                      IconButton(
+                        icon: Icon(Icons.edit,
+                            color: Theme.of(context).primaryColor),
+                        onPressed: () {},
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  ProfileAvatar(
+                    imageUrl: imageUrl,
+                    iconButtonConfig: IconButtonConfig(
+                      icon: Icons.camera_alt,
+                      onPressed: () {
+                        // Implement camera functionality or another action
+                      },
                     ),
                   ),
-                ),
+                  SizedBox(height: 30),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: CustomDropdown<int>(
+                          items: AgeData.ageList,
+                          selectedValue:
+                              age != null ? int.tryParse(age!) : null,
+                          onChanged: (newValue) {
+                            setState(() {
+                              age = newValue.toString();
+                              ageEntered = true;
+                            });
+                          },
+                          labelText: ageEntered ? null : 'Age',
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      Expanded(
+                        flex: 3,
+                        child: CustomDropdown<String>(
+                          items: locations,
+                          selectedValue: selectedLocation,
+                          onChanged: (newValue) {
+                            setState(() {
+                              selectedLocation = newValue;
+                            });
+                          },
+                          labelText:
+                              selectedLocation == null ? 'Location' : null,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  CustomTextField(
+                    labelText: bioEntered ? null : 'About Me',
+                    onChanged: (text) {
+                      setState(() {
+                        bioEntered = text.isNotEmpty;
+                      });
+                    },
+                    maxLines: null,
+                    minLines: 3,
+                    filled: true,
+                  ),
+                  SizedBox(height: 20),
+                  CustomTextField(
+                    labelText: idEntered ? null : 'Runner ID(Optional)',
+                    onChanged: (text) {
+                      setState(() {
+                        idEntered = text.isNotEmpty;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  const Row(
+                    children: [
+                      Expanded(
+                        child: CustomDivider(),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Text('Interests',
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 16, 14, 99),
+                                fontSize: 16)),
+                      ),
+                      Expanded(
+                        child: CustomDivider(),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 5),
+                  InterestsGrid(
+                    interests: interests,
+                    onInterestChanged: (String interest, bool value) {
+                      setState(() {
+                        interests[interest] = value;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  const Row(
+                    children: [
+                      Expanded(
+                        child: CustomDivider(),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Text('Skill Level',
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 16, 14, 99),
+                                fontSize: 16)),
+                      ),
+                      Expanded(
+                        child: CustomDivider(),
+                      ),
+                    ],
+                  ),
+                  SkillLevelSlider(
+                    initialSkillLevel: _skillLevel,
+                    onSkillLevelChanged: (newLevel) {
+                      setState(() {
+                        _skillLevel = newLevel;
+                      });
+                    },
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  MyButton(
+                    buttonText: 'Save Profile',
+                    onTap: _saveProfile,
+                  ),
+                ],
               ),
             ),
-            SizedBox(height: 20),
-            TextFormField(
-              controller: _nameController,
-              decoration: InputDecoration(labelText: 'Name'),
-              validator: (value) => value!.isEmpty ? 'Name cannot be empty' : null,
-            ),
-            TextFormField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
-              validator: (value) => !value!.contains('@') ? 'Please enter a valid email' : null,
-            ),
-            TextFormField(
-              controller: _interestsController,
-              decoration: const InputDecoration(labelText: 'Interests'),
-              validator: (value) => value!.isEmpty ? 'Interests cannot be empty' : null,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              child: SkillLevelSlider(
-                initialSkillLevel: _skillLevel,
-                onSkillLevelChanged: (int newLevel) {
-                  setState(() {
-                    _skillLevel = newLevel;
-                  });
-                },
-              ),
-            ),
-            ElevatedButton(
-              onPressed: _saveProfile,
-              child: const Text('Save Profile'),
-            ),
-          ],
+          ),
         ),
       ),
     );

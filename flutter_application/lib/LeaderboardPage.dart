@@ -14,8 +14,9 @@ class LeaderboardPage extends StatelessWidget {
 
     return Scaffold(
       appBar: buildAppBar(
-        onPressed: () {},
+        context: context,
         title: 'Leaderboard',
+        showBackButton: true,
       ),
       body: DefaultBackground(
         child: Column(
@@ -38,8 +39,7 @@ class LeaderboardPage extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: buildBottomNavigationBar(
-        selectedIndex: 0, //
-        onItemTapped: (index) {},
+        context: context,
       ),
     );
   }

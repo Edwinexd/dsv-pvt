@@ -67,6 +67,18 @@ class BackendService {
     token = response.data['bearer'];
   }
 
+   Future<void> loginOauthGoogle(String? accessToken, String? idToken) async {
+      if (accessToken == null && idToken == null) {
+        throw const FormatException('loginOauthGoogle called without tokens');
+      }
+      final response = await _dio.post (
+        '/users/login/oauth/google',
+        data: {"access_token": accessToken, "id_token": idToken},
+      );
+      token = response.data['bearer'];
+    }
+  
+
   Future<User> createUser(
       String userName, String fullName, String password) async {
     final response = await _dio.post(
