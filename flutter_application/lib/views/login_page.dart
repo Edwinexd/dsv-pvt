@@ -115,7 +115,6 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await _backendService.loginOauthGoogle(googleAuthentication.accessToken, googleAuthentication.idToken);
     } on DioException catch (error) {
-        print(error.response!.data);
       if (error.response?.statusCode == 404) {
         // TODO Handle user not having account with that email and send them to sign up / display error
         ScaffoldMessenger.of(context).showSnackBar(
