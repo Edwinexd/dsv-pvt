@@ -9,8 +9,6 @@ from datetime import datetime
 from dataclasses import dataclass
 from typing import Optional
 
-# pylint: disable=no-member
-
 
 # r,g,b separated to make incrementing/decrementing individal color intensities easier
 @dataclass
@@ -110,13 +108,13 @@ def ellipse_shadow(bg: Image, bounds):
     shadow_color = (0, 0, 0, 150)
     iterations = 5
     offset = (6, 6)
-    blurred = Image.new("RGBA", bg.size)
+    blurred = Image.new("RGBA", bg.size)  # type: ignore
     draw = ImageDraw.Draw(blurred)
     draw.ellipse(bounds, fill=shadow_color)
     for n in range(0, iterations):
         blurred = blurred.filter(ImageFilter.BLUR)
 
-    bg.paste(blurred, blurred)
+    bg.paste(blurred, blurred)  # type: ignore
 
 
 # https://stackoverflow.com/a/34926008
@@ -139,7 +137,7 @@ def draw_ellipse(image, bounds, width=1, outline="white", antialias=4):
 
     # downsample the mask using PIL.Image.LANCZOS
     # (a high-quality downsampling filter).
-    mask = mask.resize(image.size, Image.LANCZOS)
+    mask = mask.resize(image.size, Image.LANCZOS)  # type: ignore
     # paste outline color to input image through the mask
     image.paste(outline, mask=mask)
 
@@ -147,8 +145,8 @@ def draw_ellipse(image, bounds, width=1, outline="white", antialias=4):
 def add_outline(bg: Image, im: Image, pos: tuple[int, int], width=6):
     circle_x0 = pos[0]
     circle_y0 = pos[1]
-    circle_x1 = pos[0] + im.width
-    circle_y1 = pos[1] + im.height
+    circle_x1 = pos[0] + im.width  # type: ignore
+    circle_y1 = pos[1] + im.height  # type: ignore
     draw_ellipse(
         bg, [circle_x0, circle_y0, circle_x1, circle_y1], width=width, outline="navy"
     )
@@ -158,7 +156,7 @@ def text_shadow(bg: Image, text: str, font, text_color, xy: tuple[int, int], anc
     shadow_color = (0, 0, 0, 155)
     iterations = 5
     offset = (0, 6)
-    blurred = Image.new("RGBA", bg.size)
+    blurred = Image.new("RGBA", bg.size)  # type: ignore
     draw = ImageDraw.Draw(blurred)
     draw.text(
         (xy[0] + offset[0], xy[1] + offset[1]),
@@ -170,7 +168,7 @@ def text_shadow(bg: Image, text: str, font, text_color, xy: tuple[int, int], anc
     for n in range(0, iterations):
         blurred = blurred.filter(ImageFilter.BLUR)
 
-    bg.paste(blurred, blurred)
+    bg.paste(blurred, blurred)  # type: ignore
     draw = ImageDraw.Draw(bg)
     draw.text(xy, text=text, fill=text_color, font=font, anchor=anchor)
     return blurred.getbbox()
@@ -243,7 +241,7 @@ def draw_gradient(im: Image, stops: list[SubGradient]):
     start = 0
 
     for g in stops:
-        end = round((g.percentage / 100) * im.height)
+        end = round((g.percentage / 100) * im.height)  # type: ignore
         draw_subgradient(
             im=im, c1=old, c2=(g.r, g.g, g.b), start=start, end=end, opacity=g.opacity
         )
@@ -302,12 +300,9 @@ def draw_subgradient(
             b = new_color(b, increment_b, 0)
             cfb_counter += c_freq_b
 
-        old = fill
         fill = (r, g, b)
-        if old[0] < fill[0] - 1 or old[0] > fill[0] + 1:
-            print(x)
 
-        draw.line([(0, x), (im.width, x)], fill=fill, width=0)
+        draw.line([(0, x), (im.width, x)], fill=fill, width=0)  # type: ignore
 
 
 def divides(a: int, b: int):
