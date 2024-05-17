@@ -3,6 +3,7 @@ import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/bars.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/activity.dart';
+import 'package:flutter_application/components/skill_level_slider.dart';
 import 'package:flutter_application/views/map_screen.dart';
 import 'package:intl/intl.dart';
 
@@ -34,15 +35,6 @@ class _ActivityCreatePageState extends State<ActivityCreatePage> {
   DateTime _pickedDateTime = DateTime.now();
   int _skillLevel = 0; // Manage skill level as an integer
   List<String> _chosenChallenges = [];
-
-  //Same skillLevels as in profiles
-  List<String> skillLevels = [
-    'Beginner: 10 - 8 min/km',
-    'Intermediate: 8 - 6 min/km',
-    'Advanced: 6 - 5 min/km',
-    'Professional: 5 - 4 min/km',
-    'Elite: < 4 min/km'
-  ];
 
   void _createActivity() async {
     if (_formKey.currentState!.validate()) {
@@ -220,24 +212,16 @@ class _ActivityCreatePageState extends State<ActivityCreatePage> {
                   'Skill Level:',
                   style: TextStyle(fontSize: 16),
                 ),
-                Slider(
-                  value: _skillLevel.toDouble(),
-                  min: 0,
-                  max: 4,
-                  divisions: 4,
-                  onChanged: (double value) {
-                    setState(() {
-                      _skillLevel = value.round();
-                    });
-                  },
-                ),
-                Center(
-                  child: Text(
-                    skillLevels[_skillLevel],
-                    style: const TextStyle(fontSize: 12),
+                SkillLevelSlider(
+                    initialSkillLevel: _skillLevel,
+                    onSkillLevelChanged: (newLevel) {
+                      setState(() {
+                        _skillLevel = newLevel;
+                      });
+                    },
                   ),
-                ),
                 const SizedBox(height: 20.0),
+                
                 Center(
                   child: ElevatedButton(
                     onPressed: () {},
