@@ -1,5 +1,5 @@
 import logging
-from typing import Annotated
+from typing import Annotated, Set
 
 from fastapi import Depends, FastAPI, HTTPException, UploadFile
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -16,6 +16,7 @@ from user_roles import Roles
 from database import engine, session_local
 from sessions import create_session, get_session, revoke_session
 from validations import validate_api_key
+from schemas import AchievementRequirement
 
 models.base.metadata.create_all(bind=engine)
 
@@ -109,7 +110,7 @@ RequestedActivity = Annotated[models.Activity, Depends(get_activity)]
 
 
 def get_achievement(achievement_id: int, db_session: DbSession):
-    db_achievement = crud.get_achievement(db_session, achievement_id)
+    db_achievement = crud.get_achievement(db_session, achievement_id=achievement_id)
     if db_achievement is None:
         raise HTTPException(status_code=404, detail="Achievement not found")
     return db_achievement
@@ -893,3 +894,83 @@ def delete_achievement(
 def read_achivements_user_has(current_user: DbUser, requested_user: RequestedUser):
     achievements = schemas.AchievementList(data=requested_user.completed_achievements)
     return achievements
+
+# TOOD: This implementation is bad
+@app.post("/users/{user_id}/health")
+def upload_health_data(
+    current_user: DbUser,
+    db_session: DbSession,
+    requested_user: RequestedUser,
+    health_data: schemas.HealthData,
+) -> schemas.AchievementList:
+    validations.validate_id(current_user, requested_user.id)
+    
+    grantable_achievements: Set[AchievementRequirement] = set()
+
+    # variables for counting streaks
+    steps_streak = 0
+    water_streak = 0
+    headache_streak = 0
+    sleep_streak = 0
+    for data in health_data.data:
+        # steps
+        if data.steps >= 25000:
+            grantable_achievements.add(AchievementRequirement.STEPS_25K)
+
+        if data.steps >= 10000:
+            steps_streak += 1
+            if steps_streak >= 7:
+                grantable_achievements.add(AchievementRequirement.STEPS_10K_7DAYS)
+        else:
+            steps_streak = 0
+
+        # max heartrate
+        if data.max_heartrate >= 200:
+            grantable_achievements.add(AchievementRequirement.HEARTRATE_200)
+
+        # water
+        if data.water_liters >= 4:
+            grantable_achievements.add(AchievementRequirement.WATER_4L)
+        
+        if data.water_liters >= 3:
+            water_streak += 1
+            if water_streak >= 7:
+                grantable_achievements.add(AchievementRequirement.WATER_3L_7DAYS)
+        else:
+            water_streak = 0
+
+        # headache
+        if data.headache_total >= 16:
+            grantable_achievements.add(AchievementRequirement.HEADACHE_16H)
+        if data.headache_total > 0:
+            headache_streak = 0
+        else:
+            headache_streak += 1
+            if headache_streak >= 7:
+                grantable_achievements.add(AchievementRequirement.HEADACHE_0_7DAYS)
+
+        # sleep
+        if data.sleep >= 10:
+            grantable_achievements.add(AchievementRequirement.SLEEP_10H)
+        if data.sleep >= 8:
+            sleep_streak += 1
+            if sleep_streak >= 7:
+                grantable_achievements.add(AchievementRequirement.SLEEP_8H_7DAYS)
+
+    # grant achievements
+    completed = crud.get_all_achievements(db_session, requested_user.id)
+    if completed is None:
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+    for achievement in completed:
+        if achievement.requirement in grantable_achievements:
+            grantable_achievements.remove(achievement.requirement)
+
+
+    new_achievements = []
+    for requirement in grantable_achievements:
+        new_user = crud.grant_achievement(db_session, requested_user, crud.get_achievement(db_session, achievement_requirement=requirement))
+        new_achievements = new_user.completed_achievements
+    
+    return schemas.AchievementList(data=new_achievements)
+

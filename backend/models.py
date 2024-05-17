@@ -11,6 +11,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
+from schemas import AchievementRequirement
 from user_roles import Roles
 
 from database import base
@@ -38,6 +39,9 @@ challenge_completions = Table(
 achievement_completions = Table(
     "achievement_completions",
     base.metadata,
+    # func.now() is improperly typed
+    # pylint: disable=not-callable
+    Column("completed_at", DateTime(timezone=True), server_default=func.now()),
     Column("user_id", ForeignKey("users.id"), primary_key=True),
     Column("achievement_id", ForeignKey("achievements.id"), primary_key=True),
 )
@@ -214,7 +218,7 @@ class Achievement(base):
     id = Column(Integer, primary_key=True)
     achievement_name = Column(String)
     description = Column(String)
-    requirement = Column(Integer)
+    requirement = Column(Enum(AchievementRequirement), default=AchievementRequirement.CHALLENGE)
     image_id = Column(String, nullable=True)
 
     # Go to a challenge

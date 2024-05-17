@@ -53,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
 
     await _backendService.getMyUser();
 
-    print(await getSteps());
+    print(await getLast30DaysData());
 
 
     Navigator.push(
