@@ -309,7 +309,9 @@ def login(credentials: schemas.UserCreds, db_session: DbSession):
 
 
 @app.post("/users/login/oauth/google")
-async def login_with_google(token_data: schemas.OauthLoginPayload, db_session: DbSession):
+async def login_with_google(
+    token_data: schemas.OauthLoginPayload, db_session: DbSession
+):
     user_id = auth.login_ouath(token_data.access_token, token_data.id_token, "google")
 
     db_user = crud.get_user(db_session, user_id)

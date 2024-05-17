@@ -29,7 +29,8 @@ def create_user(user_payload: UserCreate):
 
 def login_ouath(access_token: Optional[str], id_token: Optional[str], provider: str):
     response = requests.post(
-        f"{AUTH_URL}/users/login/oauth/{provider}", json={"access_token": access_token, "id_token": id_token}
+        f"{AUTH_URL}/users/login/oauth/{provider}",
+        json={"access_token": access_token, "id_token": id_token},
     )
     if not response.ok:
         raise HTTPException(

@@ -106,19 +106,16 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> onGoogleCurrentUserChanged(GoogleSignInAccount? account) async {
-    bool isAuthorized  = account != null;
-    if (kIsWeb && account != null) {
-      isAuthorized = await _googleSignIn.canAccessScopes(['email']);
-    }
-    if (!isAuthorized) {
+    if (account == null) {
       return;
     }
 
-    final GoogleSignInAuthentication googleAuthentication = await account!.authentication;
+    final GoogleSignInAuthentication googleAuthentication = await account.authentication;
 
     try {
-      await _backendService.loginOauthGoogle(googleAuthentication.idToken, googleAuthentication.accessToken);
+      await _backendService.loginOauthGoogle(googleAuthentication.accessToken, googleAuthentication.idToken);
     } on DioException catch (error) {
+        print(error.response!.data);
       if (error.response?.statusCode == 404) {
         // TODO Handle user not having account with that email and send them to sign up / display error
         ScaffoldMessenger.of(context).showSnackBar(
