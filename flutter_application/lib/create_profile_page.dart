@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/home_page.dart';
 import 'controllers/backend_service.dart';
@@ -10,8 +11,6 @@ import 'package:flutter_application/components/interests_grid.dart';
 import 'package:flutter_application/components/my_button.dart';
 import 'package:flutter_application/components/skill_level_slider.dart';
 import 'package:flutter_application/background_for_pages.dart';
-import 'package:flutter_application/controllers/backend_service.dart';
-import 'package:flutter_application/home_page.dart';
 
 class CreateProfilePage extends StatefulWidget {
   final bool forced;
@@ -24,13 +23,11 @@ class CreateProfilePage extends StatefulWidget {
 
 class _CreateProfilePageState extends State<CreateProfilePage> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _interestsController = TextEditingController();
   int _skillLevel = 0;
-  String imageUrl = 'https://example.com/profile_placeholder.png';
+  ImageProvider profileImage = const AssetImage('lib/images/splash.png');
   String? selectedLocation;
-  List<String> locations = CityData.swedenCities;
+  String? age;
+  String? bio;
   bool signedUpToMidnattsloppet = false;
   Map<String, bool> interests = {
     'Running': false,
@@ -40,7 +37,6 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
     'Workout': false,
     'Cycling': false,
   };
-  String? age;
   bool ageEntered = false;
   bool bioEntered = false;
   bool idEntered = false;
@@ -49,13 +45,20 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
   Future<void> _saveProfile() async {
     if (_formKey.currentState!.validate()) {
       final user = await _backendService.getMe();
-      await _backendService.createProfile(user.id, "description", 18,
-          _interestsController.text, _skillLevel, false);
+      final interests = <String>[];
+      for (final interest in this.interests.keys) {
+        if (this.interests[interest]!) {
+          interests.add(interest);
+        }
+      }
+      // TODO This boolean is hardcoded, switch needed
+      await _backendService.createProfile(user.id, bio!, int.parse(age!),
+          const JsonEncoder().convert(interests), _skillLevel, false);
+      // TODO: Need image bindings to also set the users profile image if they uploaded one
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Profile Created!')));
       if (widget.forced) {
-        Navigator.pop(context);
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomePage()),
         );
@@ -63,9 +66,11 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
     }
   }
 
-  void _pickImage() {
+  Future<void> _pickImage() async {
+    // TODO: Image picker
+    ImageProvider image = await _backendService.getImage("404");
     setState(() {
-      imageUrl = 'https://example.com/new_profile.jpg';
+      profileImage = image;
     });
   }
 
@@ -96,7 +101,7 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
                       onTap: _pickImage,
                       child: CircleAvatar(
                         radius: 60,
-                        backgroundImage: NetworkImage(imageUrl),
+                        backgroundImage: profileImage,
                         child: const Align(
                           alignment: Alignment.bottomRight,
                           child: CircleAvatar(
@@ -131,7 +136,7 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
                       Expanded(
                         flex: 3,
                         child: CustomDropdown<String>(
-                          items: locations,
+                          items: CityData.swedenCities,
                           selectedValue: selectedLocation,
                           onChanged: (newValue) {
                             setState(() {
@@ -150,6 +155,7 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
                     onChanged: (text) {
                       setState(() {
                         bioEntered = text.isNotEmpty;
+                        bio = text;
                       });
                     },
                     maxLines: null,

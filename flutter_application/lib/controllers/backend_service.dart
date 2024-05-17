@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_application/models/activity.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/models/group_invite.dart';
@@ -78,6 +81,7 @@ class BackendService {
         "password": password,
       },
     );
+    await login(email, password);
     return User.fromJson((response.data) as Map<String, dynamic>);
   }
 
@@ -110,7 +114,8 @@ class BackendService {
       updateFields['full_name'] = fullName;
     }
     if (updateFields.isEmpty) {
-      throw const FormatException('updateUser called without updated arguments');
+      throw const FormatException(
+          'updateUser called without updated arguments');
     }
 
     final response = await _dio.patch(
@@ -128,7 +133,7 @@ class BackendService {
 
   Future<Profile> createProfile(String userId, String description, int age,
       String interests, int skillLevel, bool isPrivate) async {
-    final response = await _dio.post('/users/$userId/profile', data: {
+    final response = await _dio.put('/users/$userId/profile', data: {
       "description": description,
       "age": age,
       "interests": interests,
@@ -167,7 +172,8 @@ class BackendService {
       updateFields['is_private'] = isPrivate;
     }
     if (updateFields.isEmpty) {
-      throw const FormatException('updateProfile called without updated arguments');
+      throw const FormatException(
+          'updateProfile called without updated arguments');
     }
 
     final response = await _dio.patch(
@@ -226,7 +232,8 @@ class BackendService {
       updateFields['is_private'] = isPrivate;
     }
     if (updateFields.isEmpty) {
-      throw const FormatException('updateGroup called without updated arguments');
+      throw const FormatException(
+          'updateGroup called without updated arguments');
     }
 
     final response = await _dio.patch(
@@ -307,8 +314,7 @@ class BackendService {
     return Activity.fromJson((response.data) as Map<String, dynamic>);
   }
 
-  Future<List<Activity>> getActivities(
-      int groupId, int skip, int limit) async {
+  Future<List<Activity>> getActivities(int groupId, int skip, int limit) async {
     final response =
         await _dio.get('/groups/$groupId/activities', queryParameters: {
       'skip': skip,
@@ -342,7 +348,8 @@ class BackendService {
       updateFields['is_completed'] = isCompleted;
     }
     if (updateFields.isEmpty) {
-      throw const FormatException('updateActivity called without updated arguments');
+      throw const FormatException(
+          'updateActivity called without updated arguments');
     }
 
     final response = await _dio.patch(
@@ -356,7 +363,8 @@ class BackendService {
     await _dio.delete('/groups/$groupId/activities/$activityId');
   }
 
-  Future<void> joinActivity(int groupId, int activityId, int participantId) async {
+  Future<void> joinActivity(
+      int groupId, int activityId, int participantId) async {
     await _dio.put(
         '/group/$groupId/activities/$activityId/participants/$participantId');
   }
@@ -386,8 +394,34 @@ class BackendService {
     return activityList.map((e) => Activity.fromJson(e)).toList();
   }
 
-  Future<void> leaveActivity(int groupId, int acitivityId, String participantId) async {
+  Future<void> leaveActivity(
+      int groupId, int acitivityId, String participantId) async {
     await _dio.delete(
         '/groups/$groupId/activities/$acitivityId/participants/$participantId');
+  }
+
+  // --------- IMAGE RETRIEVAL ---------
+  Future<ImageProvider> getImage(String imageId) async {
+    try {
+      final response = await _dio.get(
+        "https://images-pvt.edt.cx/images/$imageId",
+        options: Options(
+            responseType: ResponseType.bytes), // Set response type as bytes
+      );
+      return MemoryImage(response.data);
+    } on DioException catch (e) {
+      if (e.response == null) {
+        rethrow;
+      }
+      if (e.response!.statusCode == 404) {
+        // Check if data exists and is in byte form, otherwise handle the error or throw
+        if (e.response!.data is List<int>) {
+          return MemoryImage(Uint8List.fromList(e.response!.data));
+        } else {
+          throw Exception('Error handling response data');
+        }
+      }
+      rethrow;
+    }
   }
 }
