@@ -1,5 +1,4 @@
 import 'package:flutter_application/achievement.dart';
-import 'package:flutter_application/bars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:share_plus/share_plus.dart';
@@ -52,10 +51,6 @@ class _MyAchievementsState extends State<MyAchievements> {
           },
         ),
       ),
-/*             bottomNavigationBar: buildBottomNavigationBar( 
-        selectedIndex: selectedIndex, // selectedIndex,
-        onItemTapped: onItemTapped, // onItemtapped ,
-      ), */
     );
   }
 }
@@ -90,12 +85,6 @@ class AchievementCard extends StatelessWidget {
                   onPressed: () async {
                     // Share achievement - How?
                     Share.share('${achievement.header}: ${achievement.description}');
-                    // final result = await Share.shareXFiles([XFile('images/apple.png')], text: 'Great picture');
-                    // print('Thank you for sharing the picture!');
-/*                     
-                     if (result.status == ShareResultStatus.success) {
-                      print('Thank you for sharing the picture!');
-                    }  */
                   },
                   child: const Text('Share'),
                 ),
