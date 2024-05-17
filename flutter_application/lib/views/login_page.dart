@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/components/custom_divider.dart';
@@ -115,10 +116,18 @@ class _LoginPageState extends State<LoginPage> {
 
     final GoogleSignInAuthentication googleAuthentication = await account!.authentication;
 
-    await _backendService.loginOauthGoogle(googleAuthentication.idToken, googleAuthentication.accessToken);
+    try {
+      await _backendService.loginOauthGoogle(googleAuthentication.idToken, googleAuthentication.accessToken);
+    } on DioException catch (error) {
+      if (error.response?.statusCode == 404) {
+        // TODO Handle user not having account with that email and send them to sign up / display error
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('User not found, please sign up')));
+        return;
+      }
+      rethrow;
+    }
     
-    // TODO Handle user not having account with that email and send them to sign up / display error
-
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(
