@@ -80,6 +80,7 @@ class UserProfilePage extends StatelessWidget {
                   initialSkillLevel: 2,
                   isSliderLocked: true,
                 ),
+                /*
                 const SizedBox(height: 40),
                 MyButton(
                   buttonText: '$username\'s Trophies',
@@ -88,6 +89,7 @@ class UserProfilePage extends StatelessWidget {
                         builder: (context) => MyAchievements()));
                   },
                 ),
+                */
               ],
             ),
           ),
