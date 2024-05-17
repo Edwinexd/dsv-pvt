@@ -47,15 +47,15 @@ class SkillLevelSliderState extends State<SkillLevelSlider> {
               divisions: 4,
               label: skillLevels[_skillLevel],
               onChanged: (double value) {
-                    setState(() {
-                      _skillLevel = value.round();
-                      if (widget.onSkillLevelChanged != null) {
-                        widget.onSkillLevelChanged!(_skillLevel);
-                      }
-                    });
-                  },
+                setState(() {
+                  _skillLevel = value.round();
+                  if (widget.onSkillLevelChanged != null) {
+                    widget.onSkillLevelChanged!(_skillLevel);
+                  }
+                });
+              },
               activeColor: const Color.fromARGB(255, 255, 92, 00),
-            inactiveColor: const Color.fromARGB(255, 206, 150, 118),
+              inactiveColor: const Color.fromARGB(255, 206, 150, 118),
             ),
           ),
         ),
