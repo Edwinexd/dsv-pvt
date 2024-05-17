@@ -1,8 +1,9 @@
 import logging
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, UploadFile
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 import crud
@@ -10,6 +11,7 @@ import models
 import schemas
 import auth
 import validations
+import images
 from user_roles import Roles
 from database import engine, session_local
 from sessions import create_session, get_session, revoke_session
@@ -18,6 +20,15 @@ from validations import validate_api_key
 models.base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+# CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origin_regex=r"(https://pvt\.edt\.cx)|(http://localhost:\d{2,5})|(http://10\.97\.231\.1:81)",
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def get_db_session():
@@ -117,6 +128,170 @@ def get_challenge(challenge_id: int, db_session: DbSession):
 RequestedChallenge = Annotated[models.Challenge, Depends(get_challenge)]
 
 
+# IMAGES
+# profile pic
+@app.put("/users/{user_id}/profile/picture", status_code=204)
+def upload_pfp(
+    current_user: DbUser,
+    db_session: DbSession,
+    requested_profile: RequestedProfile,
+    image: UploadFile,
+):
+    validations.validate_id(current_user, requested_profile.owner_id)
+    if requested_profile.image_id is not None:
+        images.delete(requested_profile.image_id)
+    id = images.upload(image=image)
+    crud.update_profile(
+        db_session, requested_profile, schemas.ProfileImageUpdate(image_id=str(id))
+    )
+
+
+@app.delete("/users/{user_id}/profile/picture", status_code=204)
+def delete_pfp(
+    current_user: DbUser, db_session: DbSession, requested_profile: RequestedProfile
+):
+    validations.validate_id(current_user, requested_profile.owner_id)
+    if requested_profile.image_id is None:
+        raise HTTPException(status_code=404, detail="Profile picture not found")
+    images.delete(requested_profile.image_id)
+    crud.update_profile(
+        db_session, requested_profile, schemas.ProfileImageUpdate(image_id=None)
+    )
+
+
+# group pic
+@app.put("/groups/{group_id}/picture", status_code=204)
+def upload_group_pic(
+    current_user: DbUser,
+    db_session: DbSession,
+    requested_group: RequestedGroup,
+    image: UploadFile,
+):
+    validations.validate_owns_group(current_user, requested_group)
+    if requested_group.image_id is not None:
+        images.delete(requested_group.image_id)
+    id = images.upload(image=image)
+    crud.update_group(
+        db_session, requested_group, schemas.GroupImageUpdate(image_id=str(id))
+    )
+
+
+@app.delete("/groups/{group_id}/picture", status_code=204)
+def delete_group_pic(
+    current_user: DbUser,
+    db_session: DbSession,
+    requested_group: RequestedGroup,
+):
+    validations.validate_owns_group(current_user, requested_group)
+    if requested_group.image_id is None:
+        raise HTTPException(status_code=404, detail="Group picture not found")
+    images.delete(requested_group.image_id)
+    crud.update_group(
+        db_session, requested_group, schemas.GroupImageUpdate(image_id=None)
+    )
+
+
+# activity pic
+@app.put("/groups/{group_id}/activites/{activity_id}/picture", status_code=204)
+def upload_activity_pic(
+    current_user: DbUser,
+    db_session: DbSession,
+    requested_group: RequestedGroup,
+    requested_activity: RequestedActivity,
+    image: UploadFile,
+):
+    validations.validate_owns_activity(current_user, requested_group)
+    if requested_activity.image_id is not None:
+        images.delete(requested_activity.image_id)
+    id = images.upload(image=image)
+    crud.update_activity(
+        db_session, requested_activity, schemas.ActivityImageUpdate(image_id=str(id))
+    )
+
+
+@app.delete("/groups/{group_id}/activites/{activity_id}/picture", status_code=204)
+def delete_activity_pic(
+    current_user: DbUser,
+    db_session: DbSession,
+    requested_group: RequestedGroup,
+    requested_activity: RequestedActivity,
+):
+    validations.validate_owns_activity(current_user, requested_group)
+    if requested_activity.image_id is None:
+        raise HTTPException(status_code=404, detail="Activity picture not found")
+    images.delete(requested_activity.image_id)
+    crud.update_activity(
+        db_session, requested_activity, schemas.ActivityImageUpdate(image_id=None)
+    )
+
+
+# challenge pic
+@app.put("/challenges/{challenge_id}/picture", status_code=204)
+def upload_challenge_pic(
+    current_user: DbUser,
+    db_session: DbSession,
+    requested_challenge: RequestedChallenge,
+    image: UploadFile,
+):
+    validations.validate_is_admin(current_user)
+    if requested_challenge.image_id is not None:
+        images.delete(requested_challenge.image_id)
+    id = images.upload(image=image)
+    crud.update_challenge(
+        db_session, requested_challenge, schemas.ChallengeImageUpdate(image_id=str(id))
+    )
+
+
+# dunno if this is even needed but keeping it anyway
+@app.delete("/challenges/{challenge_id}/picture", status_code=204)
+def delete_challenge_pic(
+    current_user: DbUser,
+    db_session: DbSession,
+    requested_challenge: RequestedChallenge,
+):
+    validations.validate_is_admin(current_user)
+    if requested_challenge.image_id is None:
+        raise HTTPException(status_code=404, detail="Challenge picture not found")
+    images.delete(requested_challenge.image_id)
+    crud.update_challenge(
+        db_session, requested_challenge, schemas.ChallengeImageUpdate(image_id=None)
+    )
+
+
+# achievement pic
+@app.put("/achievements/{achievement_id}/picture", status_code=204)
+def upload_achievement_pic(
+    current_user: DbUser,
+    db_session: DbSession,
+    requested_achievement: RequestedAchievement,
+    image: UploadFile,
+):
+    validations.validate_is_admin(current_user)
+    if requested_achievement.image_id is not None:
+        images.delete(requested_achievement.image_id)
+    id = images.upload(image=image)
+    crud.update_achievement(
+        db_session,
+        requested_achievement,
+        schemas.AchievementImageUpdate(image_id=str(id)),
+    )
+
+
+@app.delete("/achivements/{achievement_id}/picture", status_code=204)
+def delete_achievement_pic(
+    current_user: DbUser,
+    db_session: DbSession,
+    requested_achievement: RequestedAchievement,
+):
+    validations.validate_is_admin(current_user)
+    if requested_achievement.image_id is None:
+        raise HTTPException(status_code=404, detail="Achievement picture not found")
+    images.delete(requested_achievement.image_id)
+    crud.update_achievement(
+        db_session, requested_achievement, schemas.AchievementImageUpdate(image_id=None)
+    )
+
+
 # USER
 # login
 # TODO: Properly annotate in OPENAPI that it requires credentials
@@ -133,7 +308,6 @@ def login(credentials: schemas.UserCreds, db_session: DbSession):
     return {"bearer": f"Bearer {session}"}
 
 
-# should maybe be delete?
 @app.post("/users/logout", status_code=204)
 def logout(token: Annotated[HTTPAuthorizationCredentials, Depends(header_scheme)]):
     revoke_session(token.credentials)
@@ -282,6 +456,10 @@ def read_group(
         owner_id=requested_group.owner_id,
         id=requested_group.id,
         points=crud.get_group_points(requested_group),
+        image_id=requested_group.image_id,
+        latitude=requested_group.latitude,
+        longitude=requested_group.longitude,
+        address=requested_group.address,
     )
 
 
@@ -463,6 +641,9 @@ def create_activity(
         group_id=requested_group.id,
         owner_id=current_user.id,
         challenges=activity.challenges,
+        latitude=activity.latitude,
+        longitude=activity.longitude,
+        address=activity.address,
     )
     return crud.create_activity(db_session, activity_payload)
 

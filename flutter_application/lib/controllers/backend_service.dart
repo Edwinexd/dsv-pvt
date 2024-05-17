@@ -47,6 +47,15 @@ class BackendService {
     return _me!;
   }
 
+  Future<bool> isLoggedIn() async {
+    try {
+      await getMe();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future<void> login(String userName, String password) async {
     final response = await _dio.post(
       '/users/login',
