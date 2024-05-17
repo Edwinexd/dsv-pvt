@@ -7,7 +7,6 @@ import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/models/user.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/views/group_members.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class GroupPage extends StatefulWidget {
   final Group group;
