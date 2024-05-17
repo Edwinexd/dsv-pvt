@@ -2,3 +2,8 @@ pvt.edt.cx {
     encode zstd gzip
     reverse_proxy localhost:81 # Backend service
 }
+
+images-pvt.edt.cx {
+    encode zstd gzip
+    reverse_proxy localhost:83 # Images service
+}
