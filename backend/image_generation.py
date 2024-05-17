@@ -9,6 +9,7 @@ from datetime import datetime
 from dataclasses import dataclass
 from typing import Optional
 
+# pylint: disable=no-member
 
 # r,g,b separated to make incrementing/decrementing individal color intensities easier
 @dataclass
@@ -230,7 +231,7 @@ def add_corners(im, rad):
     return im
 
 
-def get_s3_image(image_id: str) -> Image:
+def get_s3_image(image_id: str):
     img_response = download(image_id)
     stream = io.BytesIO(img_response.content)
     return Image.open(stream)
