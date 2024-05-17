@@ -1,15 +1,25 @@
 import 'package:flutter/material.dart';
 
-class ProfileAvatar extends StatelessWidget {
-  final String imageUrl;
+class IconButtonConfig {
   final IconData icon;
   final VoidCallback onPressed;
+  final bool showIcon;
+
+  IconButtonConfig({
+    required this.icon,
+    required this.onPressed,
+    this.showIcon = true,
+  });
+}
+
+class ProfileAvatar extends StatelessWidget {
+  final String imageUrl;
+  final IconButtonConfig? iconButtonConfig;
 
   const ProfileAvatar({
     Key? key,
     required this.imageUrl,
-    required this.icon,
-    required this.onPressed,
+    this.iconButtonConfig,
   }) : super(key: key);
 
   @override
@@ -21,30 +31,32 @@ class ProfileAvatar extends StatelessWidget {
           radius: 70.0,
           backgroundImage: NetworkImage(imageUrl),
         ),
-        Positioned(
-          right: -10,
-          top: 95,
-          child: Container(
-            height: 40,
-            width: 40,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
-                  spreadRadius: 1,
-                  blurRadius: 3,
-                  offset: const Offset(0, 1),
-                ),
-              ],
-            ),
-            child: IconButton(
-              icon: Icon(icon, color: Color.fromARGB(255, 255, 92, 00)),
-              onPressed: onPressed,
+        if (iconButtonConfig != null && iconButtonConfig!.showIcon)
+          Positioned(
+            right: -10,
+            top: 95,
+            child: Container(
+              height: 40,
+              width: 40,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    spreadRadius: 1,
+                    blurRadius: 3,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
+              ),
+              child: IconButton(
+                icon: Icon(iconButtonConfig!.icon,
+                    color: Color.fromARGB(255, 255, 92, 00)),
+                onPressed: iconButtonConfig!.onPressed,
+              ),
             ),
           ),
-        ),
       ],
     );
   }

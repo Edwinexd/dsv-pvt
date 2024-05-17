@@ -3,6 +3,7 @@ import requests
 from fastapi import HTTPException, UploadFile
 from fastapi.responses import FileResponse
 from tempfile import NamedTemporaryFile
+from dataclasses import dataclass
 
 IMAGES_URL = os.getenv("IMAGES_URL")
 IMAGES_API_KEY = os.getenv("IMAGES_API_KEY")
@@ -34,3 +35,16 @@ def delete(image_id: str):
         raise HTTPException(
             status_code=response.status_code, detail=response.json()["detail"]
         )
+
+
+@dataclass
+class ImageResponse:
+    content: bytes
+    media_type: str
+
+
+def download(image_id: str):
+    response = requests.get(url=f"https://images-pvt.edt.cx/images/{image_id}")
+    return ImageResponse(
+        content=response.content, media_type=response.headers["Content-Type"]
+    )

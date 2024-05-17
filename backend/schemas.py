@@ -287,3 +287,8 @@ class AchievementRequirement(Enum):
     HEADACHE_0_7DAYS = 7
     SLEEP_10H = 8
     SLEEP_8H_7DAYS = 9
+
+# oauth
+class OauthLoginPayload(BaseModel):
+    access_token: Optional[str]
+    id_token: Optional[str]

@@ -1,13 +1,19 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/components/custom_divider.dart';
 import 'package:flutter_application/components/my_button.dart';
 import 'package:flutter_application/components/my_textfield.dart';
-import 'package:flutter_application/components/square_tile.dart';
+import 'package:flutter_application/components/sign_in_button.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/controllers/health.dart';
 import 'package:flutter_application/forgot_password.dart';
 import 'package:flutter_application/main.dart';
 import 'package:flutter_application/views/sign_up_page.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginPage extends StatefulWidget {
   final bool darkModeEnabled;
@@ -27,8 +33,46 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final BackendService _backendService = BackendService();
+  late GoogleSignIn _googleSignIn;
+  
+  @override
+  void initState() {
+    super.initState();
+    _googleSignIn = _getGoogleSignIn();
+    _googleSignIn.onCurrentUserChanged.listen(onGoogleCurrentUserChanged);
+    // _googleSignIn.signInSilently();
+  }
+  
+  GoogleSignIn _getGoogleSignIn() {
+    if (kIsWeb) {
+      return GoogleSignIn(
+        clientId:
+            dotenv.env['GOOGLE_WEB_CLIENT_ID']!,
+        scopes: [
+          'email',
+        ],
+      );
+    }
+    if (Platform.isAndroid) {
+      return GoogleSignIn(
+        scopes: [
+          'email',
+        ],
+      );
+    }
+    if (Platform.isIOS || Platform.isMacOS) {
+      return GoogleSignIn(
+        clientId:
+            dotenv.env['GOOGLE_APPLE_CLIENT_ID']!,
+        scopes: [
+          'email',
+        ],
+      );
+    }
+    throw Exception('Unsupported platform');
+  }
 
-  void signUserIn() async {
+  Future<void> signUserIn() async {
     final String email = usernameController.text.trim();
     final String password = passwordController.text.trim();
 
@@ -55,8 +99,35 @@ class _LoginPageState extends State<LoginPage> {
 
     print(await getLast30DaysData());
 
-
     Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => MainPage(
+                  darkModeEnabled: widget.darkModeEnabled,
+                  onToggleDarkMode: widget.onToggleDarkMode,
+                )));
+  }
+
+  Future<void> onGoogleCurrentUserChanged(GoogleSignInAccount? account) async {
+    if (account == null) {
+      return;
+    }
+
+    final GoogleSignInAuthentication googleAuthentication = await account.authentication;
+
+    try {
+      await _backendService.loginOauthGoogle(googleAuthentication.accessToken, googleAuthentication.idToken);
+    } on DioException catch (error) {
+      if (error.response?.statusCode == 404) {
+        // TODO Handle user not having account with that email and send them to sign up / display error
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('User not found, please sign up')));
+        return;
+      }
+      rethrow;
+    }
+    
+    Navigator.pushReplacement(
         context,
         MaterialPageRoute(
             builder: (context) => MainPage(
@@ -153,10 +224,18 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 50),
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SquareTile(imagePath: 'lib/images/google.png'),
+                    buildSignInButton(
+                      onPressed: () async {
+                        try {
+                          await _googleSignIn.signIn();
+                        } catch (error) {
+                          print(error);
+                        }
+                      }
+                    )
                   ],
                 ),
                 const SizedBox(height: 50),
