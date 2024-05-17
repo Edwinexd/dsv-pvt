@@ -4,7 +4,9 @@ import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/models/group_invite.dart';
 import 'package:flutter_application/models/profile.dart';
 import 'package:flutter_application/models/user.dart';
+import 'package:flutter_application/models/achievement.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 
 class BackendService {
   static final BackendService _singleton = BackendService._internal();
@@ -400,5 +402,12 @@ class BackendService {
   Future<void> leaveActivity(int groupId, int acitivityId, String participantId) async {
     await _dio.delete(
         '/groups/$groupId/activities/$acitivityId/participants/$participantId');
+  }
+
+  Future<List<Achievement>> uploadHealthData(List<Map<String, dynamic>> data) async {
+    final userId = await getMe().then((value) => value.id);
+    final response = await _dio.post('/users/$userId/health', data: {'data': data});
+    var achievementList = response.data['data'] as List;
+    return achievementList.map((e) => Achievement.fromJson(e)).toList();
   }
 }

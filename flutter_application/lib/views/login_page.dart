@@ -97,8 +97,6 @@ class _LoginPageState extends State<LoginPage> {
 
     await _backendService.getMyUser();
 
-    print(await getLast30DaysData());
-
     Navigator.push(
         context,
         MaterialPageRoute(
