@@ -8,114 +8,158 @@ import io
 from datetime import datetime
 from dataclasses import dataclass
 
-
+# r,g,b separated to make incrementing/decrementing individal color intensities easier
 @dataclass
 class SubGradient:
     percentage: int = 0
     r: int = 0xFF
     g: int = 0xFF
     b: int = 0xFF
-    opacity: float = 1
+    opacity: float = 1 # not functional atm
 
-# TODO: refactor and remove commented code...
-def generate_image(**data):
+
+def generate_image(
+    *,
+    image_id: str,
+    completed_thing_name: str = None,
+    user_image_id: str,
+    username: str,
+    date: str,
+):
     base = Image.new(mode="RGB", size=(1024, 1024))
-    base.paste(0xc7ecee, (0, 0, base.width, base.height))
+    base.paste(0xC7ECEE, (0, 0, base.width, base.height))
     draw_gradient(
         base,
         [
             SubGradient(percentage=23, r=0xAB, g=0xAB, b=0xFC, opacity=0.9),
-            SubGradient(percentage=43, r=0xAA, g=0x6C, b=0xFC, opacity=0.6),
-            SubGradient(percentage=63, r=0xD2, g=0x78, b=0xFC, opacity=0.3),
-            SubGradient(percentage=75, r=0xEE, g=0xAC, b=0xFF, opacity=0.3),
+            SubGradient(percentage=43, r=0xc9, g=0xa7, b=0xfd, opacity=0.6),
+            SubGradient(percentage=63, r=0xf1, g=0xd6, b=0xfe, opacity=0.3),
+            SubGradient(percentage=75, r=0xfa, g=0xe6, b=0xFF, opacity=0.3),
             SubGradient(percentage=100, r=0xFD, g=0xFD, b=0xFF, opacity=1.0),
         ],
     )
 
-    s3_im = get_s3_image(data["image_id"]).resize((512,512))
-    #s3_im = Image.open("testAc.jpeg").resize((512,512))
+    s3_im = get_s3_image(image_id).resize((512, 512))
     radius = 25
     add_corners(s3_im, radius)
-    sh = drop_shadow(s3_im, iterations=60, border=68, background=0x000000, shadow=(0,0,0,150), offset=(0,0))
-    offset = (-62,-62)
-    image_pos = (int(base.width / 2 - base.width/4), int(base.height / 2 - base.height /4))
-    base.paste(sh, (image_pos[0]+offset[0],image_pos[1]+offset[1]), sh)
+    sh = drop_shadow(
+        s3_im,
+        iterations=60,
+        border=68,
+        background=0x000000,
+        shadow=(0, 0, 0, 150),
+        offset=(0, 0),
+    )
+    offset = (-62, -62)
+    image_pos = (
+        int(base.width / 2 - base.width / 4),
+        int(base.height / 2 - base.height / 4),
+    )
+    base.paste(sh, (image_pos[0] + offset[0], image_pos[1] + offset[1]), sh)
     base.paste(s3_im, image_pos, s3_im)
+    draw = ImageDraw.Draw(base)
+    draw.text((512,125), text=completed_thing_name, fill='purple', font=font, anchor='mm')
 
-    font = ImageFont.load_default(size=36)
+    # pilmoji = Pilmoji(base)
+    # pilmoji.text(
+    #     (512, 125),
+    #     f"{completed_thing_name}",
+    #     fill=0x8134CE,
+    #     font=font,
+    #     anchor="ms",
+    # )
+
+    font = ImageFont.load_default(size=38)
     pilmoji = Pilmoji(base)
     pilmoji.text(
-        (512, 65),
-        f"I completed",
+        (512, 180),
+        f"{datetime.fromisoformat(date).strftime("%d %B")}",
         fill=0x8134CE,
         font=font,
-        anchor="ms",
-        stroke_width=2,
-        stroke_fill="black",
+        anchor="mm",
     )
 
-    font2 = ImageFont.truetype("NotoSans-Bold.ttf", size=42)
-    pilmoji = Pilmoji(base)
-    pilmoji.text(
-        (512, 100),
-        f"{data["achievement_name"]} 🏆",
-        fill=0x8134CE,
-        font=font2,
-        anchor="ms",
-        stroke_width=2,
-        stroke_fill="black",
-    )
 
-    # \n{data["achievement_name"]}\nat\n{datetime.fromisoformat(data["date"]).strftime("%d %B")}!",
-
-    profile_pic = get_s3_image(data["user_image_id"]).resize((86,86))
-    # profile_pic = Image.open("testAc.jpeg").resize((86,86))
+    profile_pic = get_s3_image(user_image_id).resize((86, 86))
     add_corners(profile_pic, 15)
-    sh = drop_shadow(profile_pic, iterations=20, border=68, background=0x000000, shadow=(0,0,0,155), offset=(0,0))
-    offset = (-64,-64)
+    sh = drop_shadow(
+        profile_pic,
+        iterations=20,
+        border=68,
+        background=0x000000,
+        shadow=(0, 0, 0, 155),
+        offset=(0, 0),
+    )
+    offset = (-64, -64)
     image_pos = (330, 835)
-    base.paste(sh, (image_pos[0]+offset[0], image_pos[1]+offset[1]), sh)
+    base.paste(sh, (image_pos[0] + offset[0], image_pos[1] + offset[1]), sh)
     base.paste(profile_pic, image_pos, profile_pic)
 
     pilmoji.text(
-        (330+profile_pic.width+20, 850),
-        f"{data["username"]}",
+        (330 + profile_pic.width + 20, 850),
+        f"{username}",
         fill=0xABABFC,
         font=font,
         stroke_width=1,
         stroke_fill="black",
     )
-    #d = ImageDraw.Draw(base)
-    #d.text((512,100), "aaaaaaaaaaaaaaa", fill="black", anchor="ms", font=font)
+
+    ## Circular trophy icon in corner of achievement image; looks like shit so commented out but might improve in future.
+    # draw = ImageDraw.Draw(base)
+    # draw.ellipse((660,655, 760,755), fill=0xfdfdfd, outline=0x8134CE, width=4)
+    #
+    # font = ImageFont.load_default(size=64)
+    # pilmoji = Pilmoji(base)
+    # pilmoji.text(
+    #     (678, 676),
+    #     f"🏆",
+    #     font=font,
+    # )
 
     base.show()
 
+def text_shadow(text: str, offset: tuple[int,int], shadow_color: int, iterations: int):
+    font = ImageFont.truetype("fonts/Inter-Bold.ttf", size = 62)
+    blurred = Image.new('RGBA', base.size)
+    draw = ImageDraw.Draw(blurred)
+    draw.text(xy=(514, 127), text=completed_thing_name, fill=(0,0,0,200), font=font, anchor='mm')
+    for n in range(0, 20):
+        blurred = blurred.filter(ImageFilter.BLUR)
+
+    # Paste soft text onto background
+    base.paste(blurred,blurred)
+
+
+
 # Credit: https://enzircle.hashnode.dev/image-beautifier-in-python
 # Modified to make shadows work for rounded images
-def drop_shadow(image, offset=(5,5), background=0xffffff, shadow=0x444444, 
-                border=8, iterations=3):
+def drop_shadow(
+    image, offset=(5, 5), background=0xFFFFFF, shadow=0x444444, border=8, iterations=3
+):
     """
-    Add a gaussian blur drop shadow to an image.  
+    Add a gaussian blur drop shadow to an image.
     image       - The image to overlay on top of the shadow.
-    offset      - Offset of the shadow from the image as an (x,y) tuple. 
+    offset      - Offset of the shadow from the image as an (x,y) tuple.
                   Can be positive or negative.
     background  - Background colour behind the image.
     shadow      - Shadow colour (darkness).
     border      - Width of the border around the image.  This must be wide
                 enough to account for the blurring of the shadow.
-    iterations  - Number of times to apply the filter.  More iterations 
+    iterations  - Number of times to apply the filter.  More iterations
                 produce a more blurred shadow, but increase processing time.
     """
-    # Create the backdrop image -- a box in the background colour with a 
+    # Create the backdrop image -- a box in the background colour with a
     # shadow on it.
-    totalWidth = image.size[0] + abs(offset[0]) + 2*border
-    totalHeight = image.size[1] + abs(offset[1]) + 2*border
+    totalWidth = image.size[0] + abs(offset[0]) + 2 * border
+    totalHeight = image.size[1] + abs(offset[1]) + 2 * border
     back = Image.new("RGBA", (totalWidth, totalHeight), background)
     # Place the shadow, taking into account the offset from the image
     shadowLeft = border + max(offset[0], 0)
     shadowTop = border + max(offset[1], 0)
-    back.paste(shadow, [shadowLeft, shadowTop, shadowLeft + image.size[0], 
-               shadowTop + image.size[1]] )
+    back.paste(
+        shadow,
+        [shadowLeft, shadowTop, shadowLeft + image.size[0], shadowTop + image.size[1]],
+    )
     # Apply the filter to blur the edges of the shadow.  Since a small kernel
     # is used, the filter must be applied repeatedly to get a decent blur.
     n = 0
@@ -129,10 +173,10 @@ def drop_shadow(image, offset=(5,5), background=0xffffff, shadow=0x444444,
 
 # https://stackoverflow.com/a/11291419
 def add_corners(im, rad):
-    circle = Image.new('L', (rad * 2, rad * 2), 0)
+    circle = Image.new("L", (rad * 2, rad * 2), 0)
     draw = ImageDraw.Draw(circle)
     draw.ellipse((0, 0, rad * 2 - 1, rad * 2 - 1), fill=255)
-    alpha = Image.new('L', im.size, 255)
+    alpha = Image.new("L", im.size, 255)
     w, h = im.size
     alpha.paste(circle.crop((0, 0, rad, rad)), (0, 0))
     alpha.paste(circle.crop((0, rad, rad, rad * 2)), (0, h - rad))
@@ -141,10 +185,12 @@ def add_corners(im, rad):
     im.putalpha(alpha)
     return im
 
+
 def get_s3_image(image_id: str) -> Image:
     img_response = download(image_id)
     stream = io.BytesIO(img_response.content)
     return Image.open(stream)
+
 
 def draw_gradient(im: Image, stops: list[SubGradient]):
     old = (stops[0].r, stops[0].g, stops[0].b)
@@ -247,4 +293,10 @@ def has_reached_end(color1: int, color2, up: bool):
         return color1 <= color2
 
 
-generate_image(achievement_name="Testtitel", id=1234, image_id="171576751164", date="2024-05-15", username="testuser", user_image_id="1715376751164")
+generate_image(
+    completed_thing_name="Testtitel",
+    image_id="171576751164",
+    date="2024-05-15",
+    username="testuser",
+    user_image_id="1715376751164",
+)
