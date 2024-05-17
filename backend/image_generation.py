@@ -57,54 +57,62 @@ def generate_image(
     )
     base.paste(sh, (image_pos[0] + offset[0], image_pos[1] + offset[1]), sh)
     base.paste(s3_im, image_pos, s3_im)
-    draw = ImageDraw.Draw(base)
-    draw.text((512,125), text=completed_thing_name, fill='purple', font=font, anchor='mm')
 
-    # pilmoji = Pilmoji(base)
-    # pilmoji.text(
-    #     (512, 125),
-    #     f"{completed_thing_name}",
-    #     fill=0x8134CE,
-    #     font=font,
-    #     anchor="ms",
-    # )
-
-    font = ImageFont.load_default(size=38)
-    pilmoji = Pilmoji(base)
-    pilmoji.text(
-        (512, 180),
-        f"{datetime.fromisoformat(date).strftime("%d %B")}",
-        fill=0x8134CE,
+    font = ImageFont.truetype("fonts/Inter-Bold.ttf", size=62)
+    text_shadow(
+        bg=base,
+        text=completed_thing_name,
         font=font,
-        anchor="mm",
+        text_color='purple',
+        xy=(512,95),
+        anchor='mm',
     )
 
-
-    profile_pic = get_s3_image(user_image_id).resize((86, 86))
-    add_corners(profile_pic, 15)
-    sh = drop_shadow(
-        profile_pic,
-        iterations=20,
-        border=68,
-        background=0x000000,
-        shadow=(0, 0, 0, 155),
-        offset=(0, 0),
+    font = ImageFont.truetype("fonts/Inter-Bold.ttf", size = 40)
+    text_shadow(
+        bg=base,
+        text=datetime.fromisoformat(date).strftime("%d %B"),
+        font=font,
+        text_color=0x8134CE,
+        xy=(512, 165),
+        anchor='mm',
     )
-    offset = (-64, -64)
-    image_pos = (330, 835)
-    base.paste(sh, (image_pos[0] + offset[0], image_pos[1] + offset[1]), sh)
+
+    profile_pic = get_s3_image(user_image_id).resize((64, 64))
+    image_pos = (360, 835)
+    profile_pic = add_corners(profile_pic, 33)
     base.paste(profile_pic, image_pos, profile_pic)
+    add_outline(base, profile_pic, image_pos, width=4)
 
-    pilmoji.text(
-        (330 + profile_pic.width + 20, 850),
-        f"{username}",
-        fill=0xABABFC,
+    text_shadow(
+        bg=base,
+        text=username,
         font=font,
-        stroke_width=1,
-        stroke_fill="black",
+        text_color=(0x61, 0x61, 0xfc),
+        xy=(image_pos[0] + profile_pic.width + 20, image_pos[1] + 5),
+        anchor=None,
     )
+    # sh = drop_shadow(
+    #     profile_pic,
+    #     iterations=20,
+    #     border=68,
+    #     background=0x000000,
+    #     shadow=(0, 0, 0, 155),
+    #     offset=(0, 0),
+    # )
+    # offset = (-64, -64)
+    # base.paste(sh, (image_pos[0] + offset[0], image_pos[1] + offset[1]), sh)
 
-    ## Circular trophy icon in corner of achievement image; looks like shit so commented out but might improve in future.
+    # pilmoji.text(
+    #     (330 + profile_pic.width + 20, 850),
+    #     f"{username}",
+    #     fill=0xABABFC,
+    #     font=font,
+    #     stroke_width=1,
+    #     stroke_fill="black",
+    # )
+    #
+    # ## Circular trophy icon in corner of achievement image; looks like shit so commented out but might improve in future.
     # draw = ImageDraw.Draw(base)
     # draw.ellipse((660,655, 760,755), fill=0xfdfdfd, outline=0x8134CE, width=4)
     #
@@ -118,16 +126,51 @@ def generate_image(
 
     base.show()
 
-def text_shadow(text: str, offset: tuple[int,int], shadow_color: int, iterations: int):
-    font = ImageFont.truetype("fonts/Inter-Bold.ttf", size = 62)
-    blurred = Image.new('RGBA', base.size)
+# https://stackoverflow.com/a/34926008
+def draw_ellipse(image, bounds, width=1, outline='white', antialias=4):
+    """Improved ellipse drawing function, based on PIL.ImageDraw."""
+
+    # Use a single channel image (mode='L') as mask.
+    # The size of the mask can be increased relative to the imput image
+    # to get smoother looking results. 
+    mask = Image.new(
+        size=[int(dim * antialias) for dim in image.size],
+        mode='L', color='black')
+    draw = ImageDraw.Draw(mask)
+
+    # draw outer shape in white (color) and inner shape in black (transparent)
+    for offset, fill in (width/-2.0, 'white'), (width/2.0, 'black'):
+        left, top = [(value + offset) * antialias for value in bounds[:2]]
+        right, bottom = [(value - offset) * antialias for value in bounds[2:]]
+        draw.ellipse([left, top, right, bottom], fill=fill)
+
+    # downsample the mask using PIL.Image.LANCZOS 
+    # (a high-quality downsampling filter).
+    mask = mask.resize(image.size, Image.LANCZOS)
+    # paste outline color to input image through the mask
+    image.paste(outline, mask=mask)
+
+def add_outline(bg: Image, im: Image, pos: tuple[int,int], width=6):
+    circle_x0 = pos[0]
+    circle_y0 = pos[1]
+    circle_x1 = pos[0] + im.width
+    circle_y1 = pos[1] + im.height
+    draw_ellipse(bg, [circle_x0, circle_y0, circle_x1, circle_y1], width=width, outline='navy')
+
+
+def text_shadow(bg: Image, text: str, font, text_color, xy: tuple[int,int], anchor):
+    shadow_color = (0,0,0,155)
+    iterations = 5
+    offset = (0,6)
+    blurred = Image.new('RGBA', bg.size)
     draw = ImageDraw.Draw(blurred)
-    draw.text(xy=(514, 127), text=completed_thing_name, fill=(0,0,0,200), font=font, anchor='mm')
-    for n in range(0, 20):
+    draw.text((xy[0]+offset[0], xy[1]+offset[1]), text=text, fill=shadow_color, font=font, anchor=anchor)
+    for n in range(0, iterations):
         blurred = blurred.filter(ImageFilter.BLUR)
 
-    # Paste soft text onto background
-    base.paste(blurred,blurred)
+    bg.paste(blurred,blurred)
+    draw = ImageDraw.Draw(bg)
+    draw.text(xy, text=text, fill=text_color, font=font, anchor=anchor)
 
 
 
@@ -174,6 +217,7 @@ def drop_shadow(
 # https://stackoverflow.com/a/11291419
 def add_corners(im, rad):
     circle = Image.new("L", (rad * 2, rad * 2), 0)
+    #draw_ellipse(circle, (0, 0, rad * 2 - 1, rad * 2 - 1), fill=255)
     draw = ImageDraw.Draw(circle)
     draw.ellipse((0, 0, rad * 2 - 1, rad * 2 - 1), fill=255)
     alpha = Image.new("L", im.size, 255)
