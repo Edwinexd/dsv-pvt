@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application/activity_create.dart';
 import 'package:flutter_application/bars.dart';
@@ -9,6 +11,7 @@ import 'package:flutter_application/models/user.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/views/group_members.dart';
 import 'package:flutter_application/views/my_groups.dart';
+
 
 class GroupPage extends StatefulWidget {
   final Group group;
@@ -35,14 +38,15 @@ class _GroupPageState extends State<GroupPage> {
   @override
   void initState() {
     super.initState();
-    fetchAllActivities();
-    fetchJoinedActivities();
-    fetchMyGroups();
-    fetchMembers().then((_) {
+    unawaited(fetchAllActivities());
+    unawaited(fetchJoinedActivities());
+    unawaited(fetchMyGroups(););
+    unawaited(fetchMembers().then((_) {
       setState(() {
         displayedMembers = allMembers;
       });
-    });
+    }));
+    
     //added listener to search text field
     searchController.addListener(_searchMembers);
   }
