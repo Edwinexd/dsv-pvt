@@ -53,6 +53,7 @@ class _ActivityCreatePageState extends State<ActivityCreatePage> {
           .showSnackBar(SnackBar(content: Text('Activity created for $widget.groupId!')));
     }
     // TODO: Navigate to newly created activity
+    // TODO: Have the user join the activity?
   }
 
   Future<void> _pickDate() async {
