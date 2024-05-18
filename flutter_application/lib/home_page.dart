@@ -1,19 +1,36 @@
+import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:flutter_application/LeaderboardPage.dart';
+import 'package:flutter_application/leaderboard_page.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/bars.dart';
 import 'package:flutter_application/challenges_page.dart';
+import 'package:flutter_application/controllers/backend_service.dart';
+import 'package:flutter_application/controllers/health.dart';
 import 'package:flutter_application/midnattsloppet_activity_page.dart';
+import 'package:flutter_application/models/group.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   // Temporary sample data for leaderboard entries can be changed to real data
-  final List<LeaderboardEntry> _leaderboardEntries = [
-    LeaderboardEntry('Player 1', 5, 1),
-    LeaderboardEntry('Player 2', 20, 3),
-    LeaderboardEntry('Player 3', 60, 1),
-  ];
+  List<Group> _leaderboardGroups = [];
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(collectAndSendData());
+    unawaited(BackendService().getGroups(0, 3, GroupOrderType.POINTS, true).then((groups) {
+      setState(() {
+        _leaderboardGroups = groups;
+      });
+    }));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +58,7 @@ class HomePage extends StatelessWidget {
               ActivityButton(),
               ChallengesButton(),
               Leaderboard(
-                leaderboardEntries: _leaderboardEntries,
+                leaderboardEntries: _leaderboardGroups,
               ),
             ],
           ),
@@ -231,16 +248,8 @@ class ChallengesButton extends StatelessWidget {
   }
 }
 
-class LeaderboardEntry {
-  final String name;
-  final int points;
-  final int position;
-
-  LeaderboardEntry(this.name, this.points, this.position);
-}
-
 class Leaderboard extends StatelessWidget {
-  final List<LeaderboardEntry> leaderboardEntries;
+  final List<Group> leaderboardEntries;
   final bool showMoreButton;
   final bool showCrown;
 
@@ -297,9 +306,7 @@ class Leaderboard extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => LeaderboardPage(
-                                  leaderboardEntries: leaderboardEntries,
-                                )),
+                            builder: (context) => LeaderboardPage()),
                       );
                     },
                     child: const Text(
