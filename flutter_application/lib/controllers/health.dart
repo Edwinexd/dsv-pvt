@@ -119,7 +119,7 @@ Future<List<Map<String, dynamic>>> getLast30DaysData() async {
 /// Collects the health data for the last 30 days and sends it to the backend
 /// Note: This is extremely against GDPR and is only for demonstration purposes within the scope of this course
 Future<void> collectAndSendData() async {
-  if (kIsWeb || kIsWasm) {
+  if (kIsWeb) {
     return; // For some reason the health plugin doesn't even throw an catchable error on web...
   }
   try {
