@@ -129,8 +129,21 @@ def get_group_points(db_group: models.Group):
 
 
 # get a list of groups
-def get_groups(db_session: Session, skip: int = 0, limit: int = 100):
-    return db_session.query(models.Group).offset(skip).limit(limit).all()
+def get_groups(
+    db_session: Session,
+    skip: int = 0,
+    limit: int = 100,
+    order_by: schemas.GroupOrderType = schemas.GroupOrderType.NAME,
+    descending: bool = False,
+):
+    orderer = models.Group.group_name
+    if order_by == schemas.GroupOrderType.POINTS:
+        orderer = models.Group.points
+    if descending:
+        orderer = orderer.desc()
+    return (
+        db_session.query(models.Group).order_by(orderer).offset(skip).limit(limit).all()
+    )
 
 
 def update_group(

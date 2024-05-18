@@ -116,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
       rethrow;
     }
 
-    await _backendService.getMyUser();
+    await _backendService.getMe();
 
     Navigator.push(
         context,

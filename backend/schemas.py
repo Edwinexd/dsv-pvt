@@ -128,6 +128,11 @@ class GroupImageUpdate(GroupUpdate):
     image_id: Optional[str] = None
 
 
+class GroupOrderType(str, Enum):
+    NAME = "name"
+    POINTS = "points"
+
+
 # INVITES
 class InviteBase(BaseModel):
     user_id: str
