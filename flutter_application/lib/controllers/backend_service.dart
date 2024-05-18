@@ -437,6 +437,7 @@ class BackendService {
       }
       rethrow;
     }
+  }
  
   Future<List<Achievement>> uploadHealthData(List<Map<String, dynamic>> data) async {
     final userId = await getMe().then((value) => value.id);
