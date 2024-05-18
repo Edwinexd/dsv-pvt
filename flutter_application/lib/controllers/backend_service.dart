@@ -58,11 +58,11 @@ class BackendService {
     }
   }
 
-  Future<void> login(String userName, String password) async {
+  Future<void> login(String email, String password) async {
     final response = await _dio.post(
       '/users/login',
       data: {
-        "email": userName,
+        "email": email,
         "password": password,
       },
     );

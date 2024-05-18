@@ -30,7 +30,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final BackendService _backendService = BackendService();
   late GoogleSignIn _googleSignIn;
@@ -43,6 +43,13 @@ class _LoginPageState extends State<LoginPage> {
     // _googleSignIn.signInSilently();
   }
   
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   GoogleSignIn _getGoogleSignIn() {
     if (kIsWeb) {
       return GoogleSignIn(
@@ -73,11 +80,12 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> signUserIn() async {
-    final String email = usernameController.text.trim();
+    final String email = emailController.text.trim();
     final String password = passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
-      // TODO: Handle email and password is empty
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please fill in all fields')));
       return;
     }
 
@@ -88,11 +96,23 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
 
-    await _backendService.login(email, password);
-
-    if (_backendService.token == null) {
-      // TODO: Handle login failure
-      return;
+    try {
+      await _backendService.login(email, password);
+    } on DioException catch (error) {
+      if (error.response?.statusCode == 401 || error.response?.statusCode == 403) {
+        // TODO This sort of parsing should be done in backend_service but not sure how to manipulate the error object
+        String? errorDetail;
+        if (error.response != null && error.response!.data != null) {
+          final errorData = error.response!.data as Map<String, dynamic>?;
+          errorDetail = errorData?['detail'];
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(errorDetail ?? 'Invalid email or password')));
+        
+        Navigator.pop(context);
+        return;
+      }
+      rethrow;
     }
 
     await _backendService.getMyUser();
@@ -165,7 +185,7 @@ class _LoginPageState extends State<LoginPage> {
                         color: Color.fromARGB(255, 16, 14, 99), fontSize: 16)),
                 const SizedBox(height: 25),
                 MyTextField(
-                  controller: usernameController,
+                  controller: emailController,
                   hintText: 'Email',
                   obscureText: false,
                 ),

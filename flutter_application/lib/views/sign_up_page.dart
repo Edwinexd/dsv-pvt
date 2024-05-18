@@ -26,9 +26,7 @@ class _SignUpPageState extends State<SignUpPage> {
       },
     );
 
-    Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pop(context);
-    });
+    Navigator.pop(context);
   }
 
   @override
