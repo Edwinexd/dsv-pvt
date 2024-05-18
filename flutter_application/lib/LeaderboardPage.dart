@@ -19,7 +19,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
   @override
   void initState() {
     super.initState();
-    unawaited(BackendService().getGroups(0, 50).then((groups) async {
+    unawaited(BackendService().getGroups(0, 50, GroupOrderType.POINTS, true).then((groups) async {
       groups.sort((a, b) => b.points.compareTo(a.points));
       setState(() {
         leaderboardEntries = groups;

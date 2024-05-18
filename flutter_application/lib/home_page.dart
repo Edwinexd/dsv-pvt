@@ -24,7 +24,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     unawaited(collectAndSendData());
-    unawaited(BackendService().getGroups(0, 3).then((groups) {
+    unawaited(BackendService().getGroups(0, 3, GroupOrderType.POINTS, true).then((groups) {
       setState(() {
         _leaderboardGroups = groups;
       });

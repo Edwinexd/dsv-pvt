@@ -25,3 +25,19 @@ class Group {
     );
   }
 }
+
+enum GroupOrderType { 
+  NAME,
+  POINTS;
+
+  static GroupOrderType parse(String orderValue) {
+    switch (orderValue) {
+      case 'name':
+        return GroupOrderType.NAME;
+      case 'points':
+        return GroupOrderType.POINTS;
+      default:
+        throw ArgumentError('Invalid order value: $orderValue');
+    }
+  } 
+}
