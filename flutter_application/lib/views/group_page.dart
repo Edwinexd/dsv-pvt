@@ -28,6 +28,8 @@ class _GroupPageState extends State<GroupPage> {
   bool isPublic = false;
   String skillLevel = '';
   String location = '';
+  int skip = 0; // TODO: Pagination?
+  int limit = 100; // TODO: Pagination?
 
   @override
   void initState() {
@@ -50,7 +52,8 @@ class _GroupPageState extends State<GroupPage> {
   }
 
   Future<void> fetchJoinedActivities() async {
-    var joinedActivities = await BackendService().getUserActivities(userId, skip, limit);
+    User me = await BackendService().getMe();
+    var joinedActivities = await BackendService().getUserActivities(me.id, skip, limit);
     joinedActivityIds = joinedActivities.map((a) => a.id).toSet();
   }
 
@@ -242,7 +245,7 @@ class _GroupPageState extends State<GroupPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const GroupMembersPage(),
+                      builder: (context) => GroupMembersPage(group: widget.group),
                     ),
                   );
                 },
@@ -362,7 +365,7 @@ class _GroupPageState extends State<GroupPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const GroupMembersPage(),
+                          builder: (context) => GroupMembersPage(group: widget.group),
                         ),
                       );
                     },
