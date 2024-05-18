@@ -1,10 +1,11 @@
 import logging
-from typing import Annotated
+from typing import Annotated, Set
 
-from fastapi import Depends, FastAPI, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, HTTPException, UploadFile, Response
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
+from datetime import datetime
 
 import crud
 import models
@@ -16,6 +17,8 @@ from user_roles import Roles
 from database import engine, session_local
 from sessions import create_session, get_session, revoke_session
 from validations import validate_api_key
+from schemas import AchievementRequirement
+from image_generation import generate_image
 
 models.base.metadata.create_all(bind=engine)
 
@@ -109,7 +112,7 @@ RequestedActivity = Annotated[models.Activity, Depends(get_activity)]
 
 
 def get_achievement(achievement_id: int, db_session: DbSession):
-    db_achievement = crud.get_achievement(db_session, achievement_id)
+    db_achievement = crud.get_achievement(db_session, achievement_id=achievement_id)
     if db_achievement is None:
         raise HTTPException(status_code=404, detail="Achievement not found")
     return db_achievement
@@ -126,6 +129,53 @@ def get_challenge(challenge_id: int, db_session: DbSession):
 
 
 RequestedChallenge = Annotated[models.Challenge, Depends(get_challenge)]
+
+
+# GENERATED IMAGES
+@app.get("/users/{user_id}/achievements/{achievement_id}/share")
+def generate_completed_achievement_image(
+    current_user: DbUser,
+    requested_user: RequestedUser,
+    requested_achievement: RequestedAchievement,
+):
+    validations.validate_id(current_user, requested_user.id)
+    if requested_achievement not in requested_user.completed_achievements:
+        return HTTPException(status_code=400, detail="Achievement not completed")
+    return Response(
+        content=generate_image(
+            image_id=requested_achievement.image_id,
+            completed_thing_name=requested_achievement.achievement_name,
+            user_image_id=requested_user.profile.image_id,
+            username=requested_user.username,
+            date=datetime.now().isoformat(),
+        ).read(),
+        media_type="image/png",
+    )
+
+
+@app.get("/users/{user_id}/activities/{activity_id}/share")
+def generate_completed_activity_image(
+    current_user: DbUser,
+    requested_user: RequestedUser,
+    requested_activity: RequestedActivity,
+):
+    validations.validate_id(current_user, requested_user.id)
+    if requested_activity.is_completed == 0:
+        return HTTPException(status_code=400, detail="Achievement not completed")
+    if requested_activity not in requested_user.activities:
+        return HTTPException(
+            status_code=400, detail="Achievement not completed by user"
+        )
+    return Response(
+        content=generate_image(
+            image_id=requested_activity.image_id,
+            completed_thing_name=requested_activity.activity_name,
+            user_image_id=requested_user.profile.image_id,
+            username=requested_user.username,
+            date=datetime.now().isoformat(),
+        ).read(),
+        media_type="image/png",
+    )
 
 
 # IMAGES
@@ -299,6 +349,21 @@ def delete_achievement_pic(
 def login(credentials: schemas.UserCreds, db_session: DbSession):
     user_id = auth.login(credentials)
     # Attempt to get user from db before creating session
+    db_user = crud.get_user(db_session, user_id)
+    if db_user is None:
+        logging.error("User (id: %s) not found in database!", user_id)
+        raise HTTPException(status_code=500, detail="State mismatch")
+
+    session = create_session(user_id)
+    return {"bearer": f"Bearer {session}"}
+
+
+@app.post("/users/login/oauth/google")
+async def login_with_google(
+    token_data: schemas.OauthLoginPayload, db_session: DbSession
+):
+    user_id = auth.login_ouath(token_data.access_token, token_data.id_token, "google")
+
     db_user = crud.get_user(db_session, user_id)
     if db_user is None:
         logging.error("User (id: %s) not found in database!", user_id)
@@ -893,3 +958,86 @@ def delete_achievement(
 def read_achivements_user_has(current_user: DbUser, requested_user: RequestedUser):
     achievements = schemas.AchievementList(data=requested_user.completed_achievements)
     return achievements
+
+
+# TOOD: This implementation is bad
+@app.post("/users/{user_id}/health")
+def upload_health_data(
+    current_user: DbUser,
+    db_session: DbSession,
+    requested_user: RequestedUser,
+    health_data: schemas.HealthData,
+) -> schemas.AchievementList:
+    validations.validate_id(current_user, requested_user.id)
+
+    grantable_achievements: Set[AchievementRequirement] = set()
+
+    # variables for counting streaks
+    steps_streak = 0
+    water_streak = 0
+    headache_streak = 0
+    sleep_streak = 0
+    for data in health_data.data:
+        # steps
+        if data.steps >= 25000:
+            grantable_achievements.add(AchievementRequirement.STEPS_25K)
+
+        if data.steps >= 10000:
+            steps_streak += 1
+            if steps_streak >= 7:
+                grantable_achievements.add(AchievementRequirement.STEPS_10K_7DAYS)
+        else:
+            steps_streak = 0
+
+        # max heartrate
+        if data.max_heartrate >= 200:
+            grantable_achievements.add(AchievementRequirement.HEARTRATE_200)
+
+        # water
+        if data.water_liters >= 4:
+            grantable_achievements.add(AchievementRequirement.WATER_4L)
+
+        if data.water_liters >= 3:
+            water_streak += 1
+            if water_streak >= 7:
+                grantable_achievements.add(AchievementRequirement.WATER_3L_7DAYS)
+        else:
+            water_streak = 0
+
+        # headache
+        if data.headache_total >= 16:
+            grantable_achievements.add(AchievementRequirement.HEADACHE_16H)
+        if data.headache_total > 0:
+            headache_streak = 0
+        else:
+            headache_streak += 1
+            if headache_streak >= 7:
+                grantable_achievements.add(AchievementRequirement.HEADACHE_0_7DAYS)
+
+        # sleep
+        if data.sleep >= 10:
+            grantable_achievements.add(AchievementRequirement.SLEEP_10H)
+        if data.sleep >= 8:
+            sleep_streak += 1
+            if sleep_streak >= 7:
+                grantable_achievements.add(AchievementRequirement.SLEEP_8H_7DAYS)
+
+    # grant achievements
+    completed = crud.get_all_achievements(db_session, requested_user.id)
+    if completed is None:
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+    for achievement in completed:
+        if achievement.requirement in grantable_achievements:
+            grantable_achievements.remove(achievement.requirement)
+
+    new_achievements = []
+    for requirement in grantable_achievements:
+        granted = crud.grant_achievement(
+            db_session,
+            requested_user,
+            crud.get_achievement(db_session, achievement_requirement=requirement),
+        )
+        new_achievements.append(granted.achievement)
+
+    return schemas.AchievementList(data=new_achievements)

@@ -1,3 +1,4 @@
+from typing import Optional
 from sqlalchemy.orm import Session
 import models, schemas
 
@@ -194,10 +195,22 @@ def create_achievement(db_session: Session, achievement: schemas.AchievementCrea
 
 
 # get achievement from id
-def get_achievement(db_session: Session, achievement_id: int):
+def get_achievement(
+    db_session: Session,
+    *,
+    achievement_id: Optional[int] = None,
+    achievement_requirement: Optional[schemas.AchievementRequirement] = None
+):
+    if achievement_id is None and achievement_requirement is None:
+        raise ValueError(
+            "Either achievement_id or achievement_requirement must be provided"
+        )
     return (
         db_session.query(models.Achievement)
-        .filter(models.Achievement.id == achievement_id)
+        .filter(
+            (models.Achievement.id == achievement_id)
+            | (models.Achievement.requirement == achievement_requirement)
+        )
         .first()
     )
 
@@ -233,6 +246,18 @@ def get_all_achievements(db_session: Session, user_id: str):
     if user is None:
         return None
     return user.completed_achievements
+
+
+def grant_achievement(
+    db_session: Session, db_user: models.User, db_achievement: models.Achievement
+):
+    achievement_grant = models.AchievementCompletion(
+        user_id=db_user.id, achievement_id=db_achievement.id
+    )
+    db_session.add(achievement_grant)
+    db_session.commit()
+    db_session.refresh(achievement_grant)
+    return achievement_grant
 
 
 # INVITATIONS
@@ -365,7 +390,7 @@ def complete_activity(
             achievements.append(c.achievement_match)
     for u in db_activity.participants:  # each participant gets their achievement(s)
         for a in achievements:
-            u.completed_achievements.append(a)
+            grant_achievement(db_session, u, a)
     db_session.commit()
 
 

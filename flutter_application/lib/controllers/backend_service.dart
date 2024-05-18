@@ -7,7 +7,9 @@ import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/models/group_invite.dart';
 import 'package:flutter_application/models/profile.dart';
 import 'package:flutter_application/models/user.dart';
+import 'package:flutter_application/models/achievement.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 
 class BackendService {
   static final BackendService _singleton = BackendService._internal();
@@ -69,6 +71,18 @@ class BackendService {
     );
     token = response.data['bearer'];
   }
+
+   Future<void> loginOauthGoogle(String? accessToken, String? idToken) async {
+      if (accessToken == null && idToken == null) {
+        throw const FormatException('loginOauthGoogle called without tokens');
+      }
+      final response = await _dio.post (
+        '/users/login/oauth/google',
+        data: {"access_token": accessToken, "id_token": idToken},
+      );
+      token = response.data['bearer'];
+    }
+  
 
   Future<User> createUser(
       String userName, String email, String fullName, String password) async {
@@ -423,5 +437,11 @@ class BackendService {
       }
       rethrow;
     }
+ 
+  Future<List<Achievement>> uploadHealthData(List<Map<String, dynamic>> data) async {
+    final userId = await getMe().then((value) => value.id);
+    final response = await _dio.post('/users/$userId/health', data: {'data': data});
+    var achievementList = response.data['data'] as List;
+    return achievementList.map((e) => Achievement.fromJson(e)).toList();
   }
 }
