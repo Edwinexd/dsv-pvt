@@ -1,17 +1,34 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/bars.dart';
+import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/home_page.dart';
+import 'package:flutter_application/models/group.dart';
 
-class LeaderboardPage extends StatelessWidget {
-  final List<LeaderboardEntry> leaderboardEntries;
+class LeaderboardPage extends StatefulWidget {
 
-  LeaderboardPage({required this.leaderboardEntries});
+  @override
+  _LeaderboardPageState createState() => _LeaderboardPageState();
+}
+
+class _LeaderboardPageState extends State<LeaderboardPage> {
+  List<Group> leaderboardEntries = [];
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(BackendService().getGroups(0, 50).then((groups) async {
+      groups.sort((a, b) => b.points.compareTo(a.points));
+      setState(() {
+        leaderboardEntries = groups;
+      });
+    }));
+  }
 
   @override
   Widget build(BuildContext context) {
-    leaderboardEntries.sort((a, b) => b.points.compareTo(a.points));
-
     return Scaffold(
       appBar: buildAppBar(
         context: context,
@@ -21,7 +38,8 @@ class LeaderboardPage extends StatelessWidget {
       body: DefaultBackground(
         child: Column(
           children: [
-            Leaderboard(leaderboardEntries: leaderboardEntries, showMoreButton: false, showCrown: true),
+            // Create copy of leaderboard as it modifies the internal list
+            Leaderboard(leaderboardEntries: List<Group>.of(leaderboardEntries), showMoreButton: false, showCrown: true),
             Expanded(
               child: ListView.builder(
                 itemCount: leaderboardEntries.length,

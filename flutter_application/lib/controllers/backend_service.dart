@@ -219,6 +219,7 @@ class BackendService {
     return Group.fromJson((response.data) as Map<String, dynamic>);
   }
 
+  // TODO: Backend should have an order by parameter
   Future<List<Group>> getGroups(int skip, int limit) async {
     final response = await _dio.get('/groups', queryParameters: {
       'skip': skip,
