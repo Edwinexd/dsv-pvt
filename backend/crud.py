@@ -119,15 +119,6 @@ def get_group(db_session: Session, group_id: int):
     return db_session.query(models.Group).filter(models.Group.id == group_id).first()
 
 
-def get_group_points(db_group: models.Group):
-    points = 0
-    for a in db_group.activities:
-        if a.is_completed:
-            for c in a.challenges:
-                points += c.point_reward
-    return points
-
-
 # get a list of groups
 def get_groups(
     db_session: Session,
@@ -141,9 +132,21 @@ def get_groups(
         orderer = models.Group.points
     if descending:
         orderer = orderer.desc()
-    return (
-        db_session.query(models.Group).order_by(orderer).offset(skip).limit(limit).all()
+    else:
+        orderer = orderer.asc()
+
+    # TODO: I can't get it to work properly with the ORM but this *works*
+    # Points now exist as a hybrid property in the Group model which is nice though
+    groups = db_session.query(models.Group).order_by(orderer).all()
+    groups.sort(
+        key=lambda x: x.points
+        if order_by == schemas.GroupOrderType.POINTS
+        else x.group_name,
+        reverse=descending,
     )
+    groups = groups[skip : skip + limit]
+
+    return groups
 
 
 def update_group(

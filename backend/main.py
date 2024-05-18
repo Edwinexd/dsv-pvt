@@ -520,7 +520,7 @@ def read_group(
         is_private=requested_group.is_private,
         owner_id=requested_group.owner_id,
         id=requested_group.id,
-        points=crud.get_group_points(requested_group),
+        points=requested_group.points,
         image_id=requested_group.image_id,
         latitude=requested_group.latitude,
         longitude=requested_group.longitude,
@@ -542,8 +542,6 @@ def read_groups(
             db_session, skip=skip, limit=limit, order_by=order_by, descending=descending
         )
     )
-    for g in groups.data:
-        g.points = crud.get_group_points(crud.get_group(db_session, g.id))
     return groups
 
 
