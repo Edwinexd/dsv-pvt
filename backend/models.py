@@ -11,6 +11,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from schemas import AchievementRequirement
@@ -164,10 +165,11 @@ class Group(base):
             for c in a.challenges
         )
 
-    @points.expression
-    def points(cls):
+    @points.inplace.expression
+    @classmethod
+    def _points_expression(cls):
         return (
-            select(func.sum(Challenge.point_reward))
+            select(coalesce(func.sum(Challenge.point_reward), 0))
             .select_from(Activity)
             .join(activity_challenges, Activity.id == activity_challenges.c.activity_id)
             .join(Challenge, Challenge.id == activity_challenges.c.challenge_id)

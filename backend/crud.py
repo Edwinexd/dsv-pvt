@@ -1,5 +1,7 @@
 from typing import Optional
+from sqlalchemy import asc
 from sqlalchemy.orm import Session
+from sqlmodel import desc
 import models, schemas
 
 
@@ -131,22 +133,13 @@ def get_groups(
     if order_by == schemas.GroupOrderType.POINTS:
         orderer = models.Group.points
     if descending:
-        orderer = orderer.desc()
+        orderer = desc(orderer)
     else:
-        orderer = orderer.asc()
+        orderer = asc(orderer)  # type: ignore
 
-    # TODO: I can't get it to work properly with the ORM but this *works*
-    # Points now exist as a hybrid property in the Group model which is nice though
-    groups = db_session.query(models.Group).order_by(orderer).all()
-    groups.sort(
-        key=lambda x: x.points
-        if order_by == schemas.GroupOrderType.POINTS
-        else x.group_name,
-        reverse=descending,
+    return (
+        db_session.query(models.Group).order_by(orderer).offset(skip).limit(limit).all()
     )
-    groups = groups[skip : skip + limit]
-
-    return groups
 
 
 def update_group(
