@@ -531,7 +531,9 @@ class BackendService {
       options: Options(
           responseType: ResponseType.bytes), // Set response type as bytes
     );
-    return XFile.fromData(Uint8List.fromList(response.data));
+    String mimeType = response.headers.map['content-type']?.first ?? 'image/jpeg';
+    String fileExtension = mimeType.split('/').last;
+    return XFile.fromData(Uint8List.fromList(response.data), mimeType: mimeType, name: 'achievement_share.$fileExtension');
   }
 
   Future<XFile> getActivityShareImage(String userId, int activityId, int groupId) async {
@@ -543,6 +545,8 @@ class BackendService {
         'group_id': groupId,
       }
     );
-    return XFile.fromData(Uint8List.fromList(response.data));
+    String mimeType = response.headers.map['content-type']?.first ?? 'image/jpeg';
+    String fileExtension = mimeType.split('/').last;
+    return XFile.fromData(Uint8List.fromList(response.data), mimeType: mimeType, name: 'activity_share.$fileExtension');
   }
 }
