@@ -12,7 +12,6 @@ import 'package:flutter_application/models/user.dart';
 import 'package:flutter_application/models/achievement.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-
 class BackendService {
   static final BackendService _singleton = BackendService._internal();
   late Dio _dio;
@@ -74,17 +73,16 @@ class BackendService {
     token = response.data['bearer'];
   }
 
-   Future<void> loginOauthGoogle(String? accessToken, String? idToken) async {
-      if (accessToken == null && idToken == null) {
-        throw const FormatException('loginOauthGoogle called without tokens');
-      }
-      final response = await _dio.post (
-        '/users/login/oauth/google',
-        data: {"access_token": accessToken, "id_token": idToken},
-      );
-      token = response.data['bearer'];
+  Future<void> loginOauthGoogle(String? accessToken, String? idToken) async {
+    if (accessToken == null && idToken == null) {
+      throw const FormatException('loginOauthGoogle called without tokens');
     }
-  
+    final response = await _dio.post(
+      '/users/login/oauth/google',
+      data: {"access_token": accessToken, "id_token": idToken},
+    );
+    token = response.data['bearer'];
+  }
 
   Future<User> createUser(
       String userName, String email, String fullName, String password) async {
@@ -440,20 +438,23 @@ class BackendService {
       rethrow;
     }
   }
-  
+
   // --------- IMAGE UPLOADS/DELETIONS ---------
-  Future<void> uploadProfilePicture(XFile file) async {
-    final userId = await getMe().then((value) => value.id);
-    FormData formData = FormData.fromMap({
+  Future<FormData> _getFormDataFromImage(XFile file) async {
+    return FormData.fromMap({
       "image": await MultipartFile.fromBytes(
         await file.readAsBytes(),
         filename: file.name,
         contentType: MediaType.parse(file.mimeType ?? 'image/jpeg'),
       ),
     });
+  }
+
+  Future<void> uploadProfilePicture(XFile file) async {
+    final userId = await getMe().then((value) => value.id);
     await _dio.put(
       '/users/$userId/profile/picture',
-      data: formData,
+      data: await _getFormDataFromImage(file),
     );
     // Clear "me" cache
     _me = null;
@@ -469,11 +470,7 @@ class BackendService {
   Future<void> uploadGroupPicture(int groupId, XFile file) async {
     await _dio.put(
       '/groups/$groupId/picture',
-      data: await MultipartFile.fromBytes(
-        await file.readAsBytes(),
-        filename: file.name,
-        contentType: MediaType.parse(file.mimeType ?? 'image/jpeg'),
-      ),
+      data: await _getFormDataFromImage(file),
     );
   }
 
@@ -481,14 +478,11 @@ class BackendService {
     await _dio.delete('/groups/$groupId/picture');
   }
 
-  Future<void> uploadActivityPicture(int groupId, int activityId, XFile file) async {
+  Future<void> uploadActivityPicture(
+      int groupId, int activityId, XFile file) async {
     await _dio.put(
       '/groups/$groupId/activities/$activityId/picture',
-      data: await MultipartFile.fromBytes(
-        await file.readAsBytes(),
-        filename: file.name,
-        contentType: MediaType.parse(file.mimeType ?? 'image/jpeg'),
-      ),
+      data: await _getFormDataFromImage(file),
     );
   }
 
@@ -496,10 +490,11 @@ class BackendService {
     await _dio.delete('/groups/$groupId/activities/$activityId/picture');
   }
 
-
-  Future<List<Achievement>> uploadHealthData(List<Map<String, dynamic>> data) async {
+  Future<List<Achievement>> uploadHealthData(
+      List<Map<String, dynamic>> data) async {
     final userId = await getMe().then((value) => value.id);
-    final response = await _dio.post('/users/$userId/health', data: {'data': data});
+    final response =
+        await _dio.post('/users/$userId/health', data: {'data': data});
     var achievementList = response.data['data'] as List;
     return achievementList.map((e) => Achievement.fromJson(e)).toList();
   }
