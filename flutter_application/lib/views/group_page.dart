@@ -20,9 +20,9 @@ class GroupPage extends StatefulWidget {
 }
 
 class _GroupPageState extends State<GroupPage> {
+  TextEditingController searchController = TextEditingController();
   List<User> allMembers = [];
   List<User> displayedMembers = [];
-  TextEditingController searchController = TextEditingController();
   List<Activity> allActivities = [];
   Set<int> joinedActivityIds = {};
   bool isPublic = false;
@@ -70,6 +70,22 @@ class _GroupPageState extends State<GroupPage> {
 
   Future<void> fetchMembers() async {
     allMembers = await BackendService().getGroupMembers(widget.group.id);
+  }
+
+  Future<void> toggleActivityParticipation(Activity activity, bool join) async {
+    User me = await BackendService().getMe();
+    if (join) {
+      await BackendService().joinActivity(widget.group.id, activity.id, me.id);
+      setState(() {
+        joinedActivityIds.add(activity.id);
+      });
+    } else {
+      await BackendService().leaveActivity(widget.group.id, activity.id, me.id);
+      setState(() {
+        joinedActivityIds.remove(activity.id);
+      });
+    }
+    
   }
 
   @override
@@ -164,19 +180,7 @@ class _GroupPageState extends State<GroupPage> {
                           spacing: 8,
                           children: <Widget>[
                             TextButton(
-                              onPressed: () {
-                                // Handle join/leave action
-                                if (isJoined) {
-                                  // Handle leave TODO: Replace with backend request
-                                  joinedActivityIds.remove(activity.id);
-                                } else {
-                                  // Handle join // TODO: Replace with backen request
-                                  joinedActivityIds.add(activity.id);
-                                }
-                                // Optional, update the backend on this status change
-                                setState(() {});
-                                
-                              },
+                              onPressed: () => toggleActivityParticipation(activity, !isJoined),
                               style: TextButton.styleFrom(
                                 backgroundColor: Colors.white,
                                 side: const BorderSide(color: Colors.black),
