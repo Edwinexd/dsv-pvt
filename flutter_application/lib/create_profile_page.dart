@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/home_page.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import 'controllers/backend_service.dart';
 import 'package:flutter_application/components/custom_divider.dart';
@@ -25,7 +26,7 @@ class CreateProfilePage extends StatefulWidget {
 class _CreateProfilePageState extends State<CreateProfilePage> {
   final _formKey = GlobalKey<FormState>();
   ImageProvider profileImage = const AssetImage('lib/images/splash.png');
-  bool imageChanged = false;
+  XFile? pickedImage;
   String? age;
   String? selectedLocation;
   String? bio;
@@ -78,10 +79,50 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
   }
 
   Future<void> _pickImage() async {
-    // TODO: Image picker
-    ImageProvider image = await _backendService.getImage("404");
+    final ImagePicker picker = ImagePicker();
+    final ImageSource? source = await showDialog<ImageSource?>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Choose Image Source'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                GestureDetector(
+                  child: const Text('Camera'),
+                  onTap: () {
+                    Navigator.of(context).pop(ImageSource.camera);
+                  },
+                ),
+                const SizedBox(height: 10),
+                GestureDetector(
+                  child: const Text('Gallery'),
+                  onTap: () {
+                    Navigator.of(context).pop(ImageSource.gallery);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    if (source == null) {
+      return;
+    }
+    final XFile? image = await picker.pickImage(
+      source: source,
+      requestFullMetadata: false,
+    );
+    if (image == null) {
+      return;
+    }
+
+    pickedImage = image;
+
+    ImageProvider temp = MemoryImage(await image.readAsBytes());
     setState(() {
-      profileImage = image;
+      profileImage = temp;
     });
   }
 
@@ -175,7 +216,7 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
                   ),
                   SizedBox(height: 20),
                   CustomTextField(
-                    labelText: runnerId.isEmpty ? null : 'Runner ID(Optional)',
+                    labelText: 'Runner ID(Optional)',
                     onChanged: (text) {
                       setState(() {
                         runnerId = text;

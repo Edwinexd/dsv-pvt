@@ -34,5 +34,7 @@
 	<string>We will sync your data with the Apple Health app to give you better insights</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>We will sync your data with the Apple Health app to give you better insights</string>
+	<key>com.apple.security.files.user-selected.read-only</key>
+	<true/>
 </dict>
 </plist>
