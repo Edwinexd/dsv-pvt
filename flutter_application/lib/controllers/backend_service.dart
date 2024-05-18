@@ -525,44 +525,24 @@ class BackendService {
   }
 
   // --------- SHARING ---------
-  Future<XFile?> getAchievementShareImg(String userId, int achievementId) async {
-    try {
-      final response = await _dio.get(
-        "https://pvt.edt.cx/users/$userId/achievements/$achievementId/share",
-        options: Options(
-            responseType: ResponseType.bytes), // Set response type as bytes
-      );
-      return XFile.fromData(response.data); // assuming this is Uint8List?
-    } on DioException catch (e) {
-      if (e.response == null) {
-        rethrow;
-      }
-      if (e.response!.statusCode == 404) {
-        throw Exception('Error handling response data');
-      }
-      rethrow;
-    }
+  Future<XFile> getAchievementShareImage(String userId, int achievementId) async {
+    final response = await _dio.get(
+      '/users/$userId/achievements/$achievementId/share',
+      options: Options(
+          responseType: ResponseType.bytes), // Set response type as bytes
+    );
+    return XFile.fromData(Uint8List.fromList(response.data));
   }
 
-  Future<XFile?> getActivityShareImg(String userId, int activityId, int groupId) async {
-    try {
-      final response = await _dio.get(
-        "https://pvt.edt.cx/users/$userId/activities/$activityId/share",
-        options: Options(
-            responseType: ResponseType.bytes), // Set response type as fromBytes
-        queryParameters: {
-          'group_id': groupId,
-        }
-      );
-      return XFile.fromData(response.data); // assuming this is Uint8List?
-    } on DioException catch (e) {
-      if (e.response == null) {
-        rethrow;
+  Future<XFile> getActivityShareImage(String userId, int activityId, int groupId) async {
+    final response = await _dio.get(
+      '/users/$userId/activities/$activityId/share',
+      options: Options(
+          responseType: ResponseType.bytes), // Set response type as bytes
+      queryParameters: {
+        'group_id': groupId,
       }
-      if (e.response!.statusCode == 404) {
-        throw Exception('Error handling response data');
-      }
-      rethrow;
-    }
+    );
+    return XFile.fromData(Uint8List.fromList(response.data));
   }
 }
