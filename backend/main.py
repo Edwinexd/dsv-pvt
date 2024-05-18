@@ -17,7 +17,7 @@ from user_roles import Roles
 from database import engine, session_local
 from sessions import create_session, get_session, revoke_session
 from validations import validate_api_key
-from schemas import AchievementRequirement
+from schemas import AchievementRequirement, GroupOrderType
 from image_generation import generate_image
 
 models.base.metadata.create_all(bind=engine)
@@ -520,7 +520,7 @@ def read_group(
         is_private=requested_group.is_private,
         owner_id=requested_group.owner_id,
         id=requested_group.id,
-        points=crud.get_group_points(requested_group),
+        points=requested_group.points,
         image_id=requested_group.image_id,
         latitude=requested_group.latitude,
         longitude=requested_group.longitude,
@@ -530,11 +530,18 @@ def read_group(
 
 @app.get("/groups", response_model=schemas.GroupList)
 def read_groups(
-    current_user: DbUser, db_session: DbSession, skip: int = 0, limit: int = 100
+    current_user: DbUser,
+    db_session: DbSession,
+    skip: int = 0,
+    limit: int = 100,
+    order_by: GroupOrderType = GroupOrderType.NAME,
+    descending: bool = False,
 ):
-    groups = schemas.GroupList(data=crud.get_groups(db_session, skip=skip, limit=limit))
-    for g in groups.data:
-        g.points = crud.get_group_points(crud.get_group(db_session, g.id))
+    groups = schemas.GroupList(
+        data=crud.get_groups(
+            db_session, skip=skip, limit=limit, order_by=order_by, descending=descending
+        )
+    )
     return groups
 
 
@@ -956,7 +963,9 @@ def delete_achievement(
 # get completed achievements from user id
 @app.get("/users/{user_id}/achievements", response_model=schemas.AchievementList)
 def read_achivements_user_has(current_user: DbUser, requested_user: RequestedUser):
-    achievements = schemas.AchievementList(data=requested_user.completed_achievements)
+    achievements = schemas.AchievementList(
+        data=[grant.achievement for grant in requested_user.completed_achievements]
+    )
     return achievements
 
 

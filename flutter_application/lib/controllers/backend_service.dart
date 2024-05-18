@@ -219,10 +219,13 @@ class BackendService {
     return Group.fromJson((response.data) as Map<String, dynamic>);
   }
 
-  Future<List<Group>> getGroups(int skip, int limit) async {
+  // TODO: Backend should have an order by parameter
+  Future<List<Group>> getGroups(int skip, int limit, GroupOrderType orderBy, bool descending) async {
     final response = await _dio.get('/groups', queryParameters: {
       'skip': skip,
       'limit': limit,
+      'order_by': orderBy.serialize(),
+      'descending': descending,
     });
     var groupList = response.data['data'] as List;
     return groupList.map((e) => Group.fromJson(e)).toList();
@@ -309,7 +312,7 @@ class BackendService {
   }
 
   Future<List<Group>> getGroupsInvitedTo() async {
-    final response = await _dio.get('users/me/invites');
+    final response = await _dio.get('/users/me/invites');
     var groupList = response.data['data'] as List;
     return groupList.map((e) => Group.fromJson(e)).toList();
   }
@@ -378,8 +381,7 @@ class BackendService {
     await _dio.delete('/groups/$groupId/activities/$activityId');
   }
 
-  Future<void> joinActivity(
-      int groupId, int activityId, int participantId) async {
+  Future<void> joinActivity(int groupId, int activityId, String participantId) async {
     await _dio.put(
         '/group/$groupId/activities/$activityId/participants/$participantId');
   }
@@ -491,11 +493,33 @@ class BackendService {
     await _dio.delete('/groups/$groupId/activities/$activityId/picture');
   }
 
+  // --------- HEALTH DATA UPLOAD ---------
   Future<List<Achievement>> uploadHealthData(
       List<Map<String, dynamic>> data) async {
     final userId = await getMe().then((value) => value.id);
     final response =
         await _dio.post('/users/$userId/health', data: {'data': data});
+    var achievementList = response.data['data'] as List;
+    return achievementList.map((e) => Achievement.fromJson(e)).toList();
+  }
+
+  // --------- ACHIEVEMENTS ---------
+  Future<List<Achievement>> getAchievements(int skip, int limit) async {
+    final response = await _dio.get('/achievements', queryParameters: {
+      'skip': skip,
+      'limit': limit,
+    });
+    var achievementList = response.data['data'] as List;
+    return achievementList.map((e) => Achievement.fromJson(e)).toList();
+  }
+
+  Future<Achievement> getAchievement(int achievementId) async {
+    final response = await _dio.get('/achievements/$achievementId');
+    return Achievement.fromJson((response.data) as Map<String, dynamic>);
+  }
+
+  Future<List<Achievement>> getUserAchievements(String userId) async {
+    final response = await _dio.get('/users/$userId/achievements');
     var achievementList = response.data['data'] as List;
     return achievementList.map((e) => Achievement.fromJson(e)).toList();
   }

@@ -128,6 +128,11 @@ class GroupImageUpdate(GroupUpdate):
     image_id: Optional[str] = None
 
 
+class GroupOrderType(str, Enum):
+    NAME = "name"
+    POINTS = "points"
+
+
 # INVITES
 class InviteBase(BaseModel):
     user_id: str
@@ -238,11 +243,12 @@ class SessionUser(BaseModel):
 # ACHIEVEMENT
 class AchievementBase(BaseModel):
     achievement_name: str
+    requirement: "AchievementRequirement"
+    description: str
 
 
 class AchievementCreate(AchievementBase):
-    description: str
-    requirement: "AchievementRequirement"
+    pass
 
 
 class Achievement(AchievementBase):
