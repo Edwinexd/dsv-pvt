@@ -53,7 +53,7 @@ class _SignUpPageState extends State<SignUpPage> {
     try {
       await _backendService.createUser(username, email, name, password);
     } on DioException catch (error) {
-      if (error.response?.statusCode == 400) {
+      if (error.response!.statusCode! >= 400 && error.response!.statusCode! < 500) { 
         // TODO This sort of parsing should be done in backend_service but not sure how to manipulate the error object
         String? errorDetail;
         if (error.response != null && error.response!.data != null) {
@@ -66,6 +66,7 @@ class _SignUpPageState extends State<SignUpPage> {
         Navigator.pop(context);
         return;
       }
+      rethrow;
     }
 
     // Intentionally want to disallow swipe back

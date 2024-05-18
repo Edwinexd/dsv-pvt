@@ -56,6 +56,13 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
       return;
     }
 
+    showDialog(
+      context: context,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+
     final user = await _backendService.getMe();
 
     final interests = <String>[];
