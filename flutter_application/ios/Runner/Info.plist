@@ -57,6 +57,10 @@
 	<array>
 		<!-- this should be a placeholder but cant get it to work / Edwin -->
 	 <string>665729397489-mnn24hntgpa9h600nhucti3tg4evr75b.apps.googleusercontent.com</string>
-	</array> 
+	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera is used to select profile picture</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Photo Library is used to select profile / activity picture</string>
 </dict>
 </plist>

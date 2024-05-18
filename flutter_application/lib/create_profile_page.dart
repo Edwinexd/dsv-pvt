@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/home_page.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:share_plus/share_plus.dart';
 import 'controllers/backend_service.dart';
 import 'package:flutter_application/components/custom_divider.dart';
 import 'package:flutter_application/age_data.dart';
@@ -23,12 +25,14 @@ class CreateProfilePage extends StatefulWidget {
 
 class _CreateProfilePageState extends State<CreateProfilePage> {
   final _formKey = GlobalKey<FormState>();
-  int _skillLevel = 0;
   ImageProvider profileImage = const AssetImage('lib/images/splash.png');
-  String? selectedLocation;
+  XFile? pickedImage;
   String? age;
+  String? selectedLocation;
   String? bio;
-  bool signedUpToMidnattsloppet = false;
+  bool ageEntered = false;
+  bool bioEntered = false;
+  String runnerId = '';
   Map<String, bool> interests = {
     'Running': false,
     'Yoga': false,
@@ -37,40 +41,99 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
     'Workout': false,
     'Cycling': false,
   };
-  bool ageEntered = false;
-  bool bioEntered = false;
-  bool idEntered = false;
+  int _skillLevel = 0;
+  bool isPrivate = false;
   final BackendService _backendService = BackendService();
 
   Future<void> _saveProfile() async {
-    if (_formKey.currentState!.validate()) {
-      final user = await _backendService.getMe();
-      final interests = <String>[];
-      for (final interest in this.interests.keys) {
-        if (this.interests[interest]!) {
-          interests.add(interest);
-        }
-      }
-      // TODO This boolean is hardcoded, switch needed
-      await _backendService.createProfile(user.id, bio!, int.parse(age!),
-          const JsonEncoder().convert(interests), _skillLevel, false);
-      // TODO: Need image bindings to also set the users profile image if they uploaded one
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    if (!ageEntered || !bioEntered) {
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Profile Created!')));
-      if (widget.forced) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
+          .showSnackBar(SnackBar(content: Text('Please fill all the fields')));
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+
+    final user = await _backendService.getMe();
+
+    final interests = <String>[];
+    for (final interest in this.interests.keys) {
+      if (this.interests[interest]!) {
+        interests.add(interest);
       }
+    }
+
+    await _backendService.createProfile(user.id, bio!, int.parse(age!),
+        const JsonEncoder().convert(interests), _skillLevel, isPrivate, runnerId.isEmpty ? null : runnerId);
+
+    if (pickedImage != null) {
+      await _backendService.uploadProfilePicture(pickedImage!);
+    }
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('Profile Created!')));
+    if (widget.forced) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
     }
   }
 
   Future<void> _pickImage() async {
-    // TODO: Image picker
-    ImageProvider image = await _backendService.getImage("404");
+    final ImagePicker picker = ImagePicker();
+    final ImageSource? source = await showDialog<ImageSource?>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Choose Image Source'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                GestureDetector(
+                  child: const Text('Camera'),
+                  onTap: () {
+                    Navigator.of(context).pop(ImageSource.camera);
+                  },
+                ),
+                const SizedBox(height: 10),
+                GestureDetector(
+                  child: const Text('Gallery'),
+                  onTap: () {
+                    Navigator.of(context).pop(ImageSource.gallery);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    if (source == null) {
+      return;
+    }
+    final XFile? image = await picker.pickImage(
+      source: source,
+      requestFullMetadata: false,
+    );
+    if (image == null) {
+      return;
+    }
+
+    pickedImage = image;
+
+    ImageProvider temp = MemoryImage(await image.readAsBytes());
     setState(() {
-      profileImage = image;
+      profileImage = temp;
     });
   }
 
@@ -164,10 +227,10 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
                   ),
                   SizedBox(height: 20),
                   CustomTextField(
-                    labelText: idEntered ? null : 'Runner ID(Optional)',
+                    labelText: 'Runner ID(Optional)',
                     onChanged: (text) {
                       setState(() {
-                        idEntered = text.isNotEmpty;
+                        runnerId = text;
                       });
                     },
                   ),
@@ -223,6 +286,17 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
                         _skillLevel = newLevel;
                       });
                     },
+                  ),
+                  ListTile(
+                    title: const Text('Private Profile'),
+                    trailing: Switch(
+                      value: isPrivate,
+                      onChanged: (value) {
+                        setState(() {
+                          isPrivate = value;
+                        });
+                      },
+                    ),
                   ),
                   SizedBox(height: 20),
                   MyButton(

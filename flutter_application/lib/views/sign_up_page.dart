@@ -1,8 +1,11 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/components/gradient_button.dart';
 import 'package:flutter_application/components/my_textfield.dart';
 import 'package:flutter_application/components/square_tile.dart';
 import 'package:flutter_application/create_profile_page.dart';
+
+import '../controllers/backend_service.dart';
 
 import '../controllers/backend_service.dart';
 
@@ -14,6 +17,8 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+  static final EMAIL_REGEX = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+
   final nameController = TextEditingController();
   final usernameController = TextEditingController();
   final emailController = TextEditingController();
@@ -27,7 +32,12 @@ class _SignUpPageState extends State<SignUpPage> {
     final String password = passwordController.text.trim();
 
     if (name.isEmpty || username.isEmpty || email.isEmpty || password.isEmpty) {
-      // TODO: Handle bad input
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please fill all the fields')));
+      return;
+    }
+    // Validate email
+    if (!EMAIL_REGEX.hasMatch(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Invalid email')));
       return;
     }
 
@@ -40,12 +50,27 @@ class _SignUpPageState extends State<SignUpPage> {
       },
     );
 
-    await _backendService.createUser(username, email, name, password);
+    try {
+      await _backendService.createUser(username, email, name, password);
+    } on DioException catch (error) {
+      if (error.response!.statusCode! >= 400 && error.response!.statusCode! < 500) { 
+        // TODO This sort of parsing should be done in backend_service but not sure how to manipulate the error object
+        String? errorDetail;
+        if (error.response != null && error.response!.data != null) {
+          final errorData = error.response!.data as Map<String, dynamic>?;
+          errorDetail = errorData?['detail'];
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(errorDetail ?? 'Invalid email or password')));
+        
+        Navigator.pop(context);
+        return;
+      }
+      rethrow;
+    }
 
-    // Intentionally want to disallow swipe back to login page
-    Navigator.pop(context);
-
-    Navigator.push(
+    // Intentionally want to disallow swipe back
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => CreateProfilePage(forced: true)),
     );

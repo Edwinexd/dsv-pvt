@@ -62,11 +62,11 @@ class BackendService {
     }
   }
 
-  Future<void> login(String userName, String password) async {
+  Future<void> login(String email, String password) async {
     final response = await _dio.post(
       '/users/login',
       data: {
-        "email": userName,
+        "email": email,
         "password": password,
       },
     );
@@ -146,13 +146,14 @@ class BackendService {
   // --------- PROFILE ---------
 
   Future<Profile> createProfile(String userId, String description, int age,
-      String interests, int skillLevel, bool isPrivate) async {
+      String interests, int skillLevel, bool isPrivate, String? runnerId) async {
     final response = await _dio.put('/users/$userId/profile', data: {
       "description": description,
       "age": age,
       "interests": interests,
       "skill_level": skillLevel,
       "is_private": isPrivate,
+      "runner_id": runnerId,
     });
 
     return Profile.fromJson((response.data) as Map<String, dynamic>);
