@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:cross_file/cross_file.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/models/activity.dart';
@@ -438,7 +440,63 @@ class BackendService {
       rethrow;
     }
   }
- 
+  
+  // --------- IMAGE UPLOADS/DELETIONS ---------
+  Future<void> uploadProfilePicture(XFile file) async {
+    final userId = await getMe().then((value) => value.id);
+    FormData formData = FormData.fromMap({
+      "image": await MultipartFile.fromBytes(
+        await file.readAsBytes(),
+        filename: file.name,
+        contentType: MediaType.parse(file.mimeType ?? 'image/jpeg'),
+      ),
+    });
+    await _dio.put(
+      '/users/$userId/profile/picture',
+      data: formData,
+    );
+    // Clear "me" cache
+    _me = null;
+  }
+
+  Future<void> deleteProfilePicture() async {
+    final userId = await getMe().then((value) => value.id);
+    await _dio.delete('/users/$userId/profile/picture');
+    // Clear "me" cache
+    _me = null;
+  }
+
+  Future<void> uploadGroupPicture(int groupId, XFile file) async {
+    await _dio.put(
+      '/groups/$groupId/picture',
+      data: await MultipartFile.fromBytes(
+        await file.readAsBytes(),
+        filename: file.name,
+        contentType: MediaType.parse(file.mimeType ?? 'image/jpeg'),
+      ),
+    );
+  }
+
+  Future<void> deleteGroupPicture(int groupId) async {
+    await _dio.delete('/groups/$groupId/picture');
+  }
+
+  Future<void> uploadActivityPicture(int groupId, int activityId, XFile file) async {
+    await _dio.put(
+      '/groups/$groupId/activities/$activityId/picture',
+      data: await MultipartFile.fromBytes(
+        await file.readAsBytes(),
+        filename: file.name,
+        contentType: MediaType.parse(file.mimeType ?? 'image/jpeg'),
+      ),
+    );
+  }
+
+  Future<void> deleteActivityPicture(int groupId, int activityId) async {
+    await _dio.delete('/groups/$groupId/activities/$activityId/picture');
+  }
+
+
   Future<List<Achievement>> uploadHealthData(List<Map<String, dynamic>> data) async {
     final userId = await getMe().then((value) => value.id);
     final response = await _dio.post('/users/$userId/health', data: {'data': data});
