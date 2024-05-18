@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:flutter_application/LeaderboardPage.dart';
+import 'package:flutter_application/leaderboard_page.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/bars.dart';
 import 'package:flutter_application/challenges_page.dart';
