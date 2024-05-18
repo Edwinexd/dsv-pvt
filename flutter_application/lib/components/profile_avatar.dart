@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_application/controllers/backend_service.dart';
 
 class IconButtonConfig {
   final IconData icon;
@@ -13,12 +16,12 @@ class IconButtonConfig {
 }
 
 class ProfileAvatar extends StatelessWidget {
-  final String imageUrl;
+  final ImageProvider image;
   final IconButtonConfig? iconButtonConfig;
 
   const ProfileAvatar({
     Key? key,
-    required this.imageUrl,
+    required this.image,
     this.iconButtonConfig,
   }) : super(key: key);
 
@@ -29,7 +32,7 @@ class ProfileAvatar extends StatelessWidget {
       children: <Widget>[
         CircleAvatar(
           radius: 70.0,
-          backgroundImage: NetworkImage(imageUrl),
+          foregroundImage: image,
         ),
         if (iconButtonConfig != null && iconButtonConfig!.showIcon)
           Positioned(

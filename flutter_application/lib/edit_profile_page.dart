@@ -77,9 +77,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
                   SizedBox(height: 10),
                   ProfileAvatar(
-                    imageUrl: imageUrl,
+                    image: const NetworkImage("https://example.com/profile_placeholder.png"),
                     iconButtonConfig: IconButtonConfig(
-                      icon: Icons.camera_alt,
+                      icon: Icons.edit,
                       onPressed: () {
                         // Implement camera functionality or another action
                       },

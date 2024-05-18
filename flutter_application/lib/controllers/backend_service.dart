@@ -160,7 +160,7 @@ class BackendService {
   }
 
   Future<Profile> getProfile(String userId) async {
-    final response = await _dio.get('/users/$userId');
+    final response = await _dio.get('/users/$userId/profile');
     return Profile.fromJson((response.data) as Map<String, dynamic>);
   }
 
