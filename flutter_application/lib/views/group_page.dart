@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/activity_create.dart';
 import 'package:flutter_application/bars.dart';
 import 'package:flutter_application/components/checkered_background.dart';
+import 'package:flutter_application/components/user_selector.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/models/user.dart';
@@ -204,7 +205,13 @@ class _GroupPageState extends State<GroupPage> {
               width: 250,
               child: ElevatedButton(
                 onPressed: () {
-                  //Will handle invite new members button later
+                  // Render user_selector
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UserSelector(onUserSelected: (User u) => {}),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,

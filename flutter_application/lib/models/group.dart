@@ -39,5 +39,14 @@ enum GroupOrderType {
       default:
         throw ArgumentError('Invalid order value: $orderValue');
     }
-  } 
+  }
+  
+  String serialize() {
+    switch (this) {
+      case GroupOrderType.NAME:
+        return 'name';
+      case GroupOrderType.POINTS:
+        return 'points';
+    }
+  }
 }
