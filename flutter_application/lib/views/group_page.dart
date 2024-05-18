@@ -7,7 +7,9 @@ import 'package:flutter_application/models/activity.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/models/user.dart';
 import 'package:flutter_application/background_for_pages.dart';
+import 'package:flutter_application/views/all_group_pages.dart';
 import 'package:flutter_application/views/group_members.dart';
+import 'package:flutter_application/views/my_groups.dart';
 
 class GroupPage extends StatefulWidget {
   final Group group;
@@ -85,7 +87,54 @@ class _GroupPageState extends State<GroupPage> {
         joinedActivityIds.remove(activity.id);
       });
     }
-    
+  }
+
+  void joinGroup() async {
+    User me = await BackendService().getMe();
+    await BackendService().joinGroup(me.id, widget.group.id);
+    Navigator.push(
+      context, 
+      MaterialPageRoute(
+        builder: (context) => GroupPage(group: widget.group, isMember: true)
+      ),
+    );
+  }
+
+  Future<void> leaveGroup() async {
+    User me = await BackendService().getMe();
+    await BackendService().leaveGroup(me.id, widget.group.id);
+    Navigator.push(
+      context, 
+      MaterialPageRoute(
+        builder: ((context) => MyGroups())
+      ),
+    ); 
+  }
+
+  void confirmLeaveGroup() {
+    showDialog(
+      context: context, 
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Confirm"),
+          content: const Text("Are you sure you want to leave this group?"),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text("Leave"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                leaveGroup();
+              },
+            ),
+          ],
+        );
+      });
   }
 
   @override
@@ -292,9 +341,7 @@ class _GroupPageState extends State<GroupPage> {
               height: 40,
               width: 250,
               child: ElevatedButton(
-                onPressed: () {
-                  //Will handle leaving the group
-                },
+                onPressed: confirmLeaveGroup,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                 ),
@@ -415,9 +462,7 @@ class _GroupPageState extends State<GroupPage> {
               height: 40,
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  //Will handle joining the group
-                },
+                onPressed: () => joinGroup(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.purple,
                 ),
