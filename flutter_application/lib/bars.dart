@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/home_page.dart';
 import 'package:flutter_application/profile_page.dart';
 import 'package:flutter_application/views/my_groups.dart';
+import 'package:flutter_application/views/schedule_page.dart';
 
 AppBar buildAppBar({
   required String title,
@@ -76,7 +77,7 @@ BottomNavigationBar buildBottomNavigationBar({
       } else if (index == 2) {
         // Go to Friends page
       } else if (index == 3) {
-        // Go to My Schedule page 
+        goToSchedulePage(context);
       }
     },
   );
@@ -94,4 +95,11 @@ void goToGroupPage(BuildContext context) {
     context,
     MaterialPageRoute(builder: (context) => MyGroups()),
   );
+}
+
+void goToSchedulePage(BuildContext context) {
+  Navigator.pushReplacement(
+    context, 
+    MaterialPageRoute(builder: (context) => SchedulePage()),
+    );
 }
