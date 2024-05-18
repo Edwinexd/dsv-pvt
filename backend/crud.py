@@ -1,4 +1,5 @@
 from typing import Optional
+from sqlalchemy import asc, desc
 from sqlalchemy.orm import Session
 import models, schemas
 
@@ -119,15 +120,6 @@ def get_group(db_session: Session, group_id: int):
     return db_session.query(models.Group).filter(models.Group.id == group_id).first()
 
 
-def get_group_points(db_group: models.Group):
-    points = 0
-    for a in db_group.activities:
-        if a.is_completed:
-            for c in a.challenges:
-                points += c.point_reward
-    return points
-
-
 # get a list of groups
 def get_groups(
     db_session: Session,
@@ -139,8 +131,8 @@ def get_groups(
     orderer = models.Group.group_name
     if order_by == schemas.GroupOrderType.POINTS:
         orderer = models.Group.points
-    if descending:
-        orderer = orderer.desc()
+    orderer = desc(orderer) if descending else asc(orderer)  # type: ignore
+
     return (
         db_session.query(models.Group).order_by(orderer).offset(skip).limit(limit).all()
     )
