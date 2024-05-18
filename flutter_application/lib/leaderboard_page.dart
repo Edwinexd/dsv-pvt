@@ -6,6 +6,7 @@ import 'package:flutter_application/bars.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/home_page.dart';
 import 'package:flutter_application/models/group.dart';
+import 'package:flutter_application/views/group_page.dart';
 
 class LeaderboardPage extends StatefulWidget {
 
@@ -15,6 +16,7 @@ class LeaderboardPage extends StatefulWidget {
 
 class _LeaderboardPageState extends State<LeaderboardPage> {
   List<Group> leaderboardEntries = [];
+  List<Group> myGroups = [];
 
   @override
   void initState() {
@@ -23,6 +25,11 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
       groups.sort((a, b) => b.points.compareTo(a.points));
       setState(() {
         leaderboardEntries = groups;
+      });
+    }));
+    unawaited(BackendService().getMyGroups().then((groups) {
+      setState(() {
+        myGroups = groups;
       });
     }));
   }
@@ -49,6 +56,17 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                     title: Text(leaderboardEntries[index].name),
                     trailing:
                         Text('${leaderboardEntries[index].points} points'),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => GroupPage(
+                            group: leaderboardEntries[index],
+                            isMember: myGroups.any((group) => group.id == leaderboardEntries[index].id),
+                          ),
+                        ),
+                      );
+                    }
                   );
                 },
               ),
