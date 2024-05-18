@@ -160,28 +160,50 @@ class _GroupPageState extends State<GroupPage> {
                       bool isJoined = joinedActivityIds.contains(activity.id);
                       return ListTile(
                         title: Text(activity.name),
-                        trailing: TextButton(
-                          onPressed: () {
-                            // Handle join/leave action
-                            if (isJoined) {
-                              // Handle leave TODO: Replace with backend request
-                              joinedActivityIds.remove(activity.id);
-                            } else {
-                              // Handle join // TODO: Replace with backen request
-                              joinedActivityIds.add(activity.id);
-                            }
-                            // Optional, update the backend on this status change
-                            setState(() {});
-                            
-                          },
-                          style: TextButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            side: BorderSide(color: Colors.black),
-                          ),
-                          child: Text(
-                            isJoined ? 'Leave' : 'Join',
-                          ),
-                        ),
+                        trailing: Wrap(
+                          spacing: 8,
+                          children: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                // Handle join/leave action
+                                if (isJoined) {
+                                  // Handle leave TODO: Replace with backend request
+                                  joinedActivityIds.remove(activity.id);
+                                } else {
+                                  // Handle join // TODO: Replace with backen request
+                                  joinedActivityIds.add(activity.id);
+                                }
+                                // Optional, update the backend on this status change
+                                setState(() {});
+                                
+                              },
+                              style: TextButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                side: const BorderSide(color: Colors.black),
+                              ),
+                              child: Text(
+                                isJoined ? 'Leave' : 'Join',
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder: (context) => ActvityPage(activity: activity),
+                                //   ),
+                                // );
+                              },
+                              style: TextButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                side: const BorderSide(color: Colors.black),
+                              ),
+                              child: const Text('View'),
+                            ),
+
+                          ]
+                        )
+                        
                       );
                     },
                   ),
