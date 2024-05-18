@@ -312,7 +312,7 @@ class BackendService {
   }
 
   Future<List<Group>> getGroupsInvitedTo() async {
-    final response = await _dio.get('users/me/invites');
+    final response = await _dio.get('/users/me/invites');
     var groupList = response.data['data'] as List;
     return groupList.map((e) => Group.fromJson(e)).toList();
   }
@@ -494,6 +494,7 @@ class BackendService {
     await _dio.delete('/groups/$groupId/activities/$activityId/picture');
   }
 
+  // --------- HEALTH DATA UPLOAD ---------
   Future<List<Achievement>> uploadHealthData(
       List<Map<String, dynamic>> data) async {
     final userId = await getMe().then((value) => value.id);

@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/bars.dart';
+import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 
 class GroupInvitationsPage extends StatefulWidget {
@@ -11,31 +14,20 @@ class GroupInvitationsPage extends StatefulWidget {
 }
 
 class _GroupInvitationsState extends State<GroupInvitationsPage> {
-  List<Group> invitations = [
-    Group(
-      id: 1,
-      name: "Group A",
-      description: "Description for Group A",
-      isPrivate: false,
-      ownerId: "owner1",
-    ),
-    Group(
-      id: 2,
-      name: "Group B",
-      description: "Description for Group B",
-      isPrivate: true,
-      ownerId: "owner2",
-    ),
-    Group(
-      id: 3,
-      name: "Group C",
-      description: "Description for Group C",
-      isPrivate: false,
-      ownerId: "owner3",
-    ),
-  ];
+  List<Group> invitations = [];
 
-  void acceptInvitation(Group group) {
+  @override
+  void initState() {
+    super.initState();
+    unawaited(BackendService().getGroupsInvitedTo().then((groups) {
+      setState(() {
+        invitations = groups;
+      });
+    }));
+  }
+
+  Future<void> acceptInvitation(Group group) async {
+    await BackendService().joinGroup((await BackendService().getMe()).id, group.id);
     setState(() {
       invitations.remove(group);
     });
@@ -44,7 +36,8 @@ class _GroupInvitationsState extends State<GroupInvitationsPage> {
     );
   }
 
-  void rejectInvitation(Group group) {
+  Future<void> rejectInvitation(Group group) async {
+    await BackendService().declineGroupInvite(group.id);
     setState(() {
       invitations.remove(group);
     });
