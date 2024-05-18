@@ -4,13 +4,15 @@ class Group {
   final String description;
   final bool isPrivate;
   final String ownerId;
+  final int points;
 
   const Group(
       {required this.id,
       required this.name,
       required this.description,
       required this.isPrivate,
-      required this.ownerId});
+      required this.ownerId,
+      this.points = 0});
 
   factory Group.fromJson(Map<String, dynamic> json) {
     return Group(
@@ -19,6 +21,23 @@ class Group {
       description: json["description"] as String,
       isPrivate: json['is_private'] as bool,
       ownerId: json['owner_id'] as String,
+      points: json['points'] as int,
     );
   }
+}
+
+enum GroupOrderType { 
+  NAME,
+  POINTS;
+
+  static GroupOrderType parse(String orderValue) {
+    switch (orderValue) {
+      case 'name':
+        return GroupOrderType.NAME;
+      case 'points':
+        return GroupOrderType.POINTS;
+      default:
+        throw ArgumentError('Invalid order value: $orderValue');
+    }
+  } 
 }

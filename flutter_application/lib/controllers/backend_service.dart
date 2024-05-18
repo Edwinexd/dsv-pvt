@@ -219,10 +219,13 @@ class BackendService {
     return Group.fromJson((response.data) as Map<String, dynamic>);
   }
 
-  Future<List<Group>> getGroups(int skip, int limit) async {
+  // TODO: Backend should have an order by parameter
+  Future<List<Group>> getGroups(int skip, int limit, GroupOrderType orderBy, bool descending) async {
     final response = await _dio.get('/groups', queryParameters: {
       'skip': skip,
       'limit': limit,
+      'order_by': orderBy.index,
+      'descending': descending,
     });
     var groupList = response.data['data'] as List;
     return groupList.map((e) => Group.fromJson(e)).toList();
@@ -309,7 +312,7 @@ class BackendService {
   }
 
   Future<List<Group>> getGroupsInvitedTo() async {
-    final response = await _dio.get('users/me/invites');
+    final response = await _dio.get('/users/me/invites');
     var groupList = response.data['data'] as List;
     return groupList.map((e) => Group.fromJson(e)).toList();
   }
@@ -491,6 +494,7 @@ class BackendService {
     await _dio.delete('/groups/$groupId/activities/$activityId/picture');
   }
 
+  // --------- HEALTH DATA UPLOAD ---------
   Future<List<Achievement>> uploadHealthData(
       List<Map<String, dynamic>> data) async {
     final userId = await getMe().then((value) => value.id);
