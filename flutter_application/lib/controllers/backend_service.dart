@@ -381,8 +381,7 @@ class BackendService {
     await _dio.delete('/groups/$groupId/activities/$activityId');
   }
 
-  Future<void> joinActivity(
-      int groupId, int activityId, int participantId) async {
+  Future<void> joinActivity(int groupId, int activityId, String participantId) async {
     await _dio.put(
         '/group/$groupId/activities/$activityId/participants/$participantId');
   }
