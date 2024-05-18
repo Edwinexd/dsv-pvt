@@ -169,7 +169,8 @@ class BackendService {
       int? age,
       String? interests,
       int? skillLevel,
-      bool? isPrivate}) async {
+      bool? isPrivate,
+      String? runnerId }) async {
     Map<String, dynamic> updateFields = {};
     if (description != null) {
       updateFields['description'] = description;
@@ -185,6 +186,9 @@ class BackendService {
     }
     if (isPrivate != null) {
       updateFields['is_private'] = isPrivate;
+    }
+    if (runnerId != null) {
+      updateFields['runner_id'] = runnerId;
     }
     if (updateFields.isEmpty) {
       throw const FormatException(

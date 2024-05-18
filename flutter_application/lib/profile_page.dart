@@ -106,7 +106,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     icon: Icons.edit,
                     onPressed: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => EditProfilePage()));
+                          builder: (context) => EditProfilePage(initialProfile: profile!,)));
                     },
                   ),
                 ),
