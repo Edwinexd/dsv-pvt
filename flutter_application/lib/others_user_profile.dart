@@ -3,55 +3,37 @@ import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/components/my_button.dart';
 import 'package:flutter_application/components/profile_avatar.dart';
 import 'package:flutter_application/components/skill_level_slider.dart';
-import 'package:flutter_application/edit_profile_page.dart';
 import 'package:flutter_application/my_achievements.dart';
-import 'package:flutter_application/settings.dart';
 import 'package:intl/intl.dart';
 
-class ProfilePage extends StatelessWidget {
+class UserProfilePage extends StatelessWidget {
   final String username;
   final String name;
   final String biography;
   final String imageUrl;
   final DateTime joinedDate;
+  final List<String> userInterests;
 
-  const ProfilePage({
+  const UserProfilePage({
     super.key,
     required this.username,
     required this.name,
     required this.biography,
     required this.imageUrl,
     required this.joinedDate,
+    required this.userInterests,
   });
 
   @override
   Widget build(BuildContext context) {
+    final interestsString = userInterests.join(', ');
+
     return DefaultBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title:
-              const Text('Profile Page', style: TextStyle(color: Colors.white)),
-          centerTitle: true,
           backgroundColor: Colors.transparent,
           elevation: 0,
-          actions: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.settings, color: Colors.white),
-              onPressed: () {
-                bool initialDarkMode = false;
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (context) => SettingsPage(
-                            onToggleDarkMode: (bool isDarkMode) {
-                              print("Dark mode toggled: $isDarkMode");
-                            },
-                            initialDarkMode: initialDarkMode,
-                          )),
-                );
-              },
-            ),
-          ],
           iconTheme: const IconThemeData(color: Colors.white),
         ),
         body: Center(
@@ -62,15 +44,13 @@ class ProfilePage extends StatelessWidget {
                 Text(username,
                     style: const TextStyle(
                         fontSize: 24, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 10),
+                const SizedBox(height: 30),
                 ProfileAvatar(
                   imageUrl: imageUrl,
                   iconButtonConfig: IconButtonConfig(
-                    icon: Icons.edit,
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => EditProfilePage()));
-                    },
+                    icon: Icons.abc,
+                    onPressed: () {},
+                    showIcon: false,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -92,22 +72,24 @@ class ProfilePage extends StatelessWidget {
                     style: const TextStyle(fontSize: 18),
                   ),
                 ),
-                const SizedBox(height: 20),
-                SkillLevelSlider(
+                const SizedBox(height: 10),
+                Text('Interests: $interestsString',
+                    style: const TextStyle(fontSize: 16)),
+                const SizedBox(height: 30),
+                const SkillLevelSlider(
                   initialSkillLevel: 2,
-                  onSkillLevelChanged: (newLevel) {
-                    print("Skill level updated to: $newLevel");
-                  },
+                  isSliderLocked: true,
                 ),
-                const SizedBox(height: 20),
+                /*
+                const SizedBox(height: 40),
                 MyButton(
-                  buttonText: 'Trophies',
+                  buttonText: '$username\'s Trophies',
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => MyAchievements()));
                   },
                 ),
-                const SizedBox(height: 10),
+                */
               ],
             ),
           ),

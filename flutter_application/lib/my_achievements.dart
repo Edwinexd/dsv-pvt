@@ -1,7 +1,7 @@
 import 'package:flutter_application/achievement.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
+import 'package:share_plus/share_plus.dart';
 
 // should this be stateful?
 class MyAchievements extends StatefulWidget {
@@ -63,33 +63,66 @@ class AchievementCard extends StatelessWidget {
     required this.achievement,
   });
 
-  @override
+@override
   Widget build(BuildContext context) {
-    return Card(
-      child: Row(
-        children: <Widget>[
-          Icon(achievement.icon),
-          const SizedBox(width: 10.0),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                achievement.header,
-                style: const TextStyle(
-                  fontSize: 14.0,
-                  fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onTap: () {
+        // Show popup dialog
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text(achievement.header),
+              content: Text(achievement.description),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close dialog
+                  },
+                  child: const Text('Close'),
                 ),
-              ),
-              Text(
-                achievement.description,
-                style: const TextStyle(
-                  fontSize: 12.0,
+                TextButton(
+                  onPressed: () async {
+                    // Share achievement - How?
+                    Share.share('${achievement.header}: ${achievement.description}');
+                  },
+                  child: const Text('Share'),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+
+            );
+          },
+        );
+      },
+      child: Card(
+        child: Row(
+          children: <Widget>[
+            Icon(achievement.icon),
+            const SizedBox(width: 10.0),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  achievement.header,
+                  style: const TextStyle(
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  achievement.description,
+                  style: const TextStyle(
+                    fontSize: 12.0,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
+
+
+
 }
