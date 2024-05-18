@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/home_page.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:share_plus/share_plus.dart';
 import 'controllers/backend_service.dart';
 import 'package:flutter_application/components/custom_divider.dart';
 import 'package:flutter_application/age_data.dart';
@@ -50,7 +49,7 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
       return;
     }
 
-    if (!ageEntered || !bioEntered) {
+    if (!ageEntered || !bioEntered || selectedLocation == null) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Please fill all the fields')));
       return;
@@ -73,7 +72,7 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
     }
 
     await _backendService.createProfile(user.id, bio!, int.parse(age!),
-        const JsonEncoder().convert(interests), _skillLevel, isPrivate, runnerId.isEmpty ? null : runnerId);
+        const JsonEncoder().convert(interests), _skillLevel, isPrivate, selectedLocation!, runnerId.isEmpty ? null : runnerId);
 
     if (pickedImage != null) {
       await _backendService.uploadProfilePicture(pickedImage!);

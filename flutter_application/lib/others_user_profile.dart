@@ -46,7 +46,7 @@ class UserProfilePage extends StatelessWidget {
                         fontSize: 24, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 30),
                 ProfileAvatar(
-                  imageUrl: imageUrl,
+                  image: NetworkImage(imageUrl),
                   iconButtonConfig: IconButtonConfig(
                     icon: Icons.abc,
                     onPressed: () {},

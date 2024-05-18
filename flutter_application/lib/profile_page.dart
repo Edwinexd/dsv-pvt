@@ -1,31 +1,65 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/components/my_button.dart';
 import 'package:flutter_application/components/profile_avatar.dart';
 import 'package:flutter_application/components/skill_level_slider.dart';
+import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/edit_profile_page.dart';
+import 'package:flutter_application/models/profile.dart';
+import 'package:flutter_application/models/user.dart';
 import 'package:flutter_application/my_achievements.dart';
 import 'package:flutter_application/settings.dart';
 import 'package:intl/intl.dart';
 
-class ProfilePage extends StatelessWidget {
-  final String username;
-  final String name;
-  final String biography;
-  final String imageUrl;
-  final DateTime joinedDate;
-
+class ProfilePage extends StatefulWidget {
   const ProfilePage({
-    super.key,
-    required this.username,
-    required this.name,
-    required this.biography,
-    required this.imageUrl,
-    required this.joinedDate,
-  });
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  User? user;
+  Profile? profile;
+  ImageProvider? profileImage;
+
+  Future<void> _fetchProfile() async {
+    final userObj = await BackendService().getMe();
+    final profile = await BackendService().getProfile(userObj.id);
+    setState(() {
+      this.user = userObj;
+      this.profile = profile;
+    });
+    ImageProvider image = await BackendService().getImage(profile.imageId ?? '404');
+    setState(() {
+      profileImage = image;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_fetchProfile());
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (user == null || profile == null) {
+      return DefaultBackground(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      );
+    }
+
     return DefaultBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
@@ -59,26 +93,54 @@ class ProfilePage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text(username,
+                Text(user!.userName,
                     style: const TextStyle(
                         fontSize: 24, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 10),
+                profileImage == null
+                    ? const CircularProgressIndicator()
+                    :
                 ProfileAvatar(
-                  imageUrl: imageUrl,
+                  image: profileImage!,
                   iconButtonConfig: IconButtonConfig(
                     icon: Icons.edit,
                     onPressed: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => EditProfilePage()));
+                          builder: (context) => EditProfilePage(initialProfile: profile!,)));
                     },
                   ),
                 ),
                 const SizedBox(height: 10),
-                Text(name, style: const TextStyle(fontSize: 20)),
+                Text(user!.fullName, style: const TextStyle(fontSize: 20)),
                 Text(
-                    'Joined: ${DateFormat('EEEE dd MMMM y').format(joinedDate)}',
+                    'Joined: ${DateFormat('EEEE dd MMMM y').format(user!.dateCreated)}',
                     style: const TextStyle(fontSize: 16)),
                 const SizedBox(height: 10),
+                // Interests, profile.interests is a json encoded array
+                Text('Interests: ${JsonDecoder().convert(profile!.interests).join(', ')}',
+                    style: const TextStyle(fontSize: 16)),
+                // I'm sorry UX / Edwin
+                profile!.runnerId != null
+                    ? Container(
+                        padding: const EdgeInsets.all(10),
+                        margin: const EdgeInsets.only(bottom: 10),
+                        width: 300,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Colors.blue, Colors.green],
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Text(
+                          'Midnattsloppet Runner',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+
+                const SizedBox(height: 10),
+
                 Container(
                   padding: const EdgeInsets.all(10),
                   width: 300,
@@ -88,16 +150,14 @@ class ProfilePage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
-                    biography,
+                    profile!.description,
                     style: const TextStyle(fontSize: 18),
                   ),
                 ),
                 const SizedBox(height: 20),
                 SkillLevelSlider(
-                  initialSkillLevel: 2,
-                  onSkillLevelChanged: (newLevel) {
-                    print("Skill level updated to: $newLevel");
-                  },
+                  initialSkillLevel: profile!.skillLevel,
+                  isSliderLocked: true,
                 ),
                 const SizedBox(height: 20),
                 MyButton(

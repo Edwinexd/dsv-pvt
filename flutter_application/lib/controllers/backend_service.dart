@@ -146,13 +146,14 @@ class BackendService {
   // --------- PROFILE ---------
 
   Future<Profile> createProfile(String userId, String description, int age,
-      String interests, int skillLevel, bool isPrivate, String? runnerId) async {
+      String interests, int skillLevel, bool isPrivate, String location, String? runnerId) async {
     final response = await _dio.put('/users/$userId/profile', data: {
       "description": description,
       "age": age,
       "interests": interests,
       "skill_level": skillLevel,
       "is_private": isPrivate,
+      "location": location,
       "runner_id": runnerId,
     });
 
@@ -160,7 +161,7 @@ class BackendService {
   }
 
   Future<Profile> getProfile(String userId) async {
-    final response = await _dio.get('/users/$userId');
+    final response = await _dio.get('/users/$userId/profile');
     return Profile.fromJson((response.data) as Map<String, dynamic>);
   }
 
@@ -169,7 +170,9 @@ class BackendService {
       int? age,
       String? interests,
       int? skillLevel,
-      bool? isPrivate}) async {
+      bool? isPrivate,
+      String? location,
+      String? runnerId }) async {
     Map<String, dynamic> updateFields = {};
     if (description != null) {
       updateFields['description'] = description;
@@ -185,6 +188,12 @@ class BackendService {
     }
     if (isPrivate != null) {
       updateFields['is_private'] = isPrivate;
+    }
+    if (location != null) {
+      updateFields['location'] = location;
+    }
+    if (runnerId != null) {
+      updateFields['runner_id'] = runnerId;
     }
     if (updateFields.isEmpty) {
       throw const FormatException(

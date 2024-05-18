@@ -60,6 +60,7 @@ class ProfileBase(BaseModel):
     skill_level: int
     is_private: bool
     runner_id: Optional[str] = None
+    location: str
 
 
 class ProfileCreate(ProfileBase):
@@ -80,6 +81,7 @@ class ProfileUpdate(BaseModel):
     skill_level: Optional[int] = None
     is_private: Optional[bool] = None
     runner_id: Optional[str] = None
+    location: Optional[str] = None
 
 
 class ProfileImageUpdate(ProfileUpdate):
