@@ -37,7 +37,6 @@ class _MyAchievementsState extends State<MyAchievements> {
     unawaited(_populateGrantedAchievements());
   }
 
-  // TODO: There isnt any indication of completion
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,6 +52,9 @@ class _MyAchievementsState extends State<MyAchievements> {
             return ListTile(
               title: AchievementCard(
                 achievement: allAchievements[index],
+                completed: grantedAchievements
+                    .map((e) => e.id)
+                    .contains(allAchievements[index].id),
               ),
             );
           },
@@ -64,8 +66,9 @@ class _MyAchievementsState extends State<MyAchievements> {
 
 class AchievementCard extends StatefulWidget {
   final Achievement achievement;
+  final bool completed;
 
-  const AchievementCard({super.key, required this.achievement});
+  const AchievementCard({super.key, required this.achievement, required this.completed});
 
   @override
   State<AchievementCard> createState() => _AchievementCardState();
@@ -90,6 +93,9 @@ class _AchievementCardState extends State<AchievementCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        if (!widget.completed) {
+          return;
+        }
         // Show popup dialog
         showDialog(
           context: context,
@@ -120,9 +126,15 @@ class _AchievementCardState extends State<AchievementCard> {
       child: Card(
         child: Row(
           children: <Widget>[
-            CircleAvatar(
-              radius: 60,
-              backgroundImage: image,
+            Container(
+              width: 75.0,
+              height: 75.0,
+              decoration: image != null
+                  ? BoxDecoration(
+                      image: DecorationImage(image: image!),
+                    )
+                  : null,
+              child: const SizedBox(width: 75.0, height: 75.0),
             ),
             const SizedBox(width: 10.0),
             Column(
@@ -143,6 +155,15 @@ class _AchievementCardState extends State<AchievementCard> {
                 ),
               ],
             ),
+            Expanded(
+              child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                widget.completed ? Icon(Icons.lock_open, color: Colors.green[300]) : Icon(Icons.lock, color: Colors.red[300]),
+              ],
+              ),
+            ),
+            SizedBox(width: 25.0), // Add margin to the right of the element
           ],
         ),
       ),
