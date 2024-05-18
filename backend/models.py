@@ -120,6 +120,7 @@ class Profile(base):
     skill_level = Column(Integer)  # will be mapped to a running pace in client
     is_private = Column(Integer)  # 1-true, 0-false
     image_id = Column(String, nullable=True)
+    runner_id = Column(String, nullable=True)
 
     owner_id = Column(String, ForeignKey("users.id"), primary_key=True)
     owner = relationship("User", back_populates="profile")

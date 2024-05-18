@@ -57,6 +57,7 @@ def create_profile(db_session: Session, profile: schemas.ProfileCreate, user_id:
         interests=profile.interests,
         skill_level=profile.skill_level,
         is_private=int(profile.is_private),
+        runner_id=profile.runner_id,
     )
     db_user = get_user(db_session, user_id)
     if db_user is None:

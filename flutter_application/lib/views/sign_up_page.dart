@@ -17,6 +17,8 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+  static final EMAIL_REGEX = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+
   final nameController = TextEditingController();
   final usernameController = TextEditingController();
   final emailController = TextEditingController();
@@ -31,6 +33,11 @@ class _SignUpPageState extends State<SignUpPage> {
 
     if (name.isEmpty || username.isEmpty || email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please fill all the fields')));
+      return;
+    }
+    // Validate email
+    if (!EMAIL_REGEX.hasMatch(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Invalid email')));
       return;
     }
 

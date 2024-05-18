@@ -59,6 +59,7 @@ class ProfileBase(BaseModel):
     interests: Optional[str] = None
     skill_level: int
     is_private: bool
+    runner_id: Optional[str] = None
 
 
 class ProfileCreate(ProfileBase):
@@ -78,6 +79,7 @@ class ProfileUpdate(BaseModel):
     interests: Optional[str] = None
     skill_level: Optional[int] = None
     is_private: Optional[bool] = None
+    runner_id: Optional[str] = None
 
 
 class ProfileImageUpdate(ProfileUpdate):
