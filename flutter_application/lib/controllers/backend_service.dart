@@ -532,4 +532,30 @@ class BackendService {
     var achievementList = response.data['data'] as List;
     return achievementList.map((e) => Achievement.fromJson(e)).toList();
   }
+
+  // --------- SHARING ---------
+  Future<XFile> getAchievementShareImage(String userId, int achievementId) async {
+    final response = await _dio.get(
+      '/users/$userId/achievements/$achievementId/share',
+      options: Options(
+          responseType: ResponseType.bytes), // Set response type as bytes
+    );
+    String mimeType = response.headers.map['content-type']?.first ?? 'image/jpeg';
+    String fileExtension = mimeType.split('/').last;
+    return XFile.fromData(Uint8List.fromList(response.data), mimeType: mimeType, name: 'achievement_share.$fileExtension');
+  }
+
+  Future<XFile> getActivityShareImage(String userId, int activityId, int groupId) async {
+    final response = await _dio.get(
+      '/users/$userId/activities/$activityId/share',
+      options: Options(
+          responseType: ResponseType.bytes), // Set response type as bytes
+      queryParameters: {
+        'group_id': groupId,
+      }
+    );
+    String mimeType = response.headers.map['content-type']?.first ?? 'image/jpeg';
+    String fileExtension = mimeType.split('/').last;
+    return XFile.fromData(Uint8List.fromList(response.data), mimeType: mimeType, name: 'activity_share.$fileExtension');
+  }
 }
