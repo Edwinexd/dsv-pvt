@@ -1,7 +1,10 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/components/gradient_button.dart';
 import 'package:flutter_application/components/my_textfield.dart';
 import 'package:flutter_application/components/square_tile.dart';
+
+import '../controllers/backend_service.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -16,7 +19,15 @@ class _SignUpPageState extends State<SignUpPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
-  void registerUser() {
+  Future<void> registerUser() async {
+    if (nameController.text.isEmpty ||
+        usernameController.text.isEmpty ||
+        emailController.text.isEmpty ||
+        passwordController.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Please fill all the fields')));
+    }
+
     showDialog(
       context: context,
       builder: (context) {
@@ -25,6 +36,28 @@ class _SignUpPageState extends State<SignUpPage> {
         );
       },
     );
+
+    try {
+      await BackendService().createUser(
+          usernameController.text,
+          emailController.text,
+          nameController.text,
+          passwordController.text);
+    } on DioException catch (error) {
+      if (error.response?.statusCode == 400) {
+        // TODO This sort of parsing should be done in backend_service but not sure how to manipulate the error object
+        String? errorDetail;
+        if (error.response != null && error.response!.data != null) {
+          final errorData = error.response!.data as Map<String, dynamic>?;
+          errorDetail = errorData?['detail'];
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(errorDetail ?? 'Invalid email or password')));
+        
+        Navigator.pop(context);
+        return;
+      }
+    }
 
     Navigator.pop(context);
   }

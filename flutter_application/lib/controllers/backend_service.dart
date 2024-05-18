@@ -82,11 +82,12 @@ class BackendService {
   
 
   Future<User> createUser(
-      String userName, String fullName, String password) async {
+      String userName, String email, String fullName, String password) async {
     final response = await _dio.post(
       '/users',
       data: {
         "username": userName,
+        "email": email,
         "full_name": fullName,
         "password": password,
       },
