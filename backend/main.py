@@ -965,7 +965,9 @@ def delete_achievement(
 # get completed achievements from user id
 @app.get("/users/{user_id}/achievements", response_model=schemas.AchievementList)
 def read_achivements_user_has(current_user: DbUser, requested_user: RequestedUser):
-    achievements = schemas.AchievementList(data=requested_user.completed_achievements)
+    achievements = schemas.AchievementList(
+        data=[grant.achievement for grant in requested_user.completed_achievements]
+    )
     return achievements
 
 

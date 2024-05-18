@@ -503,4 +503,25 @@ class BackendService {
     var achievementList = response.data['data'] as List;
     return achievementList.map((e) => Achievement.fromJson(e)).toList();
   }
+
+  // --------- ACHIEVEMENTS ---------
+  Future<List<Achievement>> getAchievements(int skip, int limit) async {
+    final response = await _dio.get('/achievements', queryParameters: {
+      'skip': skip,
+      'limit': limit,
+    });
+    var achievementList = response.data['data'] as List;
+    return achievementList.map((e) => Achievement.fromJson(e)).toList();
+  }
+
+  Future<Achievement> getAchievement(int achievementId) async {
+    final response = await _dio.get('/achievements/$achievementId');
+    return Achievement.fromJson((response.data) as Map<String, dynamic>);
+  }
+
+  Future<List<Achievement>> getUserAchievements(String userId) async {
+    final response = await _dio.get('/users/$userId/achievements');
+    var achievementList = response.data['data'] as List;
+    return achievementList.map((e) => Achievement.fromJson(e)).toList();
+  }
 }
