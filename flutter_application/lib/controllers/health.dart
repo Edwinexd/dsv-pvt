@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:health/health.dart';
 
@@ -118,6 +119,13 @@ Future<List<Map<String, dynamic>>> getLast30DaysData() async {
 /// Collects the health data for the last 30 days and sends it to the backend
 /// Note: This is extremely against GDPR and is only for demonstration purposes within the scope of this course
 Future<void> collectAndSendData() async {
-  List<Map<String, dynamic>> data = await getLast30DaysData();
-  await BackendService().uploadHealthData(data).then((value) => null).catchError((e) => null);
+  if (kIsWeb || kIsWasm) {
+    return; // For some reason the health plugin doesn't even throw an catchable error on web...
+  }
+  try {
+    List<Map<String, dynamic>> data = await getLast30DaysData();
+    await BackendService().uploadHealthData(data).then((value) => null).catchError((e) => null);
+  } catch (e) {
+    print(e);
+  }
 }
