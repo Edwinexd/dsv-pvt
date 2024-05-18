@@ -1,7 +1,6 @@
 from typing import Optional
-from sqlalchemy import asc
+from sqlalchemy import asc, desc
 from sqlalchemy.orm import Session
-from sqlmodel import desc
 import models, schemas
 
 
@@ -132,10 +131,7 @@ def get_groups(
     orderer = models.Group.group_name
     if order_by == schemas.GroupOrderType.POINTS:
         orderer = models.Group.points
-    if descending:
-        orderer = desc(orderer)
-    else:
-        orderer = asc(orderer)  # type: ignore
+    orderer = desc(orderer) if descending else asc(orderer)  # type: ignore
 
     return (
         db_session.query(models.Group).order_by(orderer).offset(skip).limit(limit).all()
