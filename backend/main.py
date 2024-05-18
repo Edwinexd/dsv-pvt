@@ -1033,11 +1033,11 @@ def upload_health_data(
 
     new_achievements = []
     for requirement in grantable_achievements:
-        new_user = crud.grant_achievement(
+        granted = crud.grant_achievement(
             db_session,
             requested_user,
             crud.get_achievement(db_session, achievement_requirement=requirement),
         )
-        new_achievements = new_user.completed_achievements
+        new_achievements.append(granted.achievement)
 
     return schemas.AchievementList(data=new_achievements)

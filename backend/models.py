@@ -35,23 +35,12 @@ challenge_completions = Table(
     Column("user_id", ForeignKey("users.id"), primary_key=True),
     Column("challenge_id", ForeignKey("challenges.id"), primary_key=True),
 )
-# achievements association table
-achievement_completions = Table(
-    "achievement_completions",
-    base.metadata,
-    # func.now() is improperly typed
-    # pylint: disable=not-callable
-    Column("completed_at", DateTime(timezone=True), server_default=func.now()),
-    Column("user_id", ForeignKey("users.id"), primary_key=True),
-    Column("achievement_id", ForeignKey("achievements.id"), primary_key=True),
-)
 activity_challenges = Table(
     "activity_challenges",
     base.metadata,
     Column("challenge_id", ForeignKey("challenges.id"), primary_key=True),
     Column("activity_id", ForeignKey("activities.id"), primary_key=True),
 )
-
 
 # association object pattern is used to get the extra field 'invited_by'
 class GroupInvitations(base):
@@ -65,6 +54,18 @@ class GroupInvitations(base):
     user = relationship("User", viewonly=True, foreign_keys=[user_id])
     inviter = relationship("User", viewonly=True, foreign_keys=[invited_by])
 
+# association object pattern is used to get the extra field 'completed_date'
+class AchievementCompletion(base):
+    __tablename__ = "achievement_completions"
+
+    user_id = Column(String, ForeignKey("users.id"), primary_key=True)
+    achievement_id = Column(Integer, ForeignKey("achievements.id"), primary_key=True)
+    # func.now() is improperly typed
+    # pylint: disable=not-callable
+    completed_date = Column(DateTime(timezone=True), server_default=func.now())
+
+    user = relationship("User", back_populates="completed_achievements")
+    achievement = relationship("Achievement", back_populates="completed_by")
 
 # NORMAL TABLES
 class User(base):
@@ -99,11 +100,8 @@ class User(base):
     completed_challenges = relationship(
         "Challenge", secondary=challenge_completions, back_populates="completed_by"
     )
-    completed_achievements = relationship(
-        "Achievement",
-        secondary=achievement_completions,
-        back_populates="achievement_completed_by",
-    )
+    completed_achievements = relationship("AchievementCompletion", back_populates="user")
+
     profile = relationship("Profile", uselist=False, back_populates="owner")
     owned_groups = relationship("Group", back_populates="owner")
 
@@ -227,8 +225,6 @@ class Achievement(base):
     challenges = relationship("Challenge", back_populates="achievement_match")
 
     # Go to users - association table
-    achievement_completed_by = relationship(
-        "User",
-        secondary=achievement_completions,
-        back_populates="completed_achievements",
+    completed_by = relationship(
+        "AchievementCompletion", back_populates="achievement",
     )

@@ -207,11 +207,7 @@ def get_achievement(
         )
     return (
         db_session.query(models.Achievement)
-        .filter(
-            models.Achievement.id == achievement_id
-            if achievement_id is not None
-            else models.Achievement.requirement == achievement_requirement
-        )
+        .filter((models.Achievement.id == achievement_id) | (models.Achievement.requirement == achievement_requirement))
         .first()
     )
 
@@ -252,11 +248,14 @@ def get_all_achievements(db_session: Session, user_id: str):
 def grant_achievement(
     db_session: Session, db_user: models.User, db_achievement: models.Achievement
 ):
-    db_user.completed_achievements.append(db_achievement)
-    db_session.add(db_user)
+
+    achievement_grant = models.AchievementCompletion(
+        user_id=db_user.id, achievement_id=db_achievement.id
+    )
+    db_session.add(achievement_grant)
     db_session.commit()
-    db_session.refresh(db_user)
-    return db_user
+    db_session.refresh(achievement_grant)
+    return achievement_grant
 
 
 # INVITATIONS
@@ -389,7 +388,7 @@ def complete_activity(
             achievements.append(c.achievement_match)
     for u in db_activity.participants:  # each participant gets their achievement(s)
         for a in achievements:
-            u.completed_achievements.append(a)
+            grant_achievement(db_session, u, a)
     db_session.commit()
 
 
