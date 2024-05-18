@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/components/gradient_button.dart';
 import 'package:flutter_application/components/my_textfield.dart';
 import 'package:flutter_application/components/square_tile.dart';
+import 'package:flutter_application/create_profile_page.dart';
+
+import '../controllers/backend_service.dart';
 
 import '../controllers/backend_service.dart';
 
@@ -18,14 +21,17 @@ class _SignUpPageState extends State<SignUpPage> {
   final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final BackendService _backendService = BackendService();
 
   Future<void> registerUser() async {
-    if (nameController.text.isEmpty ||
-        usernameController.text.isEmpty ||
-        emailController.text.isEmpty ||
-        passwordController.text.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Please fill all the fields')));
+    final String name = nameController.text.trim();
+    final String username = usernameController.text.trim();
+    final String email = emailController.text.trim();
+    final String password = passwordController.text.trim();
+
+    if (name.isEmpty || username.isEmpty || email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please fill all the fields')));
+      return;
     }
 
     showDialog(
@@ -38,11 +44,7 @@ class _SignUpPageState extends State<SignUpPage> {
     );
 
     try {
-      await BackendService().createUser(
-          usernameController.text,
-          emailController.text,
-          nameController.text,
-          passwordController.text);
+      await _backendService.createUser(username, email, name, password);
     } on DioException catch (error) {
       if (error.response?.statusCode == 400) {
         // TODO This sort of parsing should be done in backend_service but not sure how to manipulate the error object
@@ -59,7 +61,11 @@ class _SignUpPageState extends State<SignUpPage> {
       }
     }
 
-    Navigator.pop(context);
+    // Intentionally want to disallow swipe back
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => CreateProfilePage(forced: true)),
+    );
   }
 
   @override
