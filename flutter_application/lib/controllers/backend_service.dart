@@ -224,7 +224,7 @@ class BackendService {
     final response = await _dio.get('/groups', queryParameters: {
       'skip': skip,
       'limit': limit,
-      'order_by': orderBy.index,
+      'order_by': orderBy.serialize(),
       'descending': descending,
     });
     var groupList = response.data['data'] as List;
