@@ -224,7 +224,7 @@ class BackendService {
     final response = await _dio.get('/groups', queryParameters: {
       'skip': skip,
       'limit': limit,
-      'order_by': orderBy.index,
+      'order_by': orderBy.serialize(),
       'descending': descending,
     });
     var groupList = response.data['data'] as List;
@@ -381,8 +381,7 @@ class BackendService {
     await _dio.delete('/groups/$groupId/activities/$activityId');
   }
 
-  Future<void> joinActivity(
-      int groupId, int activityId, int participantId) async {
+  Future<void> joinActivity(int groupId, int activityId, String participantId) async {
     await _dio.put(
         '/group/$groupId/activities/$activityId/participants/$participantId');
   }

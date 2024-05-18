@@ -40,7 +40,7 @@ enum GroupOrderType {
         throw ArgumentError('Invalid order value: $orderValue');
     }
   }
-  
+
   String serialize() {
     switch (this) {
       case GroupOrderType.NAME:
