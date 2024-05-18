@@ -1,5 +1,5 @@
 import logging
-from typing import Annotated, Set, Union
+from typing import Annotated, Set
 
 from fastapi import Depends, FastAPI, HTTPException, UploadFile, Response
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
