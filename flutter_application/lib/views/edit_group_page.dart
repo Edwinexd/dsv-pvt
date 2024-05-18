@@ -1,47 +1,59 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application/bars.dart';
-import 'package:flutter_application/controllers/backend_service.dart';
-import 'package:flutter_application/models/group.dart';
-import 'package:flutter_application/models/user.dart';
-import 'package:flutter_application/views/map_screen.dart';
 import 'package:flutter_application/background_for_pages.dart';
-import 'package:flutter_application/views/group_page.dart';
+import 'package:flutter_application/bars.dart';
+import 'package:flutter_application/models/group.dart';
+import 'package:flutter_application/views/map_screen.dart';
 import 'package:flutter_application/components/skill_level_slider.dart';
+import 'package:flutter_application/views/group_page.dart';
 
-class GroupCreation extends StatefulWidget {
-  final List<Function> onGroupCreatedCallBacks;
+class EditGroupPage extends StatefulWidget {
+  final Group group;
 
-  const GroupCreation({super.key, required this.onGroupCreatedCallBacks});
+  const EditGroupPage({super.key, required this.group});
 
   @override
-  GroupCreationState createState() => GroupCreationState();
+  EditGroupPageState createState() => EditGroupPageState();
 }
 
-class GroupCreationState extends State<GroupCreation> {
+class EditGroupPageState extends State<EditGroupPage> {
   final _nameController = TextEditingController();
   final _locationController = TextEditingController();
   final _descriptionController = TextEditingController();
   bool _isPublic = false;
-  int _memberLimit = 10; //Default member limit
-  int _skillLevel = 0;
-  bool _isGroupCreated = false;
+  int _memberLimit = 10; // Default member limit, we have to get the current member limit maybe?
+  int _skillLevel = 0; // Default skill level, we have to get the current skill level.
   String _errorMessage = '';
 
-  List<String> skillLevels = [
-    'Beginner: 10 - 8 min/km',
-    'Intermediate: 8 - 6 min/km',
-    'Advanced: 6 - 5 min/km',
-    'Professional: 5 - 4 min/km',
-    'Elite: < 4 min/km'
-  ];
+
+  void saveChanges() async {
+    String name = _nameController.text.trim();
+    String description = _descriptionController.text.trim();
+
+    if (name.isEmpty || description.isEmpty) {
+      setState(() {
+        _errorMessage = 'Group name and description cannot be empty!';
+      });
+      return;
+      // Method to save changes
+      // If it saved successfully it will redirect to the group page
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Group Saved!')));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  GroupPage(group: widget.group, isMember: true)));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(
+        title: 'Edit Group',
         context: context,
         showBackButton: true,
-        title: 'Create Group',
       ),
       body: DefaultBackground(
         child: Padding(
@@ -80,18 +92,18 @@ class GroupCreationState extends State<GroupCreation> {
                 ),
               ),
               const SizedBox(height: 16.0),
-                const Text(
-                  'Skill Level:',
-                  style: TextStyle(fontSize: 16),
-                ),
-                SkillLevelSlider(
-                    initialSkillLevel: _skillLevel,
-                    onSkillLevelChanged: (newLevel) {
-                      setState(() {
-                        _skillLevel = newLevel;
-                      });
-                    },
-                  ),
+              const Text(
+                'Skill Level:',
+                style: TextStyle(fontSize: 16),
+              ),
+              SkillLevelSlider(
+                initialSkillLevel: _skillLevel,
+                onSkillLevelChanged: (newLevel) {
+                  setState(() {
+                    _skillLevel = newLevel;
+                  });
+                },
+              ),
               const SizedBox(height: 16.0),
               Row(
                 children: <Widget>[
@@ -138,27 +150,14 @@ class GroupCreationState extends State<GroupCreation> {
                 maxLines: 3,
               ),
               const SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () {
-                  createGroup();
-                },
-                child: const Text('Create Group'),
-              ),
-              if (_isGroupCreated)
-                ElevatedButton(
+              Center(
+                child: ElevatedButton(
                   onPressed: () {
-                    //Redirecting to the group page
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => GroupPage(group:  Group(id: 15, name: _nameController.text, description: _descriptionController.text, isPrivate: _isPublic, ownerId: '3'), isMember: true),
-
-                    ),
-                    );
+                    saveChanges();
                   },
-                  child: const Text('Go to Group Page'),
-                  //
+                  child: const Text('Save Changes'),
                 ),
+              ),
               if (_errorMessage.isNotEmpty)
                 Text(
                   _errorMessage,
@@ -168,36 +167,6 @@ class GroupCreationState extends State<GroupCreation> {
           ),
         ),
       ),
-      bottomNavigationBar: buildBottomNavigationBar(
-        context: context,
-      ),
     );
-  }
-
-  void createGroup() async {
-    String name = _nameController.text.trim();
-    String description = _descriptionController.text.trim();
-
-    if (name.isEmpty || description.isEmpty) {
-      setState(() {
-        _errorMessage = 'Group name can not be empty!';
-      });
-      return;
-    }
-
-    User me = await BackendService().getMe();
-    await BackendService().createGroup(name, description, _isPublic, me.id);
-
-    widget.onGroupCreatedCallBacks.forEach((callback) {
-      callback();
-    }); //Calls refreshGroups in parent MyGroupsPage
-
-    setState(() {
-      _errorMessage = '';
-    });
-
-    setState(() {
-      _isGroupCreated = true;
-    });
   }
 }
