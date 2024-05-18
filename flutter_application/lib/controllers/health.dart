@@ -2,13 +2,18 @@ import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:health/health.dart';
 
 Future<bool> configureHealth(List<HealthDataType> types) async {
-  Health().configure(useHealthConnectIfAvailable: true);
-  // Checking against false and not falsy intentionally as null and false are handled differently
-  if (await Health().hasPermissions(types) == false) {
-    bool requested = await Health().requestAuthorization(types);
-    return requested;
+  try {
+    Health().configure(useHealthConnectIfAvailable: true);
+    // Checking against false and not falsy intentionally as null and false are handled differently
+    if (await Health().hasPermissions(types) == false) {
+      bool requested = await Health().requestAuthorization(types);
+      return requested;
+    }
+    return true;
+  } catch (e) {
+    // Unsupported Device
+    return false;
   }
-  return true;
 }
 
 Future<int> getSteps(DateTime startDate, DateTime endDate) async {
