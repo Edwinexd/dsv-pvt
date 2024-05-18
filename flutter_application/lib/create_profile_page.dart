@@ -67,7 +67,11 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
 
     await _backendService.createProfile(user.id, bio!, int.parse(age!),
         const JsonEncoder().convert(interests), _skillLevel, isPrivate, runnerId.isEmpty ? null : runnerId);
-    // TODO: Need image bindings to also set the users profile image if they uploaded one
+
+    if (pickedImage != null) {
+      await _backendService.uploadProfilePicture(pickedImage!);
+    }
+
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text('Profile Created!')));
     if (widget.forced) {
