@@ -124,6 +124,7 @@ class Profile(base):
     is_private = Column(Integer)  # 1-true, 0-false
     image_id = Column(String, nullable=True)
     runner_id = Column(String, nullable=True)
+    location = Column(String, nullable=True, default="Stockholm")
 
     owner_id = Column(String, ForeignKey("users.id"), primary_key=True)
     owner = relationship("User", back_populates="profile")

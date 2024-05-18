@@ -61,7 +61,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     if (widget.initialProfile.imageId != null) {
       unawaited(setProfileImageFromId(widget.initialProfile.imageId!));
     }
-    selectedLocation = 'Stockholm'; // TODO: profile is incomplete
+    selectedLocation = widget.initialProfile.location; // TODO: profile is incomplete
     age = widget.initialProfile.age.toString();
     bio = widget.initialProfile.description;
     bioEntered = true;
