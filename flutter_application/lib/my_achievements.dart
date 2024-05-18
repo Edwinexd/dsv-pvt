@@ -1,9 +1,11 @@
-import 'package:flutter_application/achievement.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
+import 'package:flutter_application/controllers/backend_service.dart';
+import 'package:flutter_application/models/achievement.dart';
 import 'package:share_plus/share_plus.dart';
 
-// should this be stateful?
 class MyAchievements extends StatefulWidget {
   MyAchievements({super.key});
 
@@ -12,25 +14,30 @@ class MyAchievements extends StatefulWidget {
 }
 
 class _MyAchievementsState extends State<MyAchievements> {
-  // Placeholder, create a widget that takes an achivement and creates a card (returns a widget)
-  final List<Achievement> trophies = [
-    Achievement(
-      icon: Icons.star,
-      header: 'Walked 10 km',
-      description: 'You walked 10 km!',
-    ),
-    Achievement(
-      icon: Icons.star_border,
-      header: 'Run 5 km',
-      description: 'You ran 5 km!',
-    ),
-    Achievement(
-      icon: Icons.star_half,
-      header: 'Added a friend',
-      description: 'You added a friend',
-    ),
-  ];
+  List<Achievement> allAchievements = [];
+  List<Achievement> grantedAchievements = [];
 
+  Future<void> _populateGrantedAchievements() async {
+    String id = (await BackendService().getMe()).id;
+    List<Achievement> achievements =
+        await BackendService().getUserAchievements(id);
+    setState(() {
+      grantedAchievements = achievements;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(BackendService().getAchievements(0, 100).then((achievements) {
+      setState(() {
+        allAchievements = achievements;
+      });
+    }));
+    unawaited(_populateGrantedAchievements());
+  }
+
+  // TODO: There isnt any indication of completion
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,11 +48,11 @@ class _MyAchievementsState extends State<MyAchievements> {
       // add header here, trophys
       body: DefaultBackground(
         child: ListView.builder(
-          itemCount: trophies.length,
+          itemCount: allAchievements.length,
           itemBuilder: (BuildContext context, int index) {
             return ListTile(
               title: AchievementCard(
-                achievement: trophies[index],
+                achievement: allAchievements[index],
               ),
             );
           },
@@ -55,15 +62,31 @@ class _MyAchievementsState extends State<MyAchievements> {
   }
 }
 
-// Creates an achievement card - where to place it?
-class AchievementCard extends StatelessWidget {
+class AchievementCard extends StatefulWidget {
   final Achievement achievement;
 
-  AchievementCard({
-    required this.achievement,
-  });
+  const AchievementCard({super.key, required this.achievement});
 
-@override
+  @override
+  State<AchievementCard> createState() => _AchievementCardState();
+}
+
+class _AchievementCardState extends State<AchievementCard> {
+  ImageProvider? image;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(BackendService()
+        .getImage(widget.achievement.imageId ?? "404")
+        .then((value) {
+      setState(() {
+        image = value;
+      });
+    }));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
@@ -72,8 +95,8 @@ class AchievementCard extends StatelessWidget {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text(achievement.header),
-              content: Text(achievement.description),
+              title: Text(widget.achievement.achievementName),
+              content: Text(widget.achievement.description),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
@@ -83,13 +106,13 @@ class AchievementCard extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () async {
-                    // Share achievement - How?
-                    Share.share('${achievement.header}: ${achievement.description}');
+                    // TODO: Connect to getShareImage
+                    Share.share(
+                        '${widget.achievement.achievementName}: ${widget.achievement.description}');
                   },
                   child: const Text('Share'),
                 ),
               ],
-
             );
           },
         );
@@ -97,20 +120,23 @@ class AchievementCard extends StatelessWidget {
       child: Card(
         child: Row(
           children: <Widget>[
-            Icon(achievement.icon),
+            CircleAvatar(
+              radius: 60,
+              backgroundImage: image,
+            ),
             const SizedBox(width: 10.0),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  achievement.header,
+                  widget.achievement.achievementName,
                   style: const TextStyle(
                     fontSize: 14.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
-                  achievement.description,
+                  widget.achievement.description,
                   style: const TextStyle(
                     fontSize: 12.0,
                   ),
@@ -122,7 +148,4 @@ class AchievementCard extends StatelessWidget {
       ),
     );
   }
-
-
-
 }

@@ -238,11 +238,12 @@ class SessionUser(BaseModel):
 # ACHIEVEMENT
 class AchievementBase(BaseModel):
     achievement_name: str
+    requirement: "AchievementRequirement"
+    description: str
 
 
 class AchievementCreate(AchievementBase):
-    description: str
-    requirement: "AchievementRequirement"
+    pass
 
 
 class Achievement(AchievementBase):
