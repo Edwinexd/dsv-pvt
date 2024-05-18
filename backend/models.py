@@ -42,6 +42,7 @@ activity_challenges = Table(
     Column("activity_id", ForeignKey("activities.id"), primary_key=True),
 )
 
+
 # association object pattern is used to get the extra field 'invited_by'
 class GroupInvitations(base):
     __tablename__ = "group_invitations"
@@ -53,6 +54,7 @@ class GroupInvitations(base):
     group = relationship("Group", viewonly=True, foreign_keys=[group_id])
     user = relationship("User", viewonly=True, foreign_keys=[user_id])
     inviter = relationship("User", viewonly=True, foreign_keys=[invited_by])
+
 
 # association object pattern is used to get the extra field 'completed_date'
 class AchievementCompletion(base):
@@ -66,6 +68,7 @@ class AchievementCompletion(base):
 
     user = relationship("User", back_populates="completed_achievements")
     achievement = relationship("Achievement", back_populates="completed_by")
+
 
 # NORMAL TABLES
 class User(base):
@@ -100,7 +103,9 @@ class User(base):
     completed_challenges = relationship(
         "Challenge", secondary=challenge_completions, back_populates="completed_by"
     )
-    completed_achievements = relationship("AchievementCompletion", back_populates="user")
+    completed_achievements = relationship(
+        "AchievementCompletion", back_populates="user"
+    )
 
     profile = relationship("Profile", uselist=False, back_populates="owner")
     owned_groups = relationship("Group", back_populates="owner")
@@ -226,5 +231,6 @@ class Achievement(base):
 
     # Go to users - association table
     completed_by = relationship(
-        "AchievementCompletion", back_populates="achievement",
+        "AchievementCompletion",
+        back_populates="achievement",
     )

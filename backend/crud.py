@@ -207,7 +207,10 @@ def get_achievement(
         )
     return (
         db_session.query(models.Achievement)
-        .filter((models.Achievement.id == achievement_id) | (models.Achievement.requirement == achievement_requirement))
+        .filter(
+            (models.Achievement.id == achievement_id)
+            | (models.Achievement.requirement == achievement_requirement)
+        )
         .first()
     )
 
@@ -248,7 +251,6 @@ def get_all_achievements(db_session: Session, user_id: str):
 def grant_achievement(
     db_session: Session, db_user: models.User, db_achievement: models.Achievement
 ):
-
     achievement_grant = models.AchievementCompletion(
         user_id=db_user.id, achievement_id=db_achievement.id
     )
