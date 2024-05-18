@@ -40,7 +40,7 @@ class _GroupPageState extends State<GroupPage> {
     super.initState();
     unawaited(fetchAllActivities());
     unawaited(fetchJoinedActivities());
-    unawaited(fetchMyGroups(););
+    unawaited(fetchMyGroups());
     unawaited(fetchMembers().then((_) {
       setState(() {
         displayedMembers = allMembers;
