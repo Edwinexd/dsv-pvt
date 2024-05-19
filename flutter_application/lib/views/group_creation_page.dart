@@ -6,6 +6,7 @@ import 'package:flutter_application/models/user.dart';
 import 'package:flutter_application/views/map_screen.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/views/group_page.dart';
+import 'package:flutter_application/components/skill_level_slider.dart';
 
 class GroupCreation extends StatefulWidget {
   final List<Function> onGroupCreatedCallBacks;
@@ -79,27 +80,18 @@ class GroupCreationState extends State<GroupCreation> {
                 ),
               ),
               const SizedBox(height: 16.0),
-              const Text(
-                'Skill Level:',
-                style: TextStyle(fontSize: 16),
-              ),
-              Slider(
-                value: _skillLevel.toDouble(),
-                min: 0,
-                max: 4,
-                divisions: 4,
-                onChanged: (double value) {
-                  setState(() {
-                    _skillLevel = value.round();
-                  });
-                },
-              ),
-              Center(
-                child: Text(
-                  skillLevels[_skillLevel],
-                  style: const TextStyle(fontSize: 12),
+                const Text(
+                  'Skill Level:',
+                  style: TextStyle(fontSize: 16),
                 ),
-              ),
+                SkillLevelSlider(
+                    initialSkillLevel: _skillLevel,
+                    onSkillLevelChanged: (newLevel) {
+                      setState(() {
+                        _skillLevel = newLevel;
+                      });
+                    },
+                  ),
               const SizedBox(height: 16.0),
               Row(
                 children: <Widget>[

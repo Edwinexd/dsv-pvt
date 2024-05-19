@@ -6,7 +6,7 @@ import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/all_group_pages.dart';
 import 'package:flutter_application/views/group_creation_page.dart';
 import 'package:flutter_application/views/group_page.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_application/views/group_invitations_page.dart';
 
 class MyGroups extends StatefulWidget {
   MyGroups({super.key});
@@ -47,20 +47,18 @@ class _MyGroupsState extends State<MyGroups> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Expanded(
+            Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 18),
-                  Text(
+                  /*Text(
                     'Groups',
-                    style: GoogleFonts.poppins(
-                      textStyle: const TextStyle(
-                        fontSize: 20.0,
-                      ),
+                    style: TextStyle(
+                      fontSize: 20,
                     ),
-                  ),
-                  const SizedBox(height: 8),
+                  ),*/
+                  const SizedBox(height: 12),
                   SizedBox(
                     height: 40,
                     width: 250,
@@ -119,7 +117,13 @@ class _MyGroupsState extends State<MyGroups> {
                     height: 40,
                     width: 250,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => GroupInvitationsPage()),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                       ),
@@ -131,27 +135,26 @@ class _MyGroupsState extends State<MyGroups> {
                         ],
                       ),
                     ),
-                  )
+                  ),
+                  const SizedBox(height: 16), // Add some space before My Groups section
                 ],
               ),
             ),
-            SizedBox(height: 2),
             const Padding(
-              padding: EdgeInsets.only(left: 16.0, top: 12.0),
+              padding: EdgeInsets.only(left: 16.0),
               child: Text('My Groups',
                   style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
                   )),
             ),
-            const SizedBox(height: 18),
-            Expanded(
+            const SizedBox(height: 6),
+            Flexible(
               child: ListView.builder(
                 itemCount: myGroups.length,
                 itemBuilder: (context, index) {
                   final group = myGroups[index];
                   return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 6.0),
+                    padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 16.0),
                     child: Container(
                       decoration: BoxDecoration(
                         color: const Color.fromARGB(255, 254, 192, 173),
@@ -169,7 +172,8 @@ class _MyGroupsState extends State<MyGroups> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: ((context) => GroupPage(group: group, isMember: true)),
+                              builder: ((context) =>
+                                  GroupPage(group: group, isMember: true)),
                             ),
                           );
                         },

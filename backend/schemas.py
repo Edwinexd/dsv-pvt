@@ -1,4 +1,5 @@
 # Schemas will be used for presentation and data query with user
+from enum import Enum
 from typing import List, Optional
 from pydantic import BaseModel, Field, field_serializer
 from datetime import datetime
@@ -58,6 +59,8 @@ class ProfileBase(BaseModel):
     interests: Optional[str] = None
     skill_level: int
     is_private: bool
+    runner_id: Optional[str] = None
+    location: str
 
 
 class ProfileCreate(ProfileBase):
@@ -77,6 +80,8 @@ class ProfileUpdate(BaseModel):
     interests: Optional[str] = None
     skill_level: Optional[int] = None
     is_private: Optional[bool] = None
+    runner_id: Optional[str] = None
+    location: Optional[str] = None
 
 
 class ProfileImageUpdate(ProfileUpdate):
@@ -123,6 +128,11 @@ class GroupUpdate(BaseModel):
 
 class GroupImageUpdate(GroupUpdate):
     image_id: Optional[str] = None
+
+
+class GroupOrderType(str, Enum):
+    NAME = "name"
+    POINTS = "points"
 
 
 # INVITES
@@ -235,11 +245,12 @@ class SessionUser(BaseModel):
 # ACHIEVEMENT
 class AchievementBase(BaseModel):
     achievement_name: str
+    requirement: "AchievementRequirement"
+    description: str
 
 
 class AchievementCreate(AchievementBase):
-    description: str
-    requirement: int
+    pass
 
 
 class Achievement(AchievementBase):
@@ -262,3 +273,36 @@ class AchievementImageUpdate(AchievementUpdate):
 
 class AchievementList(BaseModel):
     data: List[Achievement]
+
+
+# HEALTH
+class HealthPayload(BaseModel):
+    date: datetime
+    steps: int
+    max_heartrate: int
+    water_liters: int
+    headache_total: int
+    sleep: int
+
+
+class HealthData(BaseModel):
+    data: List[HealthPayload]
+
+
+class AchievementRequirement(Enum):
+    CHALLENGE = 0
+    STEPS_25K = 1
+    STEPS_10K_7DAYS = 2
+    HEARTRATE_200 = 3
+    WATER_4L = 4
+    WATER_3L_7DAYS = 5
+    HEADACHE_16H = 6
+    HEADACHE_0_7DAYS = 7
+    SLEEP_10H = 8
+    SLEEP_8H_7DAYS = 9
+
+
+# oauth
+class OauthLoginPayload(BaseModel):
+    access_token: Optional[str]
+    id_token: Optional[str]

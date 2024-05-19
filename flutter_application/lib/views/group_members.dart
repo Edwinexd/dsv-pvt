@@ -1,23 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/bars.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_application/controllers/backend_service.dart';
+import 'package:flutter_application/models/group.dart';
+import 'package:flutter_application/models/user.dart';
 
 class GroupMembersPage extends StatefulWidget {
-  const GroupMembersPage({super.key});
+  final Group group;
+  const GroupMembersPage({super.key, required this.group});
 
   @override
   _GroupMembersPageState createState() => _GroupMembersPageState();
 }
 
 class _GroupMembersPageState extends State<GroupMembersPage> {
-  TextEditingController _searchController = TextEditingController();
-  List<String> _filteredMembersList = [];
+  final TextEditingController _searchController = TextEditingController();
+  List<User> _membersList = [];
+  List<User> _filteredMembersList = [];
+
 
   @override
   void initState() {
     super.initState();
-    _filteredMembersList.addAll(_membersList);
+    _fetchMembers();
+  }
+
+  void _fetchMembers() async {
+    var members = await BackendService().getGroupMembers(widget.group.id);
+    setState(() {
+      _membersList = members;
+      _filteredMembersList = members;
+    });
   }
 
   @override
@@ -35,8 +48,8 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Text(
-                  'Group Members 4/20',
+                Text(
+                  widget.group.name,
                   /*Will be displayed total number of members and max members*/
                   style: TextStyle(fontSize: 20),
                 ),
@@ -71,7 +84,7 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
                       //placeholder for users profile picture
                       child: Icon(Icons.person),
                     ),
-                    title: Text(member),
+                    title: Text(member.fullName),
                   ),
                 );
               },
@@ -88,16 +101,8 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
   void _onSearchTextChanged(String value) {
     setState(() {
       _filteredMembersList = _membersList
-          .where((member) => member.toLowerCase().contains(value.toLowerCase()))
+          .where((member) => member.fullName.toLowerCase().contains(value.toLowerCase()))
           .toList();
     });
   }
 }
-
-//Instance members list
-final List<String> _membersList = [
-  'Anthony Edwards',
-  'LeBron James',
-  'Nikola Jokic',
-  'Luka Doncic',
-];

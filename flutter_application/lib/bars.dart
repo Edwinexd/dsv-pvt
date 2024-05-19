@@ -31,13 +31,7 @@ void goToProfilePage(BuildContext context) {
   Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => ProfilePage(
-        name: 'Axel Andersson',
-        biography: "Let's go running!",
-        imageUrl: 'https://via.placeholder.com/150',
-        username: 'Olt53',
-        joinedDate: joinedDate,
-      ),
+      builder: (context) => ProfilePage()
     ),
   );
 }
@@ -104,3 +98,4 @@ void goToGroupPage(BuildContext context) {
       MaterialPageRoute(builder: (context) => FriendsPage()),
    );
   }
+
