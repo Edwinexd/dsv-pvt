@@ -5,6 +5,7 @@ class Group {
   final bool isPrivate;
   final String ownerId;
   final int points;
+  final String? imageId;
 
   const Group(
       {required this.id,
@@ -12,7 +13,9 @@ class Group {
       required this.description,
       required this.isPrivate,
       required this.ownerId,
-      this.points = 0});
+      this.points = 0,
+      this.imageId});
+
 
   factory Group.fromJson(Map<String, dynamic> json) {
     return Group(
@@ -22,6 +25,7 @@ class Group {
       isPrivate: json['is_private'] as bool,
       ownerId: json['owner_id'] as String,
       points: json['points'] as int,
+      imageId: json['image_id'] as String?,
     );
   }
 }
