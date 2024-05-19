@@ -110,7 +110,9 @@ def create_group(db_session: Session, group: schemas.GroupCreate):
         return None
     db_owner.owned_groups.append(db_group)
     db_owner.groups.append(db_group)
+    db_group.users.append(db_owner)  # Add owner as a member
     db_session.add(db_owner)
+    db_session.add(db_group)
     db_session.commit()
     db_session.refresh(db_owner)
     return db_group

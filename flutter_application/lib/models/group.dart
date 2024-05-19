@@ -6,6 +6,9 @@ class Group {
   final String ownerId;
   final int points;
   final String? imageId;
+  final String? address;
+  final double? latitude;
+  final double? longitude;
 
   const Group(
       {required this.id,
@@ -14,7 +17,10 @@ class Group {
       required this.isPrivate,
       required this.ownerId,
       this.points = 0,
-      this.imageId});
+      this.imageId,
+      this.address,
+      this.latitude,
+      this.longitude});
 
 
   factory Group.fromJson(Map<String, dynamic> json) {
@@ -26,6 +32,9 @@ class Group {
       ownerId: json['owner_id'] as String,
       points: json['points'] as int,
       imageId: json['image_id'] as String?,
+      address: json['address'] as String?,
+      latitude: json['latitude'] as double?,
+      longitude: json['longitude'] as double?,
     );
   }
 }
