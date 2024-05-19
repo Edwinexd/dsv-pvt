@@ -58,6 +58,7 @@ def create_profile(db_session: Session, profile: schemas.ProfileCreate, user_id:
         interests=profile.interests,
         skill_level=profile.skill_level,
         is_private=int(profile.is_private),
+        location=profile.location,
         runner_id=profile.runner_id,
     )
     db_user = get_user(db_session, user_id)
@@ -326,8 +327,8 @@ def create_activity(db_session: Session, activity_payload: schemas.ActivityPaylo
     db_session.add(db_activity)
 
     if activity_payload.challenges is not None:
-        for c in activity_payload.challenges:
-            db_challenge = get_challenge(db_session, c.id)
+        for challenge in activity_payload.challenges:
+            db_challenge = get_challenge(db_session, challenge.id)
             if db_challenge is None:
                 continue
             db_activity.challenges.append(db_challenge)

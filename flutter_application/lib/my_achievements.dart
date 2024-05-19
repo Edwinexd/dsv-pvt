@@ -113,8 +113,10 @@ class _AchievementCardState extends State<AchievementCard> {
                 TextButton(
                   onPressed: () async {
                     // TODO: Connect to getShareImage
-                    Share.share(
-                        '${widget.achievement.achievementName}: ${widget.achievement.description}');
+                    String userId = (await BackendService().getMe()).id;
+                    XFile shareImage = await BackendService().getAchievementShareImage(userId, widget.achievement.id);
+                    Share.shareXFiles([shareImage]);
+                    Navigator.of(context).pop(); // Close dialog
                   },
                   child: const Text('Share'),
                 ),

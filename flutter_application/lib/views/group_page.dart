@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/activity_create.dart';
 import 'package:flutter_application/bars.dart';
 import 'package:flutter_application/components/checkered_background.dart';
+import 'package:flutter_application/components/user_selector.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/activity.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/models/user.dart';
 import 'package:flutter_application/background_for_pages.dart';
+import 'package:flutter_application/views/activity_page.dart';
 import 'package:flutter_application/views/edit_group_page.dart';
 import 'package:flutter_application/views/group_members.dart';
 import 'package:flutter_application/views/my_groups.dart';
@@ -156,6 +158,53 @@ class _GroupPageState extends State<GroupPage> {
     });
   }
 
+  void _inviteMembers() {
+    // Render user_selector
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => UserSelector(
+          finishSelectionText: 'Invite members',
+          onUserSelected: (User u) => {},
+          onCompleted: (List<User> users) async {
+            if (users.isEmpty) {
+              return;
+            }
+            // Loading icon
+            showDialog(
+              context: context,
+              builder: (context) => const Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+
+            int failed = 0;
+            for (User user in users) {
+              try {
+                await BackendService().inviteUserToGroup(user.id, widget.group.id);
+              } catch (e) {
+                failed++;
+              }
+            }
+
+            // Close loading icon
+            Navigator.pop(context);
+
+            // Show success message
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  failed == 0
+                      ? 'Invitations sent successfully'
+                      : 'Failed to send $failed invitations',)
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -241,12 +290,12 @@ class _GroupPageState extends State<GroupPage> {
                             ),
                             TextButton(
                               onPressed: () {
-                                // Navigator.push(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (context) => ActvityPage(activity: activity),
-                                //   ),
-                                // );
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ActivityPage(groupId: widget.group.id, activityId: activity.id),
+                                  ),
+                                );
                               },
                               style: TextButton.styleFrom(
                                 backgroundColor: Colors.white,
@@ -294,7 +343,7 @@ class _GroupPageState extends State<GroupPage> {
               width: 250,
               child: ElevatedButton(
                 onPressed: () {
-                  //Will handle invite new members button later
+                  _inviteMembers();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
@@ -302,7 +351,7 @@ class _GroupPageState extends State<GroupPage> {
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Invite new members'),
+                    Text('Invite members'),
                     Icon(Icons.person_add),
                   ],
                 ),

@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:cross_file/cross_file.dart';
+import 'package:flutter_application/models/challenges.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -146,13 +147,14 @@ class BackendService {
   // --------- PROFILE ---------
 
   Future<Profile> createProfile(String userId, String description, int age,
-      String interests, int skillLevel, bool isPrivate, String? runnerId) async {
+      String interests, int skillLevel, bool isPrivate, String location, String? runnerId) async {
     final response = await _dio.put('/users/$userId/profile', data: {
       "description": description,
       "age": age,
       "interests": interests,
       "skill_level": skillLevel,
       "is_private": isPrivate,
+      "location": location,
       "runner_id": runnerId,
     });
 
@@ -160,7 +162,7 @@ class BackendService {
   }
 
   Future<Profile> getProfile(String userId) async {
-    final response = await _dio.get('/users/$userId');
+    final response = await _dio.get('/users/$userId/profile');
     return Profile.fromJson((response.data) as Map<String, dynamic>);
   }
 
@@ -169,7 +171,9 @@ class BackendService {
       int? age,
       String? interests,
       int? skillLevel,
-      bool? isPrivate}) async {
+      bool? isPrivate,
+      String? location,
+      String? runnerId }) async {
     Map<String, dynamic> updateFields = {};
     if (description != null) {
       updateFields['description'] = description;
@@ -185,6 +189,12 @@ class BackendService {
     }
     if (isPrivate != null) {
       updateFields['is_private'] = isPrivate;
+    }
+    if (location != null) {
+      updateFields['location'] = location;
+    }
+    if (runnerId != null) {
+      updateFields['runner_id'] = runnerId;
     }
     if (updateFields.isEmpty) {
       throw const FormatException(
@@ -323,11 +333,15 @@ class BackendService {
 
   // --------- ACTIVITIES ---------
   Future<Activity> createActivity(
-      int groupId, String name, DateTime scheduled, int difficulty) async {
+      int groupId, String name, DateTime scheduled, int difficulty, double latitude, double longitude, String address, List<Challenge> challenges) async {
     final response = await _dio.post('/groups/$groupId/activities', data: {
       "activity_name": name,
       "scheduled_date": scheduled.toIso8601String(),
       "difficulty_code": difficulty,
+      "latitude": latitude,
+      "longitude": longitude,
+      "address": address,
+      "challenges": challenges.map((e) => {"id": e.id}).toList(),
     });
     return Activity.fromJson((response.data) as Map<String, dynamic>);
   }
@@ -416,6 +430,16 @@ class BackendService {
     await _dio.delete(
         '/groups/$groupId/activities/$acitivityId/participants/$participantId');
   }
+  // --------- CHALLENGES ---------
+  Future<List<Challenge>> getChallenges(int skip, int limit) async {
+    final response = await _dio.get('/challenges', queryParameters: {
+      'skip': skip,
+      'limit': limit,
+    });
+    var challengeList = response.data['data'] as List;
+    return challengeList.map((e) => Challenge.fromJson(e)).toList();
+  }
+
 
   // --------- IMAGE RETRIEVAL ---------
   Future<ImageProvider> getImage(String imageId) async {
@@ -522,5 +546,31 @@ class BackendService {
     final response = await _dio.get('/users/$userId/achievements');
     var achievementList = response.data['data'] as List;
     return achievementList.map((e) => Achievement.fromJson(e)).toList();
+  }
+
+  // --------- SHARING ---------
+  Future<XFile> getAchievementShareImage(String userId, int achievementId) async {
+    final response = await _dio.get(
+      '/users/$userId/achievements/$achievementId/share',
+      options: Options(
+          responseType: ResponseType.bytes), // Set response type as bytes
+    );
+    String mimeType = response.headers.map['content-type']?.first ?? 'image/jpeg';
+    String fileExtension = mimeType.split('/').last;
+    return XFile.fromData(Uint8List.fromList(response.data), mimeType: mimeType, name: 'achievement_share.$fileExtension');
+  }
+
+  Future<XFile> getActivityShareImage(String userId, int activityId, int groupId) async {
+    final response = await _dio.get(
+      '/users/$userId/activities/$activityId/share',
+      options: Options(
+          responseType: ResponseType.bytes), // Set response type as bytes
+      queryParameters: {
+        'group_id': groupId,
+      }
+    );
+    String mimeType = response.headers.map['content-type']?.first ?? 'image/jpeg';
+    String fileExtension = mimeType.split('/').last;
+    return XFile.fromData(Uint8List.fromList(response.data), mimeType: mimeType, name: 'activity_share.$fileExtension');
   }
 }

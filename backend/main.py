@@ -139,15 +139,23 @@ def generate_completed_achievement_image(
     requested_achievement: RequestedAchievement,
 ):
     validations.validate_id(current_user, requested_user.id)
-    if requested_achievement not in requested_user.completed_achievements:
-        return HTTPException(status_code=400, detail="Achievement not completed")
+    completion = [
+        c
+        for c in requested_user.completed_achievements
+        if requested_achievement.id == c.achievement.id
+    ]
+    if len(completion) == 0:
+        raise HTTPException(status_code=400, detail="Achievement not completed")
+    grant = completion[0]
     return Response(
         content=generate_image(
-            image_id=requested_achievement.image_id,
-            completed_thing_name=requested_achievement.achievement_name,
+            image_id=grant.achievement.image_id
+            if grant.achievement.image_id is not None
+            else "404",
+            completed_thing_name=grant.achievement.achievement_name,
             user_image_id=requested_user.profile.image_id,
             username=requested_user.username,
-            date=datetime.now().isoformat(),
+            date=grant.completed_date.isoformat(),
         ).read(),
         media_type="image/png",
     )
@@ -161,11 +169,9 @@ def generate_completed_activity_image(
 ):
     validations.validate_id(current_user, requested_user.id)
     if requested_activity.is_completed == 0:
-        return HTTPException(status_code=400, detail="Achievement not completed")
+        raise HTTPException(status_code=400, detail="Achievement not completed")
     if requested_activity not in requested_user.activities:
-        return HTTPException(
-            status_code=400, detail="Achievement not completed by user"
-        )
+        raise HTTPException(status_code=400, detail="Achievement not completed by user")
     return Response(
         content=generate_image(
             image_id=requested_activity.image_id,
