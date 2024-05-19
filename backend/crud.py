@@ -327,8 +327,8 @@ def create_activity(db_session: Session, activity_payload: schemas.ActivityPaylo
     db_session.add(db_activity)
 
     if activity_payload.challenges is not None:
-        for challenge_id in activity_payload.challenges:
-            db_challenge = get_challenge(db_session, challenge_id)
+        for challenge in activity_payload.challenges:
+            db_challenge = get_challenge(db_session, challenge.id)
             if db_challenge is None:
                 continue
             db_activity.challenges.append(db_challenge)

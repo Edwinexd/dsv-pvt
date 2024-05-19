@@ -148,7 +148,11 @@ class Invite(InviteBase):
 
 
 # CHALLENGE
-class ChallengeBase(BaseModel):
+class ChallengePartial(BaseModel):
+    id: int
+
+
+class ChallengeBase(ChallengePartial):
     challenge_name: str
     description: str
     difficulty_code: int
@@ -191,20 +195,20 @@ class ActivityBase(BaseModel):
     activity_name: str
     scheduled_date: datetime
     difficulty_code: int
-    challenges: Optional[List[Challenge]] = None
+    challenges: List[Challenge]
     latitude: float
     longitude: float
     address: str
 
 
 class ActivityCreate(ActivityBase):
-    challenges: List[int] = []
+    challenges: List[ChallengePartial]
 
 
 class ActivityPayload(ActivityBase):
     group_id: int
     owner_id: str
-    challenges: Optional[List[int]] = []
+    challenges: List[ChallengePartial]
 
 
 class Activity(ActivityBase):
@@ -227,7 +231,7 @@ class ActivityUpdate(BaseModel):
     scheduled_date: Optional[str] = None
     difficulty_code: Optional[int] = None
     is_completed: Optional[bool] = None
-    challenges: Optional[List[int]] = None
+    challenges: Optional[List[ChallengePartial]] = None
     latitude: Optional[float] = None
     longitude: Optional[float] = None
     address: Optional[str] = None
