@@ -60,9 +60,7 @@ class _ActivityCreatePageState extends State<ActivityCreatePage> {
         _chosenChallenges
             .map((e) => _challenges.firstWhere((element) => element.id == e))
             .toList());
-
-    // Make user join the activity
-    await BackendService().joinActivity(groupId, activity.id, (await BackendService().getMe()).id);
+    // Creator automatically joins the activity
 
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
       return ActivityPage(activityId: activity.id, groupId: groupId);
