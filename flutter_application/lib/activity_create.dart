@@ -1,11 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/bars.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/activity.dart';
 import 'package:flutter_application/components/skill_level_slider.dart';
+import 'package:flutter_application/models/challenges.dart';
+import 'package:flutter_application/views/activity_page.dart';
 import 'package:flutter_application/views/map_screen.dart';
 import 'package:intl/intl.dart';
+import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
 
 //test Mac
 
@@ -14,43 +19,52 @@ class ActivityCreatePage extends StatefulWidget {
   ActivityCreatePage({super.key, required this.groupId});
 
   final int groupId;
-  // TODO Get from backend
-  final List<dynamic> challenges = [
-    {"id": 0, "name": 'Spring 0 km'},
-    {"id": 1, "name": 'Gå 1 km'},
-    {"id": 2, "name": 'Hoppa 200 ggr'}
-  ];
 
   @override
   _ActivityCreatePageState createState() => _ActivityCreatePageState();
 }
 
 class _ActivityCreatePageState extends State<ActivityCreatePage> {
-  final _formKey = GlobalKey<FormState>();
+  List<Challenge> _challenges = [];
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _locationController = TextEditingController();
+  PickedData? _location;
   DateTime _pickedDate = DateTime.now();
   TimeOfDay _pickedTime = TimeOfDay.now();
   DateTime _pickedDateTime = DateTime.now();
   int _skillLevel = 0; // Manage skill level as an integer
-  List<String> _chosenChallenges = [];
+  List<int> _chosenChallenges = [];
 
   void _createActivity() async {
-    if (_formKey.currentState!.validate()) {
-      int groupId = widget.groupId;
-      String name = _titleController.text.trim();
-      DateTime dateTime = _pickedDateTime;
-      int difficulty = _skillLevel;
-
-      Activity activity = await BackendService()
-          .createActivity(groupId, name, dateTime, difficulty);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Activity created for $widget.groupId!')));
+    if (_titleController.text.trim().isEmpty || _location == null || _descriptionController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Please fill in all fields'),
+        duration: Duration(seconds: 2),
+      ));
+      return;
     }
-    // TODO: Navigate to newly created activity
-    // TODO: Have the user join the activity?
+    int groupId = widget.groupId;
+    String name = _titleController.text.trim();
+    DateTime dateTime = _pickedDateTime;
+    int difficulty = _skillLevel;
+
+    Activity activity = await BackendService().createActivity(
+        groupId,
+        name,
+        dateTime,
+        difficulty,
+        _location!.latLong.latitude,
+        _location!.latLong.longitude,
+        _location!.address,
+        _chosenChallenges
+            .map((e) => _challenges.firstWhere((element) => element.id == e))
+            .toList());
+    // Creator automatically joins the activity
+
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+      return ActivityPage(activityId: activity.id, groupId: groupId);
+    }));
   }
 
   Future<void> _pickDate() async {
@@ -91,6 +105,16 @@ class _ActivityCreatePageState extends State<ActivityCreatePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    unawaited(BackendService().getChallenges(0, 100).then((value) {
+      setState(() {
+        _challenges = value;
+      });
+    }));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(
@@ -120,6 +144,7 @@ class _ActivityCreatePageState extends State<ActivityCreatePage> {
                         builder: (context) => MapScreen(
                           onLocationSelected: (location) {
                             setState(() {
+                              _location = location;
                               _locationController.text = location.address;
                             });
                           },
@@ -137,7 +162,6 @@ class _ActivityCreatePageState extends State<ActivityCreatePage> {
                     ),
                   ),
                 ),
-
                 SizedBox(height: 12),
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 20),
@@ -171,7 +195,6 @@ class _ActivityCreatePageState extends State<ActivityCreatePage> {
                       InputDecoration(labelText: 'Activity Description'),
                   maxLines: 2,
                 ),
-                
                 SizedBox(height: 12),
                 Container(
                   padding: EdgeInsets.all(8.0),
@@ -182,55 +205,52 @@ class _ActivityCreatePageState extends State<ActivityCreatePage> {
                     border: Border.all(
                       color: Colors.grey.shade300,
                       width: 1.0,
-                    ),   
+                    ),
                   ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text('Challenges:', style: TextStyle(fontSize: 16)),
-                      for (dynamic challenge in widget.challenges)
-                        CheckboxListTile(
-                          title: Text(challenge["name"]),
-                          value: _chosenChallenges
-                              .contains(challenge["id"].toString()),
-                          onChanged: (bool? value) {
-                            setState(() {
-                              if (value!) {
-                                _chosenChallenges
-                                    .add(challenge["id"].toString());
-                              } else {
-                                _chosenChallenges
-                                    .remove(challenge["id"].toString());
-                              }
-                            });
-                          },
-                        ),
-                    ]),
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text('Challenges:', style: TextStyle(fontSize: 16)),
+                        for (Challenge challenge in _challenges)
+                          CheckboxListTile(
+                            title: Text(challenge.name),
+                            value: _chosenChallenges.contains(challenge.id),
+                            onChanged: (bool? value) {
+                              setState(() {
+                                if (value!) {
+                                  _chosenChallenges.add(challenge.id);
+                                } else {
+                                  _chosenChallenges.remove(challenge.id);
+                                }
+                              });
+                            },
+                          ),
+                      ]),
                 ),
-                
                 const SizedBox(height: 16.0),
                 const Text(
                   'Skill Level:',
                   style: TextStyle(fontSize: 16),
                 ),
                 SkillLevelSlider(
-                    initialSkillLevel: _skillLevel,
-                    onSkillLevelChanged: (newLevel) {
-                      setState(() {
-                        _skillLevel = newLevel;
-                      });
-                    },
-                  ),
+                  initialSkillLevel: _skillLevel,
+                  onSkillLevelChanged: (newLevel) {
+                    setState(() {
+                      _skillLevel = newLevel;
+                    });
+                  },
+                ),
                 const SizedBox(height: 20.0),
-                
                 Center(
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _createActivity();
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF9B40BF),
                       padding: const EdgeInsets.symmetric(
                           vertical: 16, horizontal: 26),
-                    ), // Has no functionality right now because we do not have any Activity-page right now.
+                    ),
                     child: const Text(
                       'Create activity',
                       style: TextStyle(
@@ -245,7 +265,6 @@ class _ActivityCreatePageState extends State<ActivityCreatePage> {
           ),
         ),
       ),
-      
       bottomNavigationBar: buildBottomNavigationBar(
         context: context,
       ),
