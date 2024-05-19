@@ -198,13 +198,13 @@ class ActivityBase(BaseModel):
 
 
 class ActivityCreate(ActivityBase):
-    pass
+    challenges: List[int] = []
 
 
 class ActivityPayload(ActivityBase):
     group_id: int
     owner_id: str
-    challenges: Optional[List[Challenge]] = None
+    challenges: Optional[List[int]] = []
 
 
 class Activity(ActivityBase):
@@ -227,7 +227,7 @@ class ActivityUpdate(BaseModel):
     scheduled_date: Optional[str] = None
     difficulty_code: Optional[int] = None
     is_completed: Optional[bool] = None
-    challenges: Optional[List[Challenge]] = None
+    challenges: Optional[List[int]] = None
     latitude: Optional[float] = None
     longitude: Optional[float] = None
     address: Optional[str] = None
