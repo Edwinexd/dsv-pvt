@@ -469,7 +469,8 @@ class _GroupPageState extends State<GroupPage> {
                           child: Text(
                               widget.group.isPrivate ? 'Private' : 'Public'),
                         ),
-                        ElevatedButton(
+                        // TOOD: We don't have skill level in the group model
+                        /*ElevatedButton(
                           onPressed: () {
                           },
                           style: ElevatedButton.styleFrom(
@@ -477,7 +478,7 @@ class _GroupPageState extends State<GroupPage> {
                           ),
                           child:
                               Text('Beginner' /*${widget.group.skillLevel}*/),
-                        ),
+                        ),*/
                         ElevatedButton(
                           onPressed: () {
                             
@@ -485,7 +486,9 @@ class _GroupPageState extends State<GroupPage> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFFFEC0AD),
                           ),
-                          child: Text('Kista' /*${widget.group.location}*/),
+                          child: Text(widget.group.address != null
+                              ? widget.group.address!
+                              : 'Online'),
                         ),
                       ],
                     ),
