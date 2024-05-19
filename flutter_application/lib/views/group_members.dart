@@ -4,6 +4,7 @@ import 'package:flutter_application/bars.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/models/user.dart';
+import 'package:flutter_application/profile_page.dart';
 
 class GroupMembersPage extends StatefulWidget {
   final Group group;
@@ -81,10 +82,13 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
                   ),
                   child: ListTile(
                     leading: const CircleAvatar(
-                      //placeholder for users profile picture
+                      // TODO: We can't feasibly get every users profile image as their avatar is in the profile obj and not user
                       child: Icon(Icons.person),
                     ),
                     title: Text(member.fullName),
+                    onTap: () => {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(userId: member.id)))
+                    },
                   ),
                 );
               },

@@ -37,17 +37,23 @@ class _GroupPageState extends State<GroupPage> {
   int skip = 0; // TODO: Pagination?
   int limit = 100; // TODO: Pagination?
 
+  Future<void> _fetchData() async {
+    await fetchMyGroups();
+    await fetchMembers();
+    if (!widget.isMember) {
+      return;
+    }
+    await fetchAllActivities();
+    await fetchJoinedActivities();
+    setState(() {
+      displayedMembers = allMembers;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    unawaited(fetchAllActivities());
-    unawaited(fetchJoinedActivities());
-    unawaited(fetchMyGroups());
-    unawaited(fetchMembers().then((_) {
-      setState(() {
-        displayedMembers = allMembers;
-      });
-    }));
+    unawaited(_fetchData());
     
     //added listener to search text field
     searchController.addListener(_searchMembers);
@@ -510,7 +516,7 @@ class _GroupPageState extends State<GroupPage> {
             ),
 
             SizedBox(height: 12),
-            SizedBox(
+            !widget.group.isPrivate ? SizedBox(
               height: 40,
               width: double.infinity,
               child: ElevatedButton(
@@ -525,7 +531,7 @@ class _GroupPageState extends State<GroupPage> {
                   ),
                 ),
               ),
-            ),
+            ) : const SizedBox(),
           ],
         ],
       ),
