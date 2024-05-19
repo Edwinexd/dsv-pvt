@@ -516,7 +516,7 @@ class _GroupPageState extends State<GroupPage> {
             ),
 
             SizedBox(height: 12),
-            SizedBox(
+            !widget.group.isPrivate ? SizedBox(
               height: 40,
               width: double.infinity,
               child: ElevatedButton(
@@ -531,7 +531,7 @@ class _GroupPageState extends State<GroupPage> {
                   ),
                 ),
               ),
-            ),
+            ) : const SizedBox(),
           ],
         ],
       ),
