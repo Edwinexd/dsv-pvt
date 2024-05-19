@@ -10,6 +10,7 @@ import 'package:flutter_application/models/activity.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/models/user.dart';
 import 'package:flutter_application/background_for_pages.dart';
+import 'package:flutter_application/views/activity_page.dart';
 import 'package:flutter_application/views/group_members.dart';
 import 'package:flutter_application/views/my_groups.dart';
 
@@ -291,12 +292,12 @@ class _GroupPageState extends State<GroupPage> {
                             ),
                             TextButton(
                               onPressed: () {
-                                // Navigator.push(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (context) => ActvityPage(activity: activity),
-                                //   ),
-                                // );
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ActivityPage(groupId: widget.group.id, activityId: activity.id),
+                                  ),
+                                );
                               },
                               style: TextButton.styleFrom(
                                 backgroundColor: Colors.white,
