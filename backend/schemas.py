@@ -195,7 +195,6 @@ class ActivityBase(BaseModel):
     activity_name: str
     scheduled_date: datetime
     difficulty_code: int
-    challenges: List[Challenge]
     latitude: float
     longitude: float
     address: str
@@ -217,6 +216,7 @@ class Activity(ActivityBase):
     group_id: int
     owner_id: str
     image_id: Optional[str]
+    challenges: List[Challenge]
 
     class Config:
         from_attributes = True
