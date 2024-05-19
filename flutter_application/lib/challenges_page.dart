@@ -34,11 +34,18 @@ class ChallengesPage extends StatefulWidget {
 }
 
 class _ChallengesPageState extends State<ChallengesPage> {
-  bool _isSecondContainerVisible = false;
+  bool _isGroupActivitiesVisible = false;
+  bool _isDuringTheRaceVisible = false;
 
-  void _toggleContainerVisibility() {
+  void _toggleGroupActivitiesVisibility() {
     setState(() {
-      _isSecondContainerVisible = !_isSecondContainerVisible;
+      _isGroupActivitiesVisible = !_isGroupActivitiesVisible;
+    });
+  }
+
+  void _toggleDuringTheRaceVisibility() {
+    setState(() {
+      _isDuringTheRaceVisible = !_isDuringTheRaceVisible;
     });
   }
 
@@ -56,8 +63,7 @@ class _ChallengesPageState extends State<ChallengesPage> {
           Align(
             alignment: Alignment.topCenter,
             child: Container(
-              width: MediaQuery.of(context).size.width -
-                  60, // Adjust the width here
+              width: MediaQuery.of(context).size.width - 60, // Adjust the width here
               child: WhiteRectangle(
                 child: Padding(
                   padding: EdgeInsets.all(16.0),
@@ -99,7 +105,7 @@ class _ChallengesPageState extends State<ChallengesPage> {
                         ),
                       ),
                       const Text(
-                        'and gain an achivment',
+                        'and gain an achievement',
                         style: TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 14,
@@ -110,11 +116,10 @@ class _ChallengesPageState extends State<ChallengesPage> {
                       ),
                       SizedBox(height: 20), // Space before the first container
                       GestureDetector(
-                        onTap: _toggleContainerVisibility,
+                        onTap: _toggleGroupActivitiesVisibility,
                         child: Container(
                           height: 35,
-                          margin: EdgeInsets.symmetric(
-                              horizontal: 20), // 20px padding from the sides
+                          margin: EdgeInsets.symmetric(horizontal: 20), // 20px padding from the sides
                           decoration: ShapeDecoration(
                             color: Color(0xFFFE9E2C),
                             shape: RoundedRectangleBorder(
@@ -136,7 +141,7 @@ class _ChallengesPageState extends State<ChallengesPage> {
                               ),
                               Spacer(), // Adds space to push the text to the center
                               Icon(
-                                _isSecondContainerVisible
+                                _isGroupActivitiesVisible
                                     ? Icons.keyboard_arrow_up
                                     : Icons.keyboard_arrow_down,
                                 color: Colors.white,
@@ -145,11 +150,58 @@ class _ChallengesPageState extends State<ChallengesPage> {
                           ),
                         ),
                       ),
-                      if (_isSecondContainerVisible) ...[
+                      if (_isGroupActivitiesVisible) ...[
                         Container(
                           height: 263,
-                          margin: EdgeInsets.symmetric(
-                              horizontal: 20), // 20px padding from the sides
+                          margin: EdgeInsets.symmetric(horizontal: 20), // 20px padding from the sides
+                          decoration: ShapeDecoration(
+                            color: Color(0xFFFFD5A3),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                          ),
+                        ),
+                      ],
+                      SizedBox(height: 20), // Space before the second container
+                      GestureDetector(
+                        onTap: _toggleDuringTheRaceVisibility,
+                        child: Container(
+                          height: 35,
+                          margin: EdgeInsets.symmetric(horizontal: 20), // 20px padding from the sides
+                          decoration: ShapeDecoration(
+                            color: Color(0xFFFE9E2C),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Spacer(), // Adds space to push the text to the center
+                              const Text(
+                                'During race',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Spacer(), // Adds space to push the text to the center
+                              Icon(
+                                _isDuringTheRaceVisible
+                                    ? Icons.keyboard_arrow_up
+                                    : Icons.keyboard_arrow_down,
+                                color: Colors.white,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (_isDuringTheRaceVisible) ...[
+                        Container(
+                          height: 263,
+                          margin: EdgeInsets.symmetric(horizontal: 20), // 20px padding from the sides
                           decoration: ShapeDecoration(
                             color: Color(0xFFFFD5A3),
                             shape: RoundedRectangleBorder(
