@@ -1,16 +1,13 @@
-
-// Stateful widget that injects a completed activity page or upcoming activity page depending on the activity status
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
-import 'package:flutter_application/bars.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/activity.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/models/user.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ActivityPage extends StatefulWidget {
   final int groupId;
@@ -33,33 +30,100 @@ class _ActivityPageState extends State<ActivityPage> {
   @override
   void initState() {
     super.initState();
-    unawaited(BackendService().getActivity(widget.groupId, widget.activityId).then((activity) {
-      setState(() {
-        this.activity = activity;
-      });
-    }));
-    unawaited(BackendService().getGroup(widget.groupId).then((group) {
-      setState(() {
-        this.group = group;
-      });
-      if (group.imageId != null) {
-        unawaited(BackendService().getImage(group.imageId!).then((image) {
-          setState(() {
-            this.groupImage = image;
-          });
-        }));
-      }
-    }));
-    unawaited(BackendService().getActivityParticipants(widget.groupId, widget.activityId, 0, 250).then((participants) {
-      setState(() {
-        this.participants = participants;
-      });
-    }));
-    unawaited(BackendService().getMe().then((user) {
-      setState(() {
-        this.user = user;
-      });
-    }));
+    unawaited(_loadData());
+  }
+
+  Future<void> _loadData() async {
+    final activity = await BackendService().getActivity(widget.groupId, widget.activityId);
+    final group = await BackendService().getGroup(widget.groupId);
+    final participants = await BackendService().getActivityParticipants(widget.groupId, widget.activityId, 0, 250);
+    final user = await BackendService().getMe();
+
+    ImageProvider? groupImage;
+    if (group.imageId != null) {
+      groupImage = await BackendService().getImage(group.imageId!);
+    }
+
+    setState(() {
+      this.activity = activity;
+      this.group = group;
+      this.participants = participants;
+      this.user = user;
+      this.groupImage = groupImage;
+    });
+  }
+
+
+  Widget _buildActionButton(String text, Color color, VoidCallback? onPressed, IconData? icon) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) Icon(icon, size: 20),
+          if (icon != null) SizedBox(width: 8), // Spacing between icon and text
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 18,
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _getActionButton() {
+    if (activity == null || group == null || participants == null || user == null) {
+      return SizedBox.shrink();
+    }
+
+    // if activity owner_id is the same as the user id
+    if (!activity!.isCompleted && activity!.ownerId == user!.id) {
+      // User is able to complete the activity
+      return _buildActionButton('Complete activity', Colors.orange, () async {
+        await BackendService().updateActivity(group!.id, activity!.id, isCompleted: true);
+        // reload data
+        await _loadData();
+      }, Icons.check);
+    }
+    if (activity!.isCompleted && !participants!.any((participant) => participant.id == user!.id)) {
+      // Activity is completed
+      return _buildActionButton('Activity Completed', Colors.grey, null, Icons.done);
+    }
+    if (activity!.isCompleted && participants!.any((participant) => participant.id == user!.id)) {
+      // Activity is completed and user had joined it (share button)
+      return _buildActionButton('Share Completion', Colors.blue, () async {
+        XFile shareImage = await BackendService().getActivityShareImage(user!.id, activity!.id, group!.id);
+        Share.shareXFiles([shareImage]);
+      }, Icons.share);
+    }
+    if (!activity!.isCompleted && !participants!.any((participant) => participant.id == user!.id)) {
+      // Activity isn't completed and the user hasn't joined (join button)
+      return _buildActionButton('Join Activity', Colors.green, () async {
+        await BackendService().joinActivity(group!.id, activity!.id, user!.id);
+        // reload data
+        await _loadData();
+      }, Icons.add);
+    }
+    if (!activity!.isCompleted && participants!.any((participant) => participant.id == user!.id)) {
+      // Activity isn't completed and the user has joined (leave button)
+      return _buildActionButton('Leave Activity', Colors.red, () async {
+        await BackendService().leaveActivity(group!.id, activity!.id, user!.id);
+        // reload data
+        await _loadData();
+      }, Icons.remove);
+    }
+    return SizedBox.shrink();
   }
 
   @override
@@ -75,7 +139,9 @@ class _ActivityPageState extends State<ActivityPage> {
       );
     }
 
-   return Scaffold(
+    Widget? actionButton = _getActionButton();
+  
+    return Scaffold(
       appBar: AppBar(
         title: Text('Activity'),
         leading: IconButton(
@@ -227,26 +293,7 @@ class _ActivityPageState extends State<ActivityPage> {
                   ),
                 ),
                 SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    // Handle complete activity
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
-                  ),
-                  child: Text(
-                    'Complete activity',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
+                actionButton,
               ],
             ),
           ),
