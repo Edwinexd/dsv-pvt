@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
-import 'bars.dart'; // Import bars.dart
+import 'bars.dart'; 
 
 class WhiteRectangle extends StatelessWidget {
   final Widget child;
@@ -10,7 +10,7 @@ class WhiteRectangle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.fromLTRB(30, 30, 30, 30), // Adjust the margin here
+      margin: EdgeInsets.fromLTRB(30, 30, 30, 30), 
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(5),
@@ -34,8 +34,40 @@ class ChallengesPage extends StatefulWidget {
 }
 
 class _ChallengesPageState extends State<ChallengesPage> {
-  bool _isGroupActivitiesVisible = false;
+  bool _isGroupActivitiesVisible = true;
   bool _isDuringTheRaceVisible = false;
+
+  // The list of group activities can be replaced with the actual data
+  final List<Map<String, String>> groupActivities = [
+    {
+      'title': 'Activity 1',
+      'description': 'Description for Activity 1',
+    },
+    {
+      'title': 'Activity 2',
+      'description': 'Description for Activity 2',
+    },
+    {
+      'title': 'Activity 3',
+      'description': 'Description for Activity 3',
+    },
+    {
+      'title': 'Activity 2',
+      'description': 'Description for Activity 2',
+    },
+    {
+      'title': 'Activity 2',
+      'description': 'Description for Activity 2',
+    },
+    {
+      'title': 'Activity 2',
+      'description': 'Description for Activity 2',
+    },
+    {
+      'title': 'Activity 2',
+      'description': 'Description for Activity 2',
+    },
+  ];
 
   void _toggleGroupActivitiesVisibility() {
     setState(() {
@@ -63,154 +95,186 @@ class _ChallengesPageState extends State<ChallengesPage> {
           Align(
             alignment: Alignment.topCenter,
             child: Container(
-              width: MediaQuery.of(context).size.width - 60, // Adjust the width here
+              width: MediaQuery.of(context).size.width - 60,
               child: WhiteRectangle(
                 child: Padding(
                   padding: EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.all(10.0), // Add 10px padding
-                        child: Text(
-                          'Challenges',
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.all(10.0), 
+                          child: Text(
+                            'Challenges',
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xff8134ce),
+                              fontFamily: 'Inter',
+                              height: 0.04,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 20), 
+                        const Text(
+                          'complete challenges with a group',
                           style: TextStyle(
-                            fontSize: 32,
                             fontWeight: FontWeight.w700,
+                            fontSize: 14,
                             color: Color(0xff8134ce),
-                            fontFamily: 'Inter',
-                            height: 0.04,
+                            fontFamily: 'Poppins',
+                            height: 0,
                           ),
                         ),
-                      ),
-                      SizedBox(height: 20), // Add more space
-                      const Text(
-                        'complete challenges with a group',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                          color: Color(0xff8134ce),
-                          fontFamily: 'Poppins',
-                          height: 0,
+                        const Text(
+                          'during an activity to collect points',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            color: Color(0xff8134ce),
+                            fontFamily: 'Poppins',
+                            height: 0,
+                          ),
                         ),
-                      ),
-                      const Text(
-                        'during an activity to collect points',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                          color: Color(0xff8134ce),
-                          fontFamily: 'Poppins',
-                          height: 0,
+                        const Text(
+                          'and gain an achievement',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            color: Color(0xff8134ce),
+                            fontFamily: 'Poppins',
+                            height: 0,
+                          ),
                         ),
-                      ),
-                      const Text(
-                        'and gain an achievement',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                          color: Color(0xff8134ce),
-                          fontFamily: 'Poppins',
-                          height: 0,
-                        ),
-                      ),
-                      SizedBox(height: 20), // Space before the first container
-                      GestureDetector(
-                        onTap: _toggleGroupActivitiesVisibility,
-                        child: Container(
-                          height: 35,
-                          margin: EdgeInsets.symmetric(horizontal: 20), // 20px padding from the sides
-                          decoration: ShapeDecoration(
-                            color: Color(0xFFFE9E2C),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
+                        SizedBox(height: 30), 
+                        GestureDetector(
+                          onTap: _toggleGroupActivitiesVisibility,
+                          child: Container(
+                            height: 35,
+                            margin: EdgeInsets.symmetric(horizontal: 20), 
+                            decoration: ShapeDecoration(
+                              color: Color(0xFFFE9E2C),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
                             ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Spacer(), // Adds space to push the text to the center
-                              const Text(
-                                'Group activities',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 14,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Spacer(), 
+                                const Text(
+                                  'Group activities',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Spacer(), 
+                                Icon(
+                                  _isGroupActivitiesVisible
+                                      ? Icons.keyboard_arrow_up
+                                      : Icons.keyboard_arrow_down,
                                   color: Colors.white,
                                 ),
-                              ),
-                              Spacer(), // Adds space to push the text to the center
-                              Icon(
-                                _isGroupActivitiesVisible
-                                    ? Icons.keyboard_arrow_up
-                                    : Icons.keyboard_arrow_down,
-                                color: Colors.white,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      if (_isGroupActivitiesVisible) ...[
-                        Container(
-                          height: 263,
-                          margin: EdgeInsets.symmetric(horizontal: 20), // 20px padding from the sides
-                          decoration: ShapeDecoration(
-                            color: Color(0xFFFFD5A3),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
+                              ],
                             ),
                           ),
                         ),
-                      ],
-                      SizedBox(height: 20), // Space before the second container
-                      GestureDetector(
-                        onTap: _toggleDuringTheRaceVisibility,
-                        child: Container(
-                          height: 35,
-                          margin: EdgeInsets.symmetric(horizontal: 20), // 20px padding from the sides
-                          decoration: ShapeDecoration(
-                            color: Color(0xFFFE9E2C),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
+                        if (_isGroupActivitiesVisible) ...[
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 0), 
+                            decoration: ShapeDecoration(
+                              color: Color(0xFFFFD5A3),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                            ),
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: groupActivities.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        groupActivities[index]['title']!,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 16,
+                                          color: Color(0xff161499),
+                                        ),
+                                      ),
+                                      SizedBox(height: 5),
+                                      Text(
+                                        groupActivities[index]['description']!,
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Color(0xff161499),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
                             ),
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Spacer(), // Adds space to push the text to the center
-                              const Text(
-                                'During race',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 14,
+                        ],
+                        SizedBox(height: 30), 
+                        GestureDetector(
+                          onTap: _toggleDuringTheRaceVisibility,
+                          child: Container(
+                            height: 35,
+                            margin: EdgeInsets.symmetric(horizontal: 20),
+                            decoration: ShapeDecoration(
+                              color: Color(0xFFFE9E2C),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Spacer(), 
+                                const Text(
+                                  'During the race',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Spacer(), 
+                                Icon(
+                                  _isDuringTheRaceVisible
+                                      ? Icons.keyboard_arrow_up
+                                      : Icons.keyboard_arrow_down,
                                   color: Colors.white,
                                 ),
-                              ),
-                              Spacer(), // Adds space to push the text to the center
-                              Icon(
-                                _isDuringTheRaceVisible
-                                    ? Icons.keyboard_arrow_up
-                                    : Icons.keyboard_arrow_down,
-                                color: Colors.white,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      if (_isDuringTheRaceVisible) ...[
-                        Container(
-                          height: 263,
-                          margin: EdgeInsets.symmetric(horizontal: 20), // 20px padding from the sides
-                          decoration: ShapeDecoration(
-                            color: Color(0xFFFFD5A3),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
+                              ],
                             ),
                           ),
                         ),
+                        if (_isDuringTheRaceVisible) ...[
+                          Container(
+                            height: 263,
+                            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                            decoration: ShapeDecoration(
+                              color: Color(0xFFFFD5A3),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 ),
               ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
-import 'bars.dart'; // Import bars.dart
+import 'bars.dart';
 
 class FriendsPage extends StatefulWidget {
   const FriendsPage({super.key});
@@ -12,6 +12,7 @@ class FriendsPage extends StatefulWidget {
 class _FriendsPageState extends State<FriendsPage> {
   TextEditingController _searchController = TextEditingController();
   List<String> _filteredFriendsList = [];
+  final List<String> _friendsList = [];
 
   @override
   void initState() {
@@ -36,7 +37,6 @@ class _FriendsPageState extends State<FriendsPage> {
               children: [
                 const Text(
                   'Friends',
-                  /*Will be displayed total number of friends*/
                   style: TextStyle(fontSize: 20),
                 ),
                 SizedBox(height: 20),
@@ -67,7 +67,6 @@ class _FriendsPageState extends State<FriendsPage> {
                   ),
                   child: ListTile(
                     leading: const CircleAvatar(
-                      //placeholder for users profile picture
                       child: Icon(Icons.person),
                     ),
                     title: Text(friend),
@@ -92,6 +91,3 @@ class _FriendsPageState extends State<FriendsPage> {
     });
   }
 }
-
-//Instance friends list
-final List<String> _friendsList = [];
