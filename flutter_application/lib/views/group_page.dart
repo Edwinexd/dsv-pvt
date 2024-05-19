@@ -37,17 +37,23 @@ class _GroupPageState extends State<GroupPage> {
   int skip = 0; // TODO: Pagination?
   int limit = 100; // TODO: Pagination?
 
+  Future<void> _fetchData() async {
+    await fetchMyGroups();
+    await fetchMembers();
+    if (!widget.isMember) {
+      return;
+    }
+    await fetchAllActivities();
+    await fetchJoinedActivities();
+    setState(() {
+      displayedMembers = allMembers;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    unawaited(fetchAllActivities());
-    unawaited(fetchJoinedActivities());
-    unawaited(fetchMyGroups());
-    unawaited(fetchMembers().then((_) {
-      setState(() {
-        displayedMembers = allMembers;
-      });
-    }));
+    unawaited(_fetchData());
     
     //added listener to search text field
     searchController.addListener(_searchMembers);
@@ -463,7 +469,8 @@ class _GroupPageState extends State<GroupPage> {
                           child: Text(
                               widget.group.isPrivate ? 'Private' : 'Public'),
                         ),
-                        ElevatedButton(
+                        // TOOD: We don't have skill level in the group model
+                        /*ElevatedButton(
                           onPressed: () {
                           },
                           style: ElevatedButton.styleFrom(
@@ -471,7 +478,7 @@ class _GroupPageState extends State<GroupPage> {
                           ),
                           child:
                               Text('Beginner' /*${widget.group.skillLevel}*/),
-                        ),
+                        ),*/
                         ElevatedButton(
                           onPressed: () {
                             
@@ -479,7 +486,9 @@ class _GroupPageState extends State<GroupPage> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFFFEC0AD),
                           ),
-                          child: Text('Kista' /*${widget.group.location}*/),
+                          child: Text(widget.group.address != null
+                              ? widget.group.address!
+                              : 'Online'),
                         ),
                       ],
                     ),
@@ -510,7 +519,7 @@ class _GroupPageState extends State<GroupPage> {
             ),
 
             SizedBox(height: 12),
-            SizedBox(
+            !widget.group.isPrivate ? SizedBox(
               height: 40,
               width: double.infinity,
               child: ElevatedButton(
@@ -525,7 +534,7 @@ class _GroupPageState extends State<GroupPage> {
                   ),
                 ),
               ),
-            ),
+            ) : const SizedBox(),
           ],
         ],
       ),

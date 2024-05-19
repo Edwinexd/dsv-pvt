@@ -110,7 +110,9 @@ def create_group(db_session: Session, group: schemas.GroupCreate):
         return None
     db_owner.owned_groups.append(db_group)
     db_owner.groups.append(db_group)
+    db_group.users.append(db_owner)  # Add owner as a member
     db_session.add(db_owner)
+    db_session.add(db_group)
     db_session.commit()
     db_session.refresh(db_owner)
     return db_group
@@ -327,8 +329,8 @@ def create_activity(db_session: Session, activity_payload: schemas.ActivityPaylo
     db_session.add(db_activity)
 
     if activity_payload.challenges is not None:
-        for c in activity_payload.challenges:
-            db_challenge = get_challenge(db_session, c.id)
+        for challenge in activity_payload.challenges:
+            db_challenge = get_challenge(db_session, challenge.id)
             if db_challenge is None:
                 continue
             db_activity.challenges.append(db_challenge)
