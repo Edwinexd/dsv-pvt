@@ -41,7 +41,8 @@ class _ProfilePageState extends State<ProfilePage> {
       this.user = userObj;
       this.profile = profile;
     });
-    ImageProvider image = await BackendService().getImage(profile.imageId ?? '404');
+    ImageProvider image =
+        await BackendService().getImage(profile.imageId ?? '404');
     setState(() {
       profileImage = image;
     });
@@ -75,23 +76,26 @@ class _ProfilePageState extends State<ProfilePage> {
           centerTitle: true,
           backgroundColor: Colors.transparent,
           elevation: 0,
-          actions: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.settings, color: Colors.white),
-              onPressed: () {
-                bool initialDarkMode = false;
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (context) => SettingsPage(
+          actions: me != null && user != null && me!.id == user!.id
+              ? <Widget>[
+                  IconButton(
+                    icon: const Icon(Icons.settings, color: Colors.white),
+                    onPressed: () {
+                      bool initialDarkMode = false;
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => SettingsPage(
                             onToggleDarkMode: (bool isDarkMode) {
                               print("Dark mode toggled: $isDarkMode");
                             },
                             initialDarkMode: initialDarkMode,
-                          )),
-                );
-              },
-            ),
-          ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ]
+              : null,
           iconTheme: const IconThemeData(color: Colors.white),
         ),
         body: Center(
@@ -105,17 +109,21 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 10),
                 profileImage == null
                     ? const CircularProgressIndicator()
-                    :
-                ProfileAvatar(
-                  image: profileImage!,
-                  iconButtonConfig: me != null && user != null && me!.id == user!.id ? IconButtonConfig(
-                    icon: Icons.edit,
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => EditProfilePage(initialProfile: profile!)));
-                    },
-                  ) : null,
-                ),
+                    : ProfileAvatar(
+                        image: profileImage!,
+                        iconButtonConfig: me != null &&
+                                user != null &&
+                                me!.id == user!.id
+                            ? IconButtonConfig(
+                                icon: Icons.edit,
+                                onPressed: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => EditProfilePage(
+                                          initialProfile: profile!)));
+                                },
+                              )
+                            : null,
+                      ),
                 const SizedBox(height: 10),
                 Text(user!.fullName, style: const TextStyle(fontSize: 20)),
                 Text(
@@ -123,7 +131,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     style: const TextStyle(fontSize: 16)),
                 const SizedBox(height: 10),
                 // Interests, profile.interests is a json encoded array
-                Text('Interests: ${JsonDecoder().convert(profile!.interests).join(', ')}',
+                Text(
+                    'Interests: ${JsonDecoder().convert(profile!.interests).join(', ')}',
                     style: const TextStyle(fontSize: 16)),
                 // I'm sorry UX / Edwin
                 profile!.runnerId != null
@@ -131,16 +140,18 @@ class _ProfilePageState extends State<ProfilePage> {
                         padding: const EdgeInsets.all(10),
                         margin: const EdgeInsets.only(bottom: 10),
                         width: 300,
-                        height: 40,
+                        height: 45,
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
                             colors: [Colors.blue, Colors.green],
                           ),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Text(
-                          'Midnattsloppet Runner',
-                          style: TextStyle(fontSize: 18),
+                        child: const Center(
+                          child: Text(
+                            'Midnattsloppet Runner',
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                          ),
                         ),
                       )
                     : const SizedBox.shrink(),
