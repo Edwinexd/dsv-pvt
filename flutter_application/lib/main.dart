@@ -1,14 +1,6 @@
-import 'package:flutter_application/activity_create.dart';
-import 'package:flutter_application/bars.dart';
-import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/launch_injector.dart';
-import 'package:flutter_application/my_achievements.dart';
-import 'package:flutter_application/settings.dart';
-import 'package:flutter_application/views/my_groups.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
-import 'profile_page.dart';
-import 'package:flutter_application/views/login_page.dart';
 import 'package:flutter_application/home_page.dart';
 
 void main() async {
@@ -68,7 +60,6 @@ class MainPage extends StatefulWidget {
 
 class MainPageState extends State<MainPage> {
   int selectedIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
