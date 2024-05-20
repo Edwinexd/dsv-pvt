@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
+import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/views/generic_info_page.dart';
+import 'package:flutter_application/views/login_page.dart';
 
 class SettingsPage extends StatefulWidget {
   final ValueChanged<bool> onToggleDarkMode;
@@ -23,6 +25,13 @@ class _SettingsPageState extends State<SettingsPage> {
   void initState() {
     super.initState();
     darkModeEnabled = widget.initialDarkMode;
+  }
+
+  Future<void> signOut() async {
+    await BackendService().signOut();
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => LoginPage(darkModeEnabled: darkModeEnabled, onToggleDarkMode: widget.onToggleDarkMode)),
+    );
   }
 
   @override
@@ -113,6 +122,18 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 );
               },
+            ),
+            const SizedBox(height: 10),
+            ListTile(
+              title: const Center(
+                child: Text(
+                  'SIGN OUT',
+                  style: TextStyle(
+                    //fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              onTap: signOut,
             ),
           ],
         ),

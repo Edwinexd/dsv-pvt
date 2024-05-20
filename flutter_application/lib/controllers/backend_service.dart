@@ -576,4 +576,6 @@ class BackendService {
     String fileExtension = mimeType.split('/').last;
     return XFile.fromData(Uint8List.fromList(response.data), mimeType: mimeType, name: 'activity_share.$fileExtension');
   }
+
+  signOut() {}
 }
