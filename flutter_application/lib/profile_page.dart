@@ -31,20 +31,28 @@ class _ProfilePageState extends State<ProfilePage> {
   User? me;
   Profile? profile;
   ImageProvider? profileImage;
+  bool _isPrivateProfile = false;
 
   Future<void> _fetchProfile() async {
-    final meObj = await BackendService().getMe();
-    final userObj = await BackendService().getUser(widget.userId ?? meObj.id);
-    final profile = await BackendService().getProfile(userObj.id);
-    setState(() {
-      this.me = meObj;
-      this.user = userObj;
-      this.profile = profile;
-    });
-    ImageProvider image = await BackendService().getImage(profile.imageId ?? '404');
-    setState(() {
-      profileImage = image;
-    });
+    try {
+      final meObj = await BackendService().getMe();
+      final userObj = await BackendService().getUser(widget.userId ?? meObj.id);
+      final profile = await BackendService().getProfile(userObj.id);
+      setState(() {
+        this.me = meObj;
+        this.user = userObj;
+        this.profile = profile;
+      });
+      ImageProvider image =
+          await BackendService().getImage(profile.imageId ?? '404');
+      setState(() {
+        profileImage = image;
+      });
+    } catch (e) {
+      setState(() {
+        _isPrivateProfile = true;
+      });
+    }
   }
 
   @override
@@ -55,6 +63,30 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isPrivateProfile) {
+      return DefaultBackground(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            title: const Text('Profile Page', style: TextStyle(color: Colors.white)),
+            centerTitle: true,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+          ),
+          body: Center(
+            child: Text(
+              'This profile is private',
+              style: TextStyle(fontSize: 26),
+            ),
+          ),
+        ),
+      );
+    }
+
     if (user == null || profile == null) {
       return DefaultBackground(
         child: Scaffold(
@@ -70,28 +102,34 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title:
-              const Text('Profile Page', style: TextStyle(color: Colors.white)),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          title: const Text('Profile Page', style: TextStyle(color: Colors.white)),
           centerTitle: true,
           backgroundColor: Colors.transparent,
           elevation: 0,
-          actions: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.settings, color: Colors.white),
-              onPressed: () {
-                bool initialDarkMode = false;
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (context) => SettingsPage(
+          actions: me != null && user != null && me!.id == user!.id
+              ? <Widget>[
+                  IconButton(
+                    icon: const Icon(Icons.settings, color: Colors.white),
+                    onPressed: () {
+                      bool initialDarkMode = false;
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => SettingsPage(
                             onToggleDarkMode: (bool isDarkMode) {
                               print("Dark mode toggled: $isDarkMode");
                             },
                             initialDarkMode: initialDarkMode,
-                          )),
-                );
-              },
-            ),
-          ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ]
+              : null,
           iconTheme: const IconThemeData(color: Colors.white),
         ),
         body: Center(
@@ -105,17 +143,21 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 10),
                 profileImage == null
                     ? const CircularProgressIndicator()
-                    :
-                ProfileAvatar(
-                  image: profileImage!,
-                  iconButtonConfig: me != null && user != null && me!.id == user!.id ? IconButtonConfig(
-                    icon: Icons.edit,
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => EditProfilePage(initialProfile: profile!)));
-                    },
-                  ) : null,
-                ),
+                    : ProfileAvatar(
+                        image: profileImage!,
+                        iconButtonConfig: me != null &&
+                                user != null &&
+                                me!.id == user!.id
+                            ? IconButtonConfig(
+                                icon: Icons.edit,
+                                onPressed: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => EditProfilePage(
+                                          initialProfile: profile!)));
+                                },
+                              )
+                            : null,
+                      ),
                 const SizedBox(height: 10),
                 Text(user!.fullName, style: const TextStyle(fontSize: 20)),
                 Text(
@@ -123,7 +165,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     style: const TextStyle(fontSize: 16)),
                 const SizedBox(height: 10),
                 // Interests, profile.interests is a json encoded array
-                Text('Interests: ${JsonDecoder().convert(profile!.interests).join(', ')}',
+                Text(
+                    'Interests: ${JsonDecoder().convert(profile!.interests).join(', ')}',
                     style: const TextStyle(fontSize: 16)),
                 // I'm sorry UX / Edwin
                 profile!.runnerId != null
@@ -131,16 +174,18 @@ class _ProfilePageState extends State<ProfilePage> {
                         padding: const EdgeInsets.all(10),
                         margin: const EdgeInsets.only(bottom: 10),
                         width: 300,
-                        height: 40,
+                        height: 45,
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
                             colors: [Colors.blue, Colors.green],
                           ),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Text(
-                          'Midnattsloppet Runner',
-                          style: TextStyle(fontSize: 18),
+                        child: const Center(
+                          child: Text(
+                            'Midnattsloppet Runner',
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                          ),
                         ),
                       )
                     : const SizedBox.shrink(),
