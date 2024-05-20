@@ -33,38 +33,38 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: buildAppBar(
+      appBar: buildAppBar(
         title: 'Lace up & lead the way',
         context: context,
         showBackButton: false,
       ),
       body: DefaultBackground(
-      child: Align(
-        alignment: Alignment.topCenter,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              CustomPaint(
-                painter: SemicirclesPainter(),
-                child: Column(
-                  children: [
-                    CountdownWidget(),
-                    SignupButton(),
-                  ],
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                CustomPaint(
+                  painter: SemicirclesPainter(),
+                  child: Column(
+                    children: [
+                      CountdownWidget(),
+                      SignupButton(),
+                    ],
+                  ),
                 ),
-              ),
-              ActivityButton(),
-              ChallengesButton(),
-              Leaderboard(
-                leaderboardEntries: _leaderboardGroups,
-              ),
-            ],
+                ActivityButton(),
+                ChallengesButton(),
+                Leaderboard(
+                  leaderboardEntries: _leaderboardGroups,
+                ),
+              ],
+            ),
           ),
         ),
       ),
-    ),
-     bottomNavigationBar: buildBottomNavigationBar(
+      bottomNavigationBar: buildBottomNavigationBar(
         context: context,
       ),
     );
@@ -276,51 +276,57 @@ class Leaderboard extends StatelessWidget {
       }
     }
 
-return Container(
-  width: 327,
-  height: 370,
-  padding: const EdgeInsets.all(10),
-  child: Stack(
-    children: [
-      if (showMoreButton)
-        Positioned(
-          bottom: -20,
-          left: 0,
-          right: 0,
-          child: Center(
-            child: Container(
-              margin: EdgeInsets.all(20),
-              child: Container( 
-                padding: EdgeInsets.all(15), 
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20), 
-                ),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFF344F7),
-                    padding: const EdgeInsets.symmetric(horizontal: 90, vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LeaderboardPage()),
-                    );
-                  },
-                  child: const Text(
-                    'More',
-                    style: TextStyle(
+    final maxPoints = leaderboardEntries.isNotEmpty
+        ? leaderboardEntries.map((group) => group.points).reduce(math.max)
+        : 1;
+    final maxHeight = 200.0; 
+
+    return Container(
+      width: 327,
+      height: 370,
+      padding: const EdgeInsets.all(15),
+      child: Stack(
+        children: [
+          if (showMoreButton)
+            Positioned(
+              bottom: -27, 
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Container(
+                  width: 327,
+                  margin: EdgeInsets.all(17),
+                  child: Container(
+                    padding: EdgeInsets.all(15),
+                    decoration: BoxDecoration(
                       color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFF344F7),
+                        padding: const EdgeInsets.symmetric(horizontal: 90, vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => LeaderboardPage()),
+                        );
+                      },
+                      child: const Text(
+                        'More',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ),
           const Positioned(
             top: -10,
             left: 0,
@@ -337,6 +343,7 @@ return Container(
             ),
           ),
           ...leaderboardEntries.asMap().entries.map((entry) {
+            final barHeight = (entry.value.points / maxPoints) * maxHeight;
             return Positioned(
               bottom: 50,
               left: (entry.key * 100).toDouble(),
@@ -361,36 +368,35 @@ return Container(
                   ),
                   if (showCrown && entry.key == highestScoreIndex)
                     Icon(Icons.rocket_launch, color: Colors.yellow, size: 24.0),
-                  Container(
-                    width: 100,
-                    height: entry.value.points * 2,
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Color(0xFF9087E5),
-                          Color(0xFFCDC9F3),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 5),
-                    decoration: BoxDecoration(
-                      color: Color(0xFF9087E5),
-                      borderRadius: BorderRadius.circular(9),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(5),
-                      child: Text(
-                        '${entry.value.points} points',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        width: 100,
+                        height: barHeight,
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Color(0xFF9087E5),
+                              Color(0xFFCDC9F3),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
+                      Positioned(
+                        bottom: (barHeight - 11) /
+                            2, // Adjust this value as needed
+                        child: Text(
+                          '${entry.value.points} points',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
