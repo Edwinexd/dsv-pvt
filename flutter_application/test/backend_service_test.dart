@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
+import 'package:flutter_application/models/role.dart';
 import 'package:flutter_application/models/user.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -143,7 +144,7 @@ void main() {
           throwsA(isA<DioException>()));
     });
 
-    test('getMe returns a User object on sucess', () async {
+    test('getMyUser returns a User object on sucess', () async {
       // Arrange
       const path = '/users/me';
       final mockResponse = {
@@ -168,6 +169,61 @@ void main() {
 
       // Assert
       expect(user, isA<User>());
+    });
+
+    test('getUser returns a User object on success', () async {
+      // Arrange
+      const userId = '123';
+      final mockResponse = {
+        "id": userId,
+        "email": "test@example.com",
+        "username": "testUser",
+        "full_name": "Test User",
+        "role": 2,
+        "date_created": "2024-05-20T14:53:01.955Z",
+      };
+
+      dioAdapter.onGet(
+        '/users/$userId',
+        (server) => server.reply(200, mockResponse),
+      );
+
+      // Act
+      final user = await backendService.getUser(userId);
+
+      // Assert
+      expect(user, isA<User>());
+      expect(user.id, equals(userId));
+      expect(user.email, equals("test@example.com"));
+      expect(user.userName, equals("testUser"));
+      expect(user.fullName, equals("Test User"));
+      expect(user.role, equals(Role.parse(2)));
+      expect(user.dateCreated, equals(DateTime.parse("2024-05-20T14:53:01.955Z")));
+    });
+
+    test('getUser throws a DioException on bad request', () async {
+      // Arrange
+      const userId = 'invalidId';
+      final errorResponse = {
+        "error": "User not found"
+      };
+
+      dioAdapter.onGet(
+        '/users/$userId',
+        (server) => server.reply(400, errorResponse),
+      );
+
+      // Act & Assert
+      try {
+        await backendService.getUser(userId);
+        fail("Expected a DioException to be thrown");
+      } catch (e) {
+        expect(e, isA<DioException>());
+        if (e is DioException) {
+          expect(e.response?.statusCode, 400);
+          expect(e.response?.data, errorResponse);
+        }
+      }
     });
   });
 }
