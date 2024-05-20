@@ -15,8 +15,11 @@ import 'package:flutter_application/settings.dart';
 import 'package:intl/intl.dart';
 
 class ProfilePage extends StatefulWidget {
+  final String? userId;
+
   const ProfilePage({
     Key? key,
+    this.userId,
   }) : super(key: key);
 
   @override
@@ -25,13 +28,16 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   User? user;
+  User? me;
   Profile? profile;
   ImageProvider? profileImage;
 
   Future<void> _fetchProfile() async {
-    final userObj = await BackendService().getMe();
+    final meObj = await BackendService().getMe();
+    final userObj = await BackendService().getUser(widget.userId ?? meObj.id);
     final profile = await BackendService().getProfile(userObj.id);
     setState(() {
+      this.me = meObj;
       this.user = userObj;
       this.profile = profile;
     });
@@ -102,13 +108,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     :
                 ProfileAvatar(
                   image: profileImage!,
-                  iconButtonConfig: IconButtonConfig(
+                  iconButtonConfig: me != null && user != null && me!.id == user!.id ? IconButtonConfig(
                     icon: Icons.edit,
                     onPressed: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => EditProfilePage(initialProfile: profile!,)));
+                          builder: (context) => EditProfilePage(initialProfile: profile!)));
                     },
-                  ),
+                  ) : null,
                 ),
                 const SizedBox(height: 10),
                 Text(user!.fullName, style: const TextStyle(fontSize: 20)),

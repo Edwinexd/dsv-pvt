@@ -1,46 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
-import 'package:flutter_application/bars.dart';
-import 'package:flutter_application/controllers/backend_service.dart';
-import 'package:flutter_application/models/group.dart';
-import 'package:flutter_application/models/user.dart';
-import 'package:flutter_application/profile_page.dart';
+import 'bars.dart';
 
-class GroupMembersPage extends StatefulWidget {
-  final Group group;
-  const GroupMembersPage({super.key, required this.group});
+class FriendsPage extends StatefulWidget {
+  const FriendsPage({super.key});
 
   @override
-  _GroupMembersPageState createState() => _GroupMembersPageState();
+  _FriendsPageState createState() => _FriendsPageState();
 }
 
-class _GroupMembersPageState extends State<GroupMembersPage> {
-  final TextEditingController _searchController = TextEditingController();
-  List<User> _membersList = [];
-  List<User> _filteredMembersList = [];
-
+class _FriendsPageState extends State<FriendsPage> {
+  TextEditingController _searchController = TextEditingController();
+  List<String> _filteredFriendsList = [];
+  final List<String> _friendsList = [];
 
   @override
   void initState() {
     super.initState();
-    _fetchMembers();
-  }
-
-  void _fetchMembers() async {
-    var members = await BackendService().getGroupMembers(widget.group.id);
-    setState(() {
-      _membersList = members;
-      _filteredMembersList = members;
-    });
+    _filteredFriendsList.addAll(_friendsList);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(
+        title: 'Friends',
         context: context,
-        showBackButton: true,
-        title: 'Members',
+        showBackButton: false,
       ),
       body: DefaultBackground(
         children: [
@@ -49,9 +35,8 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  widget.group.name,
-                  /*Will be displayed total number of members and max members*/
+                const Text(
+                  'Friends',
                   style: TextStyle(fontSize: 20),
                 ),
                 SizedBox(height: 20),
@@ -59,7 +44,7 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
                   controller: _searchController,
                   onChanged: _onSearchTextChanged,
                   decoration: const InputDecoration(
-                    labelText: 'Search members...',
+                    labelText: 'Search friends...',
                     suffixIcon: Icon(Icons.search),
                     border: OutlineInputBorder(),
                   ),
@@ -69,9 +54,9 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: _filteredMembersList.length,
+              itemCount: _filteredFriendsList.length,
               itemBuilder: (context, index) {
-                final member = _filteredMembersList[index];
+                final friend = _filteredFriendsList[index];
 
                 return Container(
                   margin: const EdgeInsets.symmetric(vertical: 2.0),
@@ -82,13 +67,9 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
                   ),
                   child: ListTile(
                     leading: const CircleAvatar(
-                      // TODO: We can't feasibly get every users profile image as their avatar is in the profile obj and not user
                       child: Icon(Icons.person),
                     ),
-                    title: Text(member.fullName),
-                    onTap: () => {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(userId: member.id)))
-                    },
+                    title: Text(friend),
                   ),
                 );
               },
@@ -104,8 +85,8 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
 
   void _onSearchTextChanged(String value) {
     setState(() {
-      _filteredMembersList = _membersList
-          .where((member) => member.fullName.toLowerCase().contains(value.toLowerCase()))
+      _filteredFriendsList = _friendsList
+          .where((friend) => friend.toLowerCase().contains(value.toLowerCase()))
           .toList();
     });
   }
