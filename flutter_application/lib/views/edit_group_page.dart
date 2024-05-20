@@ -167,6 +167,9 @@ class EditGroupPageState extends State<EditGroupPage> {
           ),
         ),
       ),
+      bottomNavigationBar: buildBottomNavigationBar(
+        context: context,
+      ),
     );
   }
 }
