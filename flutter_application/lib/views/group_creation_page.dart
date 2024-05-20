@@ -8,6 +8,7 @@ import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/views/group_page.dart';
 import 'package:flutter_application/components/skill_level_slider.dart';
 import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
+import 'package:image_picker/image_picker.dart';
 
 class GroupCreation extends StatefulWidget {
   final List<Function> onGroupCreatedCallBacks;
@@ -19,6 +20,8 @@ class GroupCreation extends StatefulWidget {
 }
 
 class GroupCreationState extends State<GroupCreation> {
+  ImageProvider groupImage = const AssetImage('lib/images/splash.png');
+  XFile? pickedImage;
   final _nameController = TextEditingController();
   final _locationController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -28,14 +31,56 @@ class GroupCreationState extends State<GroupCreation> {
   int _skillLevel = 0;
   bool _isGroupCreated = false;
   String _errorMessage = '';
+  Group? createdGroup;
 
-  List<String> skillLevels = [
-    'Beginner: 10 - 8 min/km',
-    'Intermediate: 8 - 6 min/km',
-    'Advanced: 6 - 5 min/km',
-    'Professional: 5 - 4 min/km',
-    'Elite: < 4 min/km'
-  ];
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final ImageSource? source = await showDialog<ImageSource?>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Choose Image Source'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                GestureDetector(
+                  child: const Text('Camera'),
+                  onTap: () {
+                    Navigator.of(context).pop(ImageSource.camera);
+                  },
+                ),
+                const SizedBox(height: 10),
+                GestureDetector(
+                  child: const Text('Gallery'),
+                  onTap: () {
+                    Navigator.of(context).pop(ImageSource.gallery);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    if (source == null) {
+      return;
+    }
+    final XFile? image = await picker.pickImage(
+      source: source,
+      requestFullMetadata: false,
+    );
+    if (image == null) {
+      return;
+    }
+
+    pickedImage = image;
+
+    ImageProvider temp = MemoryImage(await image.readAsBytes());
+    setState(() {
+      groupImage = temp;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +96,24 @@ class GroupCreationState extends State<GroupCreation> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              Center(
+                    child: GestureDetector(
+                      onTap: _pickImage,
+                      child: CircleAvatar(
+                        radius: 60,
+                        backgroundImage: groupImage,
+                        child: const Align(
+                          alignment: Alignment.bottomRight,
+                          child: CircleAvatar(
+                            backgroundColor: Colors.white,
+                            radius: 15,
+                            child: Icon(Icons.camera_alt,
+                                color: Colors.blue, size: 22),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(labelText: 'Group Name'),
@@ -140,6 +203,7 @@ class GroupCreationState extends State<GroupCreation> {
                     const InputDecoration(labelText: 'Group Description'),
                 maxLines: 3,
               ),
+
               const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: () {
@@ -154,7 +218,7 @@ class GroupCreationState extends State<GroupCreation> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => GroupPage(group:  Group(id: 15, name: _nameController.text, description: _descriptionController.text, isPrivate: _isPublic, ownerId: '3'), isMember: true),
+                        builder: (context) => GroupPage(group: createdGroup!, isMember: true),
 
                     ),
                     );
@@ -183,13 +247,13 @@ class GroupCreationState extends State<GroupCreation> {
 
     if (name.isEmpty || description.isEmpty) {
       setState(() {
-        _errorMessage = 'Group name can not be empty!';
+        _errorMessage = 'Group name or description can not be empty!';
       });
       return;
     }
 
     User me = await BackendService().getMe();
-    await BackendService().createGroup(name, description, _isPublic, me.id, _location?.latLong.latitude, _location?.latLong.longitude, _location?.address);
+    createdGroup = await BackendService().createGroup(name, description, _isPublic, me.id, _location?.latLong.latitude, _location?.latLong.longitude, _location?.address);
 
     widget.onGroupCreatedCallBacks.forEach((callback) {
       callback();

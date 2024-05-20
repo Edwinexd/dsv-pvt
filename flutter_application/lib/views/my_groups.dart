@@ -161,6 +161,10 @@ class _MyGroupsState extends State<MyGroups> {
                         borderRadius: BorderRadius.circular(18.0),
                       ),
                       child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: group.imageId != null ? NetworkImage('URL_TO_YOUR_IMAGE_API/${group.imageId}')
+                          : const AssetImage('lib/images/splash.png') as ImageProvider,
+                          ),
                         title: Text(group.name),
                         trailing: const Row(
                           mainAxisSize: MainAxisSize.min,

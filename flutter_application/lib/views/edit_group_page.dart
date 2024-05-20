@@ -1,3 +1,4 @@
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/bars.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/map_screen.dart';
 import 'package:flutter_application/components/skill_level_slider.dart';
 import 'package:flutter_application/views/group_page.dart';
+import 'package:image_picker/image_picker.dart';
 
 class EditGroupPage extends StatefulWidget {
   final Group group;
@@ -16,6 +18,8 @@ class EditGroupPage extends StatefulWidget {
 }
 
 class EditGroupPageState extends State<EditGroupPage> {
+  ImageProvider groupImage = const AssetImage('lib/images/splash.png');
+  XFile? pickedImage;
   final _nameController = TextEditingController();
   final _locationController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -47,6 +51,54 @@ class EditGroupPageState extends State<EditGroupPage> {
     }
   }
 
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final ImageSource? source = await showDialog<ImageSource?>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Choose Image Source'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                GestureDetector(
+                  child: const Text('Camera'),
+                  onTap: () {
+                    Navigator.of(context).pop(ImageSource.camera);
+                  },
+                ),
+                const SizedBox(height: 10),
+                GestureDetector(
+                  child: const Text('Gallery'),
+                  onTap: () {
+                    Navigator.of(context).pop(ImageSource.gallery);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    if (source == null) {
+      return;
+    }
+    final XFile? image = await picker.pickImage(
+      source: source,
+      requestFullMetadata: false,
+    );
+    if (image == null) {
+      return;
+    }
+
+    pickedImage = image;
+
+    ImageProvider temp = MemoryImage(await image.readAsBytes());
+    setState(() {
+      groupImage = temp;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,6 +108,7 @@ class EditGroupPageState extends State<EditGroupPage> {
         showBackButton: true,
       ),
       body: DefaultBackground(
+        
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
