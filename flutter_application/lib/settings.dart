@@ -18,7 +18,6 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   bool darkModeEnabled = false;
-  bool pushNotificationsEnabled = true;
 
   @override
   void initState() {
@@ -54,18 +53,6 @@ class _SettingsPageState extends State<SettingsPage> {
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
               onTap: () {
                 // Implement change password functionality
-              },
-            ),
-            SwitchListTile(
-              title: const Text('Push notifications'),
-              value: pushNotificationsEnabled,
-              activeColor: Color.fromARGB(255, 255, 92, 0),
-              inactiveThumbColor: Colors.purple,
-              inactiveTrackColor: Colors.purple[800],
-              onChanged: (value) {
-                setState(() {
-                  pushNotificationsEnabled = value;
-                });
               },
             ),
             SwitchListTile(
