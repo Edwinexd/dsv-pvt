@@ -146,6 +146,8 @@ def generate_completed_achievement_image(
     ]
     if len(completion) == 0:
         raise HTTPException(status_code=400, detail="Achievement not completed")
+    if requested_user.profile is None:
+        raise HTTPException(status_code=404, detail="Profile not found")
     grant = completion[0]
     return Response(
         content=generate_image(
@@ -172,6 +174,8 @@ def generate_completed_activity_image(
         raise HTTPException(status_code=400, detail="Achievement not completed")
     if requested_activity not in requested_user.activities:
         raise HTTPException(status_code=400, detail="Achievement not completed by user")
+    if requested_user.profile is None:
+        raise HTTPException(status_code=404, detail="Profile not found")
     return Response(
         content=generate_image(
             image_id=requested_activity.image_id,
