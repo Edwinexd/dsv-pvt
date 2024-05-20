@@ -441,7 +441,7 @@ def delete_user(
     current_user: DbUser, db_session: DbSession, requested_user: RequestedUser
 ):
     validations.validate_id(current_user, requested_user.id)
-    crud.delete_user(db_session, requested_user.id)
+    crud.delete_user(db_session, requested_user)
     return {"message": "User deleted successfully"}
 
 
