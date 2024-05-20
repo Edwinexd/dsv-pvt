@@ -3,6 +3,8 @@ import 'package:flutter_application/friends_page.dart';
 import 'package:flutter_application/home_page.dart';
 import 'package:flutter_application/profile_page.dart';
 import 'package:flutter_application/views/my_groups.dart';
+import 'package:flutter_application/views/schedule_page.dart';
+import 'package:flutter_application/controllers/backend_service.dart';
 
 AppBar buildAppBar({
   required String title,
@@ -15,7 +17,9 @@ AppBar buildAppBar({
       style: const TextStyle(color: Colors.white),
     ),
     backgroundColor: const Color.fromARGB(230, 60, 71, 133),
-    leading: showBackButton ? const BackButton(color: Colors.white) : SizedBox.shrink(),
+    leading: showBackButton
+        ? const BackButton(color: Colors.white)
+        : SizedBox.shrink(),
     actions: <Widget>[
       IconButton(
         icon: const Icon(Icons.person, color: Colors.white),
@@ -71,7 +75,7 @@ BottomNavigationBar buildBottomNavigationBar({
       } else if (index == 2) {
         goToFriendsPage(context);
       } else if (index == 3) {
-        // Go to My Schedule page 
+        goToSchedulePage(context);
       }
     },
   );
@@ -98,4 +102,13 @@ void goToGroupPage(BuildContext context) {
       MaterialPageRoute(builder: (context) => FriendsPage()),
    );
   }
+
+
+void goToSchedulePage(BuildContext context) async {
+  final user = await BackendService().getMyUser();
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (context) => SchedulePage(userId: user.id)),
+  );
+}
 
