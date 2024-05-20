@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/activity_create.dart';
 import 'package:flutter_application/bars.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_application/views/activity_page.dart';
 import 'package:flutter_application/views/edit_group_page.dart';
 import 'package:flutter_application/views/group_members.dart';
 import 'package:flutter_application/views/my_groups.dart';
+import 'package:image_picker/image_picker.dart';
 
 class GroupPage extends StatefulWidget {
   final Group group;
@@ -26,6 +28,8 @@ class GroupPage extends StatefulWidget {
 }
 
 class _GroupPageState extends State<GroupPage> {
+  ImageProvider groupImage = const AssetImage('lib/images/splash.png');
+  XFile? pickedImage;
   TextEditingController searchController = TextEditingController();
   List<User> allMembers = [];
   List<User> displayedMembers = [];
@@ -54,7 +58,7 @@ class _GroupPageState extends State<GroupPage> {
   void initState() {
     super.initState();
     unawaited(_fetchData());
-    
+
     //added listener to search text field
     searchController.addListener(_searchMembers);
   }
@@ -187,7 +191,8 @@ class _GroupPageState extends State<GroupPage> {
             int failed = 0;
             for (User user in users) {
               try {
-                await BackendService().inviteUserToGroup(user.id, widget.group.id);
+                await BackendService()
+                    .inviteUserToGroup(user.id, widget.group.id);
               } catch (e) {
                 failed++;
               }
@@ -199,16 +204,64 @@ class _GroupPageState extends State<GroupPage> {
             // Show success message
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(
-                  failed == 0
-                      ? 'Invitations sent successfully'
-                      : 'Failed to send $failed invitations',)
-              ),
+                  content: Text(
+                failed == 0
+                    ? 'Invitations sent successfully'
+                    : 'Failed to send $failed invitations',
+              )),
             );
           },
         ),
       ),
     );
+  }
+
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final ImageSource? source = await showDialog<ImageSource?>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Choose Image Source'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                GestureDetector(
+                  child: const Text('Camera'),
+                  onTap: () {
+                    Navigator.of(context).pop(ImageSource.camera);
+                  },
+                ),
+                const SizedBox(height: 10),
+                GestureDetector(
+                  child: const Text('Gallery'),
+                  onTap: () {
+                    Navigator.of(context).pop(ImageSource.gallery);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    if (source == null) {
+      return;
+    }
+    final XFile? image = await picker.pickImage(
+      source: source,
+      requestFullMetadata: false,
+    );
+    if (image == null) {
+      return;
+    }
+
+    pickedImage = image;
+
+    ImageProvider temp = MemoryImage(await image.readAsBytes());
+    setState(() {
+      groupImage = temp;
+    });
   }
 
   @override
@@ -228,22 +281,43 @@ class _GroupPageState extends State<GroupPage> {
                     color1: Colors.orange[200]!,
                     color2: Colors.orange[400]!,
                     child: Container(
-                      padding: const EdgeInsets.all(8),
-                      margin: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Center(
-                        child: Text(
-                          widget.group.name,
-                          style: const TextStyle(
-                            color: Color(0xFF8134CE),
-                            //fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
+                        padding: const EdgeInsets.all(8),
+                        margin: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
                         ),
-                      ),
-                    ))
+                        child: Column(
+                          children: [
+                            Center(
+                              child: GestureDetector(
+                                onTap: _pickImage,
+                                child: CircleAvatar(
+                                  radius: 60,
+                                  backgroundImage: groupImage,
+                                  child: const Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: CircleAvatar(
+                                      backgroundColor: Colors.white,
+                                      radius: 15,
+                                      child: Icon(Icons.camera_alt,
+                                          color: Colors.blue, size: 22),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Center(
+                              child: Text(
+                                widget.group.name,
+                                style: const TextStyle(
+                                  color: Color(0xFF8134CE),
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ),
+                          ],
+                        )))
               ],
             ),
           ),
@@ -299,7 +373,9 @@ class _GroupPageState extends State<GroupPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => ActivityPage(groupId: widget.group.id, activityId: activity.id),
+                                    builder: (context) => ActivityPage(
+                                        groupId: widget.group.id,
+                                        activityId: activity.id),
                                   ),
                                 );
                               },
@@ -395,21 +471,21 @@ class _GroupPageState extends State<GroupPage> {
               height: 40,
               width: 250,
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context, 
-                    MaterialPageRoute(
-                      builder: ((context) => 
-                        EditGroupPage(group: widget.group))),
-                        );
-                }, 
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Edit Group'),
-                    Icon(Icons.edit),
-                  ],
-                )),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: ((context) =>
+                              EditGroupPage(group: widget.group))),
+                    );
+                  },
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Edit Group'),
+                      Icon(Icons.edit),
+                    ],
+                  )),
             ),
             const SizedBox(height: 30),
             Center(
@@ -536,22 +612,24 @@ class _GroupPageState extends State<GroupPage> {
             ),
 
             SizedBox(height: 12),
-            !widget.group.isPrivate ? SizedBox(
-              height: 40,
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => joinGroup(),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple,
-                ),
-                child: const Text(
-                  'Join Group',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ) : const SizedBox(),
+            !widget.group.isPrivate
+                ? SizedBox(
+                    height: 40,
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => joinGroup(),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.purple,
+                      ),
+                      child: const Text(
+                        'Join Group',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  )
+                : const SizedBox(),
           ],
         ],
       ),

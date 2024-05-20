@@ -104,12 +104,6 @@ class _MyGroupsState extends State<MyGroups> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  /*Text(
-                    'Groups',
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),*/
                   const SizedBox(height: 12),
                   SizedBox(
                     height: 40,
