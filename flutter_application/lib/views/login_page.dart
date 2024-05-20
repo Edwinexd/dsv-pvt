@@ -219,7 +219,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 10),
                 MyButton(
-                  buttonText: 'Sign In',
+                  buttonText: 'Sign In with Email',
                   onTap: signUserIn,
                 ),
                 const SizedBox(height: 50),
@@ -242,7 +242,7 @@ class _LoginPageState extends State<LoginPage> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 50),
+                const SizedBox(height: 40),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
