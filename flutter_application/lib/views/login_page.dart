@@ -232,7 +232,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Text('Or continue with',
+                        child: Text('Or continue with Google',
                             style: TextStyle(
                                 color: Color.fromARGB(255, 16, 14, 99))),
                       ),
