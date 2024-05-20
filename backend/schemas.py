@@ -152,7 +152,7 @@ class ChallengePartial(BaseModel):
     id: int
 
 
-class ChallengeBase(ChallengePartial):
+class ChallengeBase(BaseModel):
     challenge_name: str
     description: str
     difficulty_code: int
@@ -165,8 +165,7 @@ class ChallengeCreate(ChallengeBase):
     pass
 
 
-class Challenge(ChallengeBase):
-    id: int
+class Challenge(ChallengePartial, ChallengeBase):
     image_id: Optional[str]
 
     class Config:
