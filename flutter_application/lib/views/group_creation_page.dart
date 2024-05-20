@@ -245,9 +245,9 @@ class GroupCreationState extends State<GroupCreation> {
     String name = _nameController.text.trim();
     String description = _descriptionController.text.trim();
 
-    if (name.isEmpty || description.isEmpty) {
+    if (name.isEmpty) {
       setState(() {
-        _errorMessage = 'Group name or description can not be empty!';
+        _errorMessage = 'Group name can not be empty!';
       });
       return;
     }

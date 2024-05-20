@@ -86,8 +86,13 @@ class _GroupMembersPageState extends State<GroupMembersPage> {
                       child: Icon(Icons.person),
                     ),
                     title: Text(member.fullName),
-                    onTap: () => {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(userId: member.id)))
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProfilePage(userId: member.id),
+                        ),
+                      );
                     },
                   ),
                 );

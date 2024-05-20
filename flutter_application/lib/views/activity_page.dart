@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
+import 'package:flutter_application/bars.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/activity.dart';
 import 'package:flutter_application/models/group.dart';
@@ -142,16 +143,12 @@ class _ActivityPageState extends State<ActivityPage> {
     Widget? actionButton = _getActionButton();
   
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Activity'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
+      appBar: buildAppBar(
+        context: context,
+        title: 'Leaderboard',
+        showBackButton: true,
       ),
-            body: DefaultBackground(
+        body: DefaultBackground(
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -298,6 +295,9 @@ class _ActivityPageState extends State<ActivityPage> {
             ),
           ),
         ),
+      ),
+      bottomNavigationBar: buildBottomNavigationBar(
+        context: context,
       ),
     );
   }

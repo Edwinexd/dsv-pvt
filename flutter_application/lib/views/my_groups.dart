@@ -7,6 +7,7 @@ import 'package:flutter_application/views/all_group_pages.dart';
 import 'package:flutter_application/views/group_creation_page.dart';
 import 'package:flutter_application/views/group_page.dart';
 import 'package:flutter_application/views/group_invitations_page.dart';
+import 'package:image_picker/image_picker.dart';
 
 class MyGroups extends StatefulWidget {
   MyGroups({super.key});
@@ -17,6 +18,8 @@ class MyGroups extends StatefulWidget {
 
 class _MyGroupsState extends State<MyGroups> {
   List<Group> myGroups = [];
+  XFile? pickedImage;
+  ImageProvider groupImage = const AssetImage('lib/images/splash.png');
 
   @override
   void initState() {
@@ -34,6 +37,55 @@ class _MyGroupsState extends State<MyGroups> {
       myGroups = groups;
     });
   }
+
+    Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final ImageSource? source = await showDialog<ImageSource?>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Choose Image Source'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                GestureDetector(
+                  child: const Text('Camera'),
+                  onTap: () {
+                    Navigator.of(context).pop(ImageSource.camera);
+                  },
+                ),
+                const SizedBox(height: 10),
+                GestureDetector(
+                  child: const Text('Gallery'),
+                  onTap: () {
+                    Navigator.of(context).pop(ImageSource.gallery);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    if (source == null) {
+      return;
+    }
+    final XFile? image = await picker.pickImage(
+      source: source,
+      requestFullMetadata: false,
+    );
+    if (image == null) {
+      return;
+    }
+
+    pickedImage = image;
+
+    ImageProvider temp = MemoryImage(await image.readAsBytes());
+    setState(() {
+      groupImage = temp;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -168,9 +220,6 @@ class _MyGroupsState extends State<MyGroups> {
                         title: Text(group.name),
                         trailing: const Row(
                           mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.group),
-                          ],
                         ),
                         onTap: () {
                           Navigator.push(
