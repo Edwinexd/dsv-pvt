@@ -31,21 +31,28 @@ class _ProfilePageState extends State<ProfilePage> {
   User? me;
   Profile? profile;
   ImageProvider? profileImage;
+  bool _isPrivateProfile = false;
 
   Future<void> _fetchProfile() async {
-    final meObj = await BackendService().getMe();
-    final userObj = await BackendService().getUser(widget.userId ?? meObj.id);
-    final profile = await BackendService().getProfile(userObj.id);
-    setState(() {
-      this.me = meObj;
-      this.user = userObj;
-      this.profile = profile;
-    });
-    ImageProvider image =
-        await BackendService().getImage(profile.imageId ?? '404');
-    setState(() {
-      profileImage = image;
-    });
+    try {
+      final meObj = await BackendService().getMe();
+      final userObj = await BackendService().getUser(widget.userId ?? meObj.id);
+      final profile = await BackendService().getProfile(userObj.id);
+      setState(() {
+        this.me = meObj;
+        this.user = userObj;
+        this.profile = profile;
+      });
+      ImageProvider image =
+          await BackendService().getImage(profile.imageId ?? '404');
+      setState(() {
+        profileImage = image;
+      });
+    } catch (e) {
+      setState(() {
+        _isPrivateProfile = true;
+      });
+    }
   }
 
   @override
@@ -56,6 +63,30 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isPrivateProfile) {
+      return DefaultBackground(
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            title: const Text('Profile Page', style: TextStyle(color: Colors.white)),
+            centerTitle: true,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+          ),
+          body: Center(
+            child: Text(
+              'This profile is private',
+              style: TextStyle(fontSize: 26),
+            ),
+          ),
+        ),
+      );
+    }
+
     if (user == null || profile == null) {
       return DefaultBackground(
         child: Scaffold(
@@ -71,8 +102,11 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title:
-              const Text('Profile Page', style: TextStyle(color: Colors.white)),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          title: const Text('Profile Page', style: TextStyle(color: Colors.white)),
           centerTitle: true,
           backgroundColor: Colors.transparent,
           elevation: 0,
