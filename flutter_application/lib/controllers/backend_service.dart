@@ -47,6 +47,10 @@ class BackendService {
     }));
   }
 
+  void setDio(Dio dio) {
+    _dio = dio;
+  }
+
   // --------- USERS ---------
 
   Future<User> getMe() async {
