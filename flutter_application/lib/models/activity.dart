@@ -1,3 +1,5 @@
+import 'package:flutter_application/models/challenges.dart';
+
 class Activity {
   final String name;
   final DateTime scheduledDateTime;
@@ -6,6 +8,11 @@ class Activity {
   final bool isCompleted;
   final int groupId;
   final String ownerId;
+  final double latitude;
+  final double longitude;
+  final String address;
+  final List<Challenge> challenges;
+
 
   const Activity({
     required this.name,
@@ -15,6 +22,10 @@ class Activity {
     required this.isCompleted,
     required this.groupId,
     required this.ownerId,
+    required this.latitude,
+    required this.longitude,
+    required this.address,
+    required this.challenges,
   });
 
   factory Activity.fromJson(Map<String, dynamic> json) {
@@ -26,6 +37,10 @@ class Activity {
       isCompleted: json["is_completed"] as bool,
       groupId: json["group_id"] as int,
       ownerId: json["owner_id"] as String,
+      latitude: json["latitude"] as double,
+      longitude: json["longitude"] as double,
+      address: json["address"] as String,
+      challenges: (json["challenges"] as List).map((e) => Challenge.fromJson(e)).toList(),
     );
   }
 }

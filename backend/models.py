@@ -7,10 +7,14 @@ from sqlalchemy import (
     Table,
     DateTime,
     Enum,
+    select,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+from sqlalchemy.sql.functions import coalesce
+from sqlalchemy.ext.hybrid import hybrid_property
 
+from schemas import AchievementRequirement
 from user_roles import Roles
 
 from database import base
@@ -34,13 +38,6 @@ challenge_completions = Table(
     Column("user_id", ForeignKey("users.id"), primary_key=True),
     Column("challenge_id", ForeignKey("challenges.id"), primary_key=True),
 )
-# achievements association table
-achievement_completions = Table(
-    "achievement_completions",
-    base.metadata,
-    Column("user_id", ForeignKey("users.id"), primary_key=True),
-    Column("achievement_id", ForeignKey("achievements.id"), primary_key=True),
-)
 activity_challenges = Table(
     "activity_challenges",
     base.metadata,
@@ -60,6 +57,20 @@ class GroupInvitations(base):
     group = relationship("Group", viewonly=True, foreign_keys=[group_id])
     user = relationship("User", viewonly=True, foreign_keys=[user_id])
     inviter = relationship("User", viewonly=True, foreign_keys=[invited_by])
+
+
+# association object pattern is used to get the extra field 'completed_date'
+class AchievementCompletion(base):
+    __tablename__ = "achievement_completions"
+
+    user_id = Column(String, ForeignKey("users.id"), primary_key=True)
+    achievement_id = Column(Integer, ForeignKey("achievements.id"), primary_key=True)
+    # func.now() is improperly typed
+    # pylint: disable=not-callable
+    completed_date = Column(DateTime(timezone=True), server_default=func.now())
+
+    user = relationship("User", back_populates="completed_achievements")
+    achievement = relationship("Achievement", back_populates="completed_by")
 
 
 # NORMAL TABLES
@@ -96,10 +107,9 @@ class User(base):
         "Challenge", secondary=challenge_completions, back_populates="completed_by"
     )
     completed_achievements = relationship(
-        "Achievement",
-        secondary=achievement_completions,
-        back_populates="achievement_completed_by",
+        "AchievementCompletion", back_populates="user"
     )
+
     profile = relationship("Profile", uselist=False, back_populates="owner")
     owned_groups = relationship("Group", back_populates="owner")
 
@@ -113,6 +123,8 @@ class Profile(base):
     skill_level = Column(Integer)  # will be mapped to a running pace in client
     is_private = Column(Integer)  # 1-true, 0-false
     image_id = Column(String, nullable=True)
+    runner_id = Column(String, nullable=True)
+    location = Column(String, nullable=True, default="Stockholm")
 
     owner_id = Column(String, ForeignKey("users.id"), primary_key=True)
     owner = relationship("User", back_populates="profile")
@@ -144,6 +156,28 @@ class Group(base):
         primaryjoin="Group.id == GroupInvitations.group_id",
         secondaryjoin="GroupInvitations.user_id == User.id",
     )
+
+    @hybrid_property
+    def points(self):
+        return sum(
+            c.point_reward
+            for a in self.activities
+            if a.is_completed
+            for c in a.challenges
+        )
+
+    @points.inplace.expression
+    @classmethod
+    def _points_expression(cls):
+        return (
+            select(coalesce(func.sum(Challenge.point_reward), 0))
+            .select_from(Activity)
+            .join(activity_challenges, Activity.id == activity_challenges.c.activity_id)
+            .join(Challenge, Challenge.id == activity_challenges.c.challenge_id)
+            .where(Activity.group_id == cls.id)
+            .where(Activity.is_completed == 1)
+            .label("points")
+        )
 
 
 class Activity(base):
@@ -214,15 +248,16 @@ class Achievement(base):
     id = Column(Integer, primary_key=True)
     achievement_name = Column(String)
     description = Column(String)
-    requirement = Column(Integer)
+    requirement = Column(
+        Enum(AchievementRequirement), default=AchievementRequirement.CHALLENGE
+    )
     image_id = Column(String, nullable=True)
 
     # Go to a challenge
     challenges = relationship("Challenge", back_populates="achievement_match")
 
     # Go to users - association table
-    achievement_completed_by = relationship(
-        "User",
-        secondary=achievement_completions,
-        back_populates="completed_achievements",
+    completed_by = relationship(
+        "AchievementCompletion",
+        back_populates="achievement",
     )

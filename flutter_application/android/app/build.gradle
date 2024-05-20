@@ -51,6 +51,7 @@ android {
         versionName flutterVersionName
         minSdkVersion 34
         compileSdkVersion 34
+        ndkVersion "25.1.8937393"
     }
 
     buildTypes {
@@ -66,4 +67,7 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation 'com.google.android.gms:play-services-auth:20.4.1'
+}

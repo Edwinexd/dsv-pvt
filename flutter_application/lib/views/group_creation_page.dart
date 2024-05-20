@@ -6,6 +6,8 @@ import 'package:flutter_application/models/user.dart';
 import 'package:flutter_application/views/map_screen.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/views/group_page.dart';
+import 'package:flutter_application/components/skill_level_slider.dart';
+import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
 
 class GroupCreation extends StatefulWidget {
   final List<Function> onGroupCreatedCallBacks;
@@ -20,6 +22,7 @@ class GroupCreationState extends State<GroupCreation> {
   final _nameController = TextEditingController();
   final _locationController = TextEditingController();
   final _descriptionController = TextEditingController();
+  PickedData? _location;
   bool _isPublic = false;
   int _memberLimit = 10; //Default member limit
   int _skillLevel = 0;
@@ -61,6 +64,7 @@ class GroupCreationState extends State<GroupCreation> {
                       builder: (context) => MapScreen(
                         onLocationSelected: (location) {
                           setState(() {
+                            _location = location;
                             _locationController.text = location.address;
                           });
                         },
@@ -79,27 +83,18 @@ class GroupCreationState extends State<GroupCreation> {
                 ),
               ),
               const SizedBox(height: 16.0),
-              const Text(
-                'Skill Level:',
-                style: TextStyle(fontSize: 16),
-              ),
-              Slider(
-                value: _skillLevel.toDouble(),
-                min: 0,
-                max: 4,
-                divisions: 4,
-                onChanged: (double value) {
-                  setState(() {
-                    _skillLevel = value.round();
-                  });
-                },
-              ),
-              Center(
-                child: Text(
-                  skillLevels[_skillLevel],
-                  style: const TextStyle(fontSize: 12),
+                const Text(
+                  'Skill Level:',
+                  style: TextStyle(fontSize: 16),
                 ),
-              ),
+                SkillLevelSlider(
+                    initialSkillLevel: _skillLevel,
+                    onSkillLevelChanged: (newLevel) {
+                      setState(() {
+                        _skillLevel = newLevel;
+                      });
+                    },
+                  ),
               const SizedBox(height: 16.0),
               Row(
                 children: <Widget>[
@@ -194,7 +189,7 @@ class GroupCreationState extends State<GroupCreation> {
     }
 
     User me = await BackendService().getMe();
-    await BackendService().createGroup(name, description, _isPublic, me.id);
+    await BackendService().createGroup(name, description, _isPublic, me.id, _location?.latLong.latitude, _location?.latLong.longitude, _location?.address);
 
     widget.onGroupCreatedCallBacks.forEach((callback) {
       callback();

@@ -1,43 +1,75 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application/activity_create.dart';
 import 'package:flutter_application/bars.dart';
 import 'package:flutter_application/components/checkered_background.dart';
+import 'package:flutter_application/components/user_selector.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
+import 'package:flutter_application/models/activity.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/models/user.dart';
 import 'package:flutter_application/background_for_pages.dart';
+import 'package:flutter_application/views/activity_page.dart';
+import 'package:flutter_application/views/edit_group_page.dart';
 import 'package:flutter_application/views/group_members.dart';
+import 'package:flutter_application/views/my_groups.dart';
 
 class GroupPage extends StatefulWidget {
   final Group group;
   bool isMember;
 
   GroupPage({super.key, required this.group, required this.isMember});
-    
+
   @override
   _GroupPageState createState() => _GroupPageState();
 }
 
 class _GroupPageState extends State<GroupPage> {
+  TextEditingController searchController = TextEditingController();
   List<User> allMembers = [];
   List<User> displayedMembers = [];
-  TextEditingController searchController = TextEditingController();
-  List<bool> joinedActivities = List.generate(5, (index) => false);
+  List<Activity> allActivities = [];
+  Set<int> joinedActivityIds = {};
   bool isPublic = false;
   String skillLevel = '';
   String location = '';
+  int skip = 0; // TODO: Pagination?
+  int limit = 100; // TODO: Pagination?
+
+  Future<void> _fetchData() async {
+    await fetchMyGroups();
+    await fetchMembers();
+    if (!widget.isMember) {
+      return;
+    }
+    await fetchAllActivities();
+    await fetchJoinedActivities();
+    setState(() {
+      displayedMembers = allMembers;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    fetchMyGroups();
-    fetchMembers().then((_) {
-      setState(() {
-        displayedMembers = allMembers;
-      });
-    });
+    unawaited(_fetchData());
+    
     //added listener to search text field
     searchController.addListener(_searchMembers);
+  }
+
+  Future<void> fetchAllActivities() async {
+    allActivities =
+        await BackendService().getActivities(widget.group.id, skip, limit);
+    if (mounted) setState(() {});
+  }
+
+  Future<void> fetchJoinedActivities() async {
+    User me = await BackendService().getMe();
+    var joinedActivities =
+        await BackendService().getUserActivities(me.id, skip, limit);
+    joinedActivityIds = joinedActivities.map((a) => a.id).toSet();
   }
 
   Future<void> fetchMyGroups() async {
@@ -53,6 +85,66 @@ class _GroupPageState extends State<GroupPage> {
 
   Future<void> fetchMembers() async {
     allMembers = await BackendService().getGroupMembers(widget.group.id);
+  }
+
+  Future<void> toggleActivityParticipation(Activity activity, bool join) async {
+    User me = await BackendService().getMe();
+    if (join) {
+      await BackendService().joinActivity(widget.group.id, activity.id, me.id);
+      setState(() {
+        joinedActivityIds.add(activity.id);
+      });
+    } else {
+      await BackendService().leaveActivity(widget.group.id, activity.id, me.id);
+      setState(() {
+        joinedActivityIds.remove(activity.id);
+      });
+    }
+  }
+
+  void joinGroup() async {
+    User me = await BackendService().getMe();
+    await BackendService().joinGroup(me.id, widget.group.id);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => GroupPage(group: widget.group, isMember: true)),
+    );
+  }
+
+  Future<void> leaveGroup() async {
+    User me = await BackendService().getMe();
+    await BackendService().leaveGroup(me.id, widget.group.id);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: ((context) => MyGroups())),
+    );
+  }
+
+  void confirmLeaveGroup() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Confirm"),
+            content: const Text("Are you sure you want to leave this group?"),
+            actions: <Widget>[
+              TextButton(
+                child: const Text("Cancel"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: const Text("Leave"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  leaveGroup();
+                },
+              ),
+            ],
+          );
+        });
   }
 
   @override
@@ -72,13 +164,52 @@ class _GroupPageState extends State<GroupPage> {
     });
   }
 
-  late List<String> activities = [
-    'April 7th Kista at 17:00',
-    'May 3rd Kungsträdgården at 13:00',
-    'June 15th Skansen at 10:00',
-    //Instances of activities
-    //Will be removed later
-  ];
+  void _inviteMembers() {
+    // Render user_selector
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => UserSelector(
+          finishSelectionText: 'Invite members',
+          onUserSelected: (User u) => {},
+          onCompleted: (List<User> users) async {
+            if (users.isEmpty) {
+              return;
+            }
+            // Loading icon
+            showDialog(
+              context: context,
+              builder: (context) => const Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+
+            int failed = 0;
+            for (User user in users) {
+              try {
+                await BackendService().inviteUserToGroup(user.id, widget.group.id);
+              } catch (e) {
+                failed++;
+              }
+            }
+
+            // Close loading icon
+            Navigator.pop(context);
+
+            // Show success message
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  failed == 0
+                      ? 'Invitations sent successfully'
+                      : 'Failed to send $failed invitations',)
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -145,26 +276,40 @@ class _GroupPageState extends State<GroupPage> {
                   ),
                   ListView.builder(
                     shrinkWrap: true,
-                    itemCount: activities.length,
+                    itemCount: allActivities.length,
                     itemBuilder: (context, index) {
+                      var activity = allActivities[index];
+                      bool isJoined = joinedActivityIds.contains(activity.id);
                       return ListTile(
-                        title: Text(activities[index]),
-                        trailing: TextButton(
-                          onPressed: () {
-                            setState(() {
-                              joinedActivities[index] =
-                                  !joinedActivities[index];
-                            });
-                          },
-                          style: TextButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            side: BorderSide(color: Colors.black),
-                          ),
-                          child: Text(
-                            joinedActivities[index] ? 'Leave' : 'Join',
-                          ),
-                        ),
-                      );
+                          title: Text(activity.name),
+                          trailing: Wrap(spacing: 8, children: <Widget>[
+                            TextButton(
+                              onPressed: () => toggleActivityParticipation(
+                                  activity, !isJoined),
+                              style: TextButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                side: const BorderSide(color: Colors.black),
+                              ),
+                              child: Text(
+                                isJoined ? 'Leave' : 'Join',
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ActivityPage(groupId: widget.group.id, activityId: activity.id),
+                                  ),
+                                );
+                              },
+                              style: TextButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                side: const BorderSide(color: Colors.black),
+                              ),
+                              child: const Text('View'),
+                            ),
+                          ]));
                     },
                   ),
                 ],
@@ -204,7 +349,7 @@ class _GroupPageState extends State<GroupPage> {
               width: 250,
               child: ElevatedButton(
                 onPressed: () {
-                  //Will handle invite new members button later
+                  _inviteMembers();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
@@ -212,7 +357,7 @@ class _GroupPageState extends State<GroupPage> {
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Invite new members'),
+                    Text('Invite members'),
                     Icon(Icons.person_add),
                   ],
                 ),
@@ -227,7 +372,8 @@ class _GroupPageState extends State<GroupPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const GroupMembersPage(),
+                      builder: (context) =>
+                          GroupMembersPage(group: widget.group),
                     ),
                   );
                 },
@@ -243,26 +389,48 @@ class _GroupPageState extends State<GroupPage> {
                 ),
               ),
             ),
+
             const SizedBox(height: 12),
             SizedBox(
               height: 40,
               width: 250,
               child: ElevatedButton(
                 onPressed: () {
-                  //Will handle leaving the group
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                ),
+                  Navigator.push(
+                    context, 
+                    MaterialPageRoute(
+                      builder: ((context) => 
+                        EditGroupPage(group: widget.group))),
+                        );
+                }, 
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Leave the group'),
-                    Icon(Icons.exit_to_app),
+                    Text('Edit Group'),
+                    Icon(Icons.edit),
                   ],
+                )),
+            ),
+            const SizedBox(height: 30),
+            Center(
+              child: SizedBox(
+                height: 40,
+                width: 250,
+                child: ElevatedButton(
+                  onPressed: confirmLeaveGroup,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Leave the group'),
+                      Icon(Icons.exit_to_app),
+                    ],
+                  ),
                 ),
               ),
-            ),
+            )
           ] else ...[
             //Display group details for non-members
             Container(
@@ -312,15 +480,15 @@ class _GroupPageState extends State<GroupPage> {
                       children: [
                         //Non-functional buttons, no need to add any functionalities
                         ElevatedButton(
-                          onPressed: () {
-                          },
+                          onPressed: () {},
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFFFDEBB4),
                           ),
                           child: Text(
                               widget.group.isPrivate ? 'Private' : 'Public'),
                         ),
-                        ElevatedButton(
+                        // TOOD: We don't have skill level in the group model
+                        /*ElevatedButton(
                           onPressed: () {
                           },
                           style: ElevatedButton.styleFrom(
@@ -328,15 +496,15 @@ class _GroupPageState extends State<GroupPage> {
                           ),
                           child:
                               Text('Beginner' /*${widget.group.skillLevel}*/),
-                        ),
+                        ),*/
                         ElevatedButton(
-                          onPressed: () {
-                            
-                          },
+                          onPressed: () {},
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFFFEC0AD),
                           ),
-                          child: Text('Kista' /*${widget.group.location}*/),
+                          child: Text(widget.group.address != null
+                              ? widget.group.address!
+                              : 'Online'),
                         ),
                       ],
                     ),
@@ -347,7 +515,8 @@ class _GroupPageState extends State<GroupPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const GroupMembersPage(),
+                          builder: (context) =>
+                              GroupMembersPage(group: widget.group),
                         ),
                       );
                     },
@@ -367,13 +536,11 @@ class _GroupPageState extends State<GroupPage> {
             ),
 
             SizedBox(height: 12),
-            SizedBox(
+            !widget.group.isPrivate ? SizedBox(
               height: 40,
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  //Will handle joining the group
-                },
+                onPressed: () => joinGroup(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.purple,
                 ),
@@ -384,7 +551,7 @@ class _GroupPageState extends State<GroupPage> {
                   ),
                 ),
               ),
-            ),
+            ) : const SizedBox(),
           ],
         ],
       ),

@@ -1,9 +1,16 @@
+import 'dart:typed_data';
+
+import 'package:cross_file/cross_file.dart';
+import 'package:flutter_application/models/challenges.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_application/models/activity.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/models/group_invite.dart';
 import 'package:flutter_application/models/profile.dart';
 import 'package:flutter_application/models/user.dart';
+import 'package:flutter_application/models/achievement.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class BackendService {
@@ -56,27 +63,40 @@ class BackendService {
     }
   }
 
-  Future<void> login(String userName, String password) async {
+  Future<void> login(String email, String password) async {
     final response = await _dio.post(
       '/users/login',
       data: {
-        "email": userName,
+        "email": email,
         "password": password,
       },
     );
     token = response.data['bearer'];
   }
 
+  Future<void> loginOauthGoogle(String? accessToken, String? idToken) async {
+    if (accessToken == null && idToken == null) {
+      throw const FormatException('loginOauthGoogle called without tokens');
+    }
+    final response = await _dio.post(
+      '/users/login/oauth/google',
+      data: {"access_token": accessToken, "id_token": idToken},
+    );
+    token = response.data['bearer'];
+  }
+
   Future<User> createUser(
-      String userName, String fullName, String password) async {
+      String userName, String email, String fullName, String password) async {
     final response = await _dio.post(
       '/users',
       data: {
         "username": userName,
+        "email": email,
         "full_name": fullName,
         "password": password,
       },
     );
+    await login(email, password);
     return User.fromJson((response.data) as Map<String, dynamic>);
   }
 
@@ -109,7 +129,8 @@ class BackendService {
       updateFields['full_name'] = fullName;
     }
     if (updateFields.isEmpty) {
-      throw const FormatException('updateUser called without updated arguments');
+      throw const FormatException(
+          'updateUser called without updated arguments');
     }
 
     final response = await _dio.patch(
@@ -126,20 +147,22 @@ class BackendService {
   // --------- PROFILE ---------
 
   Future<Profile> createProfile(String userId, String description, int age,
-      String interests, int skillLevel, bool isPrivate) async {
-    final response = await _dio.post('/users/$userId/profile', data: {
+      String interests, int skillLevel, bool isPrivate, String location, String? runnerId) async {
+    final response = await _dio.put('/users/$userId/profile', data: {
       "description": description,
       "age": age,
       "interests": interests,
       "skill_level": skillLevel,
       "is_private": isPrivate,
+      "location": location,
+      "runner_id": runnerId,
     });
 
     return Profile.fromJson((response.data) as Map<String, dynamic>);
   }
 
   Future<Profile> getProfile(String userId) async {
-    final response = await _dio.get('/users/$userId');
+    final response = await _dio.get('/users/$userId/profile');
     return Profile.fromJson((response.data) as Map<String, dynamic>);
   }
 
@@ -148,7 +171,9 @@ class BackendService {
       int? age,
       String? interests,
       int? skillLevel,
-      bool? isPrivate}) async {
+      bool? isPrivate,
+      String? location,
+      String? runnerId }) async {
     Map<String, dynamic> updateFields = {};
     if (description != null) {
       updateFields['description'] = description;
@@ -165,8 +190,15 @@ class BackendService {
     if (isPrivate != null) {
       updateFields['is_private'] = isPrivate;
     }
+    if (location != null) {
+      updateFields['location'] = location;
+    }
+    if (runnerId != null) {
+      updateFields['runner_id'] = runnerId;
+    }
     if (updateFields.isEmpty) {
-      throw const FormatException('updateProfile called without updated arguments');
+      throw const FormatException(
+          'updateProfile called without updated arguments');
     }
 
     final response = await _dio.patch(
@@ -184,7 +216,7 @@ class BackendService {
   // --------- GROUPS ---------
 
   Future<Group> createGroup(
-      String name, String description, bool isPrivate, String ownedId) async {
+      String name, String description, bool isPrivate, String ownedId, double? latitude, double? longitude, String? address) async {
     final response = await _dio.post(
       '/groups',
       data: {
@@ -192,15 +224,21 @@ class BackendService {
         "description": description,
         "is_private": isPrivate,
         "owner_id": ownedId,
+        "latitude": latitude,
+        "longitude": longitude,
+        "address": address,
       },
     );
     return Group.fromJson((response.data) as Map<String, dynamic>);
   }
 
-  Future<List<Group>> getGroups(int skip, int limit) async {
+  // TODO: Backend should have an order by parameter
+  Future<List<Group>> getGroups(int skip, int limit, GroupOrderType orderBy, bool descending) async {
     final response = await _dio.get('/groups', queryParameters: {
       'skip': skip,
       'limit': limit,
+      'order_by': orderBy.serialize(),
+      'descending': descending,
     });
     var groupList = response.data['data'] as List;
     return groupList.map((e) => Group.fromJson(e)).toList();
@@ -225,7 +263,8 @@ class BackendService {
       updateFields['is_private'] = isPrivate;
     }
     if (updateFields.isEmpty) {
-      throw const FormatException('updateGroup called without updated arguments');
+      throw const FormatException(
+          'updateGroup called without updated arguments');
     }
 
     final response = await _dio.patch(
@@ -286,7 +325,7 @@ class BackendService {
   }
 
   Future<List<Group>> getGroupsInvitedTo() async {
-    final response = await _dio.get('users/me/invites');
+    final response = await _dio.get('/users/me/invites');
     var groupList = response.data['data'] as List;
     return groupList.map((e) => Group.fromJson(e)).toList();
   }
@@ -297,17 +336,20 @@ class BackendService {
 
   // --------- ACTIVITIES ---------
   Future<Activity> createActivity(
-      int groupId, String name, DateTime scheduled, int difficulty) async {
+      int groupId, String name, DateTime scheduled, int difficulty, double latitude, double longitude, String address, List<Challenge> challenges) async {
     final response = await _dio.post('/groups/$groupId/activities', data: {
       "activity_name": name,
       "scheduled_date": scheduled.toIso8601String(),
       "difficulty_code": difficulty,
+      "latitude": latitude,
+      "longitude": longitude,
+      "address": address,
+      "challenges": challenges.map((e) => {"id": e.id}).toList(),
     });
     return Activity.fromJson((response.data) as Map<String, dynamic>);
   }
 
-  Future<List<Activity>> getActivities(
-      int groupId, int skip, int limit) async {
+  Future<List<Activity>> getActivities(int groupId, int skip, int limit) async {
     final response =
         await _dio.get('/groups/$groupId/activities', queryParameters: {
       'skip': skip,
@@ -341,7 +383,8 @@ class BackendService {
       updateFields['is_completed'] = isCompleted;
     }
     if (updateFields.isEmpty) {
-      throw const FormatException('updateActivity called without updated arguments');
+      throw const FormatException(
+          'updateActivity called without updated arguments');
     }
 
     final response = await _dio.patch(
@@ -355,7 +398,7 @@ class BackendService {
     await _dio.delete('/groups/$groupId/activities/$activityId');
   }
 
-  Future<void> joinActivity(int groupId, int activityId, int participantId) async {
+  Future<void> joinActivity(int groupId, int activityId, String participantId) async {
     await _dio.put(
         '/group/$groupId/activities/$activityId/participants/$participantId');
   }
@@ -385,8 +428,152 @@ class BackendService {
     return activityList.map((e) => Activity.fromJson(e)).toList();
   }
 
-  Future<void> leaveActivity(int groupId, int acitivityId, String participantId) async {
+  Future<void> leaveActivity(
+      int groupId, int acitivityId, String participantId) async {
     await _dio.delete(
         '/groups/$groupId/activities/$acitivityId/participants/$participantId');
+  }
+  // --------- CHALLENGES ---------
+  Future<List<Challenge>> getChallenges(int skip, int limit) async {
+    final response = await _dio.get('/challenges', queryParameters: {
+      'skip': skip,
+      'limit': limit,
+    });
+    var challengeList = response.data['data'] as List;
+    return challengeList.map((e) => Challenge.fromJson(e)).toList();
+  }
+
+
+  // --------- IMAGE RETRIEVAL ---------
+  Future<ImageProvider> getImage(String imageId) async {
+    try {
+      final response = await _dio.get(
+        "https://images-pvt.edt.cx/images/$imageId",
+        options: Options(
+            responseType: ResponseType.bytes), // Set response type as bytes
+      );
+      return MemoryImage(response.data);
+    } on DioException catch (e) {
+      if (e.response == null) {
+        rethrow;
+      }
+      if (e.response!.statusCode == 404) {
+        // Check if data exists and is in byte form, otherwise handle the error or throw
+        if (e.response!.data is List<int>) {
+          return MemoryImage(Uint8List.fromList(e.response!.data));
+        } else {
+          throw Exception('Error handling response data');
+        }
+      }
+      rethrow;
+    }
+  }
+
+  // --------- IMAGE UPLOADS/DELETIONS ---------
+  Future<FormData> _getFormDataFromImage(XFile file) async {
+    return FormData.fromMap({
+      "image": await MultipartFile.fromBytes(
+        await file.readAsBytes(),
+        filename: file.name,
+        contentType: MediaType.parse(file.mimeType ?? 'image/jpeg'),
+      ),
+    });
+  }
+
+  Future<void> uploadProfilePicture(XFile file) async {
+    final userId = await getMe().then((value) => value.id);
+    await _dio.put(
+      '/users/$userId/profile/picture',
+      data: await _getFormDataFromImage(file),
+    );
+    // Clear "me" cache
+    _me = null;
+  }
+
+  Future<void> deleteProfilePicture() async {
+    final userId = await getMe().then((value) => value.id);
+    await _dio.delete('/users/$userId/profile/picture');
+    // Clear "me" cache
+    _me = null;
+  }
+
+  Future<void> uploadGroupPicture(int groupId, XFile file) async {
+    await _dio.put(
+      '/groups/$groupId/picture',
+      data: await _getFormDataFromImage(file),
+    );
+  }
+
+  Future<void> deleteGroupPicture(int groupId) async {
+    await _dio.delete('/groups/$groupId/picture');
+  }
+
+  Future<void> uploadActivityPicture(
+      int groupId, int activityId, XFile file) async {
+    await _dio.put(
+      '/groups/$groupId/activities/$activityId/picture',
+      data: await _getFormDataFromImage(file),
+    );
+  }
+
+  Future<void> deleteActivityPicture(int groupId, int activityId) async {
+    await _dio.delete('/groups/$groupId/activities/$activityId/picture');
+  }
+
+  // --------- HEALTH DATA UPLOAD ---------
+  Future<List<Achievement>> uploadHealthData(
+      List<Map<String, dynamic>> data) async {
+    final userId = await getMe().then((value) => value.id);
+    final response =
+        await _dio.post('/users/$userId/health', data: {'data': data});
+    var achievementList = response.data['data'] as List;
+    return achievementList.map((e) => Achievement.fromJson(e)).toList();
+  }
+
+  // --------- ACHIEVEMENTS ---------
+  Future<List<Achievement>> getAchievements(int skip, int limit) async {
+    final response = await _dio.get('/achievements', queryParameters: {
+      'skip': skip,
+      'limit': limit,
+    });
+    var achievementList = response.data['data'] as List;
+    return achievementList.map((e) => Achievement.fromJson(e)).toList();
+  }
+
+  Future<Achievement> getAchievement(int achievementId) async {
+    final response = await _dio.get('/achievements/$achievementId');
+    return Achievement.fromJson((response.data) as Map<String, dynamic>);
+  }
+
+  Future<List<Achievement>> getUserAchievements(String userId) async {
+    final response = await _dio.get('/users/$userId/achievements');
+    var achievementList = response.data['data'] as List;
+    return achievementList.map((e) => Achievement.fromJson(e)).toList();
+  }
+
+  // --------- SHARING ---------
+  Future<XFile> getAchievementShareImage(String userId, int achievementId) async {
+    final response = await _dio.get(
+      '/users/$userId/achievements/$achievementId/share',
+      options: Options(
+          responseType: ResponseType.bytes), // Set response type as bytes
+    );
+    String mimeType = response.headers.map['content-type']?.first ?? 'image/jpeg';
+    String fileExtension = mimeType.split('/').last;
+    return XFile.fromData(Uint8List.fromList(response.data), mimeType: mimeType, name: 'achievement_share.$fileExtension');
+  }
+
+  Future<XFile> getActivityShareImage(String userId, int activityId, int groupId) async {
+    final response = await _dio.get(
+      '/users/$userId/activities/$activityId/share',
+      options: Options(
+          responseType: ResponseType.bytes), // Set response type as bytes
+      queryParameters: {
+        'group_id': groupId,
+      }
+    );
+    String mimeType = response.headers.map['content-type']?.first ?? 'image/jpeg';
+    String fileExtension = mimeType.split('/').last;
+    return XFile.fromData(Uint8List.fromList(response.data), mimeType: mimeType, name: 'activity_share.$fileExtension');
   }
 }

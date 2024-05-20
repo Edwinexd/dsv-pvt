@@ -1,4 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application/home_page.dart';
+import 'package:image_picker/image_picker.dart';
+import 'controllers/backend_service.dart';
 import 'package:flutter_application/components/custom_divider.dart';
 import 'package:flutter_application/age_data.dart';
 import 'package:flutter_application/cities.dart';
@@ -8,8 +12,6 @@ import 'package:flutter_application/components/interests_grid.dart';
 import 'package:flutter_application/components/my_button.dart';
 import 'package:flutter_application/components/skill_level_slider.dart';
 import 'package:flutter_application/background_for_pages.dart';
-import 'package:flutter_application/controllers/backend_service.dart';
-import 'package:flutter_application/home_page.dart';
 
 class CreateProfilePage extends StatefulWidget {
   final bool forced;
@@ -22,14 +24,14 @@ class CreateProfilePage extends StatefulWidget {
 
 class _CreateProfilePageState extends State<CreateProfilePage> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _interestsController = TextEditingController();
-  int _skillLevel = 0;
-  String imageUrl = 'https://example.com/profile_placeholder.png';
+  ImageProvider profileImage = const AssetImage('lib/images/splash.png');
+  XFile? pickedImage;
+  String? age;
   String? selectedLocation;
-  List<String> locations = CityData.swedenCities;
-  bool signedUpToMidnattsloppet = false;
+  String? bio;
+  bool ageEntered = false;
+  bool bioEntered = false;
+  String runnerId = '';
   Map<String, bool> interests = {
     'Running': false,
     'Yoga': false,
@@ -38,32 +40,99 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
     'Workout': false,
     'Cycling': false,
   };
-  String? age;
-  bool ageEntered = false;
-  bool bioEntered = false;
-  bool idEntered = false;
+  int _skillLevel = 0;
+  bool isPrivate = false;
   final BackendService _backendService = BackendService();
 
   Future<void> _saveProfile() async {
-    if (_formKey.currentState!.validate()) {
-      final user = await _backendService.getMe();
-      await _backendService.createProfile(user.id, "description", 18,
-          _interestsController.text, _skillLevel, false);
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    if (!ageEntered || !bioEntered || selectedLocation == null) {
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Profile Created!')));
-      if (widget.forced) {
-        Navigator.pop(context);
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
+          .showSnackBar(SnackBar(content: Text('Please fill all the fields')));
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+
+    final user = await _backendService.getMe();
+
+    final interests = <String>[];
+    for (final interest in this.interests.keys) {
+      if (this.interests[interest]!) {
+        interests.add(interest);
       }
+    }
+
+    await _backendService.createProfile(user.id, bio!, int.parse(age!),
+        const JsonEncoder().convert(interests), _skillLevel, isPrivate, selectedLocation!, runnerId.isEmpty ? null : runnerId);
+
+    if (pickedImage != null) {
+      await _backendService.uploadProfilePicture(pickedImage!);
+    }
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('Profile Created!')));
+    if (widget.forced) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
     }
   }
 
-  void _pickImage() {
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final ImageSource? source = await showDialog<ImageSource?>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Choose Image Source'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                GestureDetector(
+                  child: const Text('Camera'),
+                  onTap: () {
+                    Navigator.of(context).pop(ImageSource.camera);
+                  },
+                ),
+                const SizedBox(height: 10),
+                GestureDetector(
+                  child: const Text('Gallery'),
+                  onTap: () {
+                    Navigator.of(context).pop(ImageSource.gallery);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    if (source == null) {
+      return;
+    }
+    final XFile? image = await picker.pickImage(
+      source: source,
+      requestFullMetadata: false,
+    );
+    if (image == null) {
+      return;
+    }
+
+    pickedImage = image;
+
+    ImageProvider temp = MemoryImage(await image.readAsBytes());
     setState(() {
-      imageUrl = 'https://example.com/new_profile.jpg';
+      profileImage = temp;
     });
   }
 
@@ -94,7 +163,7 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
                       onTap: _pickImage,
                       child: CircleAvatar(
                         radius: 60,
-                        backgroundImage: NetworkImage(imageUrl),
+                        backgroundImage: profileImage,
                         child: const Align(
                           alignment: Alignment.bottomRight,
                           child: CircleAvatar(
@@ -129,7 +198,7 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
                       Expanded(
                         flex: 3,
                         child: CustomDropdown<String>(
-                          items: locations,
+                          items: CityData.swedenCities,
                           selectedValue: selectedLocation,
                           onChanged: (newValue) {
                             setState(() {
@@ -148,6 +217,7 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
                     onChanged: (text) {
                       setState(() {
                         bioEntered = text.isNotEmpty;
+                        bio = text;
                       });
                     },
                     maxLines: null,
@@ -156,10 +226,10 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
                   ),
                   SizedBox(height: 20),
                   CustomTextField(
-                    labelText: idEntered ? null : 'Runner ID(Optional)',
+                    labelText: 'Runner ID(Optional)',
                     onChanged: (text) {
                       setState(() {
-                        idEntered = text.isNotEmpty;
+                        runnerId = text;
                       });
                     },
                   ),
@@ -215,6 +285,17 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
                         _skillLevel = newLevel;
                       });
                     },
+                  ),
+                  ListTile(
+                    title: const Text('Private Profile'),
+                    trailing: Switch(
+                      value: isPrivate,
+                      onChanged: (value) {
+                        setState(() {
+                          isPrivate = value;
+                        });
+                      },
+                    ),
                   ),
                   SizedBox(height: 20),
                   MyButton(

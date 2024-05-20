@@ -32,7 +32,7 @@ class AllGroupsPageState extends State<AllGroupsPage> {
   }
 
   void fetchGroups() async {
-    var fetchedGroups = await BackendService().getGroups(0, 100);
+    var fetchedGroups = await BackendService().getGroups(0, 100, GroupOrderType.NAME, false);
     setState(() {
       _groups = fetchedGroups;
     });
