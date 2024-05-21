@@ -4,6 +4,7 @@ import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/group_page.dart';
 import 'package:flutter_application/background_for_pages.dart';
+import 'package:geolocator/geolocator.dart';
 
 class AllGroupsPage extends StatefulWidget {
   final Function refreshMyGroups;
@@ -20,15 +21,31 @@ class AllGroupsPageState extends State<AllGroupsPage> {
   List<Group> _groups = [];
   List<Group> _myGroups = [];
   Map<String, ImageProvider> groupImages = {};
+  String _searchQuery = '';
+  String _selectedFilter = 'All';
+  Position? _userPosition;
+  bool _sortByDistance = false;
 
   @override
   void initState() {
     super.initState();
-    fetchGroups();
+    fetchUserLocationAndGroups();
     fetchMyGroups();
   }
 
   void refreshAllGroups() async {
+    fetchGroups();
+  }
+
+  Future<void> fetchUserLocationAndGroups() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      setState(() {
+        _userPosition = position;
+      });
+    } catch (e) {
+      print('Error getting user location: $e');
+    }
     fetchGroups();
   }
 
@@ -45,6 +62,20 @@ class AllGroupsPageState extends State<AllGroupsPage> {
         images[group.id.toString()] = const AssetImage('lib/images/splash.png');
       }
     }
+
+    if (_sortByDistance && _userPosition != null) {
+      fetchedGroups.sort((a, b) {
+        if (a.latitude == null || a.longitude == null) return 1;
+        if (b.latitude == null || b.longitude == null) return 1;
+
+        double distanceA = Geolocator.distanceBetween(
+            _userPosition!.latitude, _userPosition!.longitude, a.latitude!, a.longitude!);
+        double distanceB = Geolocator.distanceBetween(
+            _userPosition!.latitude, _userPosition!.longitude, b.latitude!, b.longitude!);
+        return distanceA.compareTo(distanceB);
+      });
+    }
+
     setState(() {
       _groups = fetchedGroups;
       groupImages = images;
@@ -54,9 +85,6 @@ class AllGroupsPageState extends State<AllGroupsPage> {
   Future<void> fetchMyGroups() async {
     _myGroups = await BackendService().getMyGroups();
   }
-
-  String _searchQuery = '';
-  String _selectedFilter = 'All';
 
   @override
   Widget build(BuildContext context) {
@@ -133,6 +161,23 @@ class AllGroupsPageState extends State<AllGroupsPage> {
                           value: 'Private',
                           child: Text('Show only private groups')),
                     ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: SwitchListTile(
+                    title: Text('Sort by Distance'),
+                    value: _sortByDistance,
+                    onChanged: (value) {
+                      setState(() {
+                        _sortByDistance = value;
+                        fetchGroups();
+                      });
+                    },
                   ),
                 ),
               ],
