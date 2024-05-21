@@ -45,41 +45,28 @@ def test_create_user_success(client, mocker):
         full_name="Test User"
     )
     mock_user_id = "user123"
-    mocker.patch("main.auth.create_user", return_value=mock_user_id) # Mock requests to auth to prevent state missmatches
-    #mocker.patch(
-    #    "main.crud.create_user",
-    #    return_value=models.User(email=user_payload.email, username = user_payload.username, full_name = user_payload.full_name, date_created="2023-05-05", role = 2, id=mock_user_id),
-    #)
+    mocker.patch("main.auth.create_user", return_value=mock_user_id) # Mock requests to auth to prevent state mismatching in prod
 
-    response = client.post("/users", json=user_payload.dict())
+    response = client.post("/users", json=user_payload.model_dump())
 
-    print(response.json())
     assert response.status_code == 200
-    #assert response.json() == {"id": mock_user_id, **user_payload.dict()}
-    #auth.create_user.assert_called_once_with(user_payload)
-    #crud.create_user.assert_called_once_with(
-    #    db_session=db_session,
-    #    user=mocker.ANY
-    #)
-#    response = client.post(
-#        "/users",
-#        json = {
-#            "email" : "test@email.com",
-#            "username" : "test123",
-#            "full_name" : "Test Testsson",
-#            "password" : "test123",
-#        }
-#    )
-#    assert response.status_code == 200
-#
-#    test_user_id = response.json()["id"]
-#    get_user_response = client.get(
-#        f"/users/{test_user_id}",
-#        headers = {
-#            "Authorization" : token,
-#        }
-#    )
-#
-#    assert get_user_response.status_code == 200
-#    assert get_user_response.json()["id"] == test_user_id
+    assert {
+        "id": mock_user_id, 
+        "email": "test@example.com",
+        "username": "testuser",
+        "full_name": "Test User",
+        "role": 2,
+    }.items() <= response.json().items() # assert above is a subset of items in response
 
+#TODO: empty/None fields (assert returns 400)
+#TODO invalid email format (400)
+#TODO alredy existing email (400)
+#TODO nonexistent fields (422)
+#TODO: invalid input types (422)
+#TODO: test with wrong request method (put,delete) (405)
+#TODO: test with diff user roles (valid) (200 for all)
+#TODO: Test with different input data encodings (e.g., UTF-8, ASCII)
+#TODO: very long strings (413?)
+#TODO: special characters/non ascii characters (valid/invalid?)
+#TODO: already existing username (400)
+#TODO: bulk user creation
