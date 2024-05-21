@@ -15,7 +15,7 @@ import 'package:flutter_application/views/activity_page.dart';
 import 'package:flutter_application/views/edit_group_page.dart';
 import 'package:flutter_application/views/group_members.dart';
 import 'package:flutter_application/views/my_groups.dart';
-import 'package:image_picker/image_picker.dart';
+
 
 class GroupPage extends StatefulWidget {
   final Group group;
@@ -28,8 +28,7 @@ class GroupPage extends StatefulWidget {
 }
 
 class _GroupPageState extends State<GroupPage> {
-  ImageProvider groupImage = const AssetImage('lib/images/splash.png');
-  XFile? pickedImage;
+  ImageProvider? groupImage;
   TextEditingController searchController = TextEditingController();
   List<User> allMembers = [];
   List<User> displayedMembers = [];
@@ -43,7 +42,9 @@ class _GroupPageState extends State<GroupPage> {
 
   Future<void> _fetchData() async {
     await fetchMyGroups();
+    await fetchGroupImage();
     await fetchMembers();
+    
     if (!widget.isMember) {
       return;
     }
@@ -67,6 +68,14 @@ class _GroupPageState extends State<GroupPage> {
     allActivities =
         await BackendService().getActivities(widget.group.id, skip, limit);
     if (mounted) setState(() {});
+  }
+
+  Future<void> fetchGroupImage() async {
+    ImageProvider image = await BackendService().getImage(widget.group.imageId ?? '404');
+    setState(() {
+      groupImage = image;
+    });
+    
   }
 
   Future<void> fetchJoinedActivities() async {
@@ -216,54 +225,6 @@ class _GroupPageState extends State<GroupPage> {
     );
   }
 
-  Future<void> _pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final ImageSource? source = await showDialog<ImageSource?>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Choose Image Source'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                GestureDetector(
-                  child: const Text('Camera'),
-                  onTap: () {
-                    Navigator.of(context).pop(ImageSource.camera);
-                  },
-                ),
-                const SizedBox(height: 10),
-                GestureDetector(
-                  child: const Text('Gallery'),
-                  onTap: () {
-                    Navigator.of(context).pop(ImageSource.gallery);
-                  },
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-    if (source == null) {
-      return;
-    }
-    final XFile? image = await picker.pickImage(
-      source: source,
-      requestFullMetadata: false,
-    );
-    if (image == null) {
-      return;
-    }
-
-    pickedImage = image;
-
-    ImageProvider temp = MemoryImage(await image.readAsBytes());
-    setState(() {
-      groupImage = temp;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -289,23 +250,11 @@ class _GroupPageState extends State<GroupPage> {
                         child: Column(
                           children: [
                             Center(
-                              child: GestureDetector(
-                                onTap: _pickImage,
                                 child: CircleAvatar(
                                   radius: 60,
                                   backgroundImage: groupImage,
-                                  child: const Align(
-                                    alignment: Alignment.bottomRight,
-                                    child: CircleAvatar(
-                                      backgroundColor: Colors.white,
-                                      radius: 15,
-                                      child: Icon(Icons.camera_alt,
-                                          color: Colors.blue, size: 22),
-                                    ),
-                                  ),
                                 ),
                               ),
-                            ),
                             const SizedBox(height: 16),
                             Center(
                               child: Text(
