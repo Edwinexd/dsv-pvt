@@ -86,6 +86,20 @@ class AllGroupsPageState extends State<AllGroupsPage> {
     _myGroups = await BackendService().getMyGroups();
   }
 
+  String getDistanceString(Group group) {
+    if (_userPosition == null || group.latitude == null || group.longitude == null) {
+      return '';
+    }
+    double distanceInMeters = Geolocator.distanceBetween(
+      _userPosition!.latitude,
+      _userPosition!.longitude,
+      group.latitude!,
+      group.longitude!,
+    );
+    double distanceInKm = distanceInMeters / 1000;
+    return '${distanceInKm.toStringAsFixed(1)} km';
+  }
+
   @override
   Widget build(BuildContext context) {
     List<Group> filteredGroups = _groups.where((group) {
@@ -226,6 +240,8 @@ class AllGroupsPageState extends State<AllGroupsPage> {
                         children: [
                           Text(group.description),
                           Text(group.isPrivate ? 'Private' : 'Public'),
+                          if (_userPosition != null)
+                            Text('Distance: ${getDistanceString(group)}'),
                         ],
                       ),
                     ),
