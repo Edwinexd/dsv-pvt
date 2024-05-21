@@ -10,7 +10,7 @@ class WhiteRectangle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.fromLTRB(30, 30, 30, 30), 
+      margin: EdgeInsets.fromLTRB(5, 20, 5, 20), 
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(5),
@@ -98,13 +98,13 @@ class _ChallengesPageState extends State<ChallengesPage> {
               width: MediaQuery.of(context).size.width - 60,
               child: WhiteRectangle(
                 child: Padding(
-                  padding: EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(2.0),
                   child: SingleChildScrollView(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         const Padding(
-                          padding: EdgeInsets.all(10.0), 
+                          padding: EdgeInsets.all(20.0), 
                           child: Text(
                             'Challenges',
                             style: TextStyle(
