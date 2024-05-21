@@ -30,7 +30,8 @@ def override_get_db_session():
 # Essentially mocks mains database to be local
 app.dependency_overrides[get_db_session] = override_get_db_session
 
-@pytest.fixture
+
+@pytest.fixture(scope='session', autouse=True)
 def client():
     with TestClient(app) as client:
         yield client
@@ -39,7 +40,7 @@ def client():
 
 def test_create_user_success(client, mocker):
     user_payload = schemas.UserCreate(
-        email="test@example.com",
+        email="test1@example.com",
         username="testuser",
         password="testpassword",
         full_name="Test User"
@@ -52,13 +53,44 @@ def test_create_user_success(client, mocker):
     assert response.status_code == 200
     assert {
         "id": mock_user_id, 
-        "email": "test@example.com",
+        "email": "test1@example.com",
         "username": "testuser",
         "full_name": "Test User",
         "role": 2,
     }.items() <= response.json().items() # assert above is a subset of items in response
 
-#TODO: empty/None fields (assert returns 400)
+
+def test_empty_fields(client, mocker):
+    user_payload = {
+        "email":"test2@example.com",
+        "username":"",
+        "password":"tes123",
+        "full_name":"Test User",
+    }
+    mock_user_id = "user223"
+    mocker.patch("main.auth.create_user", return_value=mock_user_id)
+
+    response = client.post("/users", json=user_payload)
+
+    assert response.status_code == 400
+    assert "id" not in response.json()
+
+
+def test_none_fields(client, mocker):
+    user_payload = {
+        "email":"test3@example.com",
+        "username":None,
+        "password":"tes123",
+        "full_name":"Test User",
+    }
+    mock_user_id = "user323"
+    mocker.patch("main.auth.create_user", return_value=mock_user_id)
+
+    response = client.post("/users", json=user_payload)
+
+    assert response.status_code == 422
+    assert "id" not in response.json()
+
 #TODO invalid email format (400)
 #TODO alredy existing email (400)
 #TODO nonexistent fields (422)
