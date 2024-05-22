@@ -230,3 +230,24 @@ def test_bulk_user_creation(client, mocker):
     assert 429 in responses
 
 # USER READING TESTS
+
+#valid
+#TODO: single user, valid assert amount
+#TODO: multiple users, valid assert amount
+#TODO: no users (limit=0), valid assert amount
+#TODO: limit exceeds amount in db, valid verify contains all
+#TODO: negative skip value, assert begins at start
+#TODO: mock crud.get_users, assert correct params
+#TODO: mock schemas.UserList constructor, assert constr was called with data from crud.get_users
+#TODO: empty db
+#TODO: exactly limit amt of users
+#TODO: db contains limit + 1
+#TODO: test pagination consistency
+
+
+#invalid
+#TODO: mock crud.get_users to return invalid data (missing fields), assert function handles error
+#TODO: wrong type for skip, limit; 
+#TODO: very large values for skip, limit
+#TODO: no access to endpoint
+
