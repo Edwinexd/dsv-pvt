@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/bars.dart';
+import 'package:flutter_application/components/scroll_button.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/activity.dart';
 import 'package:flutter_application/components/skill_level_slider.dart';
@@ -29,6 +31,8 @@ class _ActivityCreatePageState extends State<ActivityCreatePage> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _locationController = TextEditingController();
+  final ScrollController _scrollController = ScrollController(); 
+  bool _showScrollButton = true;
   PickedData? _location;
   DateTime _pickedDate = DateTime.now();
   TimeOfDay _pickedTime = TimeOfDay.now();
@@ -112,6 +116,22 @@ class _ActivityCreatePageState extends State<ActivityCreatePage> {
         _challenges = value;
       });
     }));
+
+    _scrollController.addListener(() { 
+      if (_scrollController.position.userScrollDirection == ScrollDirection.reverse) {
+        if (_showScrollButton) {
+          setState(() {
+            _showScrollButton = false;
+          });
+        }
+      } else if (_scrollController.position.userScrollDirection == ScrollDirection.forward) {
+        if (!_showScrollButton) {
+          setState(() {
+            _showScrollButton = true;
+          });
+        }
+      }
+    });
   }
 
   @override
@@ -123,146 +143,155 @@ class _ActivityCreatePageState extends State<ActivityCreatePage> {
         showBackButton: true,
       ),
       body: DefaultBackground(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                TextFormField(
-                  controller: _titleController,
-                  decoration: InputDecoration(labelText: 'Activity Title'),
-                  validator: (value) =>
-                      value!.isEmpty ? 'Title cannot be empty' : null,
-                ),
-                const SizedBox(height: 12),
-                InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MapScreen(
-                          onLocationSelected: (location) {
-                            setState(() {
-                              _location = location;
-                              _locationController.text = location.address;
-                            });
-                          },
+        child: Stack( 
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SingleChildScrollView(
+                controller: _scrollController, 
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    TextFormField(
+                      controller: _titleController,
+                      decoration: InputDecoration(labelText: 'Activity Title'),
+                      validator: (value) =>
+                          value!.isEmpty ? 'Title cannot be empty' : null,
+                    ),
+                    const SizedBox(height: 12),
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MapScreen(
+                              onLocationSelected: (location) {
+                                setState(() {
+                                  _location = location;
+                                  _locationController.text = location.address;
+                                });
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                      child: AbsorbPointer(
+                        child: TextFormField(
+                          controller: _locationController,
+                          decoration: const InputDecoration(
+                            labelText: 'Location',
+                            suffixIcon: Icon(Icons.location_on),
+                          ),
                         ),
                       ),
-                    );
-                  },
-                  child: AbsorbPointer(
-                    child: TextFormField(
-                      controller: _locationController,
-                      decoration: const InputDecoration(
-                        labelText: 'Location',
-                        suffixIcon: Icon(Icons.location_on),
-                      ),
                     ),
-                  ),
-                ),
-                SizedBox(height: 12),
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                          'Date & Time: ${DateFormat('EEEE dd MMMM hh:mm').format(_pickedDateTime.toLocal())}', // Use DateFormat to format the date
-                          style: TextStyle(fontSize: 16)),
-                      SizedBox(height: 12.0),
-                      Row(
-                        children: [
-                          ElevatedButton(
-                            onPressed: _pickDate,
-                            child: Text('Select Date'),
-                          ),
-                          SizedBox(width: 12.0),
-                          ElevatedButton(
-                            onPressed: _pickTime,
-                            child: Text('Select Time'),
+                    SizedBox(height: 12),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                              'Date & Time: ${DateFormat('EEEE dd MMMM hh:mm').format(_pickedDateTime.toLocal())}', // Use DateFormat to format the date
+                              style: TextStyle(fontSize: 16)),
+                          SizedBox(height: 12.0),
+                          Row(
+                            children: [
+                              ElevatedButton(
+                                onPressed: _pickDate,
+                                child: Text('Select Date'),
+                              ),
+                              SizedBox(width: 12.0),
+                              ElevatedButton(
+                                onPressed: _pickTime,
+                                child: Text('Select Time'),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12.0),
-                TextFormField(
-                  controller: _descriptionController,
-                  decoration:
-                      InputDecoration(labelText: 'Activity Description'),
-                  maxLines: 2,
-                ),
-                SizedBox(height: 12),
-                Container(
-                  padding: EdgeInsets.all(8.0),
-                  margin: EdgeInsets.all(8.0),
-                  decoration: BoxDecoration(
-                    color: Color(0xFFFDEBB4), // May change later
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: Colors.grey.shade300,
-                      width: 1.0,
                     ),
-                  ),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text('Challenges:', style: TextStyle(fontSize: 16)),
-                        for (Challenge challenge in _challenges)
-                          CheckboxListTile(
-                            title: Text(challenge.name),
-                            value: _chosenChallenges.contains(challenge.id),
-                            onChanged: (bool? value) {
-                              setState(() {
-                                if (value!) {
-                                  _chosenChallenges.add(challenge.id);
-                                } else {
-                                  _chosenChallenges.remove(challenge.id);
-                                }
-                              });
-                            },
-                          ),
-                      ]),
-                ),
-                const SizedBox(height: 16.0),
-                const Text(
-                  'Skill Level:',
-                  style: TextStyle(fontSize: 16),
-                ),
-                SkillLevelSlider(
-                  initialSkillLevel: _skillLevel,
-                  onSkillLevelChanged: (newLevel) {
-                    setState(() {
-                      _skillLevel = newLevel;
-                    });
-                  },
-                ),
-                const SizedBox(height: 20.0),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      _createActivity();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF9B40BF),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 16, horizontal: 26),
+                    const SizedBox(height: 12.0),
+                    TextFormField(
+                      controller: _descriptionController,
+                      decoration:
+                          InputDecoration(labelText: 'Activity Description'),
+                      maxLines: 2,
                     ),
-                    child: const Text(
-                      'Create activity',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
+                    SizedBox(height: 12),
+                    Container(
+                      padding: EdgeInsets.all(8.0),
+                      margin: EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        color: Color(0xFFFDEBB4), // May change later
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: Colors.grey.shade300,
+                          width: 1.0,
+                        ),
                       ),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text('Challenges:', style: TextStyle(fontSize: 16)),
+                            for (Challenge challenge in _challenges)
+                              CheckboxListTile(
+                                title: Text(challenge.name),
+                                value: _chosenChallenges.contains(challenge.id),
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    if (value!) {
+                                      _chosenChallenges.add(challenge.id);
+                                    } else {
+                                      _chosenChallenges.remove(challenge.id);
+                                    }
+                                  });
+                                },
+                              ),
+                          ]),
                     ),
-                  ),
-                )
-              ],
+                    const SizedBox(height: 16.0),
+                    const Text(
+                      'Skill Level:',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    SkillLevelSlider(
+                      initialSkillLevel: _skillLevel,
+                      onSkillLevelChanged: (newLevel) {
+                        setState(() {
+                          _skillLevel = newLevel;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 20.0),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _createActivity();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF9B40BF),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 16, horizontal: 26),
+                        ),
+                        child: const Text(
+                          'Create activity',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
             ),
-          ),
+            ScrollButton( 
+              scrollController: _scrollController,
+              isVisible: _showScrollButton,
+            ),
+          ],
         ),
       ),
       bottomNavigationBar: buildBottomNavigationBar(
