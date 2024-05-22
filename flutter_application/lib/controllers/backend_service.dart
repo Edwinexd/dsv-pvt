@@ -251,7 +251,7 @@ class BackendService {
   }
 
   Future<Group> updateGroup(int groupId,
-      {String? newName, String? description, int? skillLevel, bool? isPrivate}) async {
+      {String? newName, String? description, int? newSkillLevel, bool? isPrivate}) async {
     // Create a map to hold the update fields
     Map<String, dynamic> updateFields = {};
     if (newName != null) {
@@ -260,8 +260,8 @@ class BackendService {
     if (description != null) {
       updateFields['description'] = description;
     }
-    if (skillLevel != null) {
-      updateFields['skill_level'] = skillLevel;
+    if (newSkillLevel != null) {
+      updateFields['skill_level'] = newSkillLevel;
     }
     if (isPrivate != null) {
       updateFields['is_private'] = isPrivate;

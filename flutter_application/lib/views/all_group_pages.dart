@@ -39,7 +39,7 @@ class AllGroupsPageState extends State<AllGroupsPage> {
     for (var group in fetchedGroups) {
       if (group.imageId != null) {
         ImageProvider image =
-            await BackendService().getImage(group.imageId ?? '');
+            await BackendService().getImage(group.imageId!);
         images[group.id.toString()] = image;
       } else {
         images[group.id.toString()] = const AssetImage('lib/images/splash.png');

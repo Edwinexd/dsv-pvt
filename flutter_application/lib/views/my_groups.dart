@@ -34,7 +34,7 @@ class _MyGroupsState extends State<MyGroups> {
     Map<String, ImageProvider> images = {};
     for (var group in groups) {
       if (group.imageId != null) {
-        ImageProvider image = await BackendService().getImage(group.imageId ?? '');
+        ImageProvider image = await BackendService().getImage(group.imageId!);
         images[group.id.toString()] = image;
       } else {
         images[group.id.toString()] = const AssetImage('lib/images/splash.png'); 
