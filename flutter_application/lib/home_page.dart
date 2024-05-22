@@ -17,7 +17,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // Temporary sample data for leaderboard entries can be changed to real data
   List<Group> _leaderboardGroups = [];
 
   @override
@@ -103,9 +102,9 @@ class SignupButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 140.0),
+      padding: const EdgeInsets.symmetric(horizontal: 90.0),
       child: Container(
-        width: double.infinity,
+        width: 200,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.deepOrange,
@@ -277,48 +276,51 @@ class Leaderboard extends StatelessWidget {
       }
     }
 
-    return Container(
-      width: 327,
-      height: 370,
-      padding: const EdgeInsets.all(10),
-      child: Stack(
-        children: [
-          if (showMoreButton)
-            Positioned(
-              bottom: -20,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Container(
-                  margin: EdgeInsets.all(20),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Color(0xFFF344F7),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 90, vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
-                        side: const BorderSide(color: Colors.white, width: 30),
-                      ),
+return Container(
+  width: 327,
+  height: 370,
+  padding: const EdgeInsets.all(10),
+  child: Stack(
+    children: [
+      if (showMoreButton)
+        Positioned(
+          bottom: -20,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: Container(
+              margin: EdgeInsets.all(20),
+              child: Container( 
+                padding: EdgeInsets.all(15), 
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20), 
+                ),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFF344F7),
+                    padding: const EdgeInsets.symmetric(horizontal: 90, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
                     ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => LeaderboardPage()),
-                      );
-                    },
-                    child: const Text(
-                      'More',
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => LeaderboardPage()),
+                    );
+                  },
+                  child: const Text(
+                    'More',
+                    style: TextStyle(
+                      color: Colors.white,
                     ),
                   ),
                 ),
               ),
             ),
+          ),
+        ),
           const Positioned(
             top: -10,
             left: 0,

@@ -42,6 +42,7 @@ class _MyAchievementsState extends State<MyAchievements> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Achievements'),
+        backgroundColor: Colors.transparent,
         centerTitle: true,
       ),
       // add header here, trophys
