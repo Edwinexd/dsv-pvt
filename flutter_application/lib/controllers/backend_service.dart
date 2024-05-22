@@ -85,6 +85,11 @@ class BackendService {
     token = response.data['bearer'];
   }
 
+  Future<void> logout() async {
+    await _dio.post('/users/logout');
+    token = null;
+  }
+
   Future<User> createUser(
       String userName, String email, String fullName, String password) async {
     final response = await _dio.post(
