@@ -58,7 +58,7 @@ class EditGroupPageState extends State<EditGroupPage> {
         widget.group.id,
         newName: name,
         description: description,
-        newSkillLevel: _skillLevel,
+        skillLevel: _skillLevel,
         isPrivate: !_isPublic,
         
       );
