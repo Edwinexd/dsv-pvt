@@ -217,10 +217,11 @@ class _GroupPageState extends State<GroupPage> {
       appBar: buildAppBar(
         context: context,
         showBackButton: true,
-        title: 'Groups',
+        title: widget.group.name,
       ),
       body: DefaultBackground(
         children: [
+          /*
           SingleChildScrollView(
             child: Column(
               children: [
@@ -247,6 +248,7 @@ class _GroupPageState extends State<GroupPage> {
               ],
             ),
           ),
+          */
           if (widget.isMember) ...[
             //Display group for members
             Container(
