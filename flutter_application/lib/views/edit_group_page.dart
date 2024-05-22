@@ -38,7 +38,7 @@ class EditGroupPageState extends State<EditGroupPage> {
     _skillLevel = widget.group.skillLevel;
 
     if (widget.group.imageId != null) {
-      fetchGroupImage();    
+      fetchGroupImage();
     }
   }
 
@@ -54,13 +54,16 @@ class EditGroupPageState extends State<EditGroupPage> {
     }
 
     try {
+      if (pickedImage != null) {
+        await BackendService().uploadGroupPicture(widget.group.id, pickedImage!);
+      }
+
       Group updatedGroup = await BackendService().updateGroup(
         widget.group.id,
         newName: name,
         description: description,
         skillLevel: _skillLevel,
         isPrivate: !_isPublic,
-        
       );
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text('Group Saved!')));
@@ -129,7 +132,7 @@ class EditGroupPageState extends State<EditGroupPage> {
     ImageProvider image = await BackendService().getImage(widget.group.imageId!);
     setState(() {
       groupImage = image;
-    }); 
+    });
   }
 
   @override

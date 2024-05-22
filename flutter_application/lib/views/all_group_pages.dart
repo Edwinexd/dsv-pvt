@@ -37,14 +37,11 @@ class AllGroupsPageState extends State<AllGroupsPage> {
         await BackendService().getGroups(0, 100, GroupOrderType.NAME, false);
     Map<String, ImageProvider> images = {};
     for (var group in fetchedGroups) {
-      if (group.imageId != null) {
         ImageProvider image =
             await BackendService().getImage(group.imageId!);
-        images[group.id.toString()] = image;
-      } else {
-        images[group.id.toString()] = const AssetImage('lib/images/splash.png');
-      }
+        images[group.id.toString()] = image; 
     }
+    
     setState(() {
       _groups = fetchedGroups;
       groupImages = images;
