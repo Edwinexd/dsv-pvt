@@ -260,7 +260,7 @@ class GroupCreationState extends State<GroupCreation> {
     }
 
     User me = await BackendService().getMe();
-    createdGroup = await BackendService().createGroup(name, description, _isPublic, me.id, _location?.latLong.latitude, _location?.latLong.longitude, _location?.address, _skillLevel);
+    createdGroup = await BackendService().createGroup(name, description, _isPublic, me.id, _skillLevel, _location?.latLong.latitude, _location?.latLong.longitude, _location?.address);
     
     if (pickedImage != null) {
       await BackendService().uploadGroupPicture(createdGroup!.id, pickedImage!);

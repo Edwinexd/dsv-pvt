@@ -11,6 +11,7 @@ class Group {
   final double? latitude;
   final double? longitude;
 
+
   const Group(
       {required this.id,
       required this.name,
