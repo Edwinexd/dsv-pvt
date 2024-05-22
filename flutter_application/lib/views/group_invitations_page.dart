@@ -91,6 +91,9 @@ class _GroupInvitationsState extends State<GroupInvitationsPage> {
                 ),
               ),
       ),
+      bottomNavigationBar: buildBottomNavigationBar(
+        context: context,
+      ),
     );
   }
 }

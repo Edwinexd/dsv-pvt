@@ -299,7 +299,7 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
                   ),
                   SizedBox(height: 20),
                   MyButton(
-                    buttonText: 'Save Profile',
+                    buttonText: 'Create Profile',
                     onTap: _saveProfile,
                   ),
                 ],

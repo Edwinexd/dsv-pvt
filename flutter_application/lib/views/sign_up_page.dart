@@ -131,35 +131,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     buttonText: "Create account",
                     onTap: registerUser,
                   ),
-                  const SizedBox(height: 20),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 25.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                            child: Divider(
-                                color: Color.fromARGB(255, 16, 14, 99),
-                                thickness: 0.5)),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10.0),
-                          child: Text('Or continue with',
-                              style: TextStyle(
-                                  color: Color.fromARGB(255, 16, 14, 99))),
-                        ),
-                        Expanded(
-                            child: Divider(
-                                color: Color.fromARGB(255, 16, 14, 99),
-                                thickness: 0.5)),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 25),
-                  const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SquareTile(imagePath: 'lib/images/google.png')
-                      ]),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 40),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
