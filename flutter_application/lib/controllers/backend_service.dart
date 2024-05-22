@@ -216,7 +216,7 @@ class BackendService {
   // --------- GROUPS ---------
 
   Future<Group> createGroup(
-      String name, String description, bool isPrivate, String ownedId, double? latitude, double? longitude, String? address) async {
+      String name, String description, bool isPrivate, String ownedId, double? latitude, double? longitude, String? address, int skillLevel) async {
     final response = await _dio.post(
       '/groups',
       data: {
@@ -227,6 +227,7 @@ class BackendService {
         "latitude": latitude,
         "longitude": longitude,
         "address": address,
+        "skill_level": skillLevel,
       },
     );
     return Group.fromJson((response.data) as Map<String, dynamic>);
@@ -250,7 +251,7 @@ class BackendService {
   }
 
   Future<Group> updateGroup(int groupId,
-      {String? newName, String? description, bool? isPrivate}) async {
+      {String? newName, String? description, bool? isPrivate, int? skillLevel}) async {
     // Create a map to hold the update fields
     Map<String, dynamic> updateFields = {};
     if (newName != null) {
@@ -261,6 +262,9 @@ class BackendService {
     }
     if (isPrivate != null) {
       updateFields['is_private'] = isPrivate;
+    }
+    if (skillLevel != null) {
+      updateFields['skill_level'] = skillLevel;
     }
     if (updateFields.isEmpty) {
       throw const FormatException(
