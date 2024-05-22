@@ -40,7 +40,7 @@ class _ChallengesPageState extends State<ChallengesPage> {
   bool _isDuringTheRaceVisible = false;
 
   Future<List<Challenge>> _fetchChallenges() async {
-    return await BackendService().getChallenges(0, 10); // Adjust skip and limit as needed
+    return await BackendService().getChallenges(0, 25); // Adjust skip and limit as needed
   }
 
   void _toggleGroupActivitiesVisibility() {

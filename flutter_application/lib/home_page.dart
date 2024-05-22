@@ -294,18 +294,18 @@ class Leaderboard extends StatelessWidget {
               right: 0,
               child: Center(
                 child: Container(
-                  width: 327,
+                  width: 330,
                   margin: EdgeInsets.all(17),
                   child: Container(
                     padding: EdgeInsets.all(15),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFFF344F7),
-                        padding: const EdgeInsets.symmetric(horizontal: 90, vertical: 15),
+                        padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -317,7 +317,7 @@ class Leaderboard extends StatelessWidget {
                         );
                       },
                       child: const Text(
-                        'More',
+                        'Show More',
                         style: TextStyle(
                           color: Colors.white,
                         ),
