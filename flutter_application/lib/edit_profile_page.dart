@@ -39,7 +39,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   String age = '';
   String selectedLocation = '';
   String bio = '';
-  bool bioEntered = true;
+  bool bioEntered = true; // bio could be turned empty by the user
   String? runnerId;
   Map<String, bool> interests = {
     'Running': false,
@@ -134,7 +134,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
   }
 
-  // TODO: Copied from create_profile_page.dart move to a common file
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final ImageSource? source = await showDialog<ImageSource?>(
@@ -189,8 +188,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title:
-              const Text('Edit Profile', style: TextStyle(color: Colors.white)),
+          title: const Text('Edit Profile', style: TextStyle(color: Colors.white)),
           backgroundColor: Colors.transparent,
           elevation: 0,
           iconTheme: const IconThemeData(color: Colors.white),
@@ -265,10 +263,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ),
                       SizedBox(height: 20),
                       CustomTextField(
-                        labelText: bioEntered ? null : 'About Me',
+                        labelText: 'About Me',
                         onChanged: (text) {
                           setState(() {
                             bioEntered = text.isNotEmpty;
+                            bio = text;
                           });
                         },
                         maxLines: null,
@@ -277,7 +276,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ),
                       SizedBox(height: 20),
                       CustomTextField(
-                        labelText: runnerId != null && runnerId!.isNotEmpty ? null : 'Runner ID(Optional)',
+                        labelText: 'Runner ID (Optional)',
                         onChanged: (text) {
                           setState(() {
                             runnerId = text.isNotEmpty ? text : null;
