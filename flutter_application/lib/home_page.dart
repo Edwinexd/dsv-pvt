@@ -260,36 +260,37 @@ class Leaderboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     leaderboardEntries.sort((a, b) => b.points.compareTo(a.points));
+    List<Group> topThree = leaderboardEntries.take(3).toList();
 
-    if (leaderboardEntries.length >= 3) {
-      var temp = leaderboardEntries[1];
-      leaderboardEntries[1] = leaderboardEntries[0];
-      leaderboardEntries[0] = leaderboardEntries[2];
-      leaderboardEntries[2] = temp;
+    if (topThree.length >= 3) {
+      var temp = topThree[1];
+      topThree[1] = topThree[0];
+      topThree[0] = topThree[2];
+      topThree[2] = temp;
     }
 
     int highestScoreIndex = 0;
-    for (int i = 1; i < leaderboardEntries.length; i++) {
-      if (leaderboardEntries[i].points >
-          leaderboardEntries[highestScoreIndex].points) {
+    for (int i = 1; i < topThree.length; i++) {
+      if (topThree[i].points >
+          topThree[highestScoreIndex].points) {
         highestScoreIndex = i;
       }
     }
 
-    final maxPoints = leaderboardEntries.isNotEmpty
-        ? leaderboardEntries.map((group) => group.points).reduce(math.max)
+    final maxPoints = topThree.isNotEmpty
+        ? topThree.map((group) => group.points).reduce(math.max)
         : 1;
     final maxHeight = 200.0; 
 
     return Container(
       width: 327,
-      height: 370,
+      height: 380,
       padding: const EdgeInsets.all(15),
       child: Stack(
         children: [
           if (showMoreButton)
             Positioned(
-              bottom: -27, 
+              bottom: -20, 
               left: 0,
               right: 0,
               child: Center(
@@ -342,52 +343,54 @@ class Leaderboard extends StatelessWidget {
               ),
             ),
           ),
-          ...leaderboardEntries.asMap().entries.map((entry) {
-            final barHeight = (entry.value.points / maxPoints) * maxHeight;
-            return Positioned(
-              bottom: 50,
-              left: (entry.key * 100).toDouble(),
-              child: Column(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(bottom: 5),
-                    decoration: BoxDecoration(
-                      color: Color(0xFF9087E5),
-                      borderRadius: BorderRadius.circular(9),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(5),
-                      child: Text(
-                        entry.value.name,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
+          Positioned(
+            bottom: 60,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: topThree.asMap().entries.map((entry) {
+                final barHeight = (entry.value.points / maxPoints) * maxHeight;
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Container(
+                      width: 80,
+                      margin: EdgeInsets.only(bottom: 5),
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(9),
                       ),
-                    ),
-                  ),
-                  if (showCrown && entry.key == highestScoreIndex)
-                    Icon(Icons.rocket_launch, color: Colors.yellow, size: 24.0),
-                  Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Container(
-                        width: 100,
-                        height: barHeight,
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Color(0xFF9087E5),
-                              Color(0xFFCDC9F3),
-                            ],
+                      child: Padding(
+                        padding: EdgeInsets.all(5),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            entry.value.name,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
                           ),
                         ),
                       ),
-                      Positioned(
-                        bottom: (barHeight - 11) /
-                            2, // Adjust this value as needed
+                    ),
+                    if (showCrown && entry.key == highestScoreIndex)
+                      Icon(Icons.rocket_launch, color: Colors.yellow, size: 24.0),
+                    Container(
+                      width: 75,
+                      height: barHeight,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Color(0xFF9087E5),
+                            Color(0xFFCDC9F3),
+                          ],
+                        ),
+                      ),
+                      child: Center(
                         child: Text(
                           '${entry.value.points} points',
                           style: const TextStyle(
@@ -396,14 +399,14 @@ class Leaderboard extends StatelessWidget {
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          }).toList(),
+                    ),
+                  ],
+                );
+              }).toList(),
+            ),
+          ),
         ],
       ),
     );
   }
-}
+}  
