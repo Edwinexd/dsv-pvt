@@ -28,7 +28,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> signOut() async {
-    await BackendService().signOut();
+    await BackendService().logout();
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (context) => LoginPage(darkModeEnabled: darkModeEnabled, onToggleDarkMode: widget.onToggleDarkMode)),
     );
