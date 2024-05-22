@@ -271,8 +271,7 @@ class Leaderboard extends StatelessWidget {
 
     int highestScoreIndex = 0;
     for (int i = 1; i < topThree.length; i++) {
-      if (topThree[i].points >
-          topThree[highestScoreIndex].points) {
+      if (topThree[i].points > topThree[highestScoreIndex].points) {
         highestScoreIndex = i;
       }
     }
@@ -280,7 +279,7 @@ class Leaderboard extends StatelessWidget {
     final maxPoints = topThree.isNotEmpty
         ? topThree.map((group) => group.points).reduce(math.max)
         : 1;
-    final maxHeight = 200.0; 
+    final maxHeight = 200.0;
 
     return Container(
       width: 327,
@@ -290,7 +289,7 @@ class Leaderboard extends StatelessWidget {
         children: [
           if (showMoreButton)
             Positioned(
-              bottom: -20, 
+              bottom: -20,
               left: 0,
               right: 0,
               child: Center(
@@ -349,6 +348,7 @@ class Leaderboard extends StatelessWidget {
             right: 0,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: topThree.asMap().entries.map((entry) {
                 final barHeight = (entry.value.points / maxPoints) * maxHeight;
                 return Column(
@@ -409,4 +409,4 @@ class Leaderboard extends StatelessWidget {
       ),
     );
   }
-}  
+}
