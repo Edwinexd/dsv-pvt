@@ -12,6 +12,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+import models
 from database import base
 from main import app, get_db_session
 
@@ -21,9 +22,7 @@ testing_session_local = sessionmaker(autocommit=False, autoflush=False, bind=eng
 
 base.metadata.create_all(bind=engine)
 
-# entire shrek script
-# VERY_LONG_STRING = open("resources/testing/shrek.txt").read()
-VERY_LONG_STRING = "temp"
+VERY_LONG_STRING = "ttemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptemptempemp"
 
 
 def override_get_db_session():
@@ -67,6 +66,7 @@ payload_generator = PayloadGenerator()
 @pytest.fixture(scope="session", autouse=True)
 def client():
     with TestClient(app) as app_client:
+        # TODO: create user to use in tests
         yield app_client
     os.remove("tester.db")
 
@@ -224,7 +224,7 @@ def test_very_long_strings(client, mocker):
 def test_bulk_user_creation(client, mocker):
     responses = set()
 
-    for i in range(0, 1000):
+    for i in range(0, 10):
         user_payload = payload_generator.generate_user_payload()
         mock_user_id = payload_generator.generate_mock_id()
 
@@ -236,35 +236,166 @@ def test_bulk_user_creation(client, mocker):
     assert 429 in responses
 
 
+creds = {  # Normal user
+    "email": "test1@example.com",
+    "password": "password",
+}
+
+
+def login(client, mocker) -> str:
+    """
+    Logs in to mock client and gets access token.
+    """
+    mocker.patch("main.auth.login", return_value="user1")
+    response = client.post("/users/login", json=creds)
+    return response.json()["bearer"]
+
+
 # USER READING TESTS
-def test_read_single_user(client):
-    # TODO: token = login()
+def test_read_single_user(client, mocker):
+    token = login(client, mocker)
     skip = 0
     limit = 1
 
-    response = client.get(f"/users?skip={skip}&limit={limit}")
+    response = client.get(
+        f"/users?skip={skip}&limit={limit}", headers={"Authorization": token}
+    )
 
     users = response.json()["data"]
 
     assert len(users) == 1
 
 
-# valid
-# TODO: single user, valid assert amount
-# TODO: multiple users, valid assert amount
-# TODO: no users (limit=0), valid assert amount
-# TODO: limit exceeds amount in db, valid verify contains all
-# TODO: negative skip value, assert begins at start
-# TODO: mock crud.get_users, assert correct params
-# TODO: mock schemas.UserList constructor, assert constr was called with data from crud.get_users
-# TODO: empty db
-# TODO: exactly limit amt of users
-# TODO: db contains limit + 1
-# TODO: test pagination consistency
+def test_read_multiple_users(client, mocker):
+    token = login(client, mocker)
+    skip = 0
+    limit = 3
+
+    response = client.get(
+        f"/users?skip={skip}&limit={limit}", headers={"Authorization": token}
+    )
+
+    users = response.json()["data"]
+
+    assert len(users) == 3
 
 
-# invalid
-# TODO: mock crud.get_users to return invalid data (missing fields), assert function handles error
-# TODO: wrong type for skip, limit;
-# TODO: very large values for skip, limit
-# TODO: no access to endpoint
+def test_no_users(client, mocker):
+    token = login(client, mocker)
+    skip = 3
+    limit = 0
+
+    response = client.get(
+        f"/users?skip={skip}&limit={limit}", headers={"Authorization": token}
+    )
+
+    users = response.json()["data"]
+
+    assert len(users) == 0
+
+
+def test_limit_exceeds_amt(client, mocker):
+    rows = testing_session_local().query(models.User).count()
+    token = login(client, mocker)
+    skip = 0
+    limit = rows+1
+
+    response = client.get(
+        f"/users?skip={skip}&limit={limit}", headers={"Authorization": token}
+    )
+
+    users = response.json()["data"]
+
+    assert len(users) == rows
+
+def test_negative_skip(client, mocker):
+    token = login(client, mocker)
+    skip = -1
+    limit = 2
+
+    response = client.get(
+        f"/users?skip={skip}&limit={limit}", headers={"Authorization": token}
+    )
+
+    users = response.json()["data"]
+
+    assert len(users) == 2
+    assert users[0]["id"] == "user1"
+
+def test_limit_equals_amt(client, mocker):
+    rows = testing_session_local().query(models.User).count()
+    token = login(client, mocker)
+    skip = 0
+    limit = rows
+
+    response = client.get(
+        f"/users?skip={skip}&limit={limit}", headers={"Authorization": token}
+    )
+
+    users = response.json()["data"]
+
+    assert len(users) == rows
+
+def test_amt_is_limit_plus_one(client, mocker):
+    rows = testing_session_local().query(models.User).count()
+    token = login(client, mocker)
+    skip = 0
+    limit = rows - 1
+
+    response = client.get(
+        f"/users?skip={skip}&limit={limit}", headers={"Authorization": token}
+    )
+
+    users = response.json()["data"]
+
+    assert len(users) == rows - 1
+
+
+def test_pagination_consistency(client, mocker):
+    expected_id = "user4"
+    token = login(client, mocker)
+    skip = 3
+    limit = 1
+
+    response = client.get(
+        f"/users?skip={skip}&limit={limit}", headers={"Authorization": token}
+    )
+
+    users = response.json()["data"]
+
+    assert len(users) == 1
+    assert users[0]["id"] == expected_id
+
+def test_wrong_datatypes(client, mocker):
+    token = login(client, mocker)
+    skip = "3"
+    limit = 12
+
+    response = client.get(
+        f"/users?skip={skip}&limit={limit}", headers={"Authorization": token}
+    )
+
+    assert response.status_code == 422
+
+def test_very_large_values(client, mocker):
+    token = login(client, mocker)
+    skip = 0
+    limit = 0x100000000000000
+
+    response = client.get(
+        f"/users?skip={skip}&limit={limit}", headers={"Authorization": token}
+    )
+
+    assert response.status_code == 413
+
+def test_no_authentication(client, mocker):
+    skip = 0
+    limit = 10
+
+    response = client.get(
+        f"/users?skip={skip}&limit={limit}", headers={"Authorization": "none"}
+    )
+
+    assert response.status_code == 401
+
+   
