@@ -876,9 +876,7 @@ void main() {
         // Arrange
         dioAdapter.onPost(
           '/groups',
-          (server) => server.reply(
-              200,
-              mockGroupResponse()),
+          (server) => server.reply(200, mockGroupResponse()),
           data: {
             "group_name": groupName,
             "description": groupDescription,
@@ -945,14 +943,15 @@ void main() {
 
         // Act
         final group = await backendService.createGroup(
-            groupName,
-            groupDescription,
-            groupIsPrivate,
-            groupOwnerId,
-            groupSkillLevel,
-            latitude,
-            longitude,
-            address,);
+          groupName,
+          groupDescription,
+          groupIsPrivate,
+          groupOwnerId,
+          groupSkillLevel,
+          latitude,
+          longitude,
+          address,
+        );
 
         // Assert
         expect(group, isA<Group>());

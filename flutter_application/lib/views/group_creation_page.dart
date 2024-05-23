@@ -82,12 +82,12 @@ class GroupCreationState extends State<GroupCreation> {
   }
 
   Future<void> fetchImage(String groupId) async {
-    ImageProvider image = await BackendService().getImage(createdGroup!.imageId!);
+    ImageProvider image =
+        await BackendService().getImage(createdGroup!.imageId!);
     setState(() {
       groupImage = image;
     });
-}
-
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,23 +104,23 @@ class GroupCreationState extends State<GroupCreation> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Center(
-                    child: GestureDetector(
-                      onTap: _pickImage,
+                child: GestureDetector(
+                  onTap: _pickImage,
+                  child: CircleAvatar(
+                    radius: 60,
+                    backgroundImage: groupImage,
+                    child: const Align(
+                      alignment: Alignment.bottomRight,
                       child: CircleAvatar(
-                        radius: 60,
-                        backgroundImage: groupImage,
-                        child: const Align(
-                          alignment: Alignment.bottomRight,
-                          child: CircleAvatar(
-                            backgroundColor: Colors.white,
-                            radius: 15,
-                            child: Icon(Icons.camera_alt,
-                                color: Colors.blue, size: 22),
-                          ),
-                        ),
+                        backgroundColor: Colors.white,
+                        radius: 15,
+                        child: Icon(Icons.camera_alt,
+                            color: Colors.blue, size: 22),
                       ),
                     ),
                   ),
+                ),
+              ),
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(labelText: 'Group Name'),
@@ -153,18 +153,18 @@ class GroupCreationState extends State<GroupCreation> {
                 ),
               ),
               const SizedBox(height: 16.0),
-                const Text(
-                  'Skill Level:',
-                  style: TextStyle(fontSize: 16),
-                ),
-                SkillLevelSlider(
-                    initialSkillLevel: _skillLevel,
-                    onSkillLevelChanged: (newLevel) {
-                      setState(() {
-                        _skillLevel = newLevel;
-                      });
-                    },
-                  ),
+              const Text(
+                'Skill Level:',
+                style: TextStyle(fontSize: 16),
+              ),
+              SkillLevelSlider(
+                initialSkillLevel: _skillLevel,
+                onSkillLevelChanged: (newLevel) {
+                  setState(() {
+                    _skillLevel = newLevel;
+                  });
+                },
+              ),
               const SizedBox(height: 16.0),
               Row(
                 children: <Widget>[
@@ -210,7 +210,6 @@ class GroupCreationState extends State<GroupCreation> {
                     const InputDecoration(labelText: 'Group Description'),
                 maxLines: 3,
               ),
-
               const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: () {
@@ -225,9 +224,9 @@ class GroupCreationState extends State<GroupCreation> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => GroupPage(group: createdGroup!, isMember: true),
-
-                    ),
+                        builder: (context) =>
+                            GroupPage(group: createdGroup!, isMember: true),
+                      ),
                     );
                   },
                   child: const Text('Go to Group Page'),
@@ -260,8 +259,16 @@ class GroupCreationState extends State<GroupCreation> {
     }
 
     User me = await BackendService().getMe();
-    createdGroup = await BackendService().createGroup(name, description, _isPublic, me.id, _skillLevel, _location?.latLong.latitude, _location?.latLong.longitude, _location?.address);
-    
+    createdGroup = await BackendService().createGroup(
+        name,
+        description,
+        _isPublic,
+        me.id,
+        _skillLevel,
+        _location?.latLong.latitude,
+        _location?.latLong.longitude,
+        _location?.address);
+
     if (pickedImage != null) {
       await BackendService().uploadGroupPicture(createdGroup!.id, pickedImage!);
     }

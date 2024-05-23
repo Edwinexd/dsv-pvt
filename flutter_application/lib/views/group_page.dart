@@ -16,7 +16,6 @@ import 'package:flutter_application/views/edit_group_page.dart';
 import 'package:flutter_application/views/group_members.dart';
 import 'package:flutter_application/views/my_groups.dart';
 
-
 class GroupPage extends StatefulWidget {
   final Group group;
   bool isMember;
@@ -44,7 +43,7 @@ class _GroupPageState extends State<GroupPage> {
     await fetchMyGroups();
     await fetchGroupImage();
     await fetchMembers();
-    
+
     if (!widget.isMember) {
       return;
     }
@@ -71,11 +70,11 @@ class _GroupPageState extends State<GroupPage> {
   }
 
   Future<void> fetchGroupImage() async {
-    ImageProvider image = await BackendService().getImage(widget.group.imageId!);
+    ImageProvider image =
+        await BackendService().getImage(widget.group.imageId!);
     setState(() {
       groupImage = image;
     });
-    
   }
 
   Future<void> fetchJoinedActivities() async {
@@ -250,11 +249,11 @@ class _GroupPageState extends State<GroupPage> {
                         child: Column(
                           children: [
                             Center(
-                                child: CircleAvatar(
-                                  radius: 60,
-                                  backgroundImage: groupImage,
-                                ),
+                              child: CircleAvatar(
+                                radius: 60,
+                                backgroundImage: groupImage,
                               ),
+                            ),
                             const SizedBox(height: 16),
                             Center(
                               child: Text(

@@ -46,7 +46,7 @@ class BackendService {
       return handler.next(error);
     }));
   }
-  
+
   void setDio(Dio dio) {
     _dio = dio;
   }
@@ -155,8 +155,15 @@ class BackendService {
 
   // --------- PROFILE ---------
 
-  Future<Profile> createProfile(String userId, String description, int age,
-      String interests, int skillLevel, bool isPrivate, String location, String? runnerId) async {
+  Future<Profile> createProfile(
+      String userId,
+      String description,
+      int age,
+      String interests,
+      int skillLevel,
+      bool isPrivate,
+      String location,
+      String? runnerId) async {
     final response = await _dio.put('/users/$userId/profile', data: {
       "description": description,
       "age": age,
@@ -182,7 +189,7 @@ class BackendService {
       int? skillLevel,
       bool? isPrivate,
       String? location,
-      String? runnerId }) async {
+      String? runnerId}) async {
     Map<String, dynamic> updateFields = {};
     if (description != null) {
       updateFields['description'] = description;
@@ -225,7 +232,14 @@ class BackendService {
   // --------- GROUPS ---------
 
   Future<Group> createGroup(
-      String name, String description, bool isPrivate, String ownerId, int skillLevel, double? latitude, double? longitude, String? address) async {
+      String name,
+      String description,
+      bool isPrivate,
+      String ownerId,
+      int skillLevel,
+      double? latitude,
+      double? longitude,
+      String? address) async {
     final response = await _dio.post(
       '/groups',
       data: {
@@ -243,7 +257,8 @@ class BackendService {
   }
 
   // TODO: Backend should have an order by parameter
-  Future<List<Group>> getGroups(int skip, int limit, GroupOrderType orderBy, bool descending) async {
+  Future<List<Group>> getGroups(
+      int skip, int limit, GroupOrderType orderBy, bool descending) async {
     final response = await _dio.get('/groups', queryParameters: {
       'skip': skip,
       'limit': limit,
@@ -260,7 +275,10 @@ class BackendService {
   }
 
   Future<Group> updateGroup(int groupId,
-      {String? newName, String? description, int? skillLevel, bool? isPrivate}) async {
+      {String? newName,
+      String? description,
+      int? skillLevel,
+      bool? isPrivate}) async {
     // Create a map to hold the update fields
     Map<String, dynamic> updateFields = {};
     if (newName != null) {
@@ -352,7 +370,14 @@ class BackendService {
 
   // --------- ACTIVITIES ---------
   Future<Activity> createActivity(
-      int groupId, String name, DateTime scheduled, int difficulty, double latitude, double longitude, String address, List<Challenge> challenges) async {
+      int groupId,
+      String name,
+      DateTime scheduled,
+      int difficulty,
+      double latitude,
+      double longitude,
+      String address,
+      List<Challenge> challenges) async {
     final response = await _dio.post('/groups/$groupId/activities', data: {
       "activity_name": name,
       "scheduled_date": scheduled.toIso8601String(),
@@ -414,7 +439,8 @@ class BackendService {
     await _dio.delete('/groups/$groupId/activities/$activityId');
   }
 
-  Future<void> joinActivity(int groupId, int activityId, String participantId) async {
+  Future<void> joinActivity(
+      int groupId, int activityId, String participantId) async {
     await _dio.put(
         '/group/$groupId/activities/$activityId/participants/$participantId');
   }
@@ -449,6 +475,7 @@ class BackendService {
     await _dio.delete(
         '/groups/$groupId/activities/$acitivityId/participants/$participantId');
   }
+
   // --------- CHALLENGES ---------
   Future<List<Challenge>> getChallenges(int skip, int limit) async {
     final response = await _dio.get('/challenges', queryParameters: {
@@ -458,7 +485,6 @@ class BackendService {
     var challengeList = response.data['data'] as List;
     return challengeList.map((e) => Challenge.fromJson(e)).toList();
   }
-
 
   // --------- IMAGE RETRIEVAL ---------
   Future<ImageProvider> getImage(String imageId) async {
@@ -568,28 +594,33 @@ class BackendService {
   }
 
   // --------- SHARING ---------
-  Future<XFile> getAchievementShareImage(String userId, int achievementId) async {
+  Future<XFile> getAchievementShareImage(
+      String userId, int achievementId) async {
     final response = await _dio.get(
       '/users/$userId/achievements/$achievementId/share',
       options: Options(
           responseType: ResponseType.bytes), // Set response type as bytes
     );
-    String mimeType = response.headers.map['content-type']?.first ?? 'image/jpeg';
+    String mimeType =
+        response.headers.map['content-type']?.first ?? 'image/jpeg';
     String fileExtension = mimeType.split('/').last;
-    return XFile.fromData(Uint8List.fromList(response.data), mimeType: mimeType, name: 'achievement_share.$fileExtension');
+    return XFile.fromData(Uint8List.fromList(response.data),
+        mimeType: mimeType, name: 'achievement_share.$fileExtension');
   }
 
-  Future<XFile> getActivityShareImage(String userId, int activityId, int groupId) async {
+  Future<XFile> getActivityShareImage(
+      String userId, int activityId, int groupId) async {
     final response = await _dio.get(
-      '/users/$userId/activities/$activityId/share',
-      options: Options(
-          responseType: ResponseType.bytes), // Set response type as bytes
-      queryParameters: {
-        'group_id': groupId,
-      }
-    );
-    String mimeType = response.headers.map['content-type']?.first ?? 'image/jpeg';
+        '/users/$userId/activities/$activityId/share',
+        options: Options(
+            responseType: ResponseType.bytes), // Set response type as bytes
+        queryParameters: {
+          'group_id': groupId,
+        });
+    String mimeType =
+        response.headers.map['content-type']?.first ?? 'image/jpeg';
     String fileExtension = mimeType.split('/').last;
-    return XFile.fromData(Uint8List.fromList(response.data), mimeType: mimeType, name: 'activity_share.$fileExtension');
+    return XFile.fromData(Uint8List.fromList(response.data),
+        mimeType: mimeType, name: 'activity_share.$fileExtension');
   }
 }
