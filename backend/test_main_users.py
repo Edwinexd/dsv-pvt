@@ -15,6 +15,7 @@ from sqlalchemy.orm import sessionmaker
 import models
 from database import base
 from main import app, get_db_session
+from sessions import revoke_sessions
 
 SQLALCHEMY_DB_URL = "sqlite:///./tester.db"
 engine = create_engine(SQLALCHEMY_DB_URL)
@@ -398,4 +399,50 @@ def test_no_authentication(client, mocker):
 
     assert response.status_code == 401
 
-   
+# CURRENT USER TESTS
+
+def test_successful_authentication(client, mocker):
+    token = login(client, mocker)
+
+    response = client.get("/users/me", headers={"Authorization": token})
+
+    assert "id" in response.json()
+    assert "email" in response.json()
+    assert "username" in response.json()
+    assert "full_name" in response.json()
+    assert response.json()["id"] == "user1"
+    assert response.status_code == 200
+
+def test_unauthorized(client, mocker):
+    response = client.get("/users/me", headers={"Authorization": "none"})
+
+    assert response.status_code == 401
+    assert "id" not in response.json()
+
+def test_revoked_session(client, mocker):
+    token = login(client, mocker)
+    revoke_sessions("user1")
+    response = client.get("/users/me", headers={"Authorization": token})
+
+    assert response.status_code == 401
+    assert "id" not in response.json()
+
+# SPECIFIC USERS TEST
+def test_nonexistent_user(client, mocker):
+    token = login(client, mocker)
+
+    response = client.get("/users/nonexistentuser123", headers={"Authorization": token})
+
+    assert "id" not in response.json()
+    assert response.status_code == 404
+
+def test_existing_user(client, mocker):
+    token = login(client, mocker)
+
+    response = client.get("/users/user1", headers={"Authorization": token})
+
+    assert "id" in response.json()
+    assert response.json()["id"] == "user1"
+    assert response.status_code == 200
+
+# USER UPDATE TESTS
