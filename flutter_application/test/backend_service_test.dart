@@ -8,6 +8,108 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 
+// MISC CONSTANTS
+const skip = 0;
+const limit = 25;
+final serverErrorResponse = {"error": "Internal server error"};
+
+// USER CONSTANTS
+const userId = '123';
+const userName = 'testUser';
+const userEmail = 'test@example.com';
+const userFullName = 'Test User';
+const userPassword = 'password123';
+const userRole = 2;
+const userDateCreated = "2024-05-20T13:51:49.615Z";
+final userNotFoundErrorResponse = {"error": "User not found"};
+
+Map<String, dynamic> mockUserResponse({
+  String email = userEmail,
+  String name = userName,
+  String fullName = userFullName,
+  String id = userId,
+  int role = userRole,
+  String dateCreated = userDateCreated,
+}) {
+  return {
+    "email": email,
+    "username": name,
+    "full_name": fullName,
+    "id": id,
+    "role": role,
+    "date_created": dateCreated,
+  };
+}
+
+// PROFILE CONSTANTS
+const profileDescription = 'This is a test profile';
+const profileAge = 25;
+const profileInterests = 'Test profile interests';
+const profileSkillLevel = 3;
+const profileIsPrivate = true;
+const profileRunnerId = userId;
+const profileLocation = 'Test Location';
+const profileNotFoundErrorResponse = {"error": "Profile not found"};
+
+Map<String, dynamic> mockProfileResponse({
+  String description = profileDescription,
+  int age = profileAge,
+  String interests = profileInterests,
+  int skillLevel = profileSkillLevel,
+  bool isPrivate = profileIsPrivate,
+  String location = profileLocation,
+  String? runnerId = profileRunnerId,
+  String? imageId,
+}) {
+  return {
+    "description": description,
+    "age": age,
+    "interests": interests,
+    "skill_level": skillLevel,
+    "is_private": isPrivate,
+    "runner_id": runnerId,
+    "location": location,
+    "image_id": imageId,
+  };
+}
+
+// GROUP CONSTANTS
+const groupId = 123;
+const groupName = 'Test Group';
+const groupDescription = 'This is a test group';
+const groupIsPrivate = true;
+const groupOwnerId = userId;
+const groupPoints = 123;
+const groupLatitude = 12.345678;
+const groupLongitude = 98.765432;
+const groupAddress = '123 Test Street';
+
+Map<String, dynamic> mockGroupResponse({
+  int id = groupId,
+  String name = groupName,
+  String description = groupDescription,
+  bool isPrivate = groupIsPrivate,
+  String ownerId = groupOwnerId,
+  int points = groupPoints,
+  String? imageId,
+  String? address = groupAddress,
+  double? latitude = groupLatitude,
+  double? longitude = groupLongitude,
+}) {
+  return {
+    "group_name": name,
+    "description": description,
+    "is_private": isPrivate,
+    "owner_id": ownerId,
+    "latitude": latitude,
+    "longitude": longitude,
+    "address": address,
+    "id": id,
+    "points": points,
+    "image_id": imageId,
+  };
+}
+
 void main() {
   late Dio dio;
   late DioAdapter dioAdapter;
@@ -36,79 +138,46 @@ void main() {
     group('createUser Tests', () {
       test('createUser returns a User object on success', () async {
         // Arrange
-        const userName = 'testUser';
-        const email = 'test@example.com';
-        const fullName = 'Test User';
-        const password = 'password123';
-
-        final mockResponse = {
-          "email": email,
-          "username": userName,
-          "full_name": fullName,
-          "id": "testId",
-          "role": 2,
-          "date_created": "2024-05-20T12:59:21.461Z",
-        };
-
         dioAdapter.onPost(
           '/users',
-          (server) => server.reply(200, mockResponse),
+          (server) => server.reply(200, mockUserResponse()),
           data: {
-            "email": email,
+            "email": userEmail,
             "username": userName,
-            "full_name": fullName,
-            "password": password,
+            "full_name": userFullName,
+            "password": userPassword,
           },
         );
 
         dioAdapter
             .onPost('/users/login', (server) => server.reply(200, {}), data: {
-          "email": email,
-          "password": password,
+          "email": userEmail,
+          "password": userPassword,
         });
 
         // Act
         final user = await backendService.createUser(
-            userName, email, fullName, password);
+            userName, userEmail, userFullName, userPassword);
 
         // Assert
         expect(user, isA<User>());
         expect(user.userName, equals(userName));
-        expect(user.email, equals(email));
-        expect(user.userName, equals(userName));
+        expect(user.email, equals(userEmail));
       });
     });
     group('getUsers Tests', () {
       test('getUsers returns a list of User objects on success', () async {
         // Arrange
-        const path = '/users';
-        const skip = 0;
-        const limit = 10;
-        const fullName = 'Test User';
-
         final mockResponse = {
           "data": [
-            {
-              "email": "string",
-              "username": "string",
-              "full_name": fullName,
-              "id": "string",
-              "role": 2,
-              "date_created": "2024-05-20T13:51:49.615Z"
-            },
-            {
-              "email": "string",
-              "username": "string",
-              "full_name": "string",
-              "id": "string",
-              "role": 2,
-              "date_created": "2024-05-20T13:51:49.615Z"
-            }
+            mockUserResponse(),
+            mockUserResponse(),
+            mockUserResponse(),
           ]
         };
 
         dioAdapter.onGet(
-          path,
+          '/users',
           queryParameters: {
             'skip': skip,
             'limit': limit,
@@ -124,14 +193,12 @@ void main() {
 
         // Assert
         expect(users, isA<List<User>>());
-        expect(users[0].fullName, equals(fullName));
+        expect(users[0].fullName, equals(userFullName));
       });
 
       test('getUsers throws DioException on bad request', () async {
         // Arrange
         const path = '/users';
-        const skip = 0;
-        const limit = 10;
 
         dioAdapter.onGet(
           path,
@@ -152,21 +219,11 @@ void main() {
     group('getMyUser Tests', () {
       test('getMyUser returns a User object on sucess', () async {
         // Arrange
-        const path = '/users/me';
-        final mockResponse = {
-          "email": 'test@example.com',
-          "username": 'testUser',
-          "full_name": 'Test User',
-          "id": "string",
-          "role": 2,
-          "date_created": "2024-05-20T12:59:21.461Z",
-        };
-
         dioAdapter.onGet(
-          path,
+          '/users/me',
           (server) => server.reply(
             200,
-            mockResponse,
+            mockUserResponse(),
           ),
         );
 
@@ -181,19 +238,9 @@ void main() {
     group('getUser Tests', () {
       test('getUser returns a User object on success', () async {
         // Arrange
-        const userId = '123';
-        final mockResponse = {
-          "id": userId,
-          "email": "test@example.com",
-          "username": "testUser",
-          "full_name": "Test User",
-          "role": 2,
-          "date_created": "2024-05-20T14:53:01.955Z",
-        };
-
         dioAdapter.onGet(
           '/users/$userId',
-          (server) => server.reply(200, mockResponse),
+          (server) => server.reply(200, mockUserResponse()),
         );
 
         // Act
@@ -202,22 +249,20 @@ void main() {
         // Assert
         expect(user, isA<User>());
         expect(user.id, equals(userId));
-        expect(user.email, equals("test@example.com"));
-        expect(user.userName, equals("testUser"));
-        expect(user.fullName, equals("Test User"));
-        expect(user.role, equals(Role.parse(2)));
-        expect(user.dateCreated,
-            equals(DateTime.parse("2024-05-20T14:53:01.955Z")));
+        expect(user.email, equals(userEmail));
+        expect(user.userName, equals(userName));
+        expect(user.fullName, equals(userFullName));
+        expect(user.role, equals(Role.parse(userRole)));
+        expect(user.dateCreated, equals(DateTime.parse(userDateCreated)));
       });
 
       test('getUser throws a DioException on bad request', () async {
         // Arrange
         const userId = 'invalidId';
-        final errorResponse = {"error": "User not found"};
 
         dioAdapter.onGet(
           '/users/$userId',
-          (server) => server.reply(400, errorResponse),
+          (server) => server.reply(400, userNotFoundErrorResponse),
         );
 
         // Act & Assert
@@ -228,7 +273,7 @@ void main() {
           expect(e, isA<DioException>());
           if (e is DioException) {
             expect(e.response?.statusCode, 400);
-            expect(e.response?.data, errorResponse);
+            expect(e.response?.data, userNotFoundErrorResponse);
           }
         }
       });
@@ -238,114 +283,84 @@ void main() {
       test('updateUser returns a User object on success with userName',
           () async {
         // Arrange
-        const userId = '123';
-        const userName = 'newUsername';
-        final mockResponse = {
-          "id": userId,
-          "email": "test@example.com",
-          "username": userName,
-          "full_name": "Test User",
-          "role": 2,
-          "date_created": "2024-05-20T14:53:01.955Z",
-        };
-
+        const newUserName = 'newUsername';
         dioAdapter.onPatch(
           '/users/$userId',
-          (server) => server.reply(200, mockResponse),
+          (server) => server.reply(200, mockUserResponse(name: newUserName)),
           data: {
-            "username": userName,
+            "username": newUserName,
           },
         );
 
         // Act
         final user =
-            await backendService.updateUser(userId, userName: userName);
+            await backendService.updateUser(userId, userName: newUserName);
 
         // Assert
         expect(user, isA<User>());
         expect(user.id, equals(userId));
-        expect(user.email, equals("test@example.com"));
-        expect(user.userName, equals(userName));
-        expect(user.fullName, equals("Test User"));
+        expect(user.email, equals(userEmail));
+        expect(user.userName, equals(newUserName));
+        expect(user.fullName, equals(userFullName));
       });
 
       test('updateUser returns a User object on success with fullName',
           () async {
         // Arrange
-        const userId = '123';
-        const fullName = 'New Full Name';
-        final mockResponse = {
-          "id": userId,
-          "email": "test@example.com",
-          "username": "testUser",
-          "full_name": fullName,
-          "role": 2,
-          "date_created": "2024-05-20T14:53:01.955Z",
-        };
-
+        const newFullName = 'New Full Name';
         dioAdapter.onPatch(
           '/users/$userId',
-          (server) => server.reply(200, mockResponse),
+          (server) =>
+              server.reply(200, mockUserResponse(fullName: newFullName)),
           data: {
-            "full_name": fullName,
+            "full_name": newFullName,
           },
         );
 
         // Act
         final user =
-            await backendService.updateUser(userId, fullName: fullName);
+            await backendService.updateUser(userId, fullName: newFullName);
 
         // Assert
         expect(user, isA<User>());
         expect(user.id, equals(userId));
-        expect(user.email, equals("test@example.com"));
-        expect(user.userName, equals("testUser"));
-        expect(user.fullName, equals(fullName));
+        expect(user.email, equals(userEmail));
+        expect(user.userName, equals(userName));
+        expect(user.fullName, equals(newFullName));
       });
 
       test(
           'updateUser returns a User object on success with userName and fullName',
           () async {
         // Arrange
-        const userId = '123';
-        const userName = 'newUsername';
-        const fullName = 'New Full Name';
-        final mockResponse = {
-          "id": userId,
-          "email": "test@example.com",
-          "username": userName,
-          "full_name": fullName,
-          "role": 2,
-          "date_created": "2024-05-20T14:53:01.955Z",
-        };
-
+        const newUserName = 'newUsername';
+        const newFullName = 'New Full Name';
         dioAdapter.onPatch(
           '/users/$userId',
-          (server) => server.reply(200, mockResponse),
+          (server) => server.reply(
+              200, mockUserResponse(name: newUserName, fullName: newFullName)),
           data: {
-            "username": userName,
-            "full_name": fullName,
+            "username": newUserName,
+            "full_name": newFullName,
           },
         );
 
         // Act
         final user = await backendService.updateUser(userId,
-            userName: userName, fullName: fullName);
+            userName: newUserName, fullName: newFullName);
 
         // Assert
         expect(user, isA<User>());
         expect(user.id, equals(userId));
-        expect(user.email, equals("test@example.com"));
-        expect(user.userName, equals(userName));
-        expect(user.fullName, equals(fullName));
+        expect(user.email, equals(userEmail));
+        expect(user.userName, equals(newUserName));
+        expect(user.fullName, equals(newFullName));
       });
+
       test(
           'updateUser throws a FormatException when no update fields are provided',
           () async {
-        // Arrange
-        const userId = '123';
-
-        // Act & Assert
+        // Arrange, Act & Assert
         expect(
           () async => await backendService.updateUser(userId),
           throwsA(isA<FormatException>().having(
@@ -359,38 +374,36 @@ void main() {
       test('updateUser throws a DioException on bad request', () async {
         // Arrange
         const userId = 'invalidId';
-        const userName = 'newUsername';
-        const fullName = 'New Full Name';
-        final errorResponse = {"error": "User not found"};
+        const newUserName = 'newUsername';
+        const newFullName = 'New Full Name';
 
         dioAdapter.onPatch(
           '/users/$userId',
-          (server) => server.reply(400, errorResponse),
+          (server) => server.reply(400, userNotFoundErrorResponse),
           data: {
-            "username": userName,
-            "full_name": fullName,
+            "username": newUserName,
+            "full_name": newFullName,
           },
         );
 
         // Act & Assert
         try {
           await backendService.updateUser(userId,
-              userName: userName, fullName: fullName);
+              userName: newUserName, fullName: newFullName);
           fail("Expected a DioException to be thrown");
         } catch (e) {
           expect(e, isA<DioException>());
           if (e is DioException) {
             expect(e.response?.statusCode, 400);
-            expect(e.response?.data, errorResponse);
+            expect(e.response?.data, userNotFoundErrorResponse);
           }
         }
       });
     });
+
     group('deleteUser Tests', () {
       test('deleteUser completes successfully', () async {
         // Arrange
-        const userId = '123';
-
         dioAdapter.onDelete(
           '/users/$userId',
           (server) => server.reply(200, {}),
@@ -406,11 +419,10 @@ void main() {
       test('deleteUser throws DioException on user not found', () async {
         // Arrange
         const userId = 'nonExistentUser';
-        final errorResponse = {"error": "User not found"};
 
         dioAdapter.onDelete(
           '/users/$userId',
-          (server) => server.reply(404, errorResponse),
+          (server) => server.reply(404, userNotFoundErrorResponse),
         );
 
         // Act & Assert
@@ -422,12 +434,9 @@ void main() {
 
       test('deleteUser throws DioException on server error', () async {
         // Arrange
-        const userId = '123';
-        final errorResponse = {"error": "Internal server error"};
-
         dioAdapter.onDelete(
           '/users/$userId',
-          (server) => server.reply(500, errorResponse),
+          (server) => server.reply(500, serverErrorResponse),
         );
 
         // Act & Assert
@@ -437,6 +446,7 @@ void main() {
         );
       });
     }); // BackendService deleUser Tests
+
     group('createProfile Tests', () {
       test('createProfile returns a Profile object on success', () async {
         // Arrange
@@ -586,11 +596,10 @@ void main() {
         const isPrivate = false;
         const location = 'Test City';
         const runnerId = 'runner123';
-        final errorResponse = {"error": "Internal server error"};
 
         dioAdapter.onPut(
           '/users/$userId/profile',
-          (server) => server.reply(500, errorResponse),
+          (server) => server.reply(500, serverErrorResponse),
           data: {
             "description": description,
             "age": age,
@@ -610,24 +619,12 @@ void main() {
         );
       });
     });
-group('getProfile Tests', () {
-  test('getProfile returns a Profile object on success', () async {
+    group('getProfile Tests', () {
+      test('getProfile returns a Profile object on success', () async {
         // Arrange
-        const userId = '123';
-        final mockResponse = {
-          "description": "This is a test profile",
-          "age": 25,
-          "interests": "Running, Hiking",
-          "skill_level": 3,
-          "is_private": false,
-          "location": "Test City",
-          "runner_id": "runner123",
-          "image_id": null
-        };
-
         dioAdapter.onGet(
           '/users/$userId/profile',
-          (server) => server.reply(200, mockResponse),
+          (server) => server.reply(200, mockProfileResponse()),
         );
 
         // Act
@@ -635,26 +632,23 @@ group('getProfile Tests', () {
 
         // Assert
         expect(profile, isA<Profile>());
-        expect(profile.description, equals("This is a test profile"));
-        expect(profile.age, equals(25));
-        expect(profile.interests, equals("Running, Hiking"));
-        expect(profile.skillLevel, equals(3));
-        expect(profile.isPrivate, equals(false));
-        expect(profile.location, equals("Test City"));
-        expect(profile.runnerId, equals("runner123"));
+        expect(profile.description, equals(profileDescription));
+        expect(profile.age, equals(profileAge));
+        expect(profile.interests, equals(profileInterests));
+        expect(profile.skillLevel, equals(profileSkillLevel));
+        expect(profile.isPrivate, equals(profileIsPrivate));
+        expect(profile.location, equals(profileLocation));
+        expect(profile.runnerId, equals(profileRunnerId));
         expect(profile.imageId, isNull);
       });
 
       test('getProfile throws DioException on profile not found', () async {
         // Arrange
         const userId = 'invalidId';
-        final errorResponse = {
-          "error": "Profile not found"
-        };
 
         dioAdapter.onGet(
           '/users/$userId/profile',
-          (server) => server.reply(404, errorResponse),
+          (server) => server.reply(404, profileNotFoundErrorResponse),
         );
 
         // Act & Assert
@@ -666,14 +660,9 @@ group('getProfile Tests', () {
 
       test('getProfile throws DioException on server error', () async {
         // Arrange
-        const userId = '123';
-        final errorResponse = {
-          "error": "Internal server error"
-        };
-
         dioAdapter.onGet(
           '/users/$userId/profile',
-          (server) => server.reply(500, errorResponse),
+          (server) => server.reply(500, serverErrorResponse),
         );
 
         // Act & Assert
@@ -685,116 +674,102 @@ group('getProfile Tests', () {
     }); // getProfile Tests
 
     group('updateProfile Tests', () {
-      test('updateProfile returns a Profile object on success with all fields', () async {
+      test('updateProfile returns a Profile object on success with all fields',
+          () async {
         // Arrange
-        const userId = '123';
-        const description = 'Updated profile description';
-        const age = 30;
-        const interests = 'Swimming, Cycling';
-        const skillLevel = 4;
-        const isPrivate = true;
-        const location = 'Updated City';
-        const runnerId = 'updatedRunner123';
+        const newDescription = 'Updated profile description';
+        const newAge = 30;
+        const newInterests = 'Swimming, Cycling';
+        const newSkillLevel = 4;
+        const newIsPrivate = true;
+        const newLocation = 'Updated City';
+        const newRunnerId = 'updatedRunner123';
 
-        final mockResponse = {
-          "description": description,
-          "age": age,
-          "interests": interests,
-          "skill_level": skillLevel,
-          "is_private": isPrivate,
-          "location": location,
-          "runner_id": runnerId,
-          "image_id": null,
-        };
+        final mockReponse = mockProfileResponse(
+            description: newDescription,
+            age: newAge,
+            interests: newInterests,
+            skillLevel: newSkillLevel,
+            isPrivate: newIsPrivate,
+            location: newLocation,
+            runnerId: newRunnerId);
 
         dioAdapter.onPatch(
           '/users/$userId/profile',
-          (server) => server.reply(200, mockResponse),
+          (server) => server.reply(200, mockReponse),
           data: {
-            "description": description,
-            "age": age,
-            "interests": interests,
-            "skill_level": skillLevel,
-            "is_private": isPrivate,
-            "location": location,
-            "runner_id": runnerId,
+            "description": newDescription,
+            "age": newAge,
+            "interests": newInterests,
+            "skill_level": newSkillLevel,
+            "is_private": newIsPrivate,
+            "location": newLocation,
+            "runner_id": newRunnerId,
           },
         );
 
         // Act
         final profile = await backendService.updateProfile(
           userId,
-          description: description,
-          age: age,
-          interests: interests,
-          skillLevel: skillLevel,
-          isPrivate: isPrivate,
-          location: location,
-          runnerId: runnerId,
+          description: newDescription,
+          age: newAge,
+          interests: newInterests,
+          skillLevel: newSkillLevel,
+          isPrivate: newIsPrivate,
+          location: newLocation,
+          runnerId: newRunnerId,
         );
 
         // Assert
         expect(profile, isA<Profile>());
-        expect(profile.description, equals(description));
-        expect(profile.age, equals(age));
-        expect(profile.interests, equals(interests));
-        expect(profile.skillLevel, equals(skillLevel));
-        expect(profile.isPrivate, equals(isPrivate));
-        expect(profile.location, equals(location));
-        expect(profile.runnerId, equals(runnerId));
+        expect(profile.description, equals(newDescription));
+        expect(profile.age, equals(newAge));
+        expect(profile.interests, equals(newInterests));
+        expect(profile.skillLevel, equals(newSkillLevel));
+        expect(profile.isPrivate, equals(newIsPrivate));
+        expect(profile.location, equals(newLocation));
+        expect(profile.runnerId, equals(newRunnerId));
         expect(profile.imageId, isNull);
       });
 
-      test('updateProfile returns a Profile object on success with some fields', () async {
+      test('updateProfile returns a Profile object on success with some fields',
+          () async {
         // Arrange
-        const userId = '123';
-        const description = 'Updated profile description';
-        const age = 30;
-
-        final mockResponse = {
-          "description": description,
-          "age": age,
-          "interests": "Running, Hiking",
-          "skill_level": 3,
-          "is_private": false,
-          "location": "Test City",
-          "runner_id": "runner123",
-          "image_id": null,
-        };
+        const newDescription = 'Updated profile description';
+        const newAge = 30;
 
         dioAdapter.onPatch(
           '/users/$userId/profile',
-          (server) => server.reply(200, mockResponse),
+          (server) => server.reply(200,
+              mockProfileResponse(description: newDescription, age: newAge)),
           data: {
-            "description": description,
-            "age": age,
+            "description": newDescription,
+            "age": newAge,
           },
         );
 
         // Act
         final profile = await backendService.updateProfile(
           userId,
-          description: description,
-          age: age,
+          description: newDescription,
+          age: newAge,
         );
 
         // Assert
         expect(profile, isA<Profile>());
-        expect(profile.description, equals(description));
-        expect(profile.age, equals(age));
-        expect(profile.interests, equals("Running, Hiking"));
-        expect(profile.skillLevel, equals(3));
-        expect(profile.isPrivate, equals(false));
-        expect(profile.location, equals("Test City"));
-        expect(profile.runnerId, equals("runner123"));
+        expect(profile.description, equals(newDescription));
+        expect(profile.age, equals(newAge));
+        expect(profile.interests, equals(profileInterests));
+        expect(profile.skillLevel, equals(profileSkillLevel));
+        expect(profile.isPrivate, equals(profileIsPrivate));
+        expect(profile.location, equals(profileLocation));
+        expect(profile.runnerId, equals(profileRunnerId));
         expect(profile.imageId, isNull);
       });
 
-      test('updateProfile throws FormatException when no fields are provided', () async {
-        // Arrange
-        const userId = '123';
-
-        // Act & Assert
+      test('updateProfile throws FormatException when no fields are provided',
+          () async {
+        // Arrange, Act & Assert
         expect(
           () async => await backendService.updateProfile(userId),
           throwsA(isA<FormatException>().having(
@@ -807,11 +782,8 @@ group('getProfile Tests', () {
 
       test('updateProfile throws DioException on bad request', () async {
         // Arrange
-        const userId = '123';
         const age = -5; // Invalid age
-        final errorResponse = {
-          "error": "Invalid age value"
-        };
+        final errorResponse = {"error": "Invalid age value"};
 
         dioAdapter.onPatch(
           '/users/$userId/profile',
@@ -830,23 +802,20 @@ group('getProfile Tests', () {
 
       test('updateProfile throws DioException on server error', () async {
         // Arrange
-        const userId = '123';
-        const description = 'Updated profile description';
-        final errorResponse = {
-          "error": "Internal server error"
-        };
+        const newDescription = 'Updated profile description';
 
         dioAdapter.onPatch(
           '/users/$userId/profile',
-          (server) => server.reply(500, errorResponse),
+          (server) => server.reply(500, serverErrorResponse),
           data: {
-            "description": description,
+            "description": newDescription,
           },
         );
 
         // Act & Assert
         expect(
-          () async => await backendService.updateProfile(userId, description: description),
+          () async => await backendService.updateProfile(userId,
+              description: newDescription),
           throwsA(isA<DioException>()),
         );
       });
@@ -855,8 +824,6 @@ group('getProfile Tests', () {
     group('deleteProfile Tests', () {
       test('deleteProfile completes successfully', () async {
         // Arrange
-        const userId = '123';
-        
         dioAdapter.onDelete(
           'users/$userId/profile',
           (server) => server.reply(200, {}),
@@ -872,13 +839,10 @@ group('getProfile Tests', () {
       test('deleteProfile throws DioException on profile not found', () async {
         // Arrange
         const userId = 'invalidId';
-        final errorResponse = {
-          "error": "Profile not found"
-        };
 
         dioAdapter.onDelete(
           'users/$userId/profile',
-          (server) => server.reply(404, errorResponse),
+          (server) => server.reply(404, profileNotFoundErrorResponse),
         );
 
         // Act & Assert
@@ -890,14 +854,9 @@ group('getProfile Tests', () {
 
       test('deleteProfile throws DioException on server error', () async {
         // Arrange
-        const userId = '123';
-        final errorResponse = {
-          "error": "Internal server error"
-        };
-
         dioAdapter.onDelete(
           'users/$userId/profile',
-          (server) => server.reply(500, errorResponse),
+          (server) => server.reply(500, serverErrorResponse),
         );
 
         // Act & Assert
@@ -909,93 +868,66 @@ group('getProfile Tests', () {
     }); // Group deleteProfile Tests
 
     group('createGroup Tests', () {
-      test('createGroup returns a Group object on success with all fields', () async {
+      test('createGroup returns a Group object on success with all fields',
+          () async {
         // Arrange
-        const name = 'Test Group';
-        const description = 'This is a test group';
-        const isPrivate = true;
-        const ownedId = 'owner123';
-        const latitude = 12.345678;
-        const longitude = 98.765432;
-        const address = '123 Test Street';
-
-        final mockResponse = {
-          "id": 1,
-          "group_name": name,
-          "description": description,
-          "is_private": isPrivate,
-          "owner_id": ownedId,
-          "points": 0,
-          "image_id": null,
-          "latitude": latitude,
-          "longitude": longitude,
-          "address": address
-        };
-
         dioAdapter.onPost(
           '/groups',
-          (server) => server.reply(200, mockResponse),
+          (server) => server.reply(200, mockGroupResponse()),
           data: {
-            "group_name": name,
-            "description": description,
-            "is_private": isPrivate,
-            "owner_id": ownedId,
-            "latitude": latitude,
-            "longitude": longitude,
-            "address": address,
+            "group_name": groupName,
+            "description": groupDescription,
+            "is_private": groupIsPrivate,
+            "owner_id": groupOwnerId,
+            "latitude": groupLatitude,
+            "longitude": groupLatitude,
+            "address": groupAddress,
           },
         );
 
         // Act
         final group = await backendService.createGroup(
-          name, description, isPrivate, ownedId, latitude, longitude, address
-        );
+            groupName,
+            groupDescription,
+            groupIsPrivate,
+            groupOwnerId,
+            groupLatitude,
+            groupLongitude,
+            groupAddress);
 
         // Assert
         expect(group, isA<Group>());
-        expect(group.id, equals(1));
-        expect(group.name, equals(name));
-        expect(group.description, equals(description));
-        expect(group.isPrivate, equals(isPrivate));
-        expect(group.ownerId, equals(ownedId));
-        expect(group.latitude, equals(latitude));
-        expect(group.longitude, equals(longitude));
-        expect(group.address, equals(address));
-        expect(group.points, equals(0));
+        expect(group.id, equals(groupId));
+        expect(group.name, equals(groupName));
+        expect(group.description, equals(groupDescription));
+        expect(group.isPrivate, equals(groupIsPrivate));
+        expect(group.ownerId, equals(groupOwnerId));
+        expect(group.latitude, equals(groupLatitude));
+        expect(group.longitude, equals(groupLongitude));
+        expect(group.address, equals(groupAddress));
+        expect(group.points, equals(groupPoints));
         expect(group.imageId, isNull);
       });
 
-      test('createGroup returns a Group object on success with optional fields missing', () async {
+      test(
+          'createGroup returns a Group object on success with optional fields missing',
+          () async {
         // Arrange
-        const name = 'Test Group';
-        const description = 'This is a test group';
-        const isPrivate = true;
-        const ownedId = 'owner123';
         const latitude = null;
         const longitude = null;
         const address = null;
 
-        final mockResponse = {
-          "id": 1,
-          "group_name": name,
-          "description": description,
-          "is_private": isPrivate,
-          "owner_id": ownedId,
-          "points": 0,
-          "image_id": null,
-          "latitude": latitude,
-          "longitude": longitude,
-          "address": address
-        };
-
         dioAdapter.onPost(
           '/groups',
-          (server) => server.reply(200, mockResponse),
+          (server) => server.reply(
+              200,
+              mockGroupResponse(
+                  latitude: latitude, longitude: longitude, address: address)),
           data: {
-            "group_name": name,
-            "description": description,
-            "is_private": isPrivate,
-            "owner_id": ownedId,
+            "group_name": groupName,
+            "description": groupDescription,
+            "is_private": groupIsPrivate,
+            "owner_id": groupOwnerId,
             "latitude": latitude,
             "longitude": longitude,
             "address": address,
@@ -1004,20 +936,25 @@ group('getProfile Tests', () {
 
         // Act
         final group = await backendService.createGroup(
-          name, description, isPrivate, ownedId, latitude, longitude, address
-        );
+            groupName,
+            groupDescription,
+            groupIsPrivate,
+            groupOwnerId,
+            latitude,
+            longitude,
+            address);
 
         // Assert
         expect(group, isA<Group>());
-        expect(group.id, equals(1));
-        expect(group.name, equals(name));
-        expect(group.description, equals(description));
-        expect(group.isPrivate, equals(isPrivate));
-        expect(group.ownerId, equals(ownedId));
+        expect(group.id, equals(groupId));
+        expect(group.name, equals(groupName));
+        expect(group.description, equals(groupDescription));
+        expect(group.isPrivate, equals(groupIsPrivate));
+        expect(group.ownerId, equals(groupOwnerId));
         expect(group.latitude, isNull);
         expect(group.longitude, isNull);
         expect(group.address, isNull);
-        expect(group.points, equals(0));
+        expect(group.points, equals(groupPoints));
         expect(group.imageId, isNull);
       });
 
@@ -1030,9 +967,7 @@ group('getProfile Tests', () {
         const latitude = null;
         const longitude = null;
         const address = '123 Test Street';
-        final errorResponse = {
-          "error": "Invalid data"
-        };
+        final errorResponse = {"error": "Invalid data"};
 
         dioAdapter.onPost(
           '/groups',
@@ -1050,9 +985,8 @@ group('getProfile Tests', () {
 
         // Act & Assert
         expect(
-          () async => await backendService.createGroup(
-            name, description, isPrivate, ownedId, latitude, longitude, address
-          ),
+          () async => await backendService.createGroup(name, description,
+              isPrivate, ownedId, latitude, longitude, address),
           throwsA(isA<DioException>()),
         );
       });
@@ -1066,13 +1000,10 @@ group('getProfile Tests', () {
         const latitude = 12.345678;
         const longitude = 98.765432;
         const address = '123 Test Street';
-        final errorResponse = {
-          "error":"Internal server error"
-        };
 
         dioAdapter.onPost(
           '/groups',
-          (server) => server.reply(500, errorResponse),
+          (server) => server.reply(500, serverErrorResponse),
           data: {
             "group_name": name,
             "description": description,
@@ -1086,9 +1017,8 @@ group('getProfile Tests', () {
 
         // Act & Assert
         expect(
-          () async => await backendService.createGroup(
-            name, description, isPrivate, ownedId, latitude, longitude, address
-          ),
+          () async => await backendService.createGroup(name, description,
+              isPrivate, ownedId, latitude, longitude, address),
           throwsA(isA<DioException>()),
         );
       });
