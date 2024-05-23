@@ -225,18 +225,18 @@ class BackendService {
   // --------- GROUPS ---------
 
   Future<Group> createGroup(
-      String name, String description, bool isPrivate, String ownedId, int skillLevel, double? latitude, double? longitude, String? address) async {
+      String name, String description, bool isPrivate, String ownerId, double? latitude, double? longitude, String? address) async {
     final response = await _dio.post(
       '/groups',
       data: {
         "group_name": name,
         "description": description,
         "is_private": isPrivate,
-        "owner_id": ownedId,
-        "skill_level": skillLevel,
+        "owner_id": ownerId,
         "latitude": latitude,
         "longitude": longitude,
         "address": address,
+        // "skill_level": skillLevel,
       },
     );
     return Group.fromJson((response.data) as Map<String, dynamic>);
