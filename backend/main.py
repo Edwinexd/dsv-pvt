@@ -441,7 +441,7 @@ def delete_user(
     current_user: DbUser, db_session: DbSession, requested_user: RequestedUser
 ):
     validations.validate_id(current_user, requested_user.id)
-    crud.delete_user(db_session, requested_user.id)
+    crud.delete_user(db_session, requested_user)
     return {"message": "User deleted successfully"}
 
 
@@ -535,6 +535,7 @@ def read_group(
         latitude=requested_group.latitude,
         longitude=requested_group.longitude,
         address=requested_group.address,
+        skill_level=requested_group.skill_level,
     )
 
 
@@ -588,6 +589,7 @@ def join_group(
     validations.validate_id(current_user, requested_user.id)
     if requested_group.is_private != 0:
         validations.validate_user_invited(current_user, requested_group.invited_users)
+    if requested_user in requested_group.invited_users:
         crud.delete_invitation(db_session, current_user.id, requested_group.id)
     return crud.join_group(
         db_session=db_session, db_user=requested_user, db_group=requested_group
@@ -641,11 +643,6 @@ def invite_user(
     requested_user: RequestedUser,
     requested_group: RequestedGroup,
 ):
-    if requested_group.is_private == 0:
-        raise HTTPException(
-            status_code=400, detail="Can't create invite to public group!"
-        )
-
     validations.validate_user_in_group(
         current_user, current_user, requested_group
     )  # user can only invite to group if user is in the group

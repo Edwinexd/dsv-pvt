@@ -6,6 +6,8 @@ import 'package:flutter_application/views/my_groups.dart';
 import 'package:flutter_application/views/schedule_page.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 
+ValueNotifier<int> selectedIndexNotifier = ValueNotifier<int>(0);
+
 AppBar buildAppBar({
   required String title,
   required BuildContext context,
@@ -30,8 +32,6 @@ AppBar buildAppBar({
 }
 
 void goToProfilePage(BuildContext context) {
-  DateTime joinedDate = DateTime(2021, 4, 12);
-
   Navigator.push(
     context,
     MaterialPageRoute(
@@ -40,43 +40,52 @@ void goToProfilePage(BuildContext context) {
   );
 }
 
-BottomNavigationBar buildBottomNavigationBar({
+Widget buildBottomNavigationBar({
   required BuildContext context,
-  int currentIndex = 0,
 }) {
-  return BottomNavigationBar(
-    backgroundColor: const Color.fromARGB(230, 60, 71, 133),
-    items: const <BottomNavigationBarItem>[
-      BottomNavigationBarItem(
-        icon: Icon(Icons.home),
-        label: 'Home',
-      ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.group),
-        label: 'Groups',
-      ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.favorite),
-        label: 'Friends',
-      ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.calendar_month),
-        label: 'My Activity',
-      ),
-    ],
-    currentIndex: currentIndex,
-    selectedItemColor: Colors.white,
-    unselectedItemColor: Colors.white,
-    onTap: (index) {
-      if (index == 0) {
-        goToHomePage(context);
-      } else if (index == 1) {
-        goToGroupPage(context);
-      } else if (index == 2) {
-        goToFriendsPage(context);
-      } else if (index == 3) {
-        goToSchedulePage(context);
-      }
+  return ValueListenableBuilder<int>(
+    valueListenable: selectedIndexNotifier,
+    builder: (context, currentIndex, _) {
+      return BottomNavigationBar(
+        backgroundColor: const Color.fromARGB(230, 60, 71, 133),
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home, color: currentIndex == 0 ? Colors.deepOrange : Colors.white),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.group, color: currentIndex == 1 ? Colors.deepOrange : Colors.white),
+            label: 'Groups',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite, color: currentIndex == 2 ? Colors.deepOrange : Colors.white),
+            label: 'Friends',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_month, color: currentIndex == 3 ? Colors.deepOrange : Colors.white),
+            label: 'My Activity',
+          ),
+        ],
+        currentIndex: currentIndex,
+        selectedItemColor: Colors.deepOrange,
+        unselectedItemColor: Colors.white,
+        onTap: (index) {
+          if (selectedIndexNotifier.value == index) {
+            return; 
+          }
+          selectedIndexNotifier.value = index;
+
+          if (index == 0) {
+            goToHomePage(context);
+          } else if (index == 1) {
+            goToGroupPage(context);
+          } else if (index == 2) {
+            goToFriendsPage(context);
+          } else if (index == 3) {
+            goToSchedulePage(context);
+          }
+        },
+      );
     },
   );
 }
@@ -95,14 +104,12 @@ void goToGroupPage(BuildContext context) {
   );
 }
 
-
-  void goToFriendsPage(BuildContext context) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => FriendsPage()),
-   );
-  }
-
+void goToFriendsPage(BuildContext context) {
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (context) => FriendsPage()),
+  );
+}
 
 void goToSchedulePage(BuildContext context) async {
   final user = await BackendService().getMyUser();
@@ -111,4 +118,3 @@ void goToSchedulePage(BuildContext context) async {
     MaterialPageRoute(builder: (context) => SchedulePage(userId: user.id)),
   );
 }
-

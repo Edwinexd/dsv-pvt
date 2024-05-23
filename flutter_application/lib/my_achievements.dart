@@ -39,14 +39,18 @@ class _MyAchievementsState extends State<MyAchievements> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Achievements'),
-        centerTitle: true,
-      ),
-      // add header here, trophys
-      body: DefaultBackground(
-        child: ListView.builder(
+    return DefaultBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: const Text('My Achievements'),
+          backgroundColor: Colors.transparent,
+          centerTitle: true,
+          elevation: 0.0,
+          iconTheme: const IconThemeData(color: Colors.white),
+        ),
+        // add header here, trophys
+        body: ListView.builder(
           itemCount: allAchievements.length,
           itemBuilder: (BuildContext context, int index) {
             return ListTile(
