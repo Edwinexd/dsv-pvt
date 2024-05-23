@@ -83,6 +83,7 @@ const groupPoints = 123;
 const groupLatitude = 12.345678;
 const groupLongitude = 98.765432;
 const groupAddress = '123 Test Street';
+const groupSkillLevel = 3;
 
 Map<String, dynamic> mockGroupResponse({
   String name = groupName,
@@ -95,6 +96,7 @@ Map<String, dynamic> mockGroupResponse({
   int id = groupId,
   int points = groupPoints,
   String? imageId,
+  int skillLevel = groupSkillLevel,
 }) {
   return {
     "group_name": name,
@@ -107,6 +109,7 @@ Map<String, dynamic> mockGroupResponse({
     "id": id,
     "points": points,
     "image_id": imageId,
+    "skill_level": skillLevel,
   };
 }
 
@@ -884,6 +887,7 @@ void main() {
             "latitude": groupLatitude,
             "longitude": groupLongitude,
             "address": groupAddress,
+            "skill_level": groupSkillLevel,
           },
         );
 
@@ -893,6 +897,7 @@ void main() {
             groupDescription,
             groupIsPrivate,
             groupOwnerId,
+            groupSkillLevel,
             groupLatitude,
             groupLongitude,
             groupAddress);
@@ -909,6 +914,7 @@ void main() {
         expect(group.address, equals(groupAddress));
         expect(group.points, equals(groupPoints));
         expect(group.imageId, isNull);
+        expect(group.skillLevel, groupSkillLevel);
       });
 
       test(
@@ -933,6 +939,7 @@ void main() {
             "latitude": latitude,
             "longitude": longitude,
             "address": address,
+            "skill_level": groupSkillLevel,
           },
         );
 
@@ -942,9 +949,10 @@ void main() {
             groupDescription,
             groupIsPrivate,
             groupOwnerId,
+            groupSkillLevel,
             latitude,
             longitude,
-            address);
+            address,);
 
         // Assert
         expect(group, isA<Group>());
@@ -972,6 +980,7 @@ void main() {
             "description": groupDescription,
             "is_private": groupIsPrivate,
             "owner_id": groupOwnerId,
+            "skill_level": groupSkillLevel,
             "latitude": groupLatitude,
             "longitude": groupLongitude,
             "address": groupAddress,
@@ -985,6 +994,7 @@ void main() {
               groupDescription,
               groupIsPrivate,
               groupOwnerId,
+              groupSkillLevel,
               groupLatitude,
               groupLongitude,
               groupAddress),
@@ -1002,6 +1012,7 @@ void main() {
             "description": groupDescription,
             "is_private": groupIsPrivate,
             "owner_id": groupOwnerId,
+            "skill_level": groupSkillLevel,
             "latitude": groupLatitude,
             "longitude": groupLongitude,
             "address": groupAddress,
@@ -1015,6 +1026,7 @@ void main() {
               groupDescription,
               groupIsPrivate,
               groupOwnerId,
+              groupSkillLevel,
               groupLatitude,
               groupLongitude,
               groupAddress),

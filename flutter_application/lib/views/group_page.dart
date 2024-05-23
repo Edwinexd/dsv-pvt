@@ -35,7 +35,7 @@ class _GroupPageState extends State<GroupPage> {
   List<Activity> allActivities = [];
   Set<int> joinedActivityIds = {};
   bool isPublic = false;
-  // String skillLevel = '';
+  String skillLevel = '';
   String location = '';
   int skip = 0; // TODO: Pagination?
   int limit = 100; // TODO: Pagination?
@@ -91,8 +91,8 @@ class _GroupPageState extends State<GroupPage> {
       isPublic = widget.group.isPrivate;
       widget.isMember =
           allMyGroups.any((myGroup) => myGroup.id == widget.group.id);
-      //skillLevel = widget.group.skillLevel;
-      //location = widget.group.location;
+      // skillLevel = widget.group.skillLevel;
+      // location = widget.group.location;
     }
   }
 

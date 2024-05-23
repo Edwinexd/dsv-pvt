@@ -6,7 +6,7 @@ import 'package:flutter_application/models/user.dart';
 import 'package:flutter_application/views/map_screen.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/views/group_page.dart';
-// import 'package:flutter_application/components/skill_level_slider.dart';
+import 'package:flutter_application/components/skill_level_slider.dart';
 import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -28,7 +28,7 @@ class GroupCreationState extends State<GroupCreation> {
   PickedData? _location;
   bool _isPublic = false;
   int _memberLimit = 10; //Default member limit
-  // int _skillLevel = 0;
+  int _skillLevel = 0;
   bool _isGroupCreated = false;
   String _errorMessage = '';
   Group? createdGroup;
@@ -152,19 +152,19 @@ class GroupCreationState extends State<GroupCreation> {
                   ),
                 ),
               ),
-              // const SizedBox(height: 16.0),
-              //   const Text(
-              //     'Skill Level:',
-              //     style: TextStyle(fontSize: 16),
-              //   ),
-              //   SkillLevelSlider(
-              //       initialSkillLevel: _skillLevel,
-              //       onSkillLevelChanged: (newLevel) {
-              //         setState(() {
-              //           _skillLevel = newLevel;
-              //         });
-              //       },
-              //     ),
+              const SizedBox(height: 16.0),
+                const Text(
+                  'Skill Level:',
+                  style: TextStyle(fontSize: 16),
+                ),
+                SkillLevelSlider(
+                    initialSkillLevel: _skillLevel,
+                    onSkillLevelChanged: (newLevel) {
+                      setState(() {
+                        _skillLevel = newLevel;
+                      });
+                    },
+                  ),
               const SizedBox(height: 16.0),
               Row(
                 children: <Widget>[
@@ -260,8 +260,7 @@ class GroupCreationState extends State<GroupCreation> {
     }
 
     User me = await BackendService().getMe();
-    // createdGroup = await BackendService().createGroup(name, description, _isPublic, me.id, _skillLevel, _location?.latLong.latitude, _location?.latLong.longitude, _location?.address);
-    createdGroup = await BackendService().createGroup(name, description, _isPublic, me.id, _location?.latLong.latitude, _location?.latLong.longitude, _location?.address);
+    createdGroup = await BackendService().createGroup(name, description, _isPublic, me.id, _skillLevel, _location?.latLong.latitude, _location?.latLong.longitude, _location?.address);
     
     if (pickedImage != null) {
       await BackendService().uploadGroupPicture(createdGroup!.id, pickedImage!);
