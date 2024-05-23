@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
-import 'bars.dart'; 
+import 'package:flutter_application/controllers/backend_service.dart';
+import 'package:flutter_application/models/challenges.dart';
+import 'bars.dart';
 
 class WhiteRectangle extends StatelessWidget {
   final Widget child;
@@ -10,7 +12,7 @@ class WhiteRectangle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.fromLTRB(30, 30, 30, 30), 
+      margin: EdgeInsets.fromLTRB(5, 20, 5, 20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(5),
@@ -37,37 +39,9 @@ class _ChallengesPageState extends State<ChallengesPage> {
   bool _isGroupActivitiesVisible = true;
   bool _isDuringTheRaceVisible = false;
 
-  // The list of group activities can be replaced with the actual data
-  final List<Map<String, String>> groupActivities = [
-    {
-      'title': 'Activity 1',
-      'description': 'Description for Activity 1',
-    },
-    {
-      'title': 'Activity 2',
-      'description': 'Description for Activity 2',
-    },
-    {
-      'title': 'Activity 3',
-      'description': 'Description for Activity 3',
-    },
-    {
-      'title': 'Activity 2',
-      'description': 'Description for Activity 2',
-    },
-    {
-      'title': 'Activity 2',
-      'description': 'Description for Activity 2',
-    },
-    {
-      'title': 'Activity 2',
-      'description': 'Description for Activity 2',
-    },
-    {
-      'title': 'Activity 2',
-      'description': 'Description for Activity 2',
-    },
-  ];
+  Future<List<Challenge>> _fetchChallenges() async {
+    return await BackendService().getChallenges(0, 25); // Adjust skip and limit as needed
+  }
 
   void _toggleGroupActivitiesVisibility() {
     setState(() {
@@ -98,13 +72,13 @@ class _ChallengesPageState extends State<ChallengesPage> {
               width: MediaQuery.of(context).size.width - 60,
               child: WhiteRectangle(
                 child: Padding(
-                  padding: EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(2.0),
                   child: SingleChildScrollView(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         const Padding(
-                          padding: EdgeInsets.all(10.0), 
+                          padding: EdgeInsets.all(20.0),
                           child: Text(
                             'Challenges',
                             style: TextStyle(
@@ -116,7 +90,7 @@ class _ChallengesPageState extends State<ChallengesPage> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 20), 
+                        SizedBox(height: 20),
                         const Text(
                           'complete challenges with a group',
                           style: TextStyle(
@@ -147,12 +121,12 @@ class _ChallengesPageState extends State<ChallengesPage> {
                             height: 0,
                           ),
                         ),
-                        SizedBox(height: 30), 
+                        SizedBox(height: 30),
                         GestureDetector(
                           onTap: _toggleGroupActivitiesVisibility,
                           child: Container(
                             height: 35,
-                            margin: EdgeInsets.symmetric(horizontal: 20), 
+                            margin: EdgeInsets.symmetric(horizontal: 20),
                             decoration: ShapeDecoration(
                               color: Color(0xFFFE9E2C),
                               shape: RoundedRectangleBorder(
@@ -163,7 +137,7 @@ class _ChallengesPageState extends State<ChallengesPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Spacer(), 
+                                Spacer(),
                                 const Text(
                                   'Group activities',
                                   style: TextStyle(
@@ -172,7 +146,7 @@ class _ChallengesPageState extends State<ChallengesPage> {
                                     color: Colors.white,
                                   ),
                                 ),
-                                Spacer(), 
+                                Spacer(),
                                 Icon(
                                   _isGroupActivitiesVisible
                                       ? Icons.keyboard_arrow_up
@@ -183,49 +157,62 @@ class _ChallengesPageState extends State<ChallengesPage> {
                             ),
                           ),
                         ),
-                        if (_isGroupActivitiesVisible) ...[
-                          Container(
-                            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 0), 
-                            decoration: ShapeDecoration(
-                              color: Color(0xFFFFD5A3),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                            ),
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: groupActivities.length,
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        groupActivities[index]['title']!,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 16,
-                                          color: Color(0xff161499),
-                                        ),
-                                      ),
-                                      SizedBox(height: 5),
-                                      Text(
-                                        groupActivities[index]['description']!,
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Color(0xff161499),
-                                        ),
-                                      ),
-                                    ],
+                        if (_isGroupActivitiesVisible)
+                          FutureBuilder<List<Challenge>>(
+                            future: _fetchChallenges(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return Center(child: CircularProgressIndicator());
+                              } else if (snapshot.hasError) {
+                                return Center(child: Text('Error loading challenges'));
+                              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                                return Center(child: Text('No challenges available'));
+                              }
+
+                              var challenges = snapshot.data!;
+                              return Container(
+                                margin: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                                decoration: ShapeDecoration(
+                                  color: Color(0xFFFFD5A3),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5),
                                   ),
-                                );
-                              },
-                            ),
+                                ),
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: challenges.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            challenges[index].name,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 16,
+                                              color: Color(0xff161499),
+                                            ),
+                                          ),
+                                          SizedBox(height: 5),
+                                          Text(
+                                            challenges[index].description,
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: Color(0xff161499),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                            },
                           ),
-                        ],
-                        SizedBox(height: 30), 
+                        SizedBox(height: 30),
                         GestureDetector(
                           onTap: _toggleDuringTheRaceVisibility,
                           child: Container(
@@ -241,7 +228,7 @@ class _ChallengesPageState extends State<ChallengesPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Spacer(), 
+                                Spacer(),
                                 const Text(
                                   'During the race',
                                   style: TextStyle(
@@ -250,7 +237,7 @@ class _ChallengesPageState extends State<ChallengesPage> {
                                     color: Colors.white,
                                   ),
                                 ),
-                                Spacer(), 
+                                Spacer(),
                                 Icon(
                                   _isDuringTheRaceVisible
                                       ? Icons.keyboard_arrow_up
@@ -261,7 +248,7 @@ class _ChallengesPageState extends State<ChallengesPage> {
                             ),
                           ),
                         ),
-                        if (_isDuringTheRaceVisible) ...[
+                        if (_isDuringTheRaceVisible)
                           Container(
                             height: 263,
                             margin: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
@@ -272,7 +259,6 @@ class _ChallengesPageState extends State<ChallengesPage> {
                               ),
                             ),
                           ),
-                        ],
                       ],
                     ),
                   ),
