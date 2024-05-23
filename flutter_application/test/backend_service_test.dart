@@ -85,16 +85,16 @@ const groupLongitude = 98.765432;
 const groupAddress = '123 Test Street';
 
 Map<String, dynamic> mockGroupResponse({
-  int id = groupId,
   String name = groupName,
   String description = groupDescription,
   bool isPrivate = groupIsPrivate,
   String ownerId = groupOwnerId,
-  int points = groupPoints,
-  String? imageId,
-  String? address = groupAddress,
   double? latitude = groupLatitude,
   double? longitude = groupLongitude,
+  String? address = groupAddress,
+  int id = groupId,
+  int points = groupPoints,
+  String? imageId,
 }) {
   return {
     "group_name": name,
@@ -873,14 +873,16 @@ void main() {
         // Arrange
         dioAdapter.onPost(
           '/groups',
-          (server) => server.reply(200, mockGroupResponse()),
+          (server) => server.reply(
+              200,
+              mockGroupResponse()),
           data: {
             "group_name": groupName,
             "description": groupDescription,
             "is_private": groupIsPrivate,
             "owner_id": groupOwnerId,
             "latitude": groupLatitude,
-            "longitude": groupLatitude,
+            "longitude": groupLongitude,
             "address": groupAddress,
           },
         );
@@ -960,65 +962,62 @@ void main() {
 
       test('createGroup throws DioException on bad request', () async {
         // Arrange
-        const name = 'Test Group';
-        const description = 'This is a test group';
-        const isPrivate = true;
-        const ownedId = 'owner123';
-        const latitude = null;
-        const longitude = null;
-        const address = '123 Test Street';
         final errorResponse = {"error": "Invalid data"};
 
         dioAdapter.onPost(
           '/groups',
           (server) => server.reply(400, errorResponse),
           data: {
-            "group_name": name,
-            "description": description,
-            "is_private": isPrivate,
-            "owner_id": ownedId,
-            "latitude": latitude,
-            "longitude": longitude,
-            "address": address,
+            "group_name": groupName,
+            "description": groupDescription,
+            "is_private": groupIsPrivate,
+            "owner_id": groupOwnerId,
+            "latitude": groupLatitude,
+            "longitude": groupLongitude,
+            "address": groupAddress,
           },
         );
 
         // Act & Assert
         expect(
-          () async => await backendService.createGroup(name, description,
-              isPrivate, ownedId, latitude, longitude, address),
+          () async => await backendService.createGroup(
+              groupName,
+              groupDescription,
+              groupIsPrivate,
+              groupOwnerId,
+              groupLatitude,
+              groupLongitude,
+              groupAddress),
           throwsA(isA<DioException>()),
         );
       });
 
       test('createGroup throws DioException on server error', () async {
         // Arrange
-        const name = 'Test Group';
-        const description = 'This is a test group';
-        const isPrivate = true;
-        const ownedId = 'owner123';
-        const latitude = 12.345678;
-        const longitude = 98.765432;
-        const address = '123 Test Street';
-
         dioAdapter.onPost(
           '/groups',
           (server) => server.reply(500, serverErrorResponse),
           data: {
-            "group_name": name,
-            "description": description,
-            "is_private": isPrivate,
-            "owner_id": ownedId,
-            "latitude": latitude,
-            "longitude": longitude,
-            "address": address,
+            "group_name": groupName,
+            "description": groupDescription,
+            "is_private": groupIsPrivate,
+            "owner_id": groupOwnerId,
+            "latitude": groupLatitude,
+            "longitude": groupLongitude,
+            "address": groupAddress,
           },
         );
 
         // Act & Assert
         expect(
-          () async => await backendService.createGroup(name, description,
-              isPrivate, ownedId, latitude, longitude, address),
+          () async => await backendService.createGroup(
+              groupName,
+              groupDescription,
+              groupIsPrivate,
+              groupOwnerId,
+              groupLatitude,
+              groupLongitude,
+              groupAddress),
           throwsA(isA<DioException>()),
         );
       });
