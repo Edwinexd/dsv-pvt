@@ -82,7 +82,7 @@ class GroupCreationState extends State<GroupCreation> {
   }
 
   Future<void> fetchImage(String groupId) async {
-    ImageProvider image = await BackendService().getImage(groupId);
+    ImageProvider image = await BackendService().getImage(createdGroup!.imageId!);
     setState(() {
       groupImage = image;
     });
