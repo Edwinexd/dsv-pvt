@@ -141,6 +141,7 @@ class Group(base):
     latitude = Column(Double, nullable=True)
     longitude = Column(Double, nullable=True)
     address = Column(String, nullable=True)
+    skill_level = Column(Integer)
 
     owner_id = Column(String, ForeignKey("users.id"))
     owner = relationship("User", back_populates="owned_groups")

@@ -17,6 +17,7 @@ class MyGroups extends StatefulWidget {
 
 class _MyGroupsState extends State<MyGroups> {
   List<Group> myGroups = [];
+  Map<String, ImageProvider> groupImages = {};
 
   @override
   void initState() {
@@ -30,8 +31,15 @@ class _MyGroupsState extends State<MyGroups> {
 
   void fetchMyGroups() async {
     List<Group> groups = await BackendService().getMyGroups();
+    Map<String, ImageProvider> images = {};
+    for (var group in groups) {
+        ImageProvider image = await BackendService().getImage(group.imageId!);
+        images[group.id.toString()] = image;
+    }
+    
     setState(() {
       myGroups = groups;
+      groupImages = images;
     });
   }
 
@@ -52,12 +60,6 @@ class _MyGroupsState extends State<MyGroups> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  /*Text(
-                    'Groups',
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),*/
                   const SizedBox(height: 12),
                   SizedBox(
                     height: 40,
@@ -136,7 +138,6 @@ class _MyGroupsState extends State<MyGroups> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16), // Add some space before My Groups section
                 ],
               ),
             ),
@@ -161,19 +162,18 @@ class _MyGroupsState extends State<MyGroups> {
                         borderRadius: BorderRadius.circular(18.0),
                       ),
                       child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: groupImages[group.id.toString()]!,
+                        ),
                         title: Text(group.name),
                         trailing: const Row(
                           mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.group),
-                          ],
                         ),
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: ((context) =>
-                                  GroupPage(group: group, isMember: true)),
+                              builder: ((context) => GroupPage(group: group, isMember: true)),
                             ),
                           );
                         },

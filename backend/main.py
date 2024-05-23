@@ -535,6 +535,7 @@ def read_group(
         latitude=requested_group.latitude,
         longitude=requested_group.longitude,
         address=requested_group.address,
+        skill_level=requested_group.skill_level,
     )
 
 
