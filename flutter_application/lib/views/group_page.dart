@@ -71,10 +71,15 @@ class _GroupPageState extends State<GroupPage> {
   }
 
   Future<void> fetchGroupImage() async {
-    ImageProvider image = await BackendService().getImage(widget.group.imageId ?? '404');
+    if (widget.group.imageId != 0) {
+      ImageProvider image = await BackendService().getImage(widget.group.imageId!);
     setState(() {
       groupImage = image;
     });
+    } else {
+      groupImage = await BackendService().getImage('lib/images/splash.png');
+    }
+    
     
   }
 
