@@ -23,7 +23,9 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     unawaited(collectAndSendData());
-    unawaited(BackendService().getGroups(0, 3, GroupOrderType.POINTS, true).then((groups) {
+    unawaited(BackendService()
+        .getGroups(0, 3, GroupOrderType.POINTS, true)
+        .then((groups) {
       setState(() {
         _leaderboardGroups = groups;
       });
@@ -59,6 +61,7 @@ class _HomePageState extends State<HomePage> {
                 Leaderboard(
                   leaderboardEntries: _leaderboardGroups,
                 ),
+                MoreButton(),
               ],
             ),
           ),
@@ -249,13 +252,12 @@ class ChallengesButton extends StatelessWidget {
 
 class Leaderboard extends StatelessWidget {
   final List<Group> leaderboardEntries;
-  final bool showMoreButton;
   final bool showCrown;
 
-  Leaderboard(
-      {required this.leaderboardEntries,
-      this.showMoreButton = true,
-      this.showCrown = false});
+  Leaderboard({
+    required this.leaderboardEntries,
+    this.showCrown = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -283,50 +285,10 @@ class Leaderboard extends StatelessWidget {
 
     return Container(
       width: 327,
-      height: 380,
-      padding: const EdgeInsets.all(15),
+      height: 300,
+      padding: const EdgeInsets.only(top: 15),
       child: Stack(
         children: [
-          if (showMoreButton)
-            Positioned(
-              bottom: -20,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Container(
-                  width: 330,
-                  margin: EdgeInsets.all(17),
-                  child: Container(
-                    padding: EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFF344F7),
-                        padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => LeaderboardPage()),
-                        );
-                      },
-                      child: const Text(
-                        'Show More',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
           const Positioned(
             top: -10,
             left: 0,
@@ -343,7 +305,7 @@ class Leaderboard extends StatelessWidget {
             ),
           ),
           Positioned(
-            bottom: 60,
+            bottom: 0,
             left: 0,
             right: 0,
             child: Row(
@@ -376,7 +338,8 @@ class Leaderboard extends StatelessWidget {
                       ),
                     ),
                     if (showCrown && entry.key == highestScoreIndex)
-                      Icon(Icons.rocket_launch, color: Colors.yellow, size: 24.0),
+                      Icon(Icons.rocket_launch,
+                          color: Colors.yellow, size: 24.0),
                     Container(
                       width: 75,
                       height: barHeight,
@@ -406,6 +369,44 @@ class Leaderboard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class MoreButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 280,
+      margin: EdgeInsets.only(bottom: 15),
+      child: Container(
+        padding: EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color(0xFFF344F7),
+            padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30),
+            ),
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => LeaderboardPage()),
+            );
+          },
+          child: const Text(
+            'Show More',
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+        ),
       ),
     );
   }
