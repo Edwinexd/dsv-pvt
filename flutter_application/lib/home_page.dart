@@ -284,7 +284,7 @@ return Container(
     children: [
       if (showMoreButton)
         Positioned(
-          bottom: -20,
+          bottom: -33,
           left: 0,
           right: 0,
           child: Center(
@@ -299,7 +299,7 @@ return Container(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFF344F7),
-                    padding: const EdgeInsets.symmetric(horizontal: 90, vertical: 15),
+                    padding: const EdgeInsets.symmetric(horizontal: 90, vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
