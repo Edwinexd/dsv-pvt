@@ -32,8 +32,6 @@ AppBar buildAppBar({
 }
 
 void goToProfilePage(BuildContext context) {
-  DateTime joinedDate = DateTime(2021, 4, 12);
-
   Navigator.push(
     context,
     MaterialPageRoute(
