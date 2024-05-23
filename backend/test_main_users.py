@@ -225,7 +225,7 @@ def test_very_long_strings(client, mocker):
 def test_bulk_user_creation(client, mocker):
     responses = set()
 
-    for i in range(0, 10):
+    for i in range(0, 1000):
         user_payload = payload_generator.generate_user_payload()
         mock_user_id = payload_generator.generate_mock_id()
 
