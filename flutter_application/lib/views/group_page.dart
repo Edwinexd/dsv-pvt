@@ -35,7 +35,7 @@ class _GroupPageState extends State<GroupPage> {
   List<Activity> allActivities = [];
   Set<int> joinedActivityIds = {};
   bool isPublic = false;
-  String skillLevel = '';
+  // String skillLevel = '';
   String location = '';
   int skip = 0; // TODO: Pagination?
   int limit = 100; // TODO: Pagination?
