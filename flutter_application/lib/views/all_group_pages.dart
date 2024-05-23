@@ -24,7 +24,7 @@ class AllGroupsPageState extends State<AllGroupsPage> {
   String _searchQuery = '';
   String _selectedFilter = 'All';
   Position? _userPosition;
-  bool _sortByDistance = false;
+  String _sortBy = 'None'; 
 
   @override
   void initState() {
@@ -63,7 +63,7 @@ class AllGroupsPageState extends State<AllGroupsPage> {
       }
     }
 
-    if (_sortByDistance && _userPosition != null) {
+    if (_sortBy == 'Distance' && _userPosition != null) {
       fetchedGroups.sort((a, b) {
         if (a.latitude == null || a.longitude == null) return 1;
         if (b.latitude == null || b.longitude == null) return 1;
@@ -74,6 +74,8 @@ class AllGroupsPageState extends State<AllGroupsPage> {
             _userPosition!.latitude, _userPosition!.longitude, b.latitude!, b.longitude!);
         return distanceA.compareTo(distanceB);
       });
+    } else if (_sortBy == 'Points') {
+      fetchedGroups.sort((a, b) => b.points.compareTo(a.points));
     }
 
     setState(() {
@@ -183,15 +185,29 @@ class AllGroupsPageState extends State<AllGroupsPage> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: SwitchListTile(
-                    title: Text('Sort by Distance'),
-                    value: _sortByDistance,
+                  child: DropdownButtonFormField(
+                    value: _sortBy,
                     onChanged: (value) {
                       setState(() {
-                        _sortByDistance = value;
+                        _sortBy = value.toString();
                         fetchGroups();
                       });
                     },
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    items: const [
+                      DropdownMenuItem(value: 'None', child: Text('Sort by...')),
+                      DropdownMenuItem(
+                          value: 'Distance',
+                          child: Text('Sort by Distance')),
+                      DropdownMenuItem(
+                          value: 'Points',
+                          child: Text('Sort by Points')),
+                    ],
                   ),
                 ),
               ],
@@ -224,10 +240,7 @@ class AllGroupsPageState extends State<AllGroupsPage> {
                     ),
                     child: ListTile(
                       leading: CircleAvatar(
-                        backgroundImage: groupImages[group.id.toString()],
-                        child: groupImages[group.id.toString()] == null
-                            ? Icon(Icons.group)
-                            : null,
+                        backgroundImage: groupImages[group.id.toString()],            
                       ),
                       title: Text(
                         group.name,
@@ -240,6 +253,7 @@ class AllGroupsPageState extends State<AllGroupsPage> {
                         children: [
                           Text(group.description),
                           Text(group.isPrivate ? 'Private' : 'Public'),
+                          Text('Points: ${group.points}'),
                           if (_userPosition != null)
                             Text('Distance: ${getDistanceString(group)}'),
                         ],
