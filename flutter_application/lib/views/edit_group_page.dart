@@ -19,14 +19,14 @@ class EditGroupPage extends StatefulWidget {
 }
 
 class EditGroupPageState extends State<EditGroupPage> {
-  ImageProvider groupImage = const AssetImage('lib/images/splash.png');
+  ImageProvider? groupImage;
   XFile? pickedImage;
   final _nameController = TextEditingController();
   final _locationController = TextEditingController();
   final _descriptionController = TextEditingController();
   bool _isPublic = false;
   int _memberLimit = 10; // Default member limit
-  int _skillLevel = 0; // Default skill level
+  int _skillLevel = 0;
   String _errorMessage = '';
 
   @override
@@ -35,6 +35,11 @@ class EditGroupPageState extends State<EditGroupPage> {
     _nameController.text = widget.group.name;
     _descriptionController.text = widget.group.description;
     _isPublic = !widget.group.isPrivate;
+    _skillLevel = widget.group.skillLevel;
+
+    if (widget.group.imageId != null) {
+      fetchGroupImage();
+    }
   }
 
   void saveChanges() async {
@@ -49,14 +54,19 @@ class EditGroupPageState extends State<EditGroupPage> {
     }
 
     try {
+      if (pickedImage != null) {
+        await BackendService().uploadGroupPicture(widget.group.id, pickedImage!);
+      }
+
       Group updatedGroup = await BackendService().updateGroup(
         widget.group.id,
         newName: name,
         description: description,
+        skillLevel: _skillLevel,
         isPrivate: !_isPublic,
       );
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Group Saved!')));
+          .showSnackBar(const SnackBar(content: Text('Group Saved!')));
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -115,6 +125,13 @@ class EditGroupPageState extends State<EditGroupPage> {
     ImageProvider temp = MemoryImage(await image.readAsBytes());
     setState(() {
       groupImage = temp;
+    });
+  }
+
+  Future<void> fetchGroupImage() async {
+    ImageProvider image = await BackendService().getImage(widget.group.imageId!);
+    setState(() {
+      groupImage = image;
     });
   }
 

@@ -234,45 +234,42 @@ class _GroupPageState extends State<GroupPage> {
       appBar: buildAppBar(
         context: context,
         showBackButton: true,
-        title: 'Groups',
+        title: widget.group.name,
       ),
       body: DefaultBackground(
         children: [
-          SingleChildScrollView(
-            child: Column(
-              children: [
-                CheckeredPatternBackground(
-                    color1: Colors.orange[200]!,
-                    color2: Colors.orange[400]!,
-                    child: Container(
-                        padding: const EdgeInsets.all(8),
-                        margin: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
+          Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                margin: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Column(
+                  children: [
+                    Center(
+                      child: CircleAvatar(
+                        radius: 60,
+                        backgroundImage: groupImage,
+                      ),
+                    ),
+                    const SizedBox(height: 16.0),
+                    Center(
+                      child: Text(
+                        widget.group.name,
+                        style: const TextStyle(
+                          color: Color(0xFF8134CE),
+                          fontSize: 20.0,
                         ),
-                        child: Column(
-                          children: [
-                            Center(
-                                child: CircleAvatar(
-                                  radius: 60,
-                                  backgroundImage: groupImage,
-                                ),
-                              ),
-                            const SizedBox(height: 16),
-                            Center(
-                              child: Text(
-                                widget.group.name,
-                                style: const TextStyle(
-                                  color: Color(0xFF8134CE),
-                                  fontSize: 20,
-                                ),
-                              ),
-                            ),
-                          ],
-                        )))
-              ],
-            ),
-          ),
+                      ),
+                    )
+
+                  ],
+                ),
+              ), 
+            ],),
+          
           if (widget.isMember) ...[
             //Display group for members
             Container(

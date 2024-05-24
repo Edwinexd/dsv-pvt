@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
+import 'package:flutter_application/bars.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/user.dart';
 import 'package:fuzzywuzzy/fuzzywuzzy.dart';
@@ -73,9 +74,10 @@ class _UserSelectorState extends State<UserSelector> {
     displayedUsers = topResults.map((e) => e.choice).toList();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.navbarTitle ?? 'Select users'),
-        centerTitle: true,
+      appBar: buildAppBar(
+        title: 'Select user',
+        context: context,
+        showBackButton: true,
       ),
       body: DefaultBackground(
         child: Column(
@@ -147,6 +149,9 @@ class _UserSelectorState extends State<UserSelector> {
                   ),
           ],
         ),
+      ),
+      bottomNavigationBar: buildBottomNavigationBar(
+        context: context,
       ),
     );
   }

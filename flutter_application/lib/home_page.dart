@@ -23,7 +23,9 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     unawaited(collectAndSendData());
-    unawaited(BackendService().getGroups(0, 3, GroupOrderType.POINTS, true).then((groups) {
+    unawaited(BackendService()
+        .getGroups(0, 3, GroupOrderType.POINTS, true)
+        .then((groups) {
       setState(() {
         _leaderboardGroups = groups;
       });
@@ -33,38 +35,39 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: buildAppBar(
+      appBar: buildAppBar(
         title: 'Lace up & lead the way',
         context: context,
         showBackButton: false,
       ),
       body: DefaultBackground(
-      child: Align(
-        alignment: Alignment.topCenter,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              CustomPaint(
-                painter: SemicirclesPainter(),
-                child: Column(
-                  children: [
-                    CountdownWidget(),
-                    SignupButton(),
-                  ],
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                CustomPaint(
+                  painter: SemicirclesPainter(),
+                  child: Column(
+                    children: [
+                      CountdownWidget(),
+                      SignupButton(),
+                    ],
+                  ),
                 ),
-              ),
-              ActivityButton(),
-              ChallengesButton(),
-              Leaderboard(
-                leaderboardEntries: _leaderboardGroups,
-              ),
-            ],
+                ActivityButton(),
+                ChallengesButton(),
+                Leaderboard(
+                  leaderboardEntries: _leaderboardGroups,
+                ),
+                MoreButton(),
+              ],
+            ),
           ),
         ),
       ),
-    ),
-     bottomNavigationBar: buildBottomNavigationBar(
+      bottomNavigationBar: buildBottomNavigationBar(
         context: context,
       ),
     );
@@ -249,78 +252,43 @@ class ChallengesButton extends StatelessWidget {
 
 class Leaderboard extends StatelessWidget {
   final List<Group> leaderboardEntries;
-  final bool showMoreButton;
   final bool showCrown;
 
-  Leaderboard(
-      {required this.leaderboardEntries,
-      this.showMoreButton = true,
-      this.showCrown = false});
+  Leaderboard({
+    required this.leaderboardEntries,
+    this.showCrown = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     leaderboardEntries.sort((a, b) => b.points.compareTo(a.points));
+    List<Group> topThree = leaderboardEntries.take(3).toList();
 
-    if (leaderboardEntries.length >= 3) {
-      var temp = leaderboardEntries[1];
-      leaderboardEntries[1] = leaderboardEntries[0];
-      leaderboardEntries[0] = leaderboardEntries[2];
-      leaderboardEntries[2] = temp;
+    if (topThree.length >= 3) {
+      var temp = topThree[1];
+      topThree[1] = topThree[0];
+      topThree[0] = topThree[2];
+      topThree[2] = temp;
     }
 
     int highestScoreIndex = 0;
-    for (int i = 1; i < leaderboardEntries.length; i++) {
-      if (leaderboardEntries[i].points >
-          leaderboardEntries[highestScoreIndex].points) {
+    for (int i = 1; i < topThree.length; i++) {
+      if (topThree[i].points > topThree[highestScoreIndex].points) {
         highestScoreIndex = i;
       }
     }
 
-return Container(
-  width: 327,
-  height: 370,
-  padding: const EdgeInsets.all(10),
-  child: Stack(
-    children: [
-      if (showMoreButton)
-        Positioned(
-          bottom: -33,
-          left: 0,
-          right: 0,
-          child: Center(
-            child: Container(
-              margin: EdgeInsets.all(20),
-              child: Container( 
-                padding: EdgeInsets.all(15), 
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20), 
-                ),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFF344F7),
-                    padding: const EdgeInsets.symmetric(horizontal: 90, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LeaderboardPage()),
-                    );
-                  },
-                  child: const Text(
-                    'More',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
+    final maxPoints = topThree.isNotEmpty
+        ? topThree.map((group) => group.points).reduce(math.max)
+        : 1;
+    final maxHeight = 200.0;
+
+    return Container(
+      width: 327,
+      height: 300,
+      padding: const EdgeInsets.only(top: 15),
+      child: Stack(
+        children: [
           const Positioned(
             top: -10,
             left: 0,
@@ -336,67 +304,109 @@ return Container(
               ),
             ),
           ),
-          ...leaderboardEntries.asMap().entries.map((entry) {
-            return Positioned(
-              bottom: 50,
-              left: (entry.key * 100).toDouble(),
-              child: Column(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(bottom: 5),
-                    decoration: BoxDecoration(
-                      color: Color(0xFF9087E5),
-                      borderRadius: BorderRadius.circular(9),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(5),
-                      child: Text(
-                        entry.value.name,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: topThree.asMap().entries.map((entry) {
+                final barHeight = (entry.value.points / maxPoints) * maxHeight;
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Container(
+                      width: 80,
+                      margin: EdgeInsets.only(bottom: 5),
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(9),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(5),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            entry.value.name,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  if (showCrown && entry.key == highestScoreIndex)
-                    Icon(Icons.rocket_launch, color: Colors.yellow, size: 24.0),
-                  Container(
-                    width: 100,
-                    height: entry.value.points * 2,
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Color(0xFF9087E5),
-                          Color(0xFFCDC9F3),
-                        ],
+                    if (showCrown && entry.key == highestScoreIndex)
+                      Icon(Icons.rocket_launch,
+                          color: Colors.yellow, size: 24.0),
+                    Container(
+                      width: 75,
+                      height: barHeight,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Color(0xFF9087E5),
+                            Color(0xFFCDC9F3),
+                          ],
+                        ),
                       ),
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 5),
-                    decoration: BoxDecoration(
-                      color: Color(0xFF9087E5),
-                      borderRadius: BorderRadius.circular(9),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(5),
-                      child: Text(
-                        '${entry.value.points} points',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
+                      child: Center(
+                        child: Text(
+                          '${entry.value.points} points',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          }).toList(),
+                  ],
+                );
+              }).toList(),
+            ),
+          ),
         ],
+      ),
+    );
+  }
+}
+
+class MoreButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 280,
+      margin: EdgeInsets.only(bottom: 15),
+      child: Container(
+        padding: EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color(0xFFF344F7),
+            padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30),
+            ),
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => LeaderboardPage()),
+            );
+          },
+          child: const Text(
+            'Show More',
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+        ),
       ),
     );
   }

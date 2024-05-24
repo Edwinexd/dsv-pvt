@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_application/components/custom_divider.dart';
 import 'package:flutter_application/components/profile_avatar.dart';
 import 'package:flutter_application/age_data.dart';
@@ -16,6 +17,7 @@ import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/profile.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_application/components/scroll_button.dart'; // Import the ScrollButton
 
 class EditProfilePage extends StatefulWidget {
   final Profile initialProfile;
@@ -30,6 +32,8 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
   final _formKey = GlobalKey<FormState>();
+  final ScrollController _scrollController = ScrollController();
+  bool _showScrollButton = true;
   ImageProvider profileImage = const AssetImage('lib/images/splash.png');
   XFile? newProfileImage;
   String age = '';
@@ -71,6 +75,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
       interests[interest] = true;
     }
     isPrivate = widget.initialProfile.isPrivate;
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.userScrollDirection == ScrollDirection.reverse) {
+        if (_showScrollButton) {
+          setState(() {
+            _showScrollButton = false;
+          });
+        }
+      } else if (_scrollController.position.userScrollDirection == ScrollDirection.forward) {
+        if (!_showScrollButton) {
+          setState(() {
+            _showScrollButton = true;
+          });
+        }
+      }
+    });
   }
 
   Future<void> _saveProfile() async {
@@ -100,13 +120,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
       }
     }
 
-    await BackendService().updateProfile(user.id, description: bio, age: int.parse(age!),
+    await BackendService().updateProfile(user.id, description: bio, age: int.parse(age),
         interests: const JsonEncoder().convert(interests), skillLevel: _skillLevel, isPrivate: isPrivate, runnerId: runnerId == null || runnerId!.isEmpty ? null : runnerId);
 
     if (newProfileImage != null) {
       await BackendService().uploadProfilePicture(newProfileImage!);
     }
-
 
     Navigator.pop(context);
     if (_formKey.currentState!.validate()) {
@@ -115,7 +134,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
   }
 
-  // TODO: Copied from create_profile_page.dart move to a common file
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final ImageSource? source = await showDialog<ImageSource?>(
@@ -164,180 +182,188 @@ class _EditProfilePageState extends State<EditProfilePage> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return DefaultBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title:
-              const Text('Edit Profile', style: TextStyle(color: Colors.white)),
+          title: const Text('Edit Profile', style: TextStyle(color: Colors.white)),
           backgroundColor: Colors.transparent,
           elevation: 0,
           iconTheme: const IconThemeData(color: Colors.white),
         ),
-        body: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Row(
+        body: Stack(
+          children: [
+            SingleChildScrollView(
+              controller: _scrollController,
+              child: Form(
+                key: _formKey,
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Username',
-                          style: TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.bold)),
-                      IconButton(
-                        icon: Icon(Icons.edit,
-                            color: Theme.of(context).primaryColor),
-                        onPressed: () {},
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('Username',
+                              style: TextStyle(
+                                  fontSize: 24, fontWeight: FontWeight.bold)),
+                          IconButton(
+                            icon: Icon(Icons.edit,
+                                color: Theme.of(context).primaryColor),
+                            onPressed: () {},
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  ProfileAvatar(
-                    image: profileImage,
-                    iconButtonConfig: IconButtonConfig(
-                      icon: Icons.edit,
-                      onPressed: () {
-                        _pickImage();
-                      },
-                    ),
-                  ),
-                  SizedBox(height: 30),
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: CustomDropdown<int>(
-                          items: AgeData.ageList,
-                          selectedValue: int.tryParse(age),
-                          onChanged: (newValue) {
-                            setState(() {
-                              age = newValue.toString();
-                            });
+                      SizedBox(height: 10),
+                      ProfileAvatar(
+                        image: profileImage,
+                        iconButtonConfig: IconButtonConfig(
+                          icon: Icons.edit,
+                          onPressed: () {
+                            _pickImage();
                           },
-                          labelText: 'Age',
                         ),
                       ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        flex: 3,
-                        child: CustomDropdown<String>(
-                          items: CityData.swedenCities,
-                          selectedValue: selectedLocation,
-                          onChanged: (newValue) {
+                      SizedBox(height: 30),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: CustomDropdown<int>(
+                              items: AgeData.ageList,
+                              selectedValue: int.tryParse(age),
+                              onChanged: (newValue) {
+                                setState(() {
+                                  age = newValue.toString();
+                                });
+                              },
+                              labelText: 'Age',
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(
+                            flex: 3,
+                            child: CustomDropdown<String>(
+                              items: CityData.swedenCities,
+                              selectedValue: selectedLocation,
+                              onChanged: (newValue) {
+                                setState(() {
+                                  if (newValue != null) {
+                                    selectedLocation = newValue;
+                                  }
+                                });
+                              },
+                              labelText: 'Location',
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                      CustomTextField(
+                        labelText: 'About Me',
+                        onChanged: (text) {
+                          setState(() {
+                            bioEntered = text.isNotEmpty;
+                            bio = text;
+                          });
+                        },
+                        maxLines: null,
+                        minLines: 3,
+                        filled: true,
+                      ),
+                      SizedBox(height: 20),
+                      CustomTextField(
+                        labelText: 'Runner ID (Optional)',
+                        onChanged: (text) {
+                          setState(() {
+                            runnerId = text.isNotEmpty ? text : null;
+                          });
+                        },
+                      ),
+                      SizedBox(height: 20),
+                      const Row(
+                        children: [
+                          Expanded(
+                            child: CustomDivider(),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Text('Interests',
+                                style: TextStyle(
+                                    color: Color.fromARGB(255, 16, 14, 99),
+                                    fontSize: 16)),
+                          ),
+                          Expanded(
+                            child: CustomDivider(),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 5),
+                      InterestsGrid(
+                        interests: interests,
+                        onInterestChanged: (String interest, bool value) {
+                          setState(() {
+                            interests[interest] = value;
+                          });
+                        },
+                      ),
+                      SizedBox(height: 20),
+                      const Row(
+                        children: [
+                          Expanded(
+                            child: CustomDivider(),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Text('Skill Level',
+                                style: TextStyle(
+                                    color: Color.fromARGB(255, 16, 14, 99),
+                                    fontSize: 16)),
+                          ),
+                          Expanded(
+                            child: CustomDivider(),
+                          ),
+                        ],
+                      ),
+                      SkillLevelSlider(
+                        initialSkillLevel: _skillLevel,
+                        onSkillLevelChanged: (newLevel) {
+                          setState(() {
+                            _skillLevel = newLevel;
+                          });
+                        },
+                      ),
+                      ListTile(
+                        title: const Text('Private Profile'),
+                        trailing: Switch(
+                          value: isPrivate,
+                          onChanged: (value) {
                             setState(() {
-                              if (newValue != null) {
-                                selectedLocation = newValue;
-                              }
+                              isPrivate = value;
                             });
                           },
-                          labelText: 'Location',
                         ),
                       ),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  CustomTextField(
-                    labelText: bioEntered ? null : 'About Me',
-                    onChanged: (text) {
-                      setState(() {
-                        bioEntered = text.isNotEmpty;
-                      });
-                    },
-                    maxLines: null,
-                    minLines: 3,
-                    filled: true,
-                  ),
-                  SizedBox(height: 20),
-                  CustomTextField(
-                    labelText: runnerId != null && runnerId!.isNotEmpty ? null : 'Runner ID(Optional)',
-                    onChanged: (text) {
-                      setState(() {
-                        runnerId = text.isNotEmpty ? text : null;
-                      });
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  const Row(
-                    children: [
-                      Expanded(
-                        child: CustomDivider(),
+                      SizedBox(
+                        height: 20,
                       ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Text('Interests',
-                            style: TextStyle(
-                                color: Color.fromARGB(255, 16, 14, 99),
-                                fontSize: 16)),
-                      ),
-                      Expanded(
-                        child: CustomDivider(),
+                      MyButton(
+                        buttonText: 'Save Profile',
+                        onTap: _saveProfile,
                       ),
                     ],
                   ),
-                  SizedBox(height: 5),
-                  InterestsGrid(
-                    interests: interests,
-                    onInterestChanged: (String interest, bool value) {
-                      setState(() {
-                        interests[interest] = value;
-                      });
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  const Row(
-                    children: [
-                      Expanded(
-                        child: CustomDivider(),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Text('Skill Level',
-                            style: TextStyle(
-                                color: Color.fromARGB(255, 16, 14, 99),
-                                fontSize: 16)),
-                      ),
-                      Expanded(
-                        child: CustomDivider(),
-                      ),
-                    ],
-                  ),
-                  SkillLevelSlider(
-                    initialSkillLevel: _skillLevel,
-                    onSkillLevelChanged: (newLevel) {
-                      setState(() {
-                        _skillLevel = newLevel;
-                      });
-                    },
-                  ),
-                  ListTile(
-                    title: const Text('Private Profile'),
-                    trailing: Switch(
-                      value: isPrivate,
-                      onChanged: (value) {
-                        setState(() {
-                          isPrivate = value;
-                        });
-                      },
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  MyButton(
-                    buttonText: 'Save Profile',
-                    onTap: _saveProfile,
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
+            ScrollButton(
+              scrollController: _scrollController,
+              isVisible: _showScrollButton,
+            ),
+          ],
         ),
       ),
     );

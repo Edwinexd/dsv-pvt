@@ -179,10 +179,13 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 50),
-                  const Icon(Icons.person,
-                      size: 100, color: Color.fromARGB(255, 16, 14, 99)),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 10),
+                  Image.asset(
+                    'lib/images/logga.png',
+                    height: 200,
+                    width: 200,
+                  ),
+                  const SizedBox(height: 10),
                   const Text('Welcome!',
                       style: TextStyle(
                           color: Color.fromARGB(255, 16, 14, 99),
@@ -277,7 +280,9 @@ class _LoginPageState extends State<LoginPage> {
                         child: const Text(
                           'Register Now',
                           style: TextStyle(
-                              color: Colors.blue, fontWeight: FontWeight.bold),
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15),
                         ),
                       ),
                     ],

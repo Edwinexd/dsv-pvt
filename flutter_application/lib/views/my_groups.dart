@@ -166,7 +166,7 @@ class _MyGroupsState extends State<MyGroups> {
                       ),
                       child: ListTile(
                         leading: CircleAvatar(
-                          backgroundImage: groupImages[group.id.toString()] ?? const AssetImage('lib/images/splash.png'),
+                          backgroundImage: groupImages[group.id.toString()]!,
                         ),
                         title: Text(group.name),
                         trailing: const Row(
