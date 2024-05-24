@@ -263,12 +263,19 @@ class _GroupPageState extends State<GroupPage> {
                           fontSize: 20.0,
                         ),
                       ),
-                    )
+                    ),
 
+                    const SizedBox(height: 16.0),
+                    Center(
+                      child: Text(
+                        'Points: ${widget.group.points}'
+                        ),
+                    ),
                   ],
                 ),
               ), 
-            ],),
+            ],
+            ),
           
           if (widget.isMember) ...[
             //Display group for members
