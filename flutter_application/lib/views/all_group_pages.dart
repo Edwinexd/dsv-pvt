@@ -56,7 +56,7 @@ class AllGroupsPageState extends State<AllGroupsPage> {
     for (var group in fetchedGroups) {
       if (group.imageId != null) {
         ImageProvider image =
-            await BackendService().getImage(group.imageId ?? '');
+            await BackendService().getImage(group.imageId!);
         images[group.id.toString()] = image;
       } else {
         images[group.id.toString()] = const AssetImage('lib/images/splash.png');
@@ -162,7 +162,10 @@ class AllGroupsPageState extends State<AllGroupsPage> {
                         _selectedFilter = value.toString();
                       });
                     },
+                    dropdownColor: Colors.white,
                     decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
                       border: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.black),
                         borderRadius: BorderRadius.circular(20),
@@ -175,7 +178,7 @@ class AllGroupsPageState extends State<AllGroupsPage> {
                           child: Text('Show only public groups')),
                       DropdownMenuItem(
                           value: 'Private',
-                          child: Text('Show only private groups')),
+                          child: Text('Show only private groups')),     
                     ],
                   ),
                 ),
@@ -193,20 +196,25 @@ class AllGroupsPageState extends State<AllGroupsPage> {
                         fetchGroups();
                       });
                     },
+                    dropdownColor: Colors.white,
                     decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
                       border: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.black),
                         borderRadius: BorderRadius.circular(20),
                       ),
                     ),
                     items: const [
-                      DropdownMenuItem(value: 'None', child: Text('Sort by...')),
+                      DropdownMenuItem(
+                        value: 'None', 
+                        child: Text('Sort by name')),
                       DropdownMenuItem(
                           value: 'Distance',
-                          child: Text('Sort by Distance')),
+                          child: Text('Sort by distance')),
                       DropdownMenuItem(
                           value: 'Points',
-                          child: Text('Sort by Points')),
+                          child: Text('Sort by points')),
                     ],
                   ),
                 ),
@@ -251,7 +259,6 @@ class AllGroupsPageState extends State<AllGroupsPage> {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(group.description),
                           Text(group.isPrivate ? 'Private' : 'Public'),
                           Text('Points: ${group.points}'),
                           if (_userPosition != null)
