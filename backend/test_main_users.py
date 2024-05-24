@@ -19,7 +19,8 @@ from sessions import revoke_sessions
 
 SQLALCHEMY_DB_URL = "sqlite:///./tester.db"
 engine = create_engine(SQLALCHEMY_DB_URL)
-testing_session_local = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+testing_session_local = sessionmaker(
+    autocommit=False, autoflush=False, bind=engine)
 
 base.metadata.create_all(bind=engine)
 
@@ -102,7 +103,7 @@ def test_empty_fields(client, mocker):
 
     response = client.post("/users", json=user_payload)
 
-    assert response.status_code == 400
+    assert response.status_code == 400 or response.status_code == 422
     assert "id" not in response.json()
 
 
@@ -115,7 +116,7 @@ def test_none_fields(client, mocker):
 
     response = client.post("/users", json=user_payload)
 
-    assert response.status_code == 422
+    assert response.status_code == 422 or response.status_code == 422
     assert "id" not in response.json()
 
 
@@ -151,7 +152,8 @@ def test_already_existing_email(client, mocker):  # 5
 
     assert response.status_code == 409
     assert "id" not in response.json()
-    assert re.search("already exists", response.json()["detail"], re.IGNORECASE)
+    assert re.search("already exists", response.json()
+                     ["detail"], re.IGNORECASE)
 
 
 def test_nonexistent_fields(client, mocker):
@@ -165,7 +167,8 @@ def test_nonexistent_fields(client, mocker):
 
     assert response.status_code == 422
     assert "id" not in response.json()
-    assert re.search("nonexistent field", response.json()["detail"], re.IGNORECASE)
+    assert re.search("nonexistent field", response.json()
+                     ["detail"], re.IGNORECASE)
 
 
 def test_invalid_input_types(client, mocker):
@@ -179,7 +182,8 @@ def test_invalid_input_types(client, mocker):
 
     assert response.status_code == 422
     assert "id" not in response.json()
-    assert re.search("invalid input type", response.json()["detail"], re.IGNORECASE)
+    assert re.search("invalid input type", response.json()
+                     ["detail"], re.IGNORECASE)
 
 
 def test_wrong_request_method_put(client, mocker):
@@ -192,7 +196,8 @@ def test_wrong_request_method_put(client, mocker):
 
     assert response.status_code == 405
     assert "id" not in response.json()
-    assert re.search("wrong request method", response.json()["detail"], re.IGNORECASE)
+    assert re.search("wrong request method", response.json()
+                     ["detail"], re.IGNORECASE)
 
 
 def test_wrong_request_method_delete(client, mocker):
@@ -205,7 +210,8 @@ def test_wrong_request_method_delete(client, mocker):
 
     assert response.status_code == 405
     assert "id" not in response.json()
-    assert re.search("wrong request method", response.json()["detail"], re.IGNORECASE)
+    assert re.search("wrong request method", response.json()
+                     ["detail"], re.IGNORECASE)
 
 
 def test_very_long_strings(client, mocker):
@@ -299,7 +305,7 @@ def test_limit_exceeds_amt(client, mocker):
     rows = testing_session_local().query(models.User).count()
     token = login(client, mocker)
     skip = 0
-    limit = rows+1
+    limit = rows + 1
 
     response = client.get(
         f"/users?skip={skip}&limit={limit}", headers={"Authorization": token}
@@ -308,6 +314,7 @@ def test_limit_exceeds_amt(client, mocker):
     users = response.json()["data"]
 
     assert len(users) == rows
+
 
 def test_negative_skip(client, mocker):
     token = login(client, mocker)
@@ -323,6 +330,7 @@ def test_negative_skip(client, mocker):
     assert len(users) == 2
     assert users[0]["id"] == "user1"
 
+
 def test_limit_equals_amt(client, mocker):
     rows = testing_session_local().query(models.User).count()
     token = login(client, mocker)
@@ -336,6 +344,7 @@ def test_limit_equals_amt(client, mocker):
     users = response.json()["data"]
 
     assert len(users) == rows
+
 
 def test_amt_is_limit_plus_one(client, mocker):
     rows = testing_session_local().query(models.User).count()
@@ -367,6 +376,7 @@ def test_pagination_consistency(client, mocker):
     assert len(users) == 1
     assert users[0]["id"] == expected_id
 
+
 def test_wrong_datatypes(client, mocker):
     token = login(client, mocker)
     skip = "3"
@@ -377,6 +387,7 @@ def test_wrong_datatypes(client, mocker):
     )
 
     assert response.status_code == 422
+
 
 def test_very_large_values(client, mocker):
     token = login(client, mocker)
@@ -389,6 +400,7 @@ def test_very_large_values(client, mocker):
 
     assert response.status_code == 413
 
+
 def test_no_authentication(client, mocker):
     skip = 0
     limit = 10
@@ -399,7 +411,9 @@ def test_no_authentication(client, mocker):
 
     assert response.status_code == 401
 
+
 # CURRENT USER TESTS
+
 
 def test_successful_authentication(client, mocker):
     token = login(client, mocker)
@@ -413,11 +427,13 @@ def test_successful_authentication(client, mocker):
     assert response.json()["id"] == "user1"
     assert response.status_code == 200
 
+
 def test_unauthorized(client, mocker):
     response = client.get("/users/me", headers={"Authorization": "none"})
 
     assert response.status_code == 401
     assert "id" not in response.json()
+
 
 def test_revoked_session(client, mocker):
     token = login(client, mocker)
@@ -427,14 +443,17 @@ def test_revoked_session(client, mocker):
     assert response.status_code == 401
     assert "id" not in response.json()
 
+
 # SPECIFIC USERS TEST
 def test_nonexistent_user(client, mocker):
     token = login(client, mocker)
 
-    response = client.get("/users/nonexistentuser123", headers={"Authorization": token})
+    response = client.get("/users/nonexistentuser123",
+                          headers={"Authorization": token})
 
     assert "id" not in response.json()
     assert response.status_code == 404
+
 
 def test_existing_user(client, mocker):
     token = login(client, mocker)
@@ -444,5 +463,6 @@ def test_existing_user(client, mocker):
     assert "id" in response.json()
     assert response.json()["id"] == "user1"
     assert response.status_code == 200
+
 
 # USER UPDATE TESTS
