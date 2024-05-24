@@ -46,7 +46,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
         child: Column(
           children: [
             // Create copy of leaderboard as it modifies the internal list
-            Leaderboard(leaderboardEntries: List<Group>.of(leaderboardEntries), showMoreButton: false, showCrown: true),
+            Leaderboard(leaderboardEntries: List<Group>.of(leaderboardEntries), showCrown: true),
             Expanded(
               child: ListView.builder(
                 itemCount: leaderboardEntries.length,

@@ -19,6 +19,7 @@ class AllGroupsPage extends StatefulWidget {
 class AllGroupsPageState extends State<AllGroupsPage> {
   List<Group> _groups = [];
   List<Group> _myGroups = [];
+  Map<String, ImageProvider> groupImages = {};
 
   @override
   void initState() {
@@ -32,12 +33,20 @@ class AllGroupsPageState extends State<AllGroupsPage> {
   }
 
   void fetchGroups() async {
-    var fetchedGroups = await BackendService().getGroups(0, 100, GroupOrderType.NAME, false);
+    List<Group> fetchedGroups =
+        await BackendService().getGroups(0, 100, GroupOrderType.NAME, false);
+    Map<String, ImageProvider> images = {};
+    for (var group in fetchedGroups) {
+        ImageProvider image =
+            await BackendService().getImage(group.imageId!);
+        images[group.id.toString()] = image; 
+    }
+    
     setState(() {
       _groups = fetchedGroups;
+      groupImages = images;
     });
   }
-
 
   Future<void> fetchMyGroups() async {
     _myGroups = await BackendService().getMyGroups();
@@ -52,7 +61,6 @@ class AllGroupsPageState extends State<AllGroupsPage> {
       final name = group.name.toLowerCase();
       final isPrivate = group.isPrivate;
 
-      //Filter system will be 'changed'
       bool matchesSearchQuery = name.contains(_searchQuery.toLowerCase());
       bool isPublicMatch = (_selectedFilter == 'All') ||
           (_selectedFilter == 'Public' && !isPrivate) ||
@@ -61,13 +69,10 @@ class AllGroupsPageState extends State<AllGroupsPage> {
     }).toList();
 
     return Scaffold(
-
- appBar: buildAppBar(
+      appBar: buildAppBar(
         context: context,
         showBackButton: true,
         title: 'All Groups',
-        
-
       ),
       body: DefaultBackground(
         children: [
@@ -137,41 +142,47 @@ class AllGroupsPageState extends State<AllGroupsPage> {
               itemBuilder: (context, index) {
                 final group = filteredGroups[index];
                 return GestureDetector(
-                    onTap: () {
-                      bool isMember = _myGroups
-                          .any((myGroup) => myGroup.id == group.id);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  GroupPage(group: group, isMember: isMember)));
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 4.0),
-                      padding: const EdgeInsets.all(4.0),
-                      decoration: BoxDecoration(
-                        color: Color(0xFFFFD5A3),
-                        borderRadius: BorderRadius.circular(20.0),
+                  onTap: () {
+                    bool isMember =
+                        _myGroups.any((myGroup) => myGroup.id == group.id);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            GroupPage(group: group, isMember: isMember),
                       ),
-                      child: ListTile(
-                        leading: const CircleAvatar(
-                          child: Icon(Icons.group), //Placeholder icon
-                        ),
-                        title: Text(
-                          group.name,
-                          style: const TextStyle(
-                            fontStyle: FontStyle.normal,
-                          ),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(group.description),
-                            Text(group.isPrivate ? 'Private' : 'Public'),
-                          ],
+                    );
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 4.0),
+                    padding: const EdgeInsets.all(4.0),
+                    decoration: BoxDecoration(
+                      color: Color(0xFFFFD5A3),
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: groupImages[group.id.toString()],
+                        child: groupImages[group.id.toString()] == null
+                            ? Icon(Icons.group)
+                            : null,
+                      ),
+                      title: Text(
+                        group.name,
+                        style: const TextStyle(
+                          fontStyle: FontStyle.normal,
                         ),
                       ),
-                    ));
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(group.description),
+                          Text(group.isPrivate ? 'Private' : 'Public'),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
               },
             ),
           ),

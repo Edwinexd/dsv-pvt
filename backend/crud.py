@@ -104,6 +104,7 @@ def create_group(db_session: Session, group: schemas.GroupCreate):
         latitude=group.latitude,
         longitude=group.longitude,
         address=group.address,
+        skill_level=group.skill_level,
     )
     db_owner = get_user(db_session, group.owner_id)
     if db_owner is None:
