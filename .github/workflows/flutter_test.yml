@@ -33,6 +33,9 @@ jobs:
             fail_on_empty: false
             sort_keys: false
 
+        - name: Mocks
+          run: flutter pub run build_runner build
+
         - name: Run Flutter Test
           run: flutter test
           working-directory: ./flutter_application

@@ -52,6 +52,8 @@ dependencies:
   cross_file: ^0.3.4+1
   fuzzywuzzy: ^1.1.6
   geolocator: ^10.1.0
+  mockito: ^5.4.4
+  analyzer: ^6.5.0
   
 
 dev_dependencies:
