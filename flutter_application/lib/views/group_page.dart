@@ -4,7 +4,6 @@ import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/activity_create.dart';
 import 'package:flutter_application/bars.dart';
-import 'package:flutter_application/components/checkered_background.dart';
 import 'package:flutter_application/components/user_selector.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/activity.dart';
@@ -15,6 +14,7 @@ import 'package:flutter_application/views/activity_page.dart';
 import 'package:flutter_application/views/edit_group_page.dart';
 import 'package:flutter_application/views/group_members.dart';
 import 'package:flutter_application/views/my_groups.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 
 class GroupPage extends StatefulWidget {
@@ -257,18 +257,11 @@ class _GroupPageState extends State<GroupPage> {
                     const SizedBox(height: 16.0),
                     Center(
                       child: Text(
-                        widget.group.name,
-                        style: const TextStyle(
-                          color: Color(0xFF8134CE),
-                          fontSize: 20.0,
+                        'Points: ${widget.group.points}',
+                        style: GoogleFonts.poppins(
+                          textStyle: const TextStyle(
+                            fontSize: 20.0),
                         ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 16.0),
-                    Center(
-                      child: Text(
-                        'Points: ${widget.group.points}'
                         ),
                     ),
                   ],
