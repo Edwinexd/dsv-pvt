@@ -12,4 +12,4 @@ While a lot of work could be automated, there were a lot of problems related to 
 - Which components to test
 
 ## Test Coverage
-Far from all widgets and components have been tested. Effort and time was primarly put into components that had computational logic.
+Far from all widgets and components have been tested. Effort and time was primarly put into components that had computational logic. Testing of views/actual pages is limited due to most of their logic being fetching data from the backend which is tested in backend service tests anyway.

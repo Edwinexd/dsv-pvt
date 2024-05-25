@@ -1,0 +1,92 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_application/views/all_group_pages.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
+import 'package:flutter_application/controllers/backend_service_interface.dart';
+import 'package:flutter_application/models/group.dart';
+
+@GenerateNiceMocks([MockSpec<BackendServiceInterface>(as: #MockBackendService)])
+import 'all_group_pages_test.mocks.dart';
+
+void main() {
+  late MockBackendService mockBackendService;
+
+  setUp(() {
+    mockBackendService = MockBackendService();
+  });
+
+  Future<void> pumpAllGroupsPage(WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AllGroupsPage(
+          refreshMyGroups: () {},
+          backendService: mockBackendService,
+        ),
+      ),
+    );
+  }
+
+  testWidgets('Initial load and display of groups', (WidgetTester tester) async {
+    when(mockBackendService.getGroups(any, any, any, any))
+        .thenAnswer((_) async => [
+              Group(id: 1, name: 'Group A', isPrivate: false, points: 10, description: 'Description A', ownerId: 'Owner A', skillLevel: 0, latitude: 40.0, longitude: -75.0),
+              Group(id: 2, name: 'Group B', isPrivate: true, points: 20, description: 'Description B', ownerId: 'Owner B', skillLevel: 1, latitude: 41.0, longitude: -74.0),
+            ]);
+
+    await pumpAllGroupsPage(tester);
+
+    await tester.pumpAndSettle();
+    await tester.pumpAndSettle();
+    await tester.pumpAndSettle();
+    await tester.pumpAndSettle();
+
+    expect(find.text('Group A'), findsOneWidget);
+    expect(find.text('Group B'), findsOneWidget);
+  });
+
+  testWidgets('Sort by distance', (WidgetTester tester) async {
+    when(mockBackendService.getGroups(any, any, any, any))
+        .thenAnswer((_) async => [
+              Group(id: 1, name: 'Group A', isPrivate: false, points: 10, description: 'Description A', ownerId: 'Owner A', skillLevel: 0, latitude: 40.0, longitude: -75.0),
+              Group(id: 2, name: 'Group B', isPrivate: true, points: 20, description: 'Description B', ownerId: 'Owner B', skillLevel: 1, latitude: 41.0, longitude: -74.0),
+            ]);
+
+    await pumpAllGroupsPage(tester);
+
+    await tester.pumpAndSettle();
+
+    // Simulate user changing sort option to 'Distance'
+    await tester.tap(find.byType(DropdownButtonFormField).first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Sort by distance').last);
+    await tester.pumpAndSettle();
+
+    // Add assertions for sorted order
+  });
+
+  testWidgets('Sort by points', (WidgetTester tester) async {
+    when(mockBackendService.getGroups(any, any, any, any))
+        .thenAnswer((_) async => [
+              Group(id: 1, name: 'Group A', isPrivate: false, points: 10, description: 'Description A', ownerId: 'Owner A', skillLevel: 0, latitude: 40.0, longitude: -75.0),
+              Group(id: 2, name: 'Group B', isPrivate: true, points: 20, description: 'Description B', ownerId: 'Owner B', skillLevel: 1, latitude: 41.0, longitude: -74.0),
+            ]);
+
+    await pumpAllGroupsPage(tester);
+
+    await tester.pumpAndSettle();
+
+    // Simulate user changing sort option to 'Points'
+    await tester.tap(find.byType(DropdownButtonFormField).at(1));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Sort by points').last);
+    await tester.pumpAndSettle();
+
+    // Add assertions for sorted order
+    final groupTiles = tester.widgetList<ListTile>(find.byType(ListTile));
+    expect((groupTiles.first as ListTile).title, equals('Group B'));
+    expect((groupTiles.last as ListTile).title, equals('Group A'));
+  });
+
+  // Additional tests for other functionalities
+}
