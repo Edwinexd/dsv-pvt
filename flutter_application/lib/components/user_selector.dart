@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/bars.dart';
+import 'package:flutter_application/components/optional_image.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/user.dart';
 import 'package:fuzzywuzzy/fuzzywuzzy.dart';
@@ -107,6 +108,7 @@ class _UserSelectorState extends State<UserSelector> {
                 ),
                 margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 child: ListTile(
+                  leading: OptionalImage(imageId: displayedUsers[index].imageId),
                   title: Text(displayedUsers[index].fullName),
                   subtitle: Text(displayedUsers[index].userName),
                   trailing: selectedUsers.contains(displayedUsers[index])
