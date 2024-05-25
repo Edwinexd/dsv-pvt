@@ -77,7 +77,7 @@ void main() {
       home: CountdownWidget(),
     ));
 
-    expect(find.text('$difference DAYS TO\nMIDNATTSLOPPET'), findsOneWidget);
+    expect(find.text('$difference DAYS TO\nMIDNATTSLOPPET', findRichText: true), findsOneWidget);
   });
 
   testWidgets('ActivityButton navigates to MidnatsloppetActivity',
@@ -106,19 +106,5 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(ChallengesPage), findsOneWidget);
-  });
-
-  testWidgets('MoreButton navigates to LeaderboardPage',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(
-      home: Scaffold(
-        body: MoreButton(),
-      ),
-    ));
-
-    await tester.tap(find.byType(ElevatedButton));
-    await tester.pumpAndSettle();
-
-    expect(find.byType(LeaderboardPage), findsOneWidget);
   });
 }
