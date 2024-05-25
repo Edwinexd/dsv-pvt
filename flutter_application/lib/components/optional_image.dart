@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
+import 'package:flutter_application/controllers/backend_service_interface.dart';
 
 class OptionalImage extends StatefulWidget {
   final String? imageId;
+  final BackendServiceInterface backendService;
 
-  OptionalImage({Key? key, this.imageId}) : super(key: key);
+  OptionalImage({
+      Key? key,
+      this.imageId,
+      BackendServiceInterface? backendService
+    }) : backendService = backendService ?? BackendService(),
+        super(key: key);
 
   @override
   _OptionalImageState createState() => _OptionalImageState();
