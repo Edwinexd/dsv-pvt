@@ -3,14 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/components/gradient_button.dart';
 import 'package:flutter_application/components/my_textfield.dart';
 import 'package:flutter_application/components/square_tile.dart';
+import 'package:flutter_application/controllers/backend_service_interface.dart';
 import 'package:flutter_application/create_profile_page.dart';
 
 import '../controllers/backend_service.dart';
 
-import '../controllers/backend_service.dart';
-
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key});
+  final BackendServiceInterface backendService;
+
+  SignUpPage({
+    Key? key,
+    BackendServiceInterface? backendService,
+  })  : backendService = backendService ?? BackendService(),
+        super(key: key);
+
 
   @override
   State<SignUpPage> createState() => _SignUpPageState();
@@ -23,7 +29,6 @@ class _SignUpPageState extends State<SignUpPage> {
   final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final BackendService _backendService = BackendService();
 
   Future<void> registerUser() async {
     final String name = nameController.text.trim();
@@ -51,7 +56,7 @@ class _SignUpPageState extends State<SignUpPage> {
     );
 
     try {
-      await _backendService.createUser(username, email, name, password);
+      await widget.backendService.createUser(username, email, name, password);
     } on DioException catch (error) {
       if (error.response!.statusCode! >= 400 && error.response!.statusCode! < 500) { 
         // TODO This sort of parsing should be done in backend_service but not sure how to manipulate the error object
@@ -61,7 +66,7 @@ class _SignUpPageState extends State<SignUpPage> {
           errorDetail = errorData?['detail'];
         }
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(errorDetail ?? 'Invalid email or password')));
+            SnackBar(content: Text(errorDetail ?? 'Email unavailable')));
         
         Navigator.pop(context);
         return;
