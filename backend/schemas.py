@@ -27,6 +27,7 @@ class UserModel(UserBase):
 
 class User(UserModel):
     date_created: datetime
+    image_id: Optional[str]
 
     class Config:
         from_attributes = True
