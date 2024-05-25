@@ -119,11 +119,14 @@ class User(base):
         if self.profile is None:
             return None
         return self.profile.image_id
-    
+
     @image_id.inplace.expression
     @classmethod
     def _image_id_expression(cls):
-        return select(Profile.image_id).where(Profile.owner_id == cls.id).label("image_id")
+        return (
+            select(Profile.image_id).where(Profile.owner_id == cls.id).label("image_id")
+        )
+
 
 class Profile(base):
     __tablename__ = "profiles"
