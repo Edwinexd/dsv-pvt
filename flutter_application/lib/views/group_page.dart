@@ -14,7 +14,9 @@ import 'package:flutter_application/views/activity_page.dart';
 import 'package:flutter_application/views/edit_group_page.dart';
 import 'package:flutter_application/views/group_members.dart';
 import 'package:flutter_application/views/my_groups.dart';
+import 'package:flutter_application/components/skill_level_slider.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 
 
 class GroupPage extends StatefulWidget {
@@ -39,6 +41,13 @@ class _GroupPageState extends State<GroupPage> {
   String location = '';
   int skip = 0; // TODO: Pagination?
   int limit = 100; // TODO: Pagination?
+  final List<String> skillLevels = [
+    'Beginner',
+    'Intermediate',
+    'Advanced',
+    'Expert',
+    'Master'
+  ];
 
   Future<void> _fetchData() async {
     await fetchMyGroups();
@@ -362,7 +371,7 @@ class _GroupPageState extends State<GroupPage> {
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Create an activity'),
+                    Text('Create an activity '),
                     Icon(Icons.create),
                   ],
                 ),
@@ -382,7 +391,7 @@ class _GroupPageState extends State<GroupPage> {
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Invite members'),
+                    Text('Invite members '),
                     Icon(Icons.person_add),
                   ],
                 ),
@@ -408,7 +417,7 @@ class _GroupPageState extends State<GroupPage> {
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Members'),
+                    Text('Members '),
                     Icon(Icons.group),
                   ],
                 ),
@@ -431,7 +440,7 @@ class _GroupPageState extends State<GroupPage> {
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Edit Group'),
+                      Text('Edit Group '),
                       Icon(Icons.edit),
                     ],
                   )),
@@ -449,7 +458,7 @@ class _GroupPageState extends State<GroupPage> {
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Leave the group'),
+                      Text('Leave the group '),
                       Icon(Icons.exit_to_app),
                     ],
                   ),
@@ -512,17 +521,18 @@ class _GroupPageState extends State<GroupPage> {
                           child: Text(
                               widget.group.isPrivate ? 'Private' : 'Public'),
                         ),
-                        // TOOD: We don't have skill level in the group model
-                        /*ElevatedButton(
+                        ElevatedButton(
                           onPressed: () {
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFFF9F2D),
+                            backgroundColor: Color(0xFFFEC0AD),
                           ),
                           child:
-                              Text('Beginner' /*${widget.group.skillLevel}*/),
-                        ),*/
-                        ElevatedButton(
+                              Text(skillLevels[widget.group.skillLevel]),
+                        ),
+                        
+                        // It displays the whole address, which is not we want to see here
+                        /*ElevatedButton(
                           onPressed: () {},
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFFFEC0AD),
@@ -530,7 +540,7 @@ class _GroupPageState extends State<GroupPage> {
                           child: Text(widget.group.address != null
                               ? widget.group.address!
                               : 'Online'),
-                        ),
+                        ),*/
                       ],
                     ),
                   ),
