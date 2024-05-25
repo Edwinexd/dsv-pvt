@@ -27,9 +27,9 @@ class _OptionalImageState extends State<OptionalImage> {
         }
         // if future is null
         if (snapshot.data == null) {
-          return const Image(image: AssetImage('lib/images/splash.png'));
+          return const CircleAvatar(foregroundImage: AssetImage('lib/images/splash.png'));
         }
-        return Image(image: snapshot.data!);
+        return CircleAvatar(foregroundImage: snapshot.data!);
       },
     );
   }
