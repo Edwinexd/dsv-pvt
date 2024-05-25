@@ -35,6 +35,7 @@ jobs:
 
         - name: Mocks
           run: flutter pub run build_runner build
+          working-directory: ./flutter_application
 
         - name: Run Flutter Test
           run: flutter test
