@@ -36,7 +36,6 @@ void main() {
     final imageProvider = AssetImage('lib/images/splash.png');
     await pumpOptionalImage(tester, 'test', imageProvider: imageProvider);
 
-    // Let the Future complete
     await tester.pump();
 
     expect(find.byType(CircleAvatar), findsOneWidget);
