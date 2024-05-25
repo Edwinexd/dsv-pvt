@@ -20,8 +20,8 @@ void main() {
   setUp(() async {
     backendService = MockBackendService();
     testUsers = [
-      User(id: '1', fullName: 'John Doe', userName: 'john_doe', dateCreated: DateTime.now(), role: Role.NORMAL),
-      User(id: '2', fullName: 'Jane Smith', userName: 'jane_smith', dateCreated: DateTime.now(), role: Role.NORMAL),
+      User(id: '1', fullName: 'John Doe', userName: 'john_doe', dateCreated: DateTime.now(), role: Role.NORMAL, imageId: null),
+      User(id: '2', fullName: 'Jane Smith', userName: 'jane_smith', dateCreated: DateTime.now(), role: Role.NORMAL, imageId: null),
     ];
     when(backendService.getUsers(SKIP, LIMIT)).thenAnswer((_) async => testUsers);
   });
