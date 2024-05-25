@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/controllers/backend_service_interface.dart';
 import 'package:flutter_application/models/role.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:flutter_application/models/user.dart';
@@ -18,6 +19,8 @@ void main() {
   late MockBackendService backendService;
 
   setUp(() async {
+    // init dotenv, for some reason a normal backend service is being created in the background and breaking tests
+    await dotenv.load();
     backendService = MockBackendService();
     testUsers = [
       User(id: '1', fullName: 'John Doe', userName: 'john_doe', dateCreated: DateTime.now(), role: Role.NORMAL, imageId: null),
