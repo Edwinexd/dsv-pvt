@@ -14,7 +14,6 @@ import 'package:flutter_application/views/activity_page.dart';
 import 'package:flutter_application/views/edit_group_page.dart';
 import 'package:flutter_application/views/group_members.dart';
 import 'package:flutter_application/views/my_groups.dart';
-import 'package:flutter_application/components/skill_level_slider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 
@@ -246,6 +245,8 @@ class _GroupPageState extends State<GroupPage> {
         title: widget.group.name,
       ),
       body: DefaultBackground(
+        child: SingleChildScrollView(
+          child: Column(     
         children: [
           Column(
             children: [
@@ -278,6 +279,7 @@ class _GroupPageState extends State<GroupPage> {
               ), 
             ],
             ),
+          
           
           if (widget.isMember) ...[
             //Display group for members
@@ -353,7 +355,7 @@ class _GroupPageState extends State<GroupPage> {
             const SizedBox(height: 12),
             SizedBox(
               height: 40,
-              width: 150,
+              width: 250,
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -592,6 +594,8 @@ class _GroupPageState extends State<GroupPage> {
           ],
         ],
       ),
+    ),
+    ),
       bottomNavigationBar: buildBottomNavigationBar(
         context: context,
       ),
