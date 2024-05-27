@@ -20,12 +20,11 @@ base.metadata.create_all(bind=engine)
 
 
 def override_get_db_session():
-    db = None
     try:
         db = testing_session_local()
         yield db
     finally:
-        db.close()
+        db.close() # type: ignore
 
 
 # Essentially mocks mains database to be local

@@ -28,12 +28,11 @@ VERY_LONG_STRING = "ttemptemptemptemptemptemptemptemptemptemptemptemptemptemptem
 
 
 def override_get_db_session():
-    db = None
     try:
         db = testing_session_local()
         yield db
     finally:
-        db.close()
+        db.close() # type: ignore
 
 
 # Essentially mocks mains database to be local
@@ -51,7 +50,7 @@ class PayloadGenerator:
         return PayloadGenerator.count
 
     def generate_user_payload(self):
-        c = PayloadGenerator.get_count()
+        c = PayloadGenerator.get_count(self)
         return {
             "email": f"test{c}@example.com",
             "username": f"testuser{c}",
