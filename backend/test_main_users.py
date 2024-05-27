@@ -16,7 +16,6 @@ from sqlalchemy.orm import sessionmaker
 import models
 from database import base
 from main import app, get_db_session
-from sessions import revoke_sessions
 
 SQLALCHEMY_DB_URL = "sqlite:///./tester.db"
 engine = create_engine(SQLALCHEMY_DB_URL)
