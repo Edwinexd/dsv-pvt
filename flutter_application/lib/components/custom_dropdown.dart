@@ -37,6 +37,7 @@ class CustomDropdown<T> extends StatelessWidget {
           value: value,
           child: Text(
             value.toString(),
+            textAlign: TextAlign.center,
             //style: TextStyle(color: Colors.white),
           ),
         );
