@@ -32,6 +32,7 @@ app.dependency_overrides[get_db_session] = override_get_db_session
 client = TestClient(app)
 payload_generator = PayloadGenerator()
 
+
 @pytest.fixture(scope="session", autouse=True)
 def generate_users(session_mocker):
     """
@@ -132,7 +133,7 @@ def test_nonexistent_data():
     )
 
     assert "id" not in response.json()
-    assert response.status_code == 400
+    assert response.status_code == 422
 
 
 def test_already_existing_profile():
@@ -149,11 +150,12 @@ def test_already_existing_profile():
         headers={"Authorization": TOKEN},
     )
 
-    assert response.status_code == 409  # Should conflict
+    assert (
+        response.status_code == 200
+    )  # Should not conflict, should just overwrite profile because PUT
 
-    # PROFILE UPDATES
 
-
+# PROFILE UPDATES
 update_data = {
     "runner_id": "testupdate",
     "age": 32,
@@ -254,8 +256,6 @@ def test_update_invalid_data():
 
 
 # check if the endpoint is vurnerable to very elementary sql injection
-
-
 def test_sql_injection():
     update_data_sql_inject = {"description": "DROP TABLE profiles;"}
 
