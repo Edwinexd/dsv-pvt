@@ -64,7 +64,7 @@ void main() {
 
   testWidgets('Valid form calls registerUser and navigates on success', (WidgetTester tester) async {
     when(mockBackendService.createUser(any, any, any, any))
-        .thenAnswer((_) async => User(id: "id", userName: "userName", fullName: "fullName", dateCreated: DateTime.now(), role: Role.NORMAL, imageId: null));
+        .thenAnswer((_) async => User(id: "id", userName: "userName", fullName: "fullName", dateCreated: DateTime.now(), role: Role.NORMAL, imageId: null, email: 'userName@mail.com'));
 
     await tester.pumpWidget(createWidgetUnderTest());
 
