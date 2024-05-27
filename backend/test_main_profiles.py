@@ -11,6 +11,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database import base
 from main import app, get_db_session
+from schemas import SessionUser
 
 SQLALCHEMY_DB_URL = "sqlite:///./tester.db"
 engine = create_engine(SQLALCHEMY_DB_URL)
@@ -63,6 +64,8 @@ def login(
     """
     Logs in to mock client once per test session and gets access token.
     """
+    session_mocker.patch("main.get_session", return_value=SessionUser(id="user1"))
+    session_mocker.patch("main.create_session", return_value={"Bearer": "Bearer abc123"})
     session_mocker.patch("main.auth.login", return_value=user_id)
     response = client.post(
         "/users/login",
@@ -180,6 +183,7 @@ def test_update_success():
 
 def test_update_invalid_user_permissions(mocker):
     # Log in to a different user
+    mocker.patch("main.get_session", return_value=SessionUser(id="user2"))
     mocker.patch("main.auth.login", return_value="user2")
     response = client.post(
         "/users/login",
