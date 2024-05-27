@@ -82,8 +82,10 @@ class GroupCreationState extends State<GroupCreation> {
   }
 
   Future<void> fetchImage(String groupId) async {
-    ImageProvider image =
-        await BackendService().getImage(createdGroup!.imageId!);
+    if (createdGroup != null && createdGroup!.imageId != null) {
+      
+    }
+    ImageProvider image = await BackendService().getImage(createdGroup!.imageId!);
     setState(() {
       groupImage = image;
     });
@@ -98,146 +100,147 @@ class GroupCreationState extends State<GroupCreation> {
         title: 'Create Group',
       ),
       body: DefaultBackground(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Center(
-                child: GestureDetector(
-                  onTap: _pickImage,
-                  child: CircleAvatar(
-                    radius: 60,
-                    backgroundImage: groupImage,
-                    child: const Align(
-                      alignment: Alignment.bottomRight,
-                      child: CircleAvatar(
-                        backgroundColor: Colors.white,
-                        radius: 15,
-                        child: Icon(Icons.camera_alt,
-                            color: Colors.blue, size: 22),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Center(
+                  child: GestureDetector(
+                    onTap: _pickImage,
+                    child: CircleAvatar(
+                      radius: 60,
+                      backgroundImage: groupImage,
+                      child: const Align(
+                        alignment: Alignment.bottomRight,
+                        child: CircleAvatar(
+                          backgroundColor: Colors.white,
+                          radius: 15,
+                          child: Icon(Icons.camera_alt,
+                              color: Colors.blue, size: 22),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Group Name'),
-              ),
-              const SizedBox(height: 16.0),
-              InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MapScreen(
-                        onLocationSelected: (location) {
+                TextFormField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(labelText: 'Group Name'),
+                ),
+                const SizedBox(height: 16.0),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MapScreen(
+                          onLocationSelected: (location) {
+                            setState(() {
+                              _location = location;
+                              _locationController.text = location.address;
+                            });
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                  child: AbsorbPointer(
+                    child: TextFormField(
+                      controller: _locationController,
+                      decoration: const InputDecoration(
+                        labelText: 'Location',
+                        suffixIcon: Icon(Icons.location_on),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                const Text(
+                  'Skill Level:',
+                  style: TextStyle(fontSize: 16),
+                ),
+                SkillLevelSlider(
+                  initialSkillLevel: _skillLevel,
+                  onSkillLevelChanged: (newLevel) {
+                    setState(() {
+                      _skillLevel = newLevel;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16.0),
+                Row(
+                  children: <Widget>[
+                    const Text(
+                      'Public',
+                      style: TextStyle(fontSize: 12.0),
+                    ),
+                    Switch(
+                      value: _isPublic,
+                      onChanged: (value) {
+                        setState(() {
+                          _isPublic = value;
+                        });
+                      },
+                    ),
+                    const Text(
+                      'Private',
+                      style: TextStyle(fontSize: 12.0),
+                    ),
+                    const SizedBox(width: 16.0),
+                    const Text(
+                      'Member Limit:',
+                      style: TextStyle(fontSize: 12.0),
+                    ),
+                    const SizedBox(width: 8.0),
+                    Expanded(
+                      child: TextFormField(
+                        initialValue: _memberLimit.toString(),
+                        keyboardType: TextInputType.number,
+                        onChanged: (value) {
                           setState(() {
-                            _location = location;
-                            _locationController.text = location.address;
+                            _memberLimit = int.tryParse(value) ?? 0;
                           });
                         },
                       ),
                     ),
-                  );
-                },
-                child: AbsorbPointer(
-                  child: TextFormField(
-                    controller: _locationController,
-                    decoration: const InputDecoration(
-                      labelText: 'Location',
-                      suffixIcon: Icon(Icons.location_on),
-                    ),
-                  ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 16.0),
-              const Text(
-                'Skill Level:',
-                style: TextStyle(fontSize: 16),
-              ),
-              SkillLevelSlider(
-                initialSkillLevel: _skillLevel,
-                onSkillLevelChanged: (newLevel) {
-                  setState(() {
-                    _skillLevel = newLevel;
-                  });
-                },
-              ),
-              const SizedBox(height: 16.0),
-              Row(
-                children: <Widget>[
-                  const Text(
-                    'Public',
-                    style: TextStyle(fontSize: 12.0),
-                  ),
-                  Switch(
-                    value: _isPublic,
-                    onChanged: (value) {
-                      setState(() {
-                        _isPublic = value;
-                      });
-                    },
-                  ),
-                  const Text(
-                    'Private',
-                    style: TextStyle(fontSize: 12.0),
-                  ),
-                  const SizedBox(width: 16.0),
-                  const Text(
-                    'Member Limit:',
-                    style: TextStyle(fontSize: 12.0),
-                  ),
-                  const SizedBox(width: 8.0),
-                  Expanded(
-                    child: TextFormField(
-                      initialValue: _memberLimit.toString(),
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) {
-                        setState(() {
-                          _memberLimit = int.tryParse(value) ?? 0;
-                        });
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16.0),
-              TextFormField(
-                controller: _descriptionController,
-                decoration:
-                    const InputDecoration(labelText: 'Group Description'),
-                maxLines: 3,
-              ),
-              const SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () {
-                  createGroup();
-                },
-                child: const Text('Create Group'),
-              ),
-              if (_isGroupCreated)
+                const SizedBox(height: 16.0),
+                TextFormField(
+                  controller: _descriptionController,
+                  decoration:
+                      const InputDecoration(labelText: 'Group Description'),
+                  maxLines: 3,
+                ),
+                const SizedBox(height: 10.0),
                 ElevatedButton(
                   onPressed: () {
-                    //Redirecting to the group page
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            GroupPage(group: createdGroup!, isMember: true),
-                      ),
-                    );
+                    createGroup();
                   },
-                  child: const Text('Go to Group Page'),
-                  //
+                  child: const Text('Create Group'),
                 ),
-              if (_errorMessage.isNotEmpty)
-                Text(
-                  _errorMessage,
-                  style: const TextStyle(color: Colors.red),
-                ),
-            ],
+                if (_isGroupCreated)
+                  ElevatedButton(
+                    onPressed: () {
+                      //Redirecting to the group page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              GroupPage(group: createdGroup!, isMember: true),
+                        ),
+                      );
+                    },
+                    child: const Text('Go to Group Page'),
+                  ),
+                if (_errorMessage.isNotEmpty)
+                  Text(
+                    _errorMessage,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+              ],
+            ),
           ),
         ),
       ),
@@ -274,7 +277,9 @@ class GroupCreationState extends State<GroupCreation> {
     }
 
     if (createdGroup != null) {
-      await fetchImage(createdGroup!.id.toString());
+      if (createdGroup!.imageId != null) {
+        await fetchImage(createdGroup!.id.toString());
+      } 
     }
 
     widget.onGroupCreatedCallBacks.forEach((callback) {
@@ -283,9 +288,6 @@ class GroupCreationState extends State<GroupCreation> {
 
     setState(() {
       _errorMessage = '';
-    });
-
-    setState(() {
       _isGroupCreated = true;
     });
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/background_for_pages.dart';
+import 'package:flutter_application/components/my_button.dart';
 import 'package:flutter_application/home_page.dart';
-
 
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({super.key});
@@ -28,7 +29,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       // After the email has been sent, navigate to the reset code page
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => ResetCodePage(email: emailController.text)),
+        MaterialPageRoute(
+            builder: (context) => ResetCodePage(email: emailController.text)),
       );
     } else {
       // TODO: Show an error message if the email is not in the database
@@ -37,36 +39,41 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Forgot Password'),
-      ),
-      body: Container(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              const Text('Please enter your email to reset the password'),
-              TextFormField(
-                controller: emailController,
-                decoration: const InputDecoration(labelText: 'Your Email'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter your email';
-                  }
-                  // TODO: Add more email validation logic here
-                  return null;
-                },
-                onSaved: (value) => emailController.text = value!,
-              ),
-              const SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: _validateAndSubmit,
-                child: const Text('Reset Password'),
-              ),
-            ],
+    return DefaultBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: const Text('Forgot Password', style: TextStyle(color: Colors.white)),
+          backgroundColor: Colors.transparent,
+          iconTheme: IconThemeData(color: Colors.white),
+        ),
+        body: Container(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                const Text('Please enter your email to reset the password'),
+                TextFormField(
+                  controller: emailController,
+                  decoration: const InputDecoration(labelText: 'Your Email'),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please enter your email';
+                    }
+                    // TODO: Add more email validation logic here
+                    return null;
+                  },
+                  onSaved: (value) => emailController.text = value!,
+                ),
+                const SizedBox(height: 16.0),
+                MyButton( 
+                  onTap: _validateAndSubmit,
+                  buttonText: 'Reset Password',
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -102,7 +109,8 @@ class _ResetCodePageState extends State<ResetCodePage> {
       // After the code has been verified, navigate to the new password page
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => NewPasswordPage(email: widget.email)),
+        MaterialPageRoute(
+            builder: (context) => NewPasswordPage(email: widget.email)),
       );
     } else {
       // TODO: Show an error message if the code is incorrect
@@ -111,43 +119,48 @@ class _ResetCodePageState extends State<ResetCodePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Check your email'),
-      ),
-      body: Container(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Text('We sent a reset link to ${widget.email}'),
-              const Text('Enter the 5-digit code that was mentioned in the email'),
-              TextFormField(
-                controller: resetCodeController,
-                decoration: const InputDecoration(labelText: '5-digit code'),
-                validator: (value) {
-                  if (value!.isEmpty || value.length != 5) {
-                    return 'Please enter the 5-digit code';
-                  }
-                  // TODO: Add more code validation logic here
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: _validateAndSubmit,
-                child: const Text('Verify Code'),
-              ),
-              const SizedBox(height: 16.0),
-              TextButton(
-                onPressed: () {
-                  // TODO: Resend the email
-                },
-                child: const Text('Haven’t got the email yet? Resend email'),
-              ),
-            ],
+    return DefaultBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text('Check your email'),
+          backgroundColor: Colors.transparent,
+        ),
+        body: Container(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Text('We sent a reset link to ${widget.email}'),
+                const Text(
+                    'Enter the 5-digit code that was mentioned in the email'),
+                TextFormField(
+                  controller: resetCodeController,
+                  decoration: const InputDecoration(labelText: '5-digit code'),
+                  validator: (value) {
+                    if (value!.isEmpty || value.length != 5) {
+                      return 'Please enter the 5-digit code';
+                    }
+                    // TODO: Add more code validation logic here
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16.0),
+                MyButton( 
+                  onTap: _validateAndSubmit,
+                  buttonText: 'Verify Code',
+                ),
+                const SizedBox(height: 16.0),
+                TextButton(
+                  onPressed: () {
+                    // TODO: Resend the email
+                  },
+                  child: const Text('Haven’t got the email yet? Resend email'),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -191,44 +204,49 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('New Password'),
-      ),
-      body: Container(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              TextFormField(
-                controller: newPasswordController,
-                decoration: const InputDecoration(labelText: 'New Password'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter your new password';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16.0),
-              TextFormField(
-                controller: confirmPasswordController,
-                decoration: const InputDecoration(labelText: 'Confirm Password'),
-                validator: (value) {
-                  if (value != newPasswordController.text) {
-                    return 'Passwords do not match';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: _validateAndSubmit,
-                child: const Text('Confirm'),
-              ),
-            ],
+    return DefaultBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text('New Password'),
+          backgroundColor: Colors.transparent,
+        ),
+        body: Container(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                TextFormField(
+                  controller: newPasswordController,
+                  decoration: const InputDecoration(labelText: 'New Password'),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please enter your new password';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16.0),
+                TextFormField(
+                  controller: confirmPasswordController,
+                  decoration:
+                      const InputDecoration(labelText: 'Confirm Password'),
+                  validator: (value) {
+                    if (value != newPasswordController.text) {
+                      return 'Passwords do not match';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16.0),
+                MyButton(
+                  onTap: _validateAndSubmit,
+                  buttonText: 'Confirm',
+                ),
+              ],
+            ),
           ),
         ),
       ),

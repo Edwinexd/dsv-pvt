@@ -6,6 +6,7 @@ class User {
   final String fullName;
   final DateTime dateCreated;
   final Role role;
+  final String? imageId;
   final String email;
 
   const User({
@@ -15,6 +16,7 @@ class User {
     required this.dateCreated,
     required this.role,
     required this.email,
+    required this.imageId,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -24,6 +26,7 @@ class User {
       fullName: json["full_name"] as String,
       dateCreated: DateTime.parse(json["date_created"] as String),
       role: Role.parse(json["role"] as int),
+      imageId: json["image_id"] as String?,
       email: json["email"] as String,
     );
   }

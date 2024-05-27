@@ -113,6 +113,20 @@ class User(base):
     profile = relationship("Profile", uselist=False, back_populates="owner")
     owned_groups = relationship("Group", back_populates="owner")
 
+    # Hybrid property prob overkill but works / Edwin
+    @hybrid_property
+    def image_id(self):
+        if self.profile is None:
+            return None
+        return self.profile.image_id
+
+    @image_id.inplace.expression
+    @classmethod
+    def _image_id_expression(cls):
+        return (
+            select(Profile.image_id).where(Profile.owner_id == cls.id).label("image_id")
+        )
+
 
 class Profile(base):
     __tablename__ = "profiles"

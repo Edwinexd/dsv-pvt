@@ -212,7 +212,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 const SizedBox(height: 20),
                 MyButton(
-                  buttonText: 'Trophies',
+                  buttonText: 'Achievements',
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => MyAchievements()));
