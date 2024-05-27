@@ -11,7 +11,6 @@ class Group {
   final double? latitude;
   final double? longitude;
 
-
   const Group(
       {required this.id,
       required this.name,
@@ -24,7 +23,6 @@ class Group {
       this.address,
       this.latitude,
       this.longitude});
-
 
   factory Group.fromJson(Map<String, dynamic> json) {
     return Group(
@@ -43,7 +41,7 @@ class Group {
   }
 }
 
-enum GroupOrderType { 
+enum GroupOrderType {
   NAME,
   POINTS;
 
