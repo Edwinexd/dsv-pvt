@@ -23,8 +23,8 @@ void main() {
     await dotenv.load();
     backendService = MockBackendService();
     testUsers = [
-      User(id: '1', fullName: 'John Doe', userName: 'john_doe', dateCreated: DateTime.now(), role: Role.NORMAL, imageId: null),
-      User(id: '2', fullName: 'Jane Smith', userName: 'jane_smith', dateCreated: DateTime.now(), role: Role.NORMAL, imageId: null),
+      User(id: '1', fullName: 'John Doe', userName: 'john_doe', dateCreated: DateTime.now(), role: Role.NORMAL, imageId: null, email: 'john_doe@mail.com'),
+      User(id: '2', fullName: 'Jane Smith', userName: 'jane_smith', dateCreated: DateTime.now(), role: Role.NORMAL, imageId: null, email: 'jane_smith@mail.com'),
     ];
     when(backendService.getUsers(SKIP, LIMIT)).thenAnswer((_) async => testUsers);
   });
