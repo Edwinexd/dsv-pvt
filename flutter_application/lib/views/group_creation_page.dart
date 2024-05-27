@@ -101,6 +101,7 @@ class GroupCreationState extends State<GroupCreation> {
         title: 'Create Group',
       ),
       body: DefaultBackground(
+        child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -215,11 +216,13 @@ class GroupCreationState extends State<GroupCreation> {
               ),
 
               const SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () {
-                  createGroup();
-                },
-                child: const Text('Create Group'),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    createGroup();
+                  }, 
+                  child: const Text('Create Group'),
+                ),
               ),
               if (_isGroupCreated)
                 ElevatedButton(
@@ -243,6 +246,7 @@ class GroupCreationState extends State<GroupCreation> {
                 ),
             ],
           ),
+        ),
         ),
       ),
       bottomNavigationBar: buildBottomNavigationBar(
