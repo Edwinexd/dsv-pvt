@@ -28,6 +28,7 @@ VERY_LONG_STRING = "ttemptemptemptemptemptemptemptemptemptemptemptemptemptemptem
 
 
 def override_get_db_session():
+    db = None
     try:
         db = testing_session_local()
         yield db
@@ -45,7 +46,7 @@ class PayloadGenerator:
     def __init__(self):
         PayloadGenerator.count = 0
 
-    def get_count():
+    def get_count(self):
         PayloadGenerator.count += 1
         return PayloadGenerator.count
 
