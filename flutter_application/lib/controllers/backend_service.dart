@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:cross_file/cross_file.dart';
+import 'package:flutter_application/controllers/backend_service_interface.dart';
 import 'package:flutter_application/models/challenges.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:dio/dio.dart';
@@ -13,7 +14,7 @@ import 'package:flutter_application/models/user.dart';
 import 'package:flutter_application/models/achievement.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-class BackendService {
+class BackendService implements BackendServiceInterface {
   static final BackendService _singleton = BackendService._internal();
   late Dio _dio;
   String? token;

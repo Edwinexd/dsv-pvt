@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter_application/controllers/backend_service_interface.dart';
 import 'package:flutter_application/leaderboard_page.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/bars.dart';
@@ -12,6 +13,14 @@ import 'package:flutter_application/models/group.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
+  final BackendServiceInterface backendService;
+
+  HomePage({
+    Key? key,
+    BackendServiceInterface? backendService,
+  })  : backendService = backendService ?? BackendService(),
+        super(key: key);
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -23,7 +32,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     unawaited(collectAndSendData());
-    unawaited(BackendService()
+    unawaited(widget.backendService
         .getGroups(0, 3, GroupOrderType.POINTS, true)
         .then((groups) {
       setState(() {

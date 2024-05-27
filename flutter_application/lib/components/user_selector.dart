@@ -5,6 +5,7 @@ import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/bars.dart';
 import 'package:flutter_application/components/optional_image.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
+import 'package:flutter_application/controllers/backend_service_interface.dart';
 import 'package:flutter_application/models/user.dart';
 import 'package:fuzzywuzzy/fuzzywuzzy.dart';
 import 'package:fuzzywuzzy/model/extracted_result.dart';
@@ -14,14 +15,17 @@ class UserSelector extends StatefulWidget {
   final String? finishSelectionText;
   final String? navbarTitle;
   final Function(List<User>)? onCompleted;
+  final BackendServiceInterface backendService;
 
-  UserSelector(
-      {Key? key,
-      required this.onUserSelected,
-      this.finishSelectionText,
-      this.navbarTitle,
-      this.onCompleted})
-      : super(key: key);
+  UserSelector({
+    Key? key,
+    required this.onUserSelected,
+    this.finishSelectionText,
+    this.navbarTitle,
+    this.onCompleted,
+    BackendServiceInterface? backendService,
+  })  : backendService = backendService ?? BackendService(),
+        super(key: key);
 
   @override
   State<UserSelector> createState() => _UserSelectorState();
@@ -34,7 +38,7 @@ class _UserSelectorState extends State<UserSelector> {
   String searchQuery = '';
 
   Future<void> _populateUsers() async {
-    List<User> users = await BackendService().getUsers(0, 500);
+    List<User> users = await widget.backendService.getUsers(0, 500);
     setState(() {
       allUsers = users;
     });
