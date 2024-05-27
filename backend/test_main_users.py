@@ -253,7 +253,7 @@ def login(client, mocker) -> str:
     """
     Logs in to mock client and gets access token.
     """
-    #mock sessions 
+    # mock sessions
     mocker.patch("main.get_session", return_value=SessionUser(id="user1"))
     mocker.patch("main.create_session", return_value={"Bearer": "Bearer abc123"})
     mocker.patch("main.auth.login", return_value="user1")

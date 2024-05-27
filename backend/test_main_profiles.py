@@ -65,7 +65,9 @@ def login(
     Logs in to mock client once per test session and gets access token.
     """
     session_mocker.patch("main.get_session", return_value=SessionUser(id="user1"))
-    session_mocker.patch("main.create_session", return_value={"Bearer": "Bearer abc123"})
+    session_mocker.patch(
+        "main.create_session", return_value={"Bearer": "Bearer abc123"}
+    )
     session_mocker.patch("main.auth.login", return_value=user_id)
     response = client.post(
         "/users/login",
