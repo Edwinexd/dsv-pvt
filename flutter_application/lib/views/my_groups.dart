@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/bars.dart';
+import 'package:flutter_application/components/optional_image.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/all_group_pages.dart';
@@ -17,7 +18,6 @@ class MyGroups extends StatefulWidget {
 
 class _MyGroupsState extends State<MyGroups> {
   List<Group> myGroups = [];
-  Map<String, ImageProvider> groupImages = {};
 
   @override
   void initState() {
@@ -31,15 +31,8 @@ class _MyGroupsState extends State<MyGroups> {
 
   void fetchMyGroups() async {
     List<Group> groups = await BackendService().getMyGroups();
-    Map<String, ImageProvider> images = {};
-    for (var group in groups) {
-        ImageProvider image = await BackendService().getImage(group.imageId!);
-        images[group.id.toString()] = image;
-    }
-    
     setState(() {
       myGroups = groups;
-      groupImages = images;
     });
   }
 
@@ -162,9 +155,7 @@ class _MyGroupsState extends State<MyGroups> {
                         borderRadius: BorderRadius.circular(18.0),
                       ),
                       child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundImage: groupImages[group.id.toString()]!,
-                        ),
+                        leading: OptionalImage(imageId: group.imageId),
                         title: Text(group.name),
                         trailing: const Row(
                           mainAxisSize: MainAxisSize.min,

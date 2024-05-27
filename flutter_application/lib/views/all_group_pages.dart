@@ -4,6 +4,7 @@ import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/group_page.dart';
 import 'package:flutter_application/background_for_pages.dart';
+import 'package:geolocator/geolocator.dart';
 
 class AllGroupsPage extends StatefulWidget {
   final Function refreshMyGroups;
@@ -20,15 +21,31 @@ class AllGroupsPageState extends State<AllGroupsPage> {
   List<Group> _groups = [];
   List<Group> _myGroups = [];
   Map<String, ImageProvider> groupImages = {};
+  String _searchQuery = '';
+  String _selectedFilter = 'All';
+  Position? _userPosition;
+  String _sortBy = 'None'; 
 
   @override
   void initState() {
     super.initState();
-    fetchGroups();
+    fetchUserLocationAndGroups();
     fetchMyGroups();
   }
 
   void refreshAllGroups() async {
+    fetchGroups();
+  }
+
+  Future<void> fetchUserLocationAndGroups() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      setState(() {
+        _userPosition = position;
+      });
+    } catch (e) {
+      print('Error getting user location: $e');
+    }
     fetchGroups();
   }
 
@@ -37,11 +54,30 @@ class AllGroupsPageState extends State<AllGroupsPage> {
         await BackendService().getGroups(0, 100, GroupOrderType.NAME, false);
     Map<String, ImageProvider> images = {};
     for (var group in fetchedGroups) {
+      if (group.imageId != null) {
         ImageProvider image =
             await BackendService().getImage(group.imageId!);
-        images[group.id.toString()] = image; 
+        images[group.id.toString()] = image;
+      } else {
+        images[group.id.toString()] = const AssetImage('lib/images/splash.png');
+      }
     }
-    
+
+    if (_sortBy == 'Distance' && _userPosition != null) {
+      fetchedGroups.sort((a, b) {
+        if (a.latitude == null || a.longitude == null) return 1;
+        if (b.latitude == null || b.longitude == null) return 1;
+
+        double distanceA = Geolocator.distanceBetween(
+            _userPosition!.latitude, _userPosition!.longitude, a.latitude!, a.longitude!);
+        double distanceB = Geolocator.distanceBetween(
+            _userPosition!.latitude, _userPosition!.longitude, b.latitude!, b.longitude!);
+        return distanceA.compareTo(distanceB);
+      });
+    } else if (_sortBy == 'Points') {
+      fetchedGroups.sort((a, b) => b.points.compareTo(a.points));
+    }
+
     setState(() {
       _groups = fetchedGroups;
       groupImages = images;
@@ -52,8 +88,19 @@ class AllGroupsPageState extends State<AllGroupsPage> {
     _myGroups = await BackendService().getMyGroups();
   }
 
-  String _searchQuery = '';
-  String _selectedFilter = 'All';
+  String getDistanceString(Group group) {
+    if (_userPosition == null || group.latitude == null || group.longitude == null) {
+      return '';
+    }
+    double distanceInMeters = Geolocator.distanceBetween(
+      _userPosition!.latitude,
+      _userPosition!.longitude,
+      group.latitude!,
+      group.longitude!,
+    );
+    double distanceInKm = distanceInMeters / 1000;
+    return '${distanceInKm.toStringAsFixed(1)} km';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +162,10 @@ class AllGroupsPageState extends State<AllGroupsPage> {
                         _selectedFilter = value.toString();
                       });
                     },
+                    dropdownColor: Colors.white,
                     decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
                       border: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.black),
                         borderRadius: BorderRadius.circular(20),
@@ -128,7 +178,43 @@ class AllGroupsPageState extends State<AllGroupsPage> {
                           child: Text('Show only public groups')),
                       DropdownMenuItem(
                           value: 'Private',
-                          child: Text('Show only private groups')),
+                          child: Text('Show only private groups')),     
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: DropdownButtonFormField(
+                    value: _sortBy,
+                    onChanged: (value) {
+                      setState(() {
+                        _sortBy = value.toString();
+                        fetchGroups();
+                      });
+                    },
+                    dropdownColor: Colors.white,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'None', 
+                        child: Text('Sort by name')),
+                      DropdownMenuItem(
+                          value: 'Distance',
+                          child: Text('Sort by distance')),
+                      DropdownMenuItem(
+                          value: 'Points',
+                          child: Text('Sort by points')),
                     ],
                   ),
                 ),
@@ -162,10 +248,7 @@ class AllGroupsPageState extends State<AllGroupsPage> {
                     ),
                     child: ListTile(
                       leading: CircleAvatar(
-                        backgroundImage: groupImages[group.id.toString()],
-                        child: groupImages[group.id.toString()] == null
-                            ? Icon(Icons.group)
-                            : null,
+                        backgroundImage: groupImages[group.id.toString()],            
                       ),
                       title: Text(
                         group.name,
@@ -176,8 +259,10 @@ class AllGroupsPageState extends State<AllGroupsPage> {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(group.description),
                           Text(group.isPrivate ? 'Private' : 'Public'),
+                          Text('Points: ${group.points}'),
+                          if (_userPosition != null)
+                            Text('Distance: ${getDistanceString(group)}'),
                         ],
                       ),
                     ),

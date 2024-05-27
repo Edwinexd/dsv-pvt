@@ -82,8 +82,10 @@ class GroupCreationState extends State<GroupCreation> {
   }
 
   Future<void> fetchImage(String groupId) async {
-    ImageProvider image =
-        await BackendService().getImage(createdGroup!.imageId!);
+    if (createdGroup != null && createdGroup!.imageId != null) {
+      
+    }
+    ImageProvider image = await BackendService().getImage(createdGroup!.imageId!);
     setState(() {
       groupImage = image;
     });
@@ -275,7 +277,9 @@ class GroupCreationState extends State<GroupCreation> {
     }
 
     if (createdGroup != null) {
-      await fetchImage(createdGroup!.id.toString());
+      if (createdGroup!.imageId != null) {
+        await fetchImage(createdGroup!.id.toString());
+      } 
     }
 
     widget.onGroupCreatedCallBacks.forEach((callback) {
