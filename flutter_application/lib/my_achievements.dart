@@ -129,21 +129,22 @@ class _AchievementCardState extends State<AchievementCard> {
           },
         );
       },
-      child: Card(
-        child: Row(
-          children: <Widget>[
-            Container(
-              width: 75.0,
-              height: 75.0,
-              decoration: image != null
-                  ? BoxDecoration(
-                      image: DecorationImage(image: image!),
-                    )
-                  : null,
-              child: const SizedBox(width: 75.0, height: 75.0),
-            ),
-            const SizedBox(width: 10.0),
-            Column(
+    child: Card(
+      child: Row(
+        children: <Widget>[
+          Container(
+            width: 75.0,
+            height: 75.0,
+            decoration: image != null
+                ? BoxDecoration(
+                    image: DecorationImage(image: image!),
+                  )
+                : null,
+            child: const SizedBox(width: 75.0, height: 75.0),
+          ),
+          const SizedBox(width: 10.0),
+          Expanded(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -158,21 +159,26 @@ class _AchievementCardState extends State<AchievementCard> {
                   style: const TextStyle(
                     fontSize: 12.0,
                   ),
+                  softWrap: true,
+                  overflow: TextOverflow.clip,
                 ),
               ],
             ),
-            Expanded(
-              child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                widget.completed ? Icon(Icons.lock_open, color: Colors.green[300]) : Icon(Icons.lock, color: Colors.red[300]),
-              ],
-              ),
-            ),
-            SizedBox(width: 25.0), // Add margin to the right of the element
-          ],
-        ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              widget.completed
+                  ? Icon(Icons.lock_open, color: Colors.green[300])
+                  : Icon(Icons.lock, color: Colors.red[300]),
+            ],
+          ),
+          const SizedBox(width: 10.0), // Add margin to the right of the element
+        ],
       ),
+    ),
+
+
     );
   }
 }
