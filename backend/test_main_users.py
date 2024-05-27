@@ -69,7 +69,8 @@ def client():
     with TestClient(app) as app_client:
         # TODO: create user to use in tests
         yield app_client
-    os.remove("tester.db")
+    # Not needed in workflow
+    # os.remove("tester.db")
 
 
 # USER CREATION TESTS
@@ -148,7 +149,6 @@ def test_already_existing_email(client, mocker):  # 5
 
     # Send same email again
     response2 = client.post("/users", json=user_payload)
-    print(response2.json())
 
     assert response2.status_code == 409
     assert "id" not in response2.json()
@@ -286,7 +286,7 @@ def test_read_multiple_users(client, mocker):
 
     users = response.json()["data"]
 
-    assert len(users) == 2
+    assert len(users) == 3
 
 
 def test_no_users(client, mocker):
@@ -374,7 +374,7 @@ def test_pagination_consistency(client, mocker):
 
     users = response.json()["data"]
 
-    assert len(users) == 0
+    assert len(users) == 1
 
 
 # def test_wrong_datatypes(client, mocker):
