@@ -20,7 +20,6 @@ class Profile {
   });
 
   factory Profile.fromJson(Map<String, dynamic> json) {
-    print(json);
     return Profile(
       description: json['description'] as String,
       age: json['age'] as int,
@@ -31,6 +30,5 @@ class Profile {
       runnerId: json['runner_id'] as String?,
       imageId: json['image_id'] as String?,
     );
-    
   }
 }

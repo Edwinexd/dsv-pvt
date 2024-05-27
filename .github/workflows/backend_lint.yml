@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.11", "3.12"]
+        python-version: ["3.11"]
 
     steps:
       - uses: actions/checkout@v3
@@ -43,3 +43,8 @@ jobs:
         uses: jakebailey/pyright-action@v2
         with:
           working-directory: ./backend
+
+      - name: Run pytest
+        working-directory: ./backend
+        run: |
+          pytest

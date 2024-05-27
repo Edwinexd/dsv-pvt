@@ -35,7 +35,7 @@ class EditGroupPageState extends State<EditGroupPage> {
     _nameController.text = widget.group.name;
     _descriptionController.text = widget.group.description;
     _isPublic = !widget.group.isPrivate;
-    _skillLevel = widget.group.skillLevel;
+    // _skillLevel = widget.group.skillLevel;
 
     if (widget.group.imageId != null) {
       fetchGroupImage();

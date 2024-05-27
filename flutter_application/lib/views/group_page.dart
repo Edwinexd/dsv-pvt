@@ -17,7 +17,6 @@ import 'package:flutter_application/views/my_groups.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 
-
 class GroupPage extends StatefulWidget {
   final Group group;
   bool isMember;
@@ -52,7 +51,7 @@ class _GroupPageState extends State<GroupPage> {
     await fetchMyGroups();
     await fetchGroupImage();
     await fetchMembers();
-    
+
     if (!widget.isMember) {
       return;
     }
@@ -102,8 +101,8 @@ class _GroupPageState extends State<GroupPage> {
       isPublic = widget.group.isPrivate;
       widget.isMember =
           allMyGroups.any((myGroup) => myGroup.id == widget.group.id);
-      //skillLevel = widget.group.skillLevel;
-      //location = widget.group.location;
+      // skillLevel = widget.group.skillLevel;
+      // location = widget.group.location;
     }
   }
 

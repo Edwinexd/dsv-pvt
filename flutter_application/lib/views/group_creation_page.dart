@@ -89,8 +89,7 @@ class GroupCreationState extends State<GroupCreation> {
     setState(() {
       groupImage = image;
     });
-}
-
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -267,8 +266,16 @@ class GroupCreationState extends State<GroupCreation> {
     }
 
     User me = await BackendService().getMe();
-    createdGroup = await BackendService().createGroup(name, description, _isPublic, me.id, _skillLevel, _location?.latLong.latitude, _location?.latLong.longitude, _location?.address);
-    
+    createdGroup = await BackendService().createGroup(
+        name,
+        description,
+        _isPublic,
+        me.id,
+        _skillLevel,
+        _location?.latLong.latitude,
+        _location?.latLong.longitude,
+        _location?.address);
+
     if (pickedImage != null) {
       await BackendService().uploadGroupPicture(createdGroup!.id, pickedImage!);
     }
@@ -285,9 +292,6 @@ class GroupCreationState extends State<GroupCreation> {
 
     setState(() {
       _errorMessage = '';
-    });
-
-    setState(() {
       _isGroupCreated = true;
     });
   }

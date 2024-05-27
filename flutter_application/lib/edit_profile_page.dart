@@ -12,6 +12,7 @@ import 'package:flutter_application/components/custom_dropdown.dart';
 import 'package:flutter_application/components/custom_text_field.dart';
 import 'package:flutter_application/components/interests_grid.dart';
 import 'package:flutter_application/components/my_button.dart';
+import 'package:flutter_application/components/checkbox_animation.dart';
 import 'package:flutter_application/components/skill_level_slider.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
@@ -39,7 +40,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   String age = '';
   String selectedLocation = '';
   String bio = '';
-  bool bioEntered = true; // bio could be turned empty by the user
+  bool bioEntered = true;
+  bool _showCheck = false;
   String? runnerId;
   Map<String, bool> interests = {
     'Running': false,
@@ -129,8 +131,25 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     Navigator.pop(context);
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Profile Saved!')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              AnimatedCheckIcon(),
+              SizedBox(width: 10),
+              Text('Profile Saved!'),
+            ],
+          ),
+        ),
+      );
+      setState(() {
+        _showCheck = true;
+      });
+      Future.delayed(Duration(seconds: 2), () {
+        setState(() {
+          _showCheck = false;
+        });
+      });
     }
   }
 
@@ -221,7 +240,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ProfileAvatar(
                         image: profileImage,
                         iconButtonConfig: IconButtonConfig(
-                          icon: Icons.edit,
+                          icon: Icons.camera_alt,
                           onPressed: () {
                             _pickImage();
                           },
