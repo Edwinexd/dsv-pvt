@@ -32,7 +32,7 @@ def override_get_db_session():
         db = testing_session_local()
         yield db
     finally:
-        db.close() # type: ignore
+        db.close()  # type: ignore
 
 
 # Essentially mocks mains database to be local
