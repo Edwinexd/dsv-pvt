@@ -43,3 +43,8 @@ jobs:
         uses: jakebailey/pyright-action@v2
         with:
           working-directory: ./backend
+
+      - name: Run pytest
+        working-directory: ./backend
+        run: |
+          pytest

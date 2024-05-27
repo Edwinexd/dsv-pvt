@@ -1,0 +1,3 @@
+"""
+Testing group endpoints
+"""

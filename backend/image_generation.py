@@ -1,9 +1,5 @@
-import PIL.Image
-import schemas
 from PIL import ImageDraw, Image, ImageFont, ImageFilter
-from pilmoji import Pilmoji
 from images import download
-from pydantic import BaseModel
 import io
 from datetime import datetime
 from dataclasses import dataclass
