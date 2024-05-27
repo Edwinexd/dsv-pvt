@@ -7,6 +7,7 @@ class User {
   final DateTime dateCreated;
   final Role role;
   final String? imageId;
+  final String email;
 
   const User({
     required this.id,
@@ -14,6 +15,7 @@ class User {
     required this.fullName,
     required this.dateCreated,
     required this.role,
+    required this.email,
     required this.imageId,
   });
 
@@ -25,6 +27,7 @@ class User {
       dateCreated: DateTime.parse(json["date_created"] as String),
       role: Role.parse(json["role"] as int),
       imageId: json["image_id"] as String?,
+      email: json["email"] as String,
     );
   }
 }

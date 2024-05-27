@@ -249,16 +249,155 @@ class _ChallengesPageState extends State<ChallengesPage> {
                           ),
                         ),
                         if (_isDuringTheRaceVisible)
-                          Container(
-                            height: 263,
-                            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-                            decoration: ShapeDecoration(
-                              color: Color(0xFFFFD5A3),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
+                          FutureBuilder<Null>(
+                            future: null,
+                            builder: (context, snapshot) {
+                              // TODO The following is a placeholder. Replace with actual data from Midnattsloppet!
+                              // Note: Examples are AI-generated and may not make sense.
+                              var challenges = [
+                              Challenge(
+                                id: 1,
+                                name: 'Hydration Station Hero',
+                                description: 'Grab a drink at each hydration station.',
+                                difficulty: 1,
+                                expirationDate: null,
+                                pointReward: 5,
+                                achievementId: null,
+                                imageId: null,
                               ),
-                            ),
-                          ),
+                              Challenge(
+                                id: 2,
+                                name: 'High Five Five',
+                                description: 'Give a high five to five spectators.',
+                                difficulty: 2,
+                                expirationDate: null,
+                                pointReward: 10,
+                                achievementId: null,
+                                imageId: null,
+                              ),
+                              Challenge(
+                                id: 3,
+                                name: 'Pace Pusher',
+                                description: 'Maintain a consistent pace for 3 consecutive miles.',
+                                difficulty: 3,
+                                expirationDate: null,
+                                pointReward: 15,
+                                achievementId: null,
+                                imageId: null,
+                              ),
+                              Challenge(
+                                id: 4,
+                                name: 'Hill Climber',
+                                description: 'Run up the steepest hill without stopping.',
+                                difficulty: 4,
+                                expirationDate: null,
+                                pointReward: 20,
+                                achievementId: null,
+                                imageId: null,
+                              ),
+                              Challenge(
+                                id: 5,
+                                name: 'Selfie Superstar',
+                                description: 'Take a selfie at a scenic spot along the route.',
+                                difficulty: 1,
+                                expirationDate: null,
+                                pointReward: 5,
+                                achievementId: null,
+                                imageId: null,
+                              ),
+                              Challenge(
+                                id: 6,
+                                name: 'Speed Burst',
+                                description: 'Sprint for 100 meters at the halfway point.',
+                                difficulty: 3,
+                                expirationDate: null,
+                                pointReward: 15,
+                                achievementId: null,
+                                imageId: null,
+                              ),
+                              Challenge(
+                                id: 7,
+                                name: 'Running DJ',
+                                description: 'Run a mile while singing along to your favorite song.',
+                                difficulty: 2,
+                                expirationDate: null,
+                                pointReward: 10,
+                                achievementId: null,
+                                imageId: null,
+                              ),
+                              Challenge(
+                                id: 8,
+                                name: 'Silent Runner',
+                                description: 'Run 2 miles in complete silence (no music or talking).',
+                                difficulty: 3,
+                                expirationDate: null,
+                                pointReward: 15,
+                                achievementId: null,
+                                imageId: null,
+                              ),
+                              Challenge(
+                                id: 9,
+                                name: 'Post-Race Pic',
+                                description: 'Take a photo with your medal at the finish line.',
+                                difficulty: 1,
+                                expirationDate: null,
+                                pointReward: 5,
+                                achievementId: null,
+                                imageId: null,
+                              ),
+                              Challenge(
+                                id: 10,
+                                name: 'Finish Line Sprint',
+                                description: 'Sprint the last 200 meters of the race.',
+                                difficulty: 2,
+                                expirationDate: null,
+                                pointReward: 10,
+                                achievementId: null,
+                                imageId: null,
+                              ),
+                            ];
+                              return Container(
+                                margin: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                                decoration: ShapeDecoration(
+                                  color: Color(0xFFFFD5A3),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                ),
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: challenges.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            challenges[index].name,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 16,
+                                              color: Color(0xff161499),
+                                            ),
+                                          ),
+                                          SizedBox(height: 5),
+                                          Text(
+                                            challenges[index].description,
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: Color(0xff161499),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                          )
                       ],
                     ),
                   ),
