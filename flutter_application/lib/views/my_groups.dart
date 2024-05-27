@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
 import 'package:flutter_application/bars.dart';
+import 'package:flutter_application/components/optional_image.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/group.dart';
 import 'package:flutter_application/views/all_group_pages.dart';
@@ -52,12 +53,6 @@ class _MyGroupsState extends State<MyGroups> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  /*Text(
-                    'Groups',
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),*/
                   const SizedBox(height: 12),
                   SizedBox(
                     height: 40,
@@ -136,7 +131,6 @@ class _MyGroupsState extends State<MyGroups> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16), // Add some space before My Groups section
                 ],
               ),
             ),
@@ -161,19 +155,16 @@ class _MyGroupsState extends State<MyGroups> {
                         borderRadius: BorderRadius.circular(18.0),
                       ),
                       child: ListTile(
+                        leading: OptionalImage(imageId: group.imageId),
                         title: Text(group.name),
                         trailing: const Row(
                           mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.group),
-                          ],
                         ),
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: ((context) =>
-                                  GroupPage(group: group, isMember: true)),
+                              builder: ((context) => GroupPage(group: group, isMember: true)),
                             ),
                           );
                         },

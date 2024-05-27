@@ -35,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController passwordController = TextEditingController();
   final BackendService _backendService = BackendService();
   late GoogleSignIn _googleSignIn;
-  
+
   @override
   void initState() {
     super.initState();
@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
     _googleSignIn.onCurrentUserChanged.listen(onGoogleCurrentUserChanged);
     // _googleSignIn.signInSilently();
   }
-  
+
   @override
   void dispose() {
     emailController.dispose();
@@ -54,8 +54,7 @@ class _LoginPageState extends State<LoginPage> {
   GoogleSignIn _getGoogleSignIn() {
     if (kIsWeb) {
       return GoogleSignIn(
-        clientId:
-            dotenv.env['GOOGLE_WEB_CLIENT_ID']!,
+        clientId: dotenv.env['GOOGLE_WEB_CLIENT_ID']!,
         scopes: [
           'email',
         ],
@@ -70,8 +69,7 @@ class _LoginPageState extends State<LoginPage> {
     }
     if (Platform.isIOS || Platform.isMacOS) {
       return GoogleSignIn(
-        clientId:
-            dotenv.env['GOOGLE_APPLE_CLIENT_ID']!,
+        clientId: dotenv.env['GOOGLE_APPLE_CLIENT_ID']!,
         scopes: [
           'email',
         ],
@@ -100,16 +98,17 @@ class _LoginPageState extends State<LoginPage> {
     try {
       await _backendService.login(email, password);
     } on DioException catch (error) {
-      if (error.response?.statusCode == 401 || error.response?.statusCode == 403) {
+      if (error.response?.statusCode == 401 ||
+          error.response?.statusCode == 403) {
         // TODO This sort of parsing should be done in backend_service but not sure how to manipulate the error object
         String? errorDetail;
         if (error.response != null && error.response!.data != null) {
           final errorData = error.response!.data as Map<String, dynamic>?;
           errorDetail = errorData?['detail'];
         }
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(errorDetail ?? 'Invalid email or password')));
-        
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(errorDetail ?? 'Invalid email or password')));
+
         Navigator.pop(context);
         return;
       }
@@ -132,10 +131,12 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    final GoogleSignInAuthentication googleAuthentication = await account.authentication;
+    final GoogleSignInAuthentication googleAuthentication =
+        await account.authentication;
 
     try {
-      await _backendService.loginOauthGoogle(googleAuthentication.accessToken, googleAuthentication.idToken);
+      await _backendService.loginOauthGoogle(
+          googleAuthentication.accessToken, googleAuthentication.idToken);
     } on DioException catch (error) {
       if (error.response?.statusCode == 404) {
         // TODO Handle user not having account with that email and send them to sign up / display error
@@ -145,7 +146,7 @@ class _LoginPageState extends State<LoginPage> {
       }
       rethrow;
     }
-    
+
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -173,114 +174,121 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
         child: SafeArea(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 50),
-                const Icon(Icons.person,
-                    size: 100, color: Color.fromARGB(255, 16, 14, 99)),
-                const SizedBox(height: 40),
-                const Text('Welcome!',
-                    style: TextStyle(
-                        color: Color.fromARGB(255, 16, 14, 99), fontSize: 16)),
-                const SizedBox(height: 25),
-                MyTextField(
-                  controller: emailController,
-                  hintText: 'Email',
-                  obscureText: false,
-                ),
-                const SizedBox(height: 10),
-                MyTextField(
-                  controller: passwordController,
-                  hintText: 'Password',
-                  obscureText: true,
-                ),
-                const SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const ForgotPassword()),
-                          );
-                        },
-                        child: const Text('Forgot Password?',
-                            style: TextStyle(
-                                color: Color.fromARGB(255, 16, 14, 99))),
-                      ),
-                    ],
+          child: SingleChildScrollView(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 10),
+                  Image.asset(
+                    'lib/images/logga.png',
+                    height: 200,
+                    width: 200,
                   ),
-                ),
-                const SizedBox(height: 10),
-                MyButton(
-                  buttonText: 'Sign In',
-                  onTap: signUserIn,
-                ),
-                const SizedBox(height: 50),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: CustomDivider(),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Text('Or continue with',
-                            style: TextStyle(
-                                color: Color.fromARGB(255, 16, 14, 99))),
-                      ),
-                      Expanded(
-                        child: CustomDivider(),
-                      ),
-                    ],
+                  const SizedBox(height: 10),
+                  const Text('Welcome!',
+                      style: TextStyle(
+                          color: Color.fromARGB(255, 16, 14, 99),
+                          fontSize: 16)),
+                  const SizedBox(height: 25),
+                  MyTextField(
+                    controller: emailController,
+                    hintText: 'Email',
+                    obscureText: false,
                   ),
-                ),
-                const SizedBox(height: 50),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    buildSignInButton(
-                      onPressed: () async {
+                  const SizedBox(height: 10),
+                  MyTextField(
+                    controller: passwordController,
+                    hintText: 'Password',
+                    obscureText: true,
+                  ),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const ForgotPassword()),
+                            );
+                          },
+                          child: const Text('Forgot Password?',
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 16, 14, 99))),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  MyButton(
+                    buttonText: 'Sign In with Email',
+                    onTap: signUserIn,
+                  ),
+                  const SizedBox(height: 50),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 25.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: CustomDivider(),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10.0),
+                          child: Text('Or continue with Google',
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 16, 14, 99))),
+                        ),
+                        Expanded(
+                          child: CustomDivider(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      buildSignInButton(onPressed: () async {
                         try {
                           await _googleSignIn.signIn();
                         } catch (error) {
                           print(error);
                         }
-                      }
-                    )
-                  ],
-                ),
-                const SizedBox(height: 50),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('Not a member?',
-                        style:
-                            TextStyle(color: Color.fromARGB(255, 16, 14, 99))),
-                    const SizedBox(width: 4),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => SignUpPage()),
-                        );
-                      },
-                      child: const Text(
-                        'Register Now',
-                        style: TextStyle(
-                            color: Colors.blue, fontWeight: FontWeight.bold),
+                      })
+                    ],
+                  ),
+                  const SizedBox(height: 50),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text('Not a member?',
+                          style: TextStyle(
+                              color: Color.fromARGB(255, 16, 14, 99))),
+                      const SizedBox(width: 4),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SignUpPage()),
+                          );
+                        },
+                        child: const Text(
+                          'Register Now',
+                          style: TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15),
+                        ),
                       ),
-                    ),
-                  ],
-                )
-              ],
+                    ],
+                  )
+                ],
+              ),
             ),
           ),
         ),

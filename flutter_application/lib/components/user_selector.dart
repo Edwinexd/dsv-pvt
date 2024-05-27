@@ -2,7 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application/background_for_pages.dart';
+import 'package:flutter_application/bars.dart';
+import 'package:flutter_application/components/optional_image.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
+import 'package:flutter_application/controllers/backend_service_interface.dart';
 import 'package:flutter_application/models/user.dart';
 import 'package:fuzzywuzzy/fuzzywuzzy.dart';
 import 'package:fuzzywuzzy/model/extracted_result.dart';
@@ -12,14 +15,17 @@ class UserSelector extends StatefulWidget {
   final String? finishSelectionText;
   final String? navbarTitle;
   final Function(List<User>)? onCompleted;
+  final BackendServiceInterface backendService;
 
-  UserSelector(
-      {Key? key,
-      required this.onUserSelected,
-      this.finishSelectionText,
-      this.navbarTitle,
-      this.onCompleted})
-      : super(key: key);
+  UserSelector({
+    Key? key,
+    required this.onUserSelected,
+    this.finishSelectionText,
+    this.navbarTitle,
+    this.onCompleted,
+    BackendServiceInterface? backendService,
+  })  : backendService = backendService ?? BackendService(),
+        super(key: key);
 
   @override
   State<UserSelector> createState() => _UserSelectorState();
@@ -32,7 +38,7 @@ class _UserSelectorState extends State<UserSelector> {
   String searchQuery = '';
 
   Future<void> _populateUsers() async {
-    List<User> users = await BackendService().getUsers(0, 500);
+    List<User> users = await widget.backendService.getUsers(0, 500);
     setState(() {
       allUsers = users;
     });
@@ -73,9 +79,10 @@ class _UserSelectorState extends State<UserSelector> {
     displayedUsers = topResults.map((e) => e.choice).toList();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.navbarTitle ?? 'Select users'),
-        centerTitle: true,
+      appBar: buildAppBar(
+        title: 'Select user',
+        context: context,
+        showBackButton: true,
       ),
       body: DefaultBackground(
         child: Column(
@@ -105,6 +112,7 @@ class _UserSelectorState extends State<UserSelector> {
                 ),
                 margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 child: ListTile(
+                  leading: OptionalImage(imageId: displayedUsers[index].imageId),
                   title: Text(displayedUsers[index].fullName),
                   subtitle: Text(displayedUsers[index].userName),
                   trailing: selectedUsers.contains(displayedUsers[index])
@@ -147,6 +155,9 @@ class _UserSelectorState extends State<UserSelector> {
                   ),
           ],
         ),
+      ),
+      bottomNavigationBar: buildBottomNavigationBar(
+        context: context,
       ),
     );
   }

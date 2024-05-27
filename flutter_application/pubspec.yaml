@@ -43,7 +43,7 @@ dependencies:
   location_picker_flutter_map: ^3.0.1
   url_launcher: ^6.0.12
   share_plus: "^9.0.0"
-
+  table_calendar: ^3.0.0
   google_fonts: ^6.2.1
   google_sign_in: ^6.2.1
   health: ^10.2.0
@@ -51,7 +51,9 @@ dependencies:
   image_picker: ^1.1.1
   cross_file: ^0.3.4+1
   fuzzywuzzy: ^1.1.6
-  table_calendar: ^3.0.0
+  geolocator: ^10.1.0
+  mockito: ^5.4.4
+  
 
 dev_dependencies:
   flutter_test:

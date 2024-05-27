@@ -27,6 +27,7 @@ class UserModel(UserBase):
 
 class User(UserModel):
     date_created: datetime
+    image_id: Optional[str]
 
     class Config:
         from_attributes = True
@@ -97,6 +98,7 @@ class GroupBase(BaseModel):
     latitude: Optional[float] = None
     longitude: Optional[float] = None
     address: Optional[str] = None
+    skill_level: int
 
 
 class GroupCreate(GroupBase):
@@ -124,6 +126,7 @@ class GroupUpdate(BaseModel):
     latitude: Optional[float] = None
     longitude: Optional[float] = None
     address: Optional[str] = None
+    skill_level: Optional[int] = None
 
 
 class GroupImageUpdate(GroupUpdate):
