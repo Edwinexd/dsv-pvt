@@ -18,7 +18,8 @@ Lace Up & Lead The Way is a pre-race training app designed to be a companion and
 
 ## Features
 
-- User creation
+- Sign up
+  - Passwords are encrypted and safely stored
 - Logging in and out
   - Authentication and session handling
 - Profiles
