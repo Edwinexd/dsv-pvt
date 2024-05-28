@@ -62,157 +62,15 @@ Documentation of our REST APIs has been generated using [Swagger UI](https://git
 ```bash
 dsv-pvt/
 ├── authentication/
-│   ├── database.py
-│   ├── Dockerfile
-│   ├── .dockerignore
-│   ├── id_generator.py
-│   ├── main.py
-│   ├── oauth.py
-│   ├── passwords.py
-│   ├── requirements.txt
-│   └── users.py
 ├── backend/
-│   ├── auth.py
-│   ├── crud.py
-│   ├── database.py
-│   ├── Dockerfile
-│   ├── fonts
-│   │   └── Inter-Bold.ttf
-│   ├── image_generation.py
-│   ├── images.py
-│   ├── main.py
-│   ├── models.py
-│   ├── pyproject.toml
-│   ├── requirements.txt
-│   ├── schemas.py
-│   ├── sessions.py
-│   ├── test_main_groups.py
-│   ├── test_main_profiles.py
-│   ├── test_main_users.py
-│   ├── user_roles.py
-│   └── validations.py
 ├── flutter_application/
-│   ├── analysis_options.yaml
-│   ├── env.example
-│   ├── gitignore
-│   ├── lib/
-│   │   ├── activity_create.dart
-│   │   ├── age_data.dart
-│   │   ├── background_for_pages.dart
-│   │   ├── bars.dart
-│   │   ├── challenges_page.dart
-│   │   ├── cities.dart
-│   │   ├── components/
-│   │   │   ├── checkbox_animation.dart
-│   │   │   ├── checkered_background.dart
-│   │   │   ├── custom_divider.dart
-│   │   │   ├── custom_dropdown.dart
-│   │   │   ├── custom_text_field.dart
-│   │   │   ├── gradient_button.dart
-│   │   │   ├── interests_grid.dart
-│   │   │   ├── my_button.dart
-│   │   │   ├── my_textfield.dart
-│   │   │   ├── optional_image.dart
-│   │   │   ├── profile_avatar.dart
-│   │   │   ├── save_profile_popup.dart
-│   │   │   ├── scroll_button.dart
-│   │   │   ├── sign_in_button/
-│   │   │   │   ├── mobile.dart
-│   │   │   │   ├── README.md
-│   │   │   │   ├── stub.dart
-│   │   │   │   └── web.dart
-│   │   │   ├── sign_in_button.dart
-│   │   │   ├── skill_level_slider.dart
-│   │   │   ├── square_tile.dart
-│   │   │   └── user_selector.dart
-│   │   ├── controllers/
-│   │   │   ├── backend_service.dart
-│   │   │   ├── backend_service_interface.dart
-│   │   │   └── health.dart
-│   │   ├── create_profile_page.dart
-│   │   ├── edit_profile_page.dart
-│   │   ├── forgot_password.dart
-│   │   ├── friends_page.dart
-│   │   ├── home_page.dart
-│   │   ├── images/
-│   │   │   ├── apple.png
-│   │   │   ├── challenge.jpg
-│   │   │   ├── google.png
-│   │   │   ├── logga.png
-│   │   │   └── splash.png
-│   │   ├── launch_injector.dart
-│   │   ├── leaderboard_page.dart
-│   │   ├── main.dart
-│   │   ├── midnattsloppet_activity_page.dart
-│   │   ├── models/
-│   │   │   ├── achievement.dart
-│   │   │   ├── activity.dart
-│   │   │   ├── challenges.dart
-│   │   │   ├── group.dart
-│   │   │   ├── group_invite.dart
-│   │   │   ├── profile.dart
-│   │   │   ├── role.dart
-│   │   │   └── user.dart
-│   │   ├── my_achievements.dart
-│   │   ├── my_list_tile.dart
-│   │   ├── profile_page.dart
-│   │   ├── settings.dart
-│   │   └── views/
-│   │       ├── activity_page.dart
-│   │       ├── all_group_pages.dart
-│   │       ├── edit_group_page.dart
-│   │       ├── generic_info_page.dart
-│   │       ├── group_creation_page.dart
-│   │       ├── group_invitations_page.dart
-│   │       ├── group_members.dart
-│   │       ├── group_page.dart
-│   │       ├── login_page.dart
-│   │       ├── map_screen.dart
-│   │       ├── my_groups.dart
-│   │       ├── schedule_page.dart
-│   │       └── sign_up_page.dart
-│   ├── .metadata
-│   ├── pubspec.lock
-│   ├── pubspec.yaml
-│   ├── README.md
-│   └── test/
-│       ├── backend_service_test.dart
-│       ├── components/
-│       │   ├── custom_text_field_test.dart
-│       │   ├── optional_image_test.dart
-│       │   ├── skill_level_slider_test.dart
-│       │   └── user_selector_test.dart
-│       ├── home_page_test.dart
-│       ├── README.md
-│       ├── views/
-│       │   ├── all_group_pages_test.dart_broken
-│       │   └── sign_up_page_test.dart
-│       └── widget_test.dart
 ├── .github/
-│   └── workflows/
-│       ├── authentication_lint.yml
-│       ├── backend_lint.yml
-│       └── flutter_test.yml
 ├── .gitignore
 ├── images/
-│   ├── Dockerfile
-│   ├── id_generator.py
-│   ├── main.py
-│   └── requirements.txt
 ├── LICENSE
 ├── proxy/
-│   ├── Caddyfile
-│   └── docker-compose.yaml
 ├── README.md
 └── sessions/
-    ├── cryptolib.py
-    ├── docker-compose.yaml
-    ├── Dockerfile
-    ├── id_generator.py
-    ├── main.py
-    ├── requirements.txt
-    ├── schemas.py
-    └── utils.py
 ```
 
 ## Installation and Setup
