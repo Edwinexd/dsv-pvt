@@ -4,7 +4,6 @@ import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/activity_create.dart';
 import 'package:flutter_application/bars.dart';
-import 'package:flutter_application/components/checkered_background.dart';
 import 'package:flutter_application/components/user_selector.dart';
 import 'package:flutter_application/controllers/backend_service.dart';
 import 'package:flutter_application/models/activity.dart';
@@ -15,6 +14,8 @@ import 'package:flutter_application/views/activity_page.dart';
 import 'package:flutter_application/views/edit_group_page.dart';
 import 'package:flutter_application/views/group_members.dart';
 import 'package:flutter_application/views/my_groups.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 
 class GroupPage extends StatefulWidget {
   final Group group;
@@ -38,6 +39,13 @@ class _GroupPageState extends State<GroupPage> {
   String location = '';
   int skip = 0; // TODO: Pagination?
   int limit = 100; // TODO: Pagination?
+  final List<String> skillLevels = [
+    'Beginner',
+    'Intermediate',
+    'Advanced',
+    'Expert',
+    'Master'
+  ];
 
   Future<void> _fetchData() async {
     await fetchMyGroups();
@@ -236,6 +244,8 @@ class _GroupPageState extends State<GroupPage> {
         title: widget.group.name,
       ),
       body: DefaultBackground(
+        child: SingleChildScrollView(
+          child: Column(     
         children: [
           Column(
             children: [
@@ -256,18 +266,19 @@ class _GroupPageState extends State<GroupPage> {
                     const SizedBox(height: 16.0),
                     Center(
                       child: Text(
-                        widget.group.name,
-                        style: const TextStyle(
-                          color: Color(0xFF8134CE),
-                          fontSize: 20.0,
+                        'Points: ${widget.group.points}',
+                        style: GoogleFonts.poppins(
+                          textStyle: const TextStyle(
+                            fontSize: 20.0),
                         ),
-                      ),
-                    )
-
+                        ),
+                    ),
                   ],
                 ),
               ), 
-            ],),
+            ],
+            ),
+          
           
           if (widget.isMember) ...[
             //Display group for members
@@ -343,7 +354,7 @@ class _GroupPageState extends State<GroupPage> {
             const SizedBox(height: 12),
             SizedBox(
               height: 40,
-              width: 150,
+              width: 250,
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -361,7 +372,7 @@ class _GroupPageState extends State<GroupPage> {
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Create an activity'),
+                    Text('Create an activity '),
                     Icon(Icons.create),
                   ],
                 ),
@@ -381,7 +392,7 @@ class _GroupPageState extends State<GroupPage> {
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Invite members'),
+                    Text('Invite members '),
                     Icon(Icons.person_add),
                   ],
                 ),
@@ -407,7 +418,7 @@ class _GroupPageState extends State<GroupPage> {
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Members'),
+                    Text('Members '),
                     Icon(Icons.group),
                   ],
                 ),
@@ -430,7 +441,7 @@ class _GroupPageState extends State<GroupPage> {
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Edit Group'),
+                      Text('Edit Group '),
                       Icon(Icons.edit),
                     ],
                   )),
@@ -448,7 +459,7 @@ class _GroupPageState extends State<GroupPage> {
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Leave the group'),
+                      Text('Leave the group '),
                       Icon(Icons.exit_to_app),
                     ],
                   ),
@@ -511,17 +522,18 @@ class _GroupPageState extends State<GroupPage> {
                           child: Text(
                               widget.group.isPrivate ? 'Private' : 'Public'),
                         ),
-                        // TOOD: We don't have skill level in the group model
-                        /*ElevatedButton(
+                        ElevatedButton(
                           onPressed: () {
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFFF9F2D),
+                            backgroundColor: Color(0xFFFEC0AD),
                           ),
                           child:
-                              Text('Beginner' /*${widget.group.skillLevel}*/),
-                        ),*/
-                        ElevatedButton(
+                              Text(skillLevels[widget.group.skillLevel]),
+                        ),
+                        
+                        // It displays the whole address, which is not we want to see here
+                        /*ElevatedButton(
                           onPressed: () {},
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFFFEC0AD),
@@ -529,7 +541,7 @@ class _GroupPageState extends State<GroupPage> {
                           child: Text(widget.group.address != null
                               ? widget.group.address!
                               : 'Online'),
-                        ),
+                        ),*/
                       ],
                     ),
                   ),
@@ -581,6 +593,8 @@ class _GroupPageState extends State<GroupPage> {
           ],
         ],
       ),
+    ),
+    ),
       bottomNavigationBar: buildBottomNavigationBar(
         context: context,
       ),
