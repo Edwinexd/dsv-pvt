@@ -2,7 +2,7 @@
 
 ## Overview
 
-Lace Up & Lead The Way is a pre-race training app designed to be a companion and guide for runners interested in running Midnattsloppet. This project is a collaborative effort by group 71 to design and develop a complete mobile app from scratch. The project includes a frontend, UI and a corresponding backend microservice architecture.
+Lace Up & Lead The Way is a pre-race training app designed to be a companion and social platform for runners interested in running Midnattsloppet. This project is a collaborative effort by group 71 to design and develop a complete mobile app from scratch. The project includes a frontend, UI and a corresponding backend microservice architecture.
 
 ## Team Members
 
@@ -18,7 +18,38 @@ Lace Up & Lead The Way is a pre-race training app designed to be a companion and
 
 ## Features
 
-- [List of app features and their descriptions]
+- User creation
+- Logging in and out
+  - Authentication and session handling
+- Profiles
+  - Each user can create their own profile
+  - Profile can be made private
+- Groups
+  - Users can join or leave them
+  - Groups can be private or public
+- Activities in groups
+  - Can be created by group members
+  - Can be scheduled to specific dates
+  - Can include planned completion of challenges
+- Challenges
+  - Can be completed in activities by linking the activity to a certain challenge
+  - Example: "Run 2,5km with 100m of elevation change!"
+- Achievements
+  - Rewarded by completing challenges
+  - Or by importing health data from phone
+  - Completed achievements will be displayed on users profiles
+- Images
+  - Ability to upload images to:
+    - User profiles
+    - Groups
+    - Activities
+    - and more...
+  - Implemented using a microservice connected to S3 Storage
+- Sharing
+  - Users can share completed achievements or activities
+  - The app generates an image specific to each user whenever they complete something
+    - This image can be shared to social media (e.g. Instagram or Facebook)
+  - Implemented using [Python PIL](https://pypi.org/project/pillow/)
 
 ## API Documentation
 Documentation of our REST APIs has been generated using [Swagger UI](https://github.com/swagger-api/swagger-ui), through usage of FastAPI, and can be viewed below.
