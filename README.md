@@ -6,7 +6,7 @@ Lace Up & Lead The Way is a pre-race training app designed to be a companion and
 
 ## Team Members
 
-- Edwin Sundberg — Backend lead & Scrum master — [@Edwinexd](https://github.com/Edwinexd)
+- Edwin Sundberg — Project manager & Scrum master — [@Edwinexd](https://github.com/Edwinexd)
 - Alfred Berggren — Backend & Database design — [@alfredberggren](https://github.com/alfredberggren)
 - Thea Ekmark — UX, UI Design & Backend — [@theaekmark](https://github.com/theaekmark)
 - Johan Berg Engstrand — Frontend & Backend — [@Johan-Berg-Engstrand](https://github.com/Johan-Berg-Engstrand)
