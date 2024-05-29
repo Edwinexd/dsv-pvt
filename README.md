@@ -112,11 +112,11 @@ No environment variables
 Alternatively, all services can be run locally using [uvicorn](https://www.uvicorn.org/). In this case, make sure to install all dependencies first!
 
 ## Screenshots
-![alt text](screenshots/signin.png?raw=true)
-![alt text](screenshots/dash.png?raw=true)
-![alt text](screenshots/profile.png?raw=true)
-![alt text](screenshots/groups.png?raw=true)
-![alt text](screenshots/challenges.png?raw=true)
+<img src="screenshots/signin.png?raw=true" width="100">
+<img src="screenshots/dash.png?raw=true" width="100">
+<img src="screenshots/profile.png?raw=true width="100">
+<img src="screenshots/groups.png?raw=true" width="100">
+<img src="screenshots/challenges.png?raw=true" width="100">
 
 ## Future enhancements
 - Friend list
