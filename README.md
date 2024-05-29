@@ -26,7 +26,7 @@ Lace Up & Lead The Way is a pre-race training app designed to be a companion and
 ## Features
 
 ### Sign up
-  - Passwords are encrypted and safely stored
+  - Passwords are irreversibly obfuscated and safely stored in an authentication database
 ### Logging in and out
   - Authentication and session handling
 ### Profiles
@@ -152,5 +152,5 @@ Lace Up & Lead The Way is open source and released under the GPL 3.0 license. Se
 
 ## Contact
 
-For any questions or concerns, please reach out to [@Edwinexd](https://github.com/Edwinexd) or open an issue in the repository.
+For any questions or concerns, please reach out to [@Edwinexd](https://github.com/Edwinexd).
 
