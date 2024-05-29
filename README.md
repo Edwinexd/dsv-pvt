@@ -58,7 +58,7 @@ Documentation of our REST APIs is generated using [Swagger UI](https://github.co
 ## Project Structure
 ```bash
 dsv-pvt/
-├── authentication/
+├── authentication/ — 
 ├── backend/
 ├── flutter_application/
 ├── .github/
@@ -70,7 +70,7 @@ dsv-pvt/
 └── sessions/
 ```
 ## Deploying
-Microservices are to be run in separate docker containers.
+Microservices are to be run in separate processes independently.
 A few environment variables need to be set in order for them all to function properly.
 
 ### Prerequisites
@@ -88,17 +88,11 @@ Enironment variables:
 - `IMAGES_URL` — URL to the deployed images microservice. No trailing slashes!
 - `DATABASE_URL` — URL to your PostgreSQL database for your general user data
 
-```
-docker build /dsv-pvt/backend/ -t backend && docker run -d --restart=always -p <dport>:<lport> --add-host host.docker.internal:host-gateway -e API_KEY=<ADMIN CREATION KEY> -e SESSIONS_URL=<URL TO SESSIONS SERVICE> -e AUTH_URL=<URL TO AUTHENTICATION SERVICE> -e IMAGES_API_KEY=<API KEY TO UPLOAD TO IMAGES SERVICE> -e IMAGES_URL=<URL TO IMAGES SERVICE> -e DATABASE_URL=<URL TO DATABASE ENGINE> --name=backend_cont backend
-```
 
 ### Authentication
 Environment variables:
 - `DATABASE_URL` — URL to your PostgreSQL database for authentication data
 
-```
-docker build /dsv-pvt/authentication/ -t authentication && docker run -d --restart=always -p <dport>:<lport> --add-host host.docker.internal:host-gateway -e DATABASE_URL=<URL TO DB ENGINE> --name=authentication_cont authentication
-```
 
 ### Images
 Environment variables:
@@ -109,12 +103,9 @@ Environment variables:
 - `BUCKET_NAME` — backblaze bucket name
 - `API_KEY_SELF` — API key that this service will require to upload images to S3
 
-```
-docker build /dsv-pvt/images/ -t images && docker run -d --restart=always -p <dport>:<lport> --add-host host.docker.internal:host-gateway -e API_KEY_ID=<S3 API KEY ID> -e API_KEY=<S3 API KEY> -e KEY_NAME=<S3 API KEY NAME> -e AWS_ENDPOINT_URL=<S3 STORAGE URL> -e BUCKET_NAME=<S3 BUCKET NAME> -e API_KEY_SELF=<API KEY TO UPLOAD IMG> --name=images_cont images
-```
 
 ### Sessions
-Environment variables:
+No environment variables
 
 
 ### Alternatives
