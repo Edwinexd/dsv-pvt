@@ -25,35 +25,35 @@ Lace Up & Lead The Way is a pre-race training app designed to be a companion and
 
 ## Features
 
-- **Sign up**
+### Sign up
   - Passwords are encrypted and safely stored
-- **Logging in and out**
+### Logging in and out
   - Authentication and session handling
-- **Profiles**
+### Profiles
   - Each user can create their own profile
   - Profile can be made private
-- **Groups**
+### Groups
   - Users can join or leave them
   - Groups can be private or public
-- **Activities in groups**
+### Activities in groups
   - Can be created by group members
   - Can be scheduled to specific dates
   - Can include planned completion of challenges
-- **Challenges**
+### Challenges
   - Can be completed in activities by linking the activity to a certain challenge
   - Example: "Run 2,5km with 100m of elevation change!"
-- **Achievements**
+### Achievements
   - Rewarded by completing challenges
   - Or by importing health data from phone
   - Completed achievements will be displayed on users profiles
-- **Images**
+### Images
   - Ability to upload images to:
     - User profiles
     - Groups
     - Activities
     - and more...
   - Implemented using a microservice connected to S3 Storage
-- **Sharing**
+### Sharing
   - Users can share completed achievements or activities
   - The app generates an image specific to each user whenever they complete something
     - This image can be shared to social media (e.g. Instagram or Facebook)
