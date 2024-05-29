@@ -112,11 +112,11 @@ No environment variables
 Alternatively, all services can be run locally using [uvicorn](https://www.uvicorn.org/). In this case, make sure to install all dependencies first!
 
 ## Screenshots
-![alt text](https://github.com/Edwinexd/dsv-pvt/blob/master/screenshots/signin.png?raw=true)
-![alt text](https://github.com/Edwinexd/dsv-pvt/blob/master/screenshots/dash.png?raw=true)
-![alt text](https://github.com/Edwinexd/dsv-pvt/blob/master/screenshots/profile.png?raw=true)
-![alt text](https://github.com/Edwinexd/dsv-pvt/blob/master/screenshots/groups.png?raw=true)
-![alt text](https://github.com/Edwinexd/dsv-pvt/blob/master/screenshots/challenges.png?raw=true)
+![alt text](screenshots/signin.png?raw=true)
+![alt text](screenshots/dash.png?raw=true)
+![alt text](screenshots/profile.png?raw=true)
+![alt text](screenshots/groups.png?raw=true)
+![alt text](screenshots/challenges.png?raw=true)
 
 ## Future enhancements
 - Friend list
