@@ -18,35 +18,35 @@ Lace Up & Lead The Way is a pre-race training app designed to be a companion and
 
 ## Features
 
-- Sign up
+- **Sign up**
   - Passwords are encrypted and safely stored
-- Logging in and out
+- **Logging in and out**
   - Authentication and session handling
-- Profiles
+- **Profiles**
   - Each user can create their own profile
   - Profile can be made private
-- Groups
+- **Groups**
   - Users can join or leave them
   - Groups can be private or public
-- Activities in groups
+- **Activities in groups**
   - Can be created by group members
   - Can be scheduled to specific dates
   - Can include planned completion of challenges
-- Challenges
+- **Challenges**
   - Can be completed in activities by linking the activity to a certain challenge
   - Example: "Run 2,5km with 100m of elevation change!"
-- Achievements
+- **Achievements**
   - Rewarded by completing challenges
   - Or by importing health data from phone
   - Completed achievements will be displayed on users profiles
-- Images
+- **Images**
   - Ability to upload images to:
     - User profiles
     - Groups
     - Activities
     - and more...
   - Implemented using a microservice connected to S3 Storage
-- Sharing
+- **Sharing**
   - Users can share completed achievements or activities
   - The app generates an image specific to each user whenever they complete something
     - This image can be shared to social media (e.g. Instagram or Facebook)
@@ -58,16 +58,16 @@ Documentation of our REST APIs is generated using [Swagger UI](https://github.co
 ## Project Structure
 ```bash
 dsv-pvt/
-├── authentication/ — 
-├── backend/
-├── flutter_application/
-├── .github/
+├── authentication/                 # a microservice handling user authentication
+├── backend/                        # a microservice handling general user data
+├── flutter_application/            # a client app, sends requests to backend
+├── .github/                        # workflows and github related things
 ├── .gitignore
-├── images/
+├── images/                         # a microservice handling image storage
 ├── LICENSE
-├── proxy/
+├── proxy/                          # proxy coniguration
 ├── README.md
-└── sessions/
+└── sessions/                       # a microservice handling login session tokens
 ```
 ## Deploying
 Microservices are to be run in separate processes independently.
@@ -107,6 +107,11 @@ Environment variables:
 ### Sessions
 No environment variables
 
+### Client
+Run the flutter application with the following environment variables set:
+- `BACKEND_API_URL` — URL to [backend](#backend) service.
+- `GOOGLE_APPLE_CLIENT_ID` — clientID to google for iOS devices. This is used for auth with google.
+- `GOOGLE_WEB_CLIENT_ID` — clientID for to google for web sessions.
 
 ### Alternatives
 Alternatively, all services can be run locally using [uvicorn](https://www.uvicorn.org/). In this case, make sure to install all dependencies first!
