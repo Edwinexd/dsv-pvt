@@ -2,12 +2,19 @@
 
 ## Overview
 
-Lace Up & Lead The Way is a pre-race training app designed to be a companion and social platform for runners interested in running Midnattsloppet. This project is a collaborative effort by group 71 to design and develop a complete mobile app from scratch. The project includes a frontend, UI and a corresponding backend microservice architecture.
+Lace Up & Lead The Way is a pre-race training app designed to be a companion and social platform for runners interested in running Midnattsloppet. This project is a collaborative effort by group 71 to design and develop a complete mobile app from scratch. The project is part of the PVT 7.5 course at [DSV](https://dsv.su.se). The project includes a frontend, UI and a corresponding backend microservice architecture.
 
 ## Team Members
 
-- Alfred Berggren — Backend; API development, Database management — [@alfredberggren](https://github.com/alfredberggren)
-- [Name] — [Role/Responsibilities] — [github-user]
+- Edwin Sundberg — Backend lead & Scrum master — [@Edwinexd](https://github.com/Edwinexd)
+- Alfred Berggren — Backend & Database design — [@alfredberggren](https://github.com/alfredberggren)
+- Thea Ekmark — UX, UI Design & Backend — [@theaekmark](https://github.com/theaekmark)
+- Johan Berg Engstrand — Frontend & Backend — [@Johan-Berg-Engstrand](https://github.com/Johan-Berg-Engstrand)
+- Enes Ihsan Celik — Frontend — [@enesihsancelik](https://github.com/enesihsancelik)
+- Daniel Wiklund — Frontend — [@LuhhDW](https://github.com/LuhhDW)
+- Axel Andersson — UX, Frontend & UI Design — [@oltan53](https://github.com/oltan53)
+- Noor Abo Hasan — UX & Frontend — [@nooorab](https://github.com/nooorab)
+- Sofia Sundin — UX & UI Design — [@SofiaSundins](https://github.com/SofiaSundins)
 
 ## Tech Stack
 
