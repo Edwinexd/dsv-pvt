@@ -111,27 +111,6 @@ No environment variables
 ### Alternatives
 Alternatively, all services can be run locally using [uvicorn](https://www.uvicorn.org/). In this case, make sure to install all dependencies first!
 
-## Installation and Setup
-
-### Prerequisites
-
-- [List of required software and their versions (e.g. Node.js, Android Studio, Xcode)]
-
-### Installation Steps
-
-1. [Step 1]
-2. [Step 2]
-3. [Step 3]
-4. [Step 4]
-
-## Contributing
-
-We welcome any contributions to the project! Please follow these guidelines:
-
-- Fork the repository and create a new branch for your feature or bug fix.
-- Write tests for your changes.
-- Submit a pull request describing your changes and why they are needed.
-
 ## Screenshots
 [Include screenshots or a link to a demo video showcasing your app's UI and functionality.]
 
