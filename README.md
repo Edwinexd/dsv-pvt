@@ -117,6 +117,7 @@ Run the flutter application with the following environment variables set:
 Alternatively, all services can be run locally using [uvicorn](https://www.uvicorn.org/). In this case, make sure to install all dependencies first!
 
 ## Screenshots
+<p float="left">
 <img src="screenshots/signin.png" width="240">
 
 <img src="screenshots/dash.png" width="240">
@@ -126,6 +127,9 @@ Alternatively, all services can be run locally using [uvicorn](https://www.uvico
 <img src="screenshots/allgroups.png" width="240">
 
 <img src="screenshots/challenges.png" width="240">
+
+<img src="screenshots/leaderboard.png" width="240">
+</p>
 
 ## Future enhancements
 - Friend list
