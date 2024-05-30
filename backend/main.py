@@ -1054,7 +1054,7 @@ def upload_health_data(
 
     for achievement_completion in completed:
         if achievement_completion.achievement.requirement in grantable_achievements:
-            grantable_achievements.remove(achievement_completion.requirement)
+            grantable_achievements.remove(achievement_completion.achievement.requirement)
 
     new_achievements = []
     for requirement in grantable_achievements:
