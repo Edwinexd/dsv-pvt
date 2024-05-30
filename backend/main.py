@@ -1052,9 +1052,9 @@ def upload_health_data(
     if completed is None:
         raise HTTPException(status_code=500, detail="Internal server error")
 
-    for achievement in completed:
-        if achievement.requirement in grantable_achievements:
-            grantable_achievements.remove(achievement.requirement)
+    for achievement_completion in completed:
+        if achievement_completion.achievement.requirement in grantable_achievements:
+            grantable_achievements.remove(achievement_completion.requirement)
 
     new_achievements = []
     for requirement in grantable_achievements:

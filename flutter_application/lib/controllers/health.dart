@@ -105,9 +105,9 @@ Future<List<Map<String, dynamic>>> getLast30DaysData() async {
     data.add({
       'date': startDate.toIso8601String(),
       'steps': steps,
-      'maxHeartrate': maxHeartrate,
-      'waterLiters': waterLiters,
-      'headacheTotal': headacheTotal,
+      'max_heartrate': maxHeartrate,
+      'water_liters': waterLiters,
+      'headache_total': headacheTotal,
       'sleep': sleep,
     });
   }
