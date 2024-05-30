@@ -115,7 +115,8 @@ Environment variables:
 
 
 ### Sessions
-No environment variables
+Environment variables:
+- `PRIVATE_KEY_BYTES` — Ed25519 PrivateKey in bytes
 
 ### Client
 Run the flutter application with the following environment variables set:
