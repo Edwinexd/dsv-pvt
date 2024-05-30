@@ -16,6 +16,9 @@ Lace Up & Lead The Way is a pre-race training app designed to be a companion and
 - Noor Abo Hasan — UX & Frontend — [@nooorab](https://github.com/nooorab)
 - Sofia Sundin — UX & UI Design — [@SofiaSundins](https://github.com/SofiaSundins)
 
+## Backlog
+Our backlog was managed through a [Github Project](https://github.com/users/Edwinexd/projects/2/views/1)
+
 ## Tech Stack
 
 - **Frontend:** [Flutter](https://flutter.dev/)
