@@ -34,6 +34,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 class BackendService implements BackendServiceInterface {
   static final BackendService _singleton = BackendService._internal();
   late Dio _dio;
+  late String _imagesBaseUrl;
   String? token;
   User? _me;
 
@@ -63,6 +64,7 @@ class BackendService implements BackendServiceInterface {
       print("API error occurred: ${error.message}");
       return handler.next(error);
     }));
+    _imagesBaseUrl = dotenv.env['IMAGES_API_URL']!;
   }
 
   void setDio(Dio dio) {
@@ -508,7 +510,7 @@ class BackendService implements BackendServiceInterface {
   Future<ImageProvider> getImage(String imageId) async {
     try {
       final response = await _dio.get(
-        "https://images-pvt.edt.cx/images/$imageId",
+        "$_imagesBaseUrl/images/$imageId",
         options: Options(
             responseType: ResponseType.bytes), // Set response type as bytes
       );

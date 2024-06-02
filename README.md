@@ -121,6 +121,7 @@ Environment variables:
 ### Client
 Run the flutter application with the following environment variables set:
 - `BACKEND_API_URL` — URL to [backend](#backend) service.
+- `IMAGES_API_URL` — URL to [images](#images) service.
 - `GOOGLE_APPLE_CLIENT_ID` — clientID to google for iOS devices. This is used for auth with google.
 - `GOOGLE_WEB_CLIENT_ID` — clientID for to google for web sessions.
 
